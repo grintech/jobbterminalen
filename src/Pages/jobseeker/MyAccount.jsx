@@ -197,12 +197,12 @@ const MyAccount = () => {
       <Navbar />
 
       <div className='top_pad'>
-        <div className="container py-4">
-          <div className="row my_account_page">
+        <div className="container py-5">
+          <div className="row my_account_page mt-4">
             <div className="col-md-3 mb-4 mb-md-0">
               <JobSidebar />
             </div>
-            <div className="col-md-9 profile_details">
+            <div className="col-md-9 profile_details ">
               <div className="card border-0 shadow bg_lblue">
                 <div className="card-body ">
                 <h1 className='job_head'>

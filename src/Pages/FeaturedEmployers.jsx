@@ -73,39 +73,55 @@ const FeaturedEmployers = () => {
             <Filter />
           </div> */}
           <div className="col-lg-12">
-            <div className="row mt-4">
-              {featuredCompanies.map((company) => (
-              <div className="col-lg-3 col-md-4 mb-5">
-                <div className="card company_list_card border-0 shadow position-relative">
-                  <div className="fea_tag">Featured</div>
-                  <div className="card-body ">
-                    <div className="logo_div me-3 mb-3 shadow position-relative">
-                    <img
-                        className=""
-                        src={`${IMG_URL}/${company.featured_company.company_profile}`}
-                        alt={company.featured_company.company_name}
-                    />
-                    </div>
-                    <div className="py-3">
-                      <Link to={`/companies/${company.featured_company.slug}`}>
-                        <h5>{company.featured_company.company_name}</h5>
-                      </Link>
-                      <p className="text-muted m-0">
-                        {company.featured_company.company_tagline || 'No tagline available'}
-                      </p>
-                    </div>
-                    <div className="d-flex justify-content-between align-items-center border-top pt-3">
-                      <div className="text-muted me-2">
-                        <i className="fa-solid fa-location-dot me-1 "></i>
-                        {company.featured_company.company_address}
+
+            { loading ? (
+                 <div className="loading-screen d-flex justify-content-center align-items-center flex-column ">
+                 <div className="spinner-grow text-primary" role="status">
+                   <span className="visually-hidden">Loading...</span>
+                 </div>
+                 <p className="mt-2">Fetching data...</p>
+               </div>
+            ) : error ? (
+              <p className="text-danger">{error}</p>
+            ) : featuredCompanies ? (
+                <div className="row mt-4">
+                  {featuredCompanies.map((company) => (
+                  <div className="col-lg-3 col-md-4 mb-5">
+                    <div className="card company_list_card border-0 shadow position-relative h-100">
+                      <div className="fea_tag">Featured</div>
+                      <div className="card-body ">
+                        <div className="logo_div me-3 mb-3 shadow position-relative">
+                        <img
+                            className=""
+                            src={`${IMG_URL}/${company.featured_company.company_profile}`}
+                            alt={company.featured_company.company_name}
+                        />
+                        </div>
+                        <div className="py-3">
+                          <Link to={`/companies/${company.featured_company.slug}`}>
+                            <h5>{company.featured_company.company_name}</h5>
+                          </Link>
+                          <p className="text-muted m-0">
+                            {company.featured_company.company_tagline || 'No tagline available'}
+                          </p>
+                        </div>
+                        <div className="d-flex justify-content-between  border-top pt-3">
+                          <div className="text-muted me-2">
+                            <i className="fa-solid fa-location-dot me-1 "></i>
+                            {company.featured_company.company_address}
+                          </div>
+                          <p style={{minWidth:"60px"}} className="text_blue m-0">{company.job_count} Jobs</p>
+                        </div>
                       </div>
-                      <p className="text_blue m-0">{company.job_count} Jobs</p>
                     </div>
                   </div>
+                  ))}
                 </div>
-              </div>
-              ))}
-            </div>
+            ): (
+              <p>No jobs found</p>
+            )
+          } 
+
           </div>
 
         </div>

@@ -85,9 +85,6 @@ const SavedJobs = () => {
     return `${diffDays} day${diffDays === 1 ? "" : "s"} ago`;
   };
 
-  // if (loading) {
-  //   return <div>Loading saved jobs...</div>;
-  // }
 
   const isJobSaved = (jobId) => {
     return Array.isArray(savedJobs) && savedJobs.some((savedJob) => savedJob.id === jobId);
@@ -97,9 +94,8 @@ const SavedJobs = () => {
     <>
       <Navbar />
       <div className="top_pad">
-        <div className="container  py-4">
-          
-            <div className="row">
+        <div className="container py-5">
+            <div className="row mt-4">
             <div className="col-md-3 mb-4 mb-md-0">
               <JobSidebar />
             </div>
@@ -122,8 +118,8 @@ const SavedJobs = () => {
                       <div className="card-body text-center">
                         <img
                           className="job_search"
-                          src="/public/images/job_search.png"
-                          alt="job_search"
+                          src="/images/job_search.png"
+                          alt="job_search"  
                         />
                         <h4>No saved jobs!</h4>
                         <p>No saved jobs! Tap on save icon on a job to save it.</p>
@@ -133,57 +129,6 @@ const SavedJobs = () => {
                   </div>
                 ) : (
                   savedJobs.map((job) => (
-                    // <div key={job.id} className="saved_jobs_list mb-3">
-                    //   <div className="card border">
-                    //     <div className="card-body">
-                    //       <h5>
-                    //         <Link to={`/job/${job.slug}`}>{job.title}</Link>
-                    //       </h5>
-                    //       <h6 className="text-secondary">
-                    //         <Link to={`/company/${job.company_id}`}>{job.company_id}</Link>
-                    //       </h6>
-                    //       <ul className="d-flex flex-wrap position-relative text-secondary p-0 m-0 saved_job_desc">
-                    //         <li className="border-end pe-3 me-3 mb-2">
-                    //           <i className="fa-solid fa-briefcase me-2"></i>
-                    //           <span>{job.experience_required || 'N/A'} Years</span>
-                    //         </li>
-                    //         <li className="border-end pe-3 me-3 mb-2">
-                    //           <i className="fa-solid fa-dollar me-2"></i>
-                    //           <span>{job.salary_range || 'N/A'}</span>
-                    //         </li>
-                    //         <li className="border-end pe-3 me-3 mb-2">
-                    //           <i className="fa-solid fa-location-dot me-2"></i>
-                    //           <span>{job.job_location || 'N/A'}</span>
-                    //         </li>
-                    //       </ul>
-                    //       <div className="text-secondary mb-2 job_note">
-                    //         <i className="fa-regular fa-clipboard me-2"></i>
-                    //         <span>{job.short_description || 'N/A'}</span>
-                    //       </div>
-                    //       <ul className="d-flex p-0 skills_list">
-                    //         {(job.skills || []).split(',').map((skill, index) => (
-                    //           <li key={index}>{skill.trim()}</li>
-                    //         ))}
-                    //       </ul>
-                    //       <div className="d-flex justify-content-between">
-                    //         <p className="m-0 text-capitalize text-muted">
-                    //           <small>Posted {job.created_at}</small>
-                    //         </p>
-                    //         <p className="m-0" onClick={() => toggleSavedJob(job.id)}
-                    //           style={{cursor:"pointer"}}
-                    //           >
-                    //           <i
-                    //             className={`fa-bookmark me-1 ${
-                    //               !saved ? 'fa-solid' : 'fa-regular'
-                    //             }`}
-                    //           ></i>
-                    //           <span> {!saved ? 'Saved' : 'Save'}</span>
-                    //         </p>
-                    //       </div>
-                    //     </div>
-                    //   </div>
-                    // </div>
-
                     <div className="col-lg-4 col-md-6 col-sm-6 mb-4" key={job.id}>
                       <div className="card company_list_card h-100">
                         <div className="card-body">

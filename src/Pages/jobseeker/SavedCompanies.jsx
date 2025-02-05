@@ -1,8 +1,12 @@
 import React from 'react'
+import Navbar from '../../components/Navbar';
+
 
 const SavedCompanies = () => {
   return (
-    <div>SavedCompanies</div>
+   <>
+      <Navbar />
+   </>
   )
 }
 

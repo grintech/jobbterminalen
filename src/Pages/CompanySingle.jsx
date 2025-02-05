@@ -248,12 +248,25 @@ const CompanySingle = () => {
                                   <div className="col-md-6 mb-4" key={job.id}>
                                     <div className="card company_list_card border-0 shadow">
                                       <div className="card-body">
-                                        <div className="logo_div me-3 mb-3">
-                                          <img
-                                            src={`${IMG_URL}/${companyData.company_profile}`}
-                                            alt={job.title}
-                                            className="rounded"
-                                          />
+                                        <div className="d-flex justify-content-between">
+                                          <div className="logo_div me-3 mb-3">
+                                            <img
+                                              src={`${IMG_URL}/${companyData.company_profile}`}
+                                              alt={job.title}
+                                              className="rounded"
+                                            />
+                                          </div>
+                                          <div className="">
+                                          {userId ? (
+                                              <ApplyPopup jobId={job.id}>
+                                                Apply
+                                              </ApplyPopup>
+                                            ) : (
+                                              <button className="btn btn-sm btn-primary" onClick={() => handleApplyClick(job.id)}>
+                                                Apply
+                                              </button>
+                                            )}
+                                          </div>
                                         </div>
                                         <Link to={`/jobs/${job.slug}`}>
                                           <h5>{job.title}</h5>
@@ -271,17 +284,7 @@ const CompanySingle = () => {
                                             {job.salary_range || 'N/A'}
                                           </div>
                                         </div>
-                                        <div className="d-flex justify-content-end">
-                                        {userId ? (
-                                            <ApplyPopup jobId={job.id}>
-                                              Apply
-                                            </ApplyPopup>
-                                          ) : (
-                                            <button className="btn btn-primary" onClick={() => handleApplyClick(job.id)}>
-                                              Apply
-                                            </button>
-                                          )}
-                                        </div>
+                                        
                                       </div>
                                     </div>
                                   </div>
