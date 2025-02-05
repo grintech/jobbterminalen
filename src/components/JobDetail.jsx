@@ -10,7 +10,7 @@ import ApplyPopup from './ApplyPopup';
 const JobDetail = () => {
   const { slug } = useParams(); // Capture the slug from the URL
   const [jobDetails, setJobDetails] = useState(null);
-  // const [latestJobs, setLatestJobs] = useState([]);
+  const [similarJobs, setSimilarJobs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [saved, setSaved] = useState(false);
@@ -98,10 +98,17 @@ const JobDetail = () => {
   };
 
   const calculateTimeAgo = (date) => {
-    const createdAtDate = new Date(date);
+    // Convert the input date to the correct UTC format (ISO string)
+    const utcZero = date.replace(" ", "T") + "Z"; // Ensure it's in ISO format with a 'Z' for UTC
+    
+    // Create Date object from the UTC date and convert it to the local time zone
+    const localDate = new Date(utcZero);
+
     const now = new Date();
-    const diffTime = now - createdAtDate;
-    const diffHours = Math.floor(diffTime / (1000 * 60 * 60));
+
+    const diffTime = now - localDate;
+
+    const diffHours = Math.floor(diffTime / (1000 * 60 * 60)); 
 
     if (diffHours < 24) {
       return `${diffHours} hour${diffHours === 1 ? '' : 's'} ago`;
@@ -110,6 +117,7 @@ const JobDetail = () => {
     const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
     return `${diffDays} day${diffDays === 1 ? '' : 's'} ago`;
   };
+  
 
   useEffect(() => {
     const fetchJobDetails = async () => {
@@ -152,7 +160,7 @@ const JobDetail = () => {
             },
           });
   
-          console.log("Raw Banner Response:", response.data); // Debugging
+          // console.log("Raw Banner Response:", response.data);
   
           // If response is a string, try parsing it correctly
           let parsedData;
@@ -173,7 +181,7 @@ const JobDetail = () => {
   
           if (formattedArray.length > 0 && formattedArray[0].data) {
             setBannerPlace(formattedArray[0].data.placement);
-            console.log("Banner Placement:", formattedArray[0].data.placement);
+            // console.log("Banner Placement:", formattedArray[0].data.placement);
           } else {
             console.warn("No valid banner data received.");
           }
@@ -186,26 +194,28 @@ const JobDetail = () => {
     }, []);
 
     useEffect(() => {
-      const fetchLatestJobs = async () => {
+      const fetchSimilarJobs = async () => {
         try {
-          const response = await axios.get(`${API_URL}/latest-jobs.php`, {
+          const response = await axios.get(`${API_URL}/similar-jobs.php?slug=${slug}`, {
             headers: {
               Authorization: `Bearer ${bearerKey}`,
               'Content-Type': 'application/json',
             },
           });
-          console.log(response.data.latest_jobs);
+    
+          // console.log("API Response:", response.data);
+    
           if (response.data.type === 'success') {
-            setLatestJobs(response.data.latest_jobs || []);
+            setSimilarJobs(response.data.similar_jobs || []);
+            // console.log("First Similar Job ID:", response.data.similar_jobs[0]?.id);
           }
         } catch (error) {
-          console.error('Error fetching Latest jobs:', error);
+          console.error('Error fetching similar jobs:', error);
         }
       };
-  
-      fetchLatestJobs();
-    }, []);
-
+    
+      fetchSimilarJobs();
+    }, [slug]);
 
     if (loading) {
       return (
@@ -429,55 +439,63 @@ const JobDetail = () => {
 
                 <h4 className="mb-3 text-start">Similar jobs</h4>
 
-                <div className="card job_list_card mb-4">
-                  <div className="card-body">
-                    <Link to={`/jobs/${jobDetails.slug}`}>
-                    <h4 className="job_title text-capitalize">{jobDetails.title}</h4>
-                    </Link>
-                    <h6 className="job_company">{jobDetails.company_name}</h6>
-                    <div className="job_details mt-2">
-                      <ul className="p-0 d-flex flex-wrap align-items-center m-0">
-                        <li className="d-flex align-items-center pe-2 me-2 border-end mb-2">
-                          <i className="fa-solid fa-briefcase me-1"></i>
-                          <span>{jobDetails.experience_required} Yrs</span>
-                        </li>
-                        <li className="d-flex align-items-center pe-2 me-2 border-end mb-2">
-                          <i className="fa-solid fa-indian-rupee-sign me-1"></i>
-                          <span>{jobDetails.salary_range || 'Not Specified'}</span>
-                        </li>
-                        <li className="d-flex align-items-center pe-2 me-2 border-end mb-2">
-                          <i className="fa-solid fa-location-dot me-1"></i>
-                          <span>{jobDetails.job_location || 'Remote'}</span>
-                        </li>
-                      </ul>
-                    </div>
-                    <p className="mt-2">{getPlainText(stripHtml(jobDetails?.description))}</p>
-                    {/* Buttons */}
-                    <div className="d-flex justify-content-between align-items-center mt-3">
-                      <span className="days">
-                        Posted {calculateTimeAgo(jobDetails.created_at)}
-                      </span>
-                      <div>
-                        <button
-                          onClick={toggleSaved}
-                          className={`btn btn-light btn-sm me-2 ${
-                            saved ? 'btn-primary' : ''
-                          }`}
-                        >
-                          <i
-                            className={`fa-bookmark me-1 ${
-                              saved ? 'fa-solid' : 'fa-regular'
-                            }`}
-                          ></i>
-                          {saved ? 'Saved' : 'Save'}
-                        </button>
-                        <button className="btn btn-light btn-sm me-2">
-                          <i className="fa-solid fa-share me-1"></i>Share
-                        </button>
+                {similarJobs.length > 0 ? (
+                  similarJobs.map((job, index) => (
+                    <div key={index} className="card job_list_card mb-4">
+                      <div className="card-body">
+                        <Link to={`/jobs/${job.slug}`}>
+                          <h4 className="job_title text-capitalize">{job.title}</h4>
+                        </Link>
+                        <h6 className="job_company">{job.company_name}</h6>
+                        <div className="job_details mt-2">
+                          <ul className="p-0 d-flex flex-wrap align-items-center m-0">
+                            <li className="d-flex align-items-center pe-2 me-2 border-end mb-2">
+                              <i className="fa-solid fa-briefcase me-1"></i>
+                              <span>{job.experience_required} Yrs</span>
+                            </li>
+                            <li className="d-flex align-items-center pe-2 me-2 mb-2">
+                              <i className="fa-solid fa-indian-rupee-sign me-1"></i>
+                              <span>{job.salary_range || 'Not Specified'}</span>
+                            </li>
+                          </ul>
+                        </div>
+
+                        <div className="job_details mt-2">
+                          <ul className="p-0 d-flex flex-wrap align-items-center m-0">
+                            <li className="d-flex align-items-center pe-2 me-2 mb-2">
+                              <i className="fa-solid fa-location-dot me-1"></i>
+                              <span>{job.job_location || 'Remote'}</span>
+                            </li>
+                          </ul>
+                        </div>
+                        {/* <div dangerouslySetInnerHTML={{ __html: stripHtml(job.description) }} /> */}
+                        {/* Buttons */}
+                        <div className="d-flex justify-content-between align-items-center mt-3">
+                          <span className="days">
+                            Posted {calculateTimeAgo(job.created_at)}
+                          </span>
+                          <div>
+                            <button
+                              onClick={toggleSaved}
+                              className={`btn btn-light btn-sm me-2 ${saved ? 'btn-primary' : ''}`}
+                            >
+                              <i
+                                className={`fa-bookmark me-1 ${saved ? 'fa-solid' : 'fa-regular'}`}
+                              ></i>
+                              {saved ? 'Saved' : 'Save'}
+                            </button>
+                            <button className="btn btn-light btn-sm me-2">
+                              <i className="fa-solid fa-share me-1"></i>Share
+                            </button>
+                          </div>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </div>
+                  ))
+                ) : (
+                  <p>No similar jobs found.</p>
+                )}
+
 
 
               </div>
