@@ -11,6 +11,7 @@ const JobDetail = () => {
   const { slug } = useParams(); // Capture the slug from the URL
   const [jobDetails, setJobDetails] = useState(null);
   const [similarJobs, setSimilarJobs] = useState([]);
+  const [savedJobs, setSavedJobs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [saved, setSaved] = useState(false);
@@ -207,7 +208,7 @@ const JobDetail = () => {
     
           if (response.data.type === 'success') {
             setSimilarJobs(response.data.similar_jobs || []);
-            // console.log("First Similar Job ID:", response.data.similar_jobs[0]?.id);
+            console.log("First Similar Job ID:", response.data.similar_jobs[0]?.status);
           }
         } catch (error) {
           console.error('Error fetching similar jobs:', error);
@@ -216,6 +217,82 @@ const JobDetail = () => {
     
       fetchSimilarJobs();
     }, [slug]);
+
+      useEffect(() => {
+        const fetchSavedJobs = async () => {
+          if (userId) {
+            try {
+              const response = await axios.get(
+                `${API_URL}/bookmarked-jobs-list.php?user_id=${userId}`,
+                {
+                  headers: {
+                    Authorization: `Bearer ${bearerKey}`,
+                    'Content-Type': 'multipart/form-data',
+                  },
+                }
+              );
+              if (response.data.type === "success" && Array.isArray(response.data.saved_jobs)) {
+                setSavedJobs(response.data.saved_jobs); // List of saved jobs
+              } else {
+                console.error("Failed to fetch saved jobs or invalid data:", response.data.message);
+                setSavedJobs([]);  // Set to empty array if the data is invalid
+              }
+            } catch (err) {
+              console.error("Error fetching saved jobs:", err);
+              setSavedJobs([]); // In case of error, ensure it's an empty array
+            }
+          }
+        };
+        
+    
+        fetchSavedJobs();
+      }, [userId]);
+
+      // Check if the job is saved
+      const isJobSaved = (jobId) => {
+        return Array.isArray(savedJobs) && savedJobs.some((savedJob) => savedJob.id === jobId);
+      };
+    
+    
+      // Toggle saved/unsaved job
+      const toggleSavedJob = async (jobId) => {
+        if (!userId) {
+          toast.error("Please login to save jobs."); 
+          return;
+        }
+      
+        try {
+          const formData = new FormData();
+          formData.append("user_id", userId);
+          formData.append("job_id", jobId);
+      
+          const response = await axios.post(`${API_URL}/bookmark-jobs.php`, formData, {
+            headers: {
+              Authorization: `Bearer ${bearerKey}`,
+              "Content-Type": "multipart/form-data",
+            },
+          });
+      
+          if (response.data.type === "success") {
+            const actionMessage = isJobSaved(jobId) ? "Job Unsaved" : "Job Saved"; 
+            toast.success(actionMessage); 
+            setSavedJobs((prevSavedJobs) => {
+              if (isJobSaved(jobId)) {
+                return prevSavedJobs.filter((job) => job.id !== jobId); // Remove the job if already saved
+              } else {
+                return [...prevSavedJobs, { id: jobId }]; // Add the job if not saved
+              }
+            });
+          } else {
+            console.error("Failed to toggle saved job:", response.data.message);
+            toast.error(`${response.data.message}`);
+          }
+        } catch (err) {
+          console.error("Error while toggling saved job:", err);
+          toast.error("Error while saving job.", err);
+        }
+      };
+      
 
     if (loading) {
       return (
@@ -440,54 +517,77 @@ const JobDetail = () => {
                 <h4 className="mb-3 text-start">Similar jobs</h4>
 
                 {similarJobs.length > 0 ? (
-                  similarJobs.map((job, index) => (
-                    <div key={index} className="card job_list_card mb-4">
-                      <div className="card-body">
-                        <Link to={`/jobs/${job.slug}`}>
-                          <h4 className="job_title text-capitalize">{job.title}</h4>
-                        </Link>
-                        <h6 className="job_company">{job.company_name}</h6>
-                        <div className="job_details mt-2">
-                          <ul className="p-0 d-flex flex-wrap align-items-center m-0">
-                            <li className="d-flex align-items-center pe-2 me-2 border-end mb-2">
-                              <i className="fa-solid fa-briefcase me-1"></i>
-                              <span>{job.experience_required} Yrs</span>
-                            </li>
-                            <li className="d-flex align-items-center pe-2 me-2 mb-2">
-                              <i className="fa-solid fa-indian-rupee-sign me-1"></i>
-                              <span>{job.salary_range || 'Not Specified'}</span>
-                            </li>
-                          </ul>
-                        </div>
-
-                        <div className="job_details mt-2">
-                          <ul className="p-0 d-flex flex-wrap align-items-center m-0">
-                            <li className="d-flex align-items-center pe-2 me-2 mb-2">
-                              <i className="fa-solid fa-location-dot me-1"></i>
-                              <span>{job.job_location || 'Remote'}</span>
-                            </li>
-                          </ul>
-                        </div>
-                        {/* <div dangerouslySetInnerHTML={{ __html: stripHtml(job.description) }} /> */}
-                        {/* Buttons */}
-                        <div className="d-flex justify-content-between align-items-center mt-3">
-                          <span className="days">
-                            Posted {calculateTimeAgo(job.created_at)}
-                          </span>
-                          <div>
-                            <button
-                              onClick={toggleSaved}
-                              className={`btn btn-light btn-sm me-2 ${saved ? 'btn-primary' : ''}`}
-                            >
-                              <i
-                                className={`fa-bookmark me-1 ${saved ? 'fa-solid' : 'fa-regular'}`}
-                              ></i>
-                              {saved ? 'Saved' : 'Save'}
-                            </button>
-                            <button className="btn btn-light btn-sm me-2">
-                              <i className="fa-solid fa-share me-1"></i>Share
-                            </button>
+                  similarJobs.map((job) => (
+                    <div className="col-lg-4 col-md-6 col-sm-6 mb-4" key={job.id}>
+                      <div className="card company_list_card h-100">
+                        <div className="card-body">
+                          <div className="d-flex justify-content-between">
+                            <Link to={`/companies/${job.company_slug}`}>
+                              <div className="logo_div border-0 shadow">
+                                <img
+                                  src={`${IMG_URL}/${job.company_profile}`}
+                                  alt="company_logo"
+                                />
+                              </div>
+                            </Link>
+                            <div className="d-flex align-items-center">
+                              <button
+                                className={`btn-light border-0 shadow me-2 ${isJobSaved(job.id) ? 'btn-primary' : ''}`}
+                                onClick={() => toggleSavedJob(job.id)}
+                              >
+                                <i
+                                  className={`fa-bookmark ${isJobSaved(job.id) ? 'fa-solid' : 'fa-regular'}`}
+                                ></i>
+                              </button>
+                              <Link className="btn-light shadow me-2">
+                                <i className="fa-solid fa-share"></i>
+                              </Link>
+                            </div>
                           </div>
+
+                          <div className="py-2">
+                            <Link to={`/companies/${job.company_slug}`}>
+                              <h5 className="py-2 m-0">{job.company_name}</h5>
+                            </Link>
+                            <Link to={`/jobs/${job.slug}`}>
+                              <h6 className="m-0">{job.title}</h6>
+                            </Link>
+                          </div>
+
+                          <p className="main_desc">{job.company_tagline}</p>
+
+                          <ul className="p-0 d-flex flex-wrap">
+                            {job.job_type && (
+                              <li>
+                                <div className="btn btn-sm btn-green me-2 mb-2 text-capitalize">
+                                  {job.job_type}
+                                </div>
+                              </li>
+                            )}
+                            <li>
+                              <div className="btn btn-sm btn-green me-2 mb-2 text-capitalize">
+                                <span>Salary -</span> {job.salary_range} {job.salary_currency}
+                              </div>
+                            </li>
+                            <li>
+                              <div className="btn btn-sm btn-green me-2 mb-2 text-capitalize">
+                                <span>Experience -</span> {job.experience_required}
+                              </div>
+                            </li>
+                            {job.job_location && (
+                              <li>
+                                <div className="btn btn-sm btn-green me-2 mb-2 text-start text-capitalize">
+                                  <i className="fa-solid fa-location-dot"></i> {job.job_location}
+                                </div>
+                              </li>
+                            )}
+                          </ul>
+
+                          <p className="text-muted m-0">
+                            <small className="badge text-bg-light">
+                              {calculateTimeAgo(job.created_at)}
+                            </small>
+                          </p>
                         </div>
                       </div>
                     </div>
@@ -495,8 +595,6 @@ const JobDetail = () => {
                 ) : (
                   <p>No similar jobs found.</p>
                 )}
-
-
 
               </div>
             </div>

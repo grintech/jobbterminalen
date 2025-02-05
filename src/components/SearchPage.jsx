@@ -83,14 +83,14 @@ const SearchPage = () => {
                     <div className="card company_list_card h-100">
                       <div className="card-body ">
                         <div className="d-flex justify-content-between">
-                          <Link to="/companies/capgemini">
+                          {/* <Link to="/companies/capgemini"> */}
                             <div className="logo_div border-0 shadow">
                               <img
                                 src={`${IMG_URL}/${job.company_profile}`}
                                 alt="company_logo"
                               />
                             </div>
-                          </Link>
+                          {/* </Link> */}
                           <div className="d-flex align-items-center">
                             <Link className="btn-light shadow me-2">
                               <i className="fa-regular fa-bookmark"></i>
@@ -101,9 +101,9 @@ const SearchPage = () => {
                           </div>
                         </div>
                         <div className="py-2 ">
-                          <Link to="/companies/capgemini">
+                          {/* <Link to="/companies/capgemini"> */}
                             <h5 className="py-2 ">{job.company_name}</h5>
-                          </Link>
+                          {/* </Link> */}
                           <p className="m-0 d-flex sml_text">
                             <span className="border-end d-inline-flex align-items-center me-2 pe-2">
                               <i className="fa-solid fa-star me-1"></i> 3.7
