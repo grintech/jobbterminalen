@@ -6,6 +6,7 @@ import Footer from './Footer';
 import { useAuthContext } from '../store/authContext';
 import HomeBanners from './HomeBanners';
 import ApplyPopup from './ApplyPopup';
+import { ToastContainer, toast } from 'react-toastify';
 
 const JobDetail = () => {
   const { slug } = useParams(); // Capture the slug from the URL
@@ -341,7 +342,7 @@ const JobDetail = () => {
                       Apply
                     </ApplyPopup>
                   ) : (
-                    <button className="btn btn-primary" onClick={() => handleApplyClick(jobDetails.id)}>
+                    <button className="btn btn-primary" onClick={() => handleApplyClick(jobDetails.job_id)}>
                       Apply
                     </button>
                   )}
