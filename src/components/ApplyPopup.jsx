@@ -241,7 +241,7 @@ const ApplyPopup = ({ jobId }) => {
                   <h6 className="mt-2 text-success mb-0">
                     Selected file: 
                     <a 
-                      href={`${IMG_URL}/${formData.resume}`} 
+                      href={`${formData.resume}`} 
                       target="_blank" 
                       rel="noopener noreferrer"
                       className="ms-2 text-primary"

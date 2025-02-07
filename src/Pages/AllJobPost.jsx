@@ -144,14 +144,14 @@ const AllJobPost = () => {
                     <div className="card company_list_card h-100">
                       <div className="card-body ">
                         <div className="d-flex justify-content-between">
-                          <Link to={`/companies/${job.companies_slug}`}>
+                          {/* <Link to={`/companies/${job.companies_slug}`}> */}
                             <div className="logo_div border-0 shadow">
                               <img
                                 src={`${IMG_URL}/${job.company_profile}`}
                                 alt="company_logo"
                               />
                             </div>
-                          </Link>
+                          {/* </Link> */}
                           <div className="d-flex align-items-center">
                             <Link className="btn-light shadow me-2">
                               <i className="fa-regular fa-bookmark"></i>
@@ -162,9 +162,9 @@ const AllJobPost = () => {
                           </div>
                         </div>
                         <div className="py-2 ">
-                          <Link to={`/companies/${job.companies_slug}`}>
+                          {/* <Link to={`/companies/${job.companies_slug}`}> */}
                             <h5 className="">{job.company_name}</h5>
-                          </Link>
+                          {/* </Link> */}
 
                           {/* <Link to="/job-detail"> */}
                           <Link to={`/jobs/${job.slug}`}>

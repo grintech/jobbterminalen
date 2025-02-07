@@ -152,10 +152,10 @@ const Homepage = () => {
 
         <PopularJob />
 
-        <div className="sponser_companies container py-5">
-          <h4 className="mb-3 text-center">Home Sponsers</h4>
-          {homeBannerPlace === "home_sponser" && <HomeBanners />}
-        </div>
+
+        {homeBannerPlace === "home_sponser" && <h4 className="mb-3 text-center pt-4">Home Sponsers</h4>}
+        {homeBannerPlace === "home_sponser" && <HomeBanners />}
+
 
         <CompaniesSlider />
 
