@@ -11,7 +11,7 @@ const SavedJobs = () => {
   const [savedJobs, setSavedJobs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
- const [saved, setSaved] = useState(false);  
+  const [saved, setSaved] = useState(false);  
 
   const { user } = useAuthContext();
   const userId = user ? user.id : null;
@@ -72,26 +72,24 @@ const SavedJobs = () => {
   }, []);
 
   const calculateTimeAgo = (date) => {
-    // Convert the input date to the correct UTC format (ISO string)
-    const utcZero = date.replace(" ", "T") + "Z"; // Ensure it's in ISO format with a 'Z' for UTC
-    
-    // Create Date object from the UTC date and convert it to the local time zone
+    const utcZero = date.replace(" ", "T") + "Z";
     const localDate = new Date(utcZero);
-
     const now = new Date();
-
     const diffTime = now - localDate;
-
-    const diffHours = Math.floor(diffTime / (1000 * 60 * 60)); 
-
-    if (diffHours < 24) {
-      return `${diffHours} hour${diffHours === 1 ? '' : 's'} ago`;
+  
+    const diffMinutes = Math.floor(diffTime / (1000 * 60));
+    if (diffMinutes < 60) {
+      return `${diffMinutes} minute${diffMinutes === 1 ? "" : "s"} ago`;
     }
-
-    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-    return `${diffDays} day${diffDays === 1 ? '' : 's'} ago`;
+  
+    const diffHours = Math.floor(diffMinutes / 60);
+    if (diffHours < 24) {
+      return `${diffHours} hour${diffHours === 1 ? "" : "s"} ago`;
+    }
+  
+    const diffDays = Math.floor(diffHours / 24);
+    return `${diffDays} day${diffDays === 1 ? "" : "s"} ago`;
   };
-
 
   const isJobSaved = (jobId) => {
     return Array.isArray(savedJobs) && savedJobs.some((savedJob) => savedJob.id === jobId);
