@@ -75,27 +75,37 @@ const JobDetail = () => {
 
     try {
       const formData = new FormData();
-      formData.append('user_id', userId);
-      formData.append('job_id', jobDetails.id);
+      formData.append("user_id", userId);
+      formData.append("job_id", jobDetails.id);
 
-      const response = await axios.post(
-        `${API_URL}/bookmark-jobs.php`,
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer ${bearerKey}`,
-            'Content-Type': 'multipart/form-data',
-          },
-        }
-      );
+      // Optimistically update UI
+      const newSavedState = !saved;
+      setSaved(newSavedState);
 
-      if (response.data.type === 'success') {
-        setSaved(!saved); // Toggle saved state
+      const response = await axios.post(`${API_URL}/bookmark-jobs.php`, formData, {
+        headers: {
+          Authorization: `Bearer ${bearerKey}`,
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      if (response.data.type === "success") {
+        toast.success(newSavedState ? "Job Saved" : "Job Unsaved");
+
+        // Update global savedJobs list
+        setSavedJobs((prevJobs) => {
+          return newSavedState
+            ? [...prevJobs, jobDetails] // Add job if saving
+            : prevJobs.filter((job) => job.id !== jobDetails.id); // Remove job if unsaving
+        });
       } else {
-        console.error('Failed to toggle saved state:', response.data.message);
+        toast.error(response.data.message);
+        setSaved(!newSavedState); // Revert UI state if API fails
       }
     } catch (err) {
-      console.error('Error while toggling saved state:', err);
+      console.error("Error while toggling saved job:", err);
+      toast.error("Error while saving job.");
+      setSaved(!saved); // Revert UI state on error
     }
   };
 

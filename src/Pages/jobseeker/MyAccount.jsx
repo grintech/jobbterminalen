@@ -1,62 +1,61 @@
-import React, { useState } from 'react';
-import Navbar from '../../components/Navbar';
-import { useAuthContext } from '../../store/authContext';
-import Footer from '../../components/Footer';
-import JobSidebar from './JobSidebar';
-import { Link } from 'react-router-dom';
+import React, { useEffect, useState } from "react";
+import Navbar from "../../components/Navbar";
+import { useAuthContext } from "../../store/authContext";
+import Footer from "../../components/Footer";
+import JobSidebar from "./JobSidebar";
+import { Link } from "react-router-dom";
+import axios from "axios";
+import { ToastContainer, toast } from 'react-toastify';
 
 const MyAccount = () => {
   const { user } = useAuthContext();
-  const [profileImage, setProfileImage] = useState('/images/blank_user.png');
+  const userId = user ? user.id : null;
+  const [userData, setUserData] = useState({});
+  const [profileImage, setProfileImage] = useState("/images/blank_user.png");
+  const [selectedImageId, setSelectedImageId] = useState(null);
+  const [uploading, setUploading] = useState(false);
   const [resume, setResume] = useState(null);
   const [resumeError, setResumeError] = useState('');
-
-  const [isExperienced, setIsExperienced] = useState(false);
-  const [isLocation, setIsLocation] = useState(false);
+  const [skills, setSkills] = useState([]);
+  const [loadingSuggestions, setLoadingSuggestions] = useState(false);
+  const [input, setInput] = useState('');
+  const [suggestions, setSuggestions] = useState([]);
+  const [employment, setEmployment] = useState([]);
+  const [education, setEducation] = useState([]);
+  const [selectedEducation, setSelectedEducation] = useState(null);
+  const [socialProfiles, setSocialProfiles] = useState([]);
+  const [selectedSocialProfile, setSelectedSocialProfile] = useState({});
 
   const [isCurrentEmployment, setIsCurrentEmployment] = useState(true); 
-
   const [isDifferentlyAbled, setIsDifferentlyAbled] = useState(null); 
   const [abledType, setAbledType] = useState("");
 
+  const handleRadioEmpChange = (event) => {
+    const value = event.target.value;
+    setIsCurrentEmployment(value === 'yes');
+    setEmployment((prevData) => ({
+      ...prevData,
+      current_employment: value,
+    }));
+  };
 
   const handleRadioChange = (event) => {
-    setIsExperienced(event.target.id === 'flexRadioDefault2');
+    const { value } = event.target;
+    setUserData((prevData) => ({
+      ...prevData,
+      work_status: value,
+    }));
   };
+
   const handleRadioLocation = (event) => {
-    setIsLocation(event.target.id === 'RadioLocation2');
+    const selectedLocation = event.target.value;
+    setUserData((prev) => ({
+      ...prev,
+      current_location: selectedLocation,
+    }));
   };
-
-  const handleRadioEmpChange = (event) => {
-    const value = event.target.value === 'yes';
-    setIsCurrentEmployment(value);
-  };
-
- 
   
-  // Cover Letter state and error handling
-  const [coverLetter, setCoverLetter] = useState(null);
-  const [coverLetterError, setCoverLetterError] = useState('');
-
-  // Handle profile image upload
-  const handleImageUpload = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setProfileImage(reader.result);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  // Handle profile image removal
-  const handleRemoveImage = () => {
-    setProfileImage('/images/blank_user.png');
-  };
-
-  // Handle resume upload with validation
-  const handleResumeUpload = (e) => {
+  const handleResumeUpload = async (e) => {
     const file = e.target.files[0];
     const allowedTypes = [
       'application/pdf',
@@ -65,87 +64,294 @@ const MyAccount = () => {
       'application/rtf',
     ];
     const maxSize = 2 * 1024 * 1024; // 2 MB in bytes
-
+  
     if (file) {
       if (!allowedTypes.includes(file.type)) {
         setResumeError('Invalid file type. Supported formats are PDF, DOC, DOCX, and RTF.');
         return;
       }
-
+  
       if (file.size > maxSize) {
         setResumeError('File size exceeds 2 MB.');
         return;
       }
-
+  
       setResumeError('');
       const fileName = file.name;
       setResume({ file, fileName });
+  
+      // Create form data
+      const formData = new FormData();
+      formData.append("user_id", userId);
+      formData.append("resume", file);
+  
+      try {
+        const response = await axios.post(`${API_URL}/upload-resume.php`, formData, {
+          headers: {
+            Authorization: `Bearer ${bearerKey}`,
+            "Content-Type": "multipart/form-data",
+          },
+        });
+  
+        if (response.data.type === "success") {
+          toast.success("Resume uploaded successfully!");
+          setUserData((prevData) => ({
+            ...prevData,
+            resume: response.data.resume,
+            resume_uploaded_on: new Date().toISOString(),
+          }));
+        } else {
+          toast.error(response.data.message);
+        }
+      } catch (error) {
+        console.error("Error uploading resume:", error);
+        toast.error("Error uploading resume.");
+      }
     }
   };
+  
+    // Handle resume download
+    const handleResumeDownload = () => {
+      const url = URL.createObjectURL(resume.file);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = resume.fileName;
+      link.click();
+    };
+  
+    const handleRemoveResume = () => {
+      const removeResumeModal = new bootstrap.Modal(document.getElementById("removeResumeModal"));
+      removeResumeModal.show();
+    };
+    
+    const confirmRemoveResume = async () => {
+      if (!userId) return;
+    
+      try {
+        const response = await axios.delete(`${API_URL}/remove-resume.php?user_id=${userId}`, {
+          headers: {
+            Authorization: `Bearer ${bearerKey}`,
+            "Content-Type": "application/json",
+          },
+        });
+    
+        if (response.data.type === "success") {
+          toast.success("Resume removed successfully!");
+          setResume(null);
+          setUserData((prevData) => ({
+            ...prevData,
+            resume: null,
+            resume_uploaded_on: null,
+          }));
+        } else {
+          toast.error(response.data.message);
+        }
+      } catch (error) {
+        console.error("Error removing resume:", error);
+        toast.error("Error removing resume.");
+      }
+    };
+  
 
-  // Handle resume download
-  const handleResumeDownload = () => {
-    const url = URL.createObjectURL(resume.file);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = resume.fileName;
-    link.click();
-  };
+  const bearerKey = import.meta.env.VITE_BEARER_KEY;
+  const API_URL = import.meta.env.VITE_API_URL;
+  const IMG_URL = import.meta.env.VITE_IMG_URL;
+  const SITE_URL = import.meta.env.VITE_SITE_URL;
 
-  // Handle resume removal
-  const handleRemoveResume = () => {
-    setResume(null);
-  };
+  useEffect(() => {
+    const fetchUserData = async () => {
+      if (userId) {
+        fetchEmployment(userId);
+        fetchEducation(userId);
+        fetchSocialProfiles(userId);
+      } else {
+        return;
+      }
+  
+      try {
+        const response = await axios.get(`${API_URL}/job-seeker-details.php?user_id=${userId}`, {
+          headers: {
+            Authorization: `Bearer ${bearerKey}`,
+            "Content-Type": "application/json",
+          },
+        });
+  
+        if (response.data.type === "success") {
+          const userDetails = response.data.data;
+  
+          // Add the provided code snippet here
+          if (userDetails.total_experience && userDetails.total_experience.includes(" - ")) {
+            const experienceParts = userDetails.total_experience.split(" - ");
+            const monthsPart = experienceParts[1] ? experienceParts[1].split(" ")[0] : null;
+  
+            userDetails.total_experience_months = monthsPart
+              ? `${monthsPart} Month${parseInt(monthsPart, 10) > 1 ? "s" : ""}`
+              : "";
+          } else {
+            userDetails.total_experience_months = "";
+          }
+  
+          if (userDetails.total_experience) {
+            const yearsPart = userDetails.total_experience.split(" ")[0];
+  
+            userDetails.total_experience_years = yearsPart
+              ? `${yearsPart} Year${parseInt(yearsPart, 10) > 1 ? "s" : ""}`
+              : "";
+          } else {
+            userDetails.total_experience_years = "";
+          }
+  
+          setUserData(userDetails);
+  
+          if (userDetails.image) {
+            setProfileImage(`${IMG_URL}/${userDetails.image}`);
+          }
+  
+          if (userDetails.skills) {
+            setSkills(userDetails.skills.split(',').map(skill => skill.trim()));
+          }
+        } else {
+          console.error("Failed to fetch user data:", response.data.message || "Unknown error");
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error.response ? error.response.data : error.message);
+      }
+    };
+  
+    fetchUserData();
+  }, [userId]);
 
-  // Handle cover letter upload with validation
-  const handleCoverLetterUpload = (e) => {
+  const handleImageUpload = async (e) => {
     const file = e.target.files[0];
-    const allowedTypes = [
-      'application/pdf',
-      'application/msword',
-      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-    ];
-    const maxSize = 2 * 1024 * 1024; // 2 MB in bytes
-
-    if (file) {
-      if (!allowedTypes.includes(file.type)) {
-        setCoverLetterError('Invalid file type. Supported formats are PDF, DOC, DOCX.');
-        return;
+    if (!file) return;
+  
+    // Allowed file types
+    const allowedExtensions = ["image/jpeg", "image/png", "image/webp", "image/gif"];
+    
+    if (!allowedExtensions.includes(file.type)) {
+      toast.error("Invalid file type. Only JPG, PNG, WEBP, and GIF are allowed.");
+      return;
+    }
+  
+    if (file.size > 500 * 1024) {
+      toast.error("File too large. Max size is 500 KB.");
+      return;
+    }
+  
+    // Show preview
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setProfileImage(reader.result);
+    };
+    reader.readAsDataURL(file);
+  
+    if (!userId || !bearerKey) {
+      toast.error("Authentication error. Please log in again.");
+      return;
+    }
+  
+    const formData = new FormData();
+    formData.append("user_id", userId);
+    formData.append("profile_img", file);
+  
+    try {
+      setUploading(true); // Start Uploading
+  
+      const ajaxModal = new bootstrap.Modal(document.getElementById("ajaxModal"));
+      document.getElementById("ajaxModalMessage").textContent = "Uploading profile image...";
+      ajaxModal.show();
+  
+      const response = await axios.post(
+        `${API_URL}/profile-upload.php?user_id=${userId}`,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${bearerKey}`,
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+  
+      if (response.data.type === "success") {
+        toast.success("Profile image uploaded successfully!");
+        setProfileImage(response.data.image || reader.result);
+      } else {
+        toast.error(response.data.message);
       }
+    } catch (error) {
+      console.error("Upload failed:", error);
+      toast.error("Error uploading profile image.");
+    } finally {
+      setUploading(false); // Stop Uploading
+  
+      const ajaxModal = bootstrap.Modal.getInstance(document.getElementById("ajaxModal"));
+      ajaxModal.hide();
+    }
+  };  
+  
 
-      if (file.size > maxSize) {
-        setCoverLetterError('File size exceeds 2 MB.');
-        return;
+  const handleRemoveImage = async () => {
+    if (!selectedImageId) return;
+    // console.log("Image ID:", selectedImageId);
+
+    const ajaxModal = new bootstrap.Modal(document.getElementById("ajaxModal"));
+    document.getElementById("ajaxModalMessage").textContent = "Removing profile image...";
+    ajaxModal.show();
+
+    try {
+      const response = await axios.delete(`${API_URL}/profile-remove.php?id=${selectedImageId}`, {
+        headers: {
+          Authorization: `Bearer ${bearerKey}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (response.data.type === "success") {
+        toast.success("Profile image removed successfully!");
+        setProfileImage("/images/blank_user.png");
+      } else {
+        toast.error(response.data.message);
       }
-
-      setCoverLetterError('');
-      const fileName = file.name;
-      setCoverLetter({ file, fileName });
+    } catch (error) {
+      console.error("Error removing profile image:", error);
+      toast.error("Error removing profile image.");
+    } finally {
+      ajaxModal.hide();
     }
   };
 
-  // Handle cover letter download
-  const handleCoverLetterDownload = () => {
-    const url = URL.createObjectURL(coverLetter.file);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = coverLetter.fileName;
-    link.click();
+  
+  const fetchSkillSuggestions = async (query) => {
+    if (!query) {
+      setSuggestions([]);
+      return;
+    }
+
+    setLoadingSuggestions(true);
+    try {
+      const response = await axios.get(`${API_URL}/fetch-skills.php?skill=${query}`, {
+        headers: {
+          Authorization: `Bearer ${bearerKey}`,
+        },
+      });
+
+      if (response.data.type === "success") {
+        setSuggestions(response.data.skills);
+      } else {
+        console.error("Failed to fetch skill suggestions:", response.data.message || "Unknown error");
+      }
+    } catch (error) {
+      console.error("Error fetching skill suggestions:", error.response ? error.response.data : error.message);
+    } finally {
+      setLoadingSuggestions(false);
+    }
   };
-
-  // Handle cover letter removal
-  const handleRemoveCoverLetter = () => {
-    setCoverLetter(null);
-  };
-
-
-  const [skills, setSkills] = useState([]); // Track added skills
-  const [input, setInput] = useState(''); // Track input value
 
   const addSkill = (skill) => {
     if (skill && !skills.includes(skill)) {
       setSkills([...skills, skill]);
       setInput(''); // Clear input after adding skill
+      setSuggestions([]); // Clear suggestions after adding skill
     }
   };
 
@@ -158,8 +364,522 @@ const MyAccount = () => {
     if (event.key === 'Enter') {
       event.preventDefault();
       addSkill(input); 
+      fetchSkillSuggestions(input);
     }
   };
+
+  const handleInputChange = (e) => {
+    const value = e.target.value;
+    setInput(value);
+    fetchSkillSuggestions(value);
+  };
+
+  const saveSkills = async () => {
+    try {
+      const response = await axios.put(
+        `${API_URL}/update-skills.php?user_id=${userId}`,
+        { skills: skills.join(", ") },
+        {
+          headers: {
+            Authorization: `Bearer ${bearerKey}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+  
+      if (response.data.type === "success") {
+        toast.success("Skills updated successfully!");
+        setUserData((prevData) => ({
+          ...prevData,
+          skills: skills.join(", "),
+        }));
+        const skillModal = bootstrap.Modal.getInstance(document.getElementById("skillModal"));
+        skillModal.hide();
+      } else {
+        toast.error(response.data.message || "Failed to update skills.");
+      }
+    } catch (error) {
+      console.error("Error updating skills:", error);
+      toast.error(
+        error.response?.data?.message || "An unexpected error occurred."
+      );
+    }
+  };
+  
+  const saveJobSeekerData = async () => {
+    // Calculate total experience
+    const totalExperience = userData.total_experience_years && userData.total_experience_months 
+    ? userData.total_experience_years + " - " + userData.total_experience_months 
+    : userData.total_experience_years
+    ? userData.total_experience_years
+    : userData.total_experience_months
+    ? userData.total_experience_months
+    : "";
+  
+    // Show ajaxModal with dynamic message
+    const ajaxModal = new bootstrap.Modal(document.getElementById("ajaxModal"));
+    document.getElementById("ajaxModalMessage").textContent = "Saving your details...";
+    ajaxModal.show();
+
+    try {
+      const response = await axios.put(
+        `${API_URL}/job-seeker-save-data.php?user_id=${userId}`,
+        {
+          name: userData.name,
+          work_status: userData.work_status,
+          total_experience: totalExperience,
+          current_salary: userData.current_salary,
+          current_location: userData.current_location,
+          country_name: userData.country_name,
+          notice_period: userData.notice_period,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${bearerKey}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+  
+      if (response.data.type === "success") {
+        toast.success("Details updated successfully!");
+        setUserData((prevData) => ({
+          ...prevData,
+          name: userData.name,
+          work_status: userData.work_status,
+          total_experience: totalExperience,
+          current_salary: userData.current_salary,
+          current_location: userData.current_location,
+          country_name: userData.country_name,
+          notice_period: userData.notice_period,
+        }));
+
+        const editProfileModal = bootstrap.Modal.getInstance(document.getElementById("editProfileModal"));
+        editProfileModal.hide();
+
+      } else {
+        toast.error(response.data.message || "Failed to update details.");
+      }
+    } catch (error) {
+      console.error("Error updating data:", error);
+      toast.error(
+        error.response?.data?.message || "An unexpected error occurred."
+      );
+    } finally {
+      ajaxModal.hide();
+    }
+  };
+
+
+  const fetchEmployment = async (userId) => {
+
+    try {
+      const response = await axios.get(`${API_URL}/employment-details.php?user_id=${userId}`, {
+        headers: {
+          Authorization: `Bearer ${bearerKey}`,
+        },
+      });
+
+      if (response.data.type === "success") {
+
+        const employmentDetails = response.data.data;
+
+        // console.log("Employment Details:", employmentDetails);
+
+        if (employmentDetails.employment_type === '1') {
+          employmentDetails.employment_type = 'Full Time';
+        } else if (employmentDetails.employment_type === '2') { 
+          employmentDetails.employment_type = 'Part Time';
+        } else if (employmentDetails.employment_type === '3') {
+          employmentDetails.employment_type = 'Fixed';
+        } else if (employmentDetails.employment_type === '4') {
+          employmentDetails.employment_type = 'Hourly';
+        }
+
+        if (employmentDetails.total_experience && employmentDetails.total_experience.includes(" - ")) {
+          const experienceParts = employmentDetails.total_experience.split(" - ");
+          const monthsPart = experienceParts[1] ? experienceParts[1].split(" ")[0] : null;
+
+          employmentDetails.total_experience_months = monthsPart
+            ? `${monthsPart} Month${parseInt(monthsPart, 10) > 1 ? "s" : ""}`
+            : "";
+        } else {
+          employmentDetails.total_experience_months = "";
+        }
+
+        if (employmentDetails.total_experience) {
+          const yearsPart = employmentDetails.total_experience.split(" ")[0];
+
+          employmentDetails.total_experience_years = yearsPart
+            ? `${yearsPart} Year${parseInt(yearsPart, 10) > 1 ? "s" : ""}`
+            : "";
+        } else {
+          employmentDetails.total_experience_years = "";
+        }
+
+        setEmployment(employmentDetails);
+      } else {
+        console.error("Failed to fetch seeker employment:", response.data.message || "Unknown error");
+      }
+    } catch (error) {
+      console.error("Error fetching seeker employment:", error.response ? error.response.data : error.message);
+    }
+  };
+
+
+  const saveEmploymentData = async () => {
+    // Calculate total experience
+    const totalExperience = employment.total_experience_years && employment.total_experience_months 
+    ? employment.total_experience_years + " - " + employment.total_experience_months 
+    : employment.total_experience_years
+    ? employment.total_experience_years
+    : employment.total_experience_months
+    ? employment.total_experience_months
+    : "";
+  
+    // Show ajaxModal with dynamic message
+    const ajaxModal = new bootstrap.Modal(document.getElementById("ajaxModal"));
+    document.getElementById("ajaxModalMessage").textContent = "Saving your details...";
+    ajaxModal.show();
+
+    try {
+      const response = await axios.put(
+        `${API_URL}/employment-details-save.php?user_id=${userId}`,
+        {
+          current_employment: employment.current_employment,
+          employment_type: employment.employment_type,
+          total_experience: totalExperience,
+          current_company_name: employment.current_company_name,
+          current_job_title: employment.current_job_title,
+          joining_date: employment.joining_date,
+          worked_till: employment.worked_till,
+          current_salary: employment.current_salary,
+          job_profile: employment.job_profile,
+          notice_period: employment.notice_period,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${bearerKey}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+  
+      if (response.data.type === "success") {
+        toast.success("Details updated successfully!");
+        setEmployment((prevData) => ({
+          ...prevData,
+          current_employment: employment.current_employment,
+          employment_type: employment.employment_type,
+          total_experience: totalExperience,
+          current_company_name: employment.current_company_name,
+          current_job_title: employment.current_job_title,
+          joining_date: employment.joining_date,
+          worked_till: employment.worked_till,
+          current_salary: employment.current_salary,
+          job_profile: employment.job_profile,
+          notice_period: employment.notice_period,
+        }));
+
+        const employModal = bootstrap.Modal.getInstance(document.getElementById("employModal"));
+        employModal.hide();
+
+        window.location.reload();
+
+      } else {
+        toast.error(response.data.message || "Failed to update details.");
+      }
+    } catch (error) {
+      console.error("Error updating data:", error);
+      toast.error(
+        error.response?.data?.message || "An unexpected error occurred."
+      );
+    } finally {
+      ajaxModal.hide();
+    }
+  };
+
+
+  const confirmDelete = async (Id) => {
+    if (!Id) return;
+  
+    try {
+      const response = await axios.patch(
+        `${API_URL}/employment-delete.php`,
+        { id: Id },
+        {
+          headers: {
+            Authorization: `Bearer ${bearerKey}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+  
+      if (response.data.type === "success") {
+        toast.success(response.data.message);
+        
+        window.location.reload();
+      } else {
+        toast.error(response.data.message);
+      }
+    } catch (error) {
+      console.error("Error deleting employment data:", error);
+      toast.error("Error deleting employment data.");
+    }
+  };
+
+
+  const fetchEducation = async (userId) => {
+    try {
+      const response = await axios.get(`${API_URL}/education.php?user_id=${userId}`, {
+        headers: {
+          Authorization: `Bearer ${bearerKey}`,
+        },
+      });
+  
+      if (response.data.type === "success") {
+        let educationDetails = response.data.data;
+  
+        educationDetails = educationDetails.map((edu) => {
+  
+          // Extracting course duration years
+          if (edu.course_duration && edu.course_duration.includes(" - ")) {
+            const [startYear, endYear] = edu.course_duration.split(" - ").map(year => year.trim());
+            edu.course_starting_year = startYear || "";
+            edu.course_ending_year = endYear || "";
+          } else {
+            edu.course_starting_year = "";
+            edu.course_ending_year = "";
+          }
+  
+          return edu;
+        });
+  
+        setEducation(educationDetails);
+        console.log("Education Details:", education);
+      } else {
+        console.error("Failed to fetch seeker education:", response.data.message || "Unknown error");
+      }
+    } catch (error) {
+      console.error("Error fetching seeker education:", error.response?.data || error.message);
+    }
+  };
+
+
+  const openEducationModal = (edu) => {
+    setSelectedEducation(edu);
+  };
+
+  const saveEducationData = async () => {
+    if (!selectedEducation) return;
+  
+    // Calculate course duration
+    const combinedDuration = selectedEducation.course_starting_year && selectedEducation.course_ending_year 
+      ? selectedEducation.course_starting_year + " - " + selectedEducation.course_ending_year 
+      : selectedEducation.course_starting_year
+      ? selectedEducation.course_starting_year
+      : selectedEducation.course_ending_year
+      ? selectedEducation.course_ending_year
+      : "";
+  
+    // Show ajaxModal with dynamic message
+    const ajaxModal = new bootstrap.Modal(document.getElementById("ajaxModal"));
+    document.getElementById("ajaxModalMessage").textContent = "Saving your details...";
+    ajaxModal.show();
+  
+    try {
+      const response = await axios.put(
+        `${API_URL}/education-save.php?user_id=${userId}`,
+        {
+          education: selectedEducation.education,
+          institute: selectedEducation.institute,
+          course: selectedEducation.course,
+          specialization: selectedEducation.specialization,
+          course_type: selectedEducation.course_type,
+          course_duration: combinedDuration,
+          grading_system: selectedEducation.grading_system,
+          marks: selectedEducation.marks,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${bearerKey}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+  
+      if (response.data.type === "success") {
+        toast.success("Details updated successfully!");
+        setEducation((prevData) => prevData.map((edu) => 
+          edu.id === selectedEducation.id ? { ...selectedEducation, course_duration: combinedDuration } : edu
+        ));
+  
+        const educationModal = bootstrap.Modal.getInstance(document.getElementById("educationModal"));
+        educationModal.hide();
+
+        window.location.reload();
+  
+      } else {
+        toast.error(response.data.message || "Failed to update details.");
+      }
+    } catch (error) {
+      console.error("Error updating data:", error);
+      toast.error(
+        error.response?.data?.message || "An unexpected error occurred."
+      );
+    } finally {
+      ajaxModal.hide();
+    }
+  };
+
+  const confirmEducationDelete = async (Id) => {
+    if (!Id) return;
+  
+    try {
+      const response = await axios.patch(
+        `${API_URL}/education-delete.php`,
+        { id: Id },
+        {
+          headers: {
+            Authorization: `Bearer ${bearerKey}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+  
+      if (response.data.type === "success") {
+        toast.success(response.data.message);
+
+        window.location.reload();
+      } else {
+        toast.error(response.data.message);
+      }
+    } catch (error) {
+      console.error("Error deleting education data:", error);
+      toast.error("Error deleting education data.");
+    }
+  };
+
+  const fetchSocialProfiles = async (userId) => {
+    try {
+      const response = await axios.get(`${API_URL}/social-profiles.php?user_id=${userId}`, {
+        headers: {
+          Authorization: `Bearer ${bearerKey}`,
+        },
+      });
+  
+      if (response.data.type === "success") {
+        let social_profile = response.data.data;
+  
+  
+        setSocialProfiles(social_profile);
+        console.log("Social Profiles  :", socialProfiles);
+      } else {
+        console.error("Failed to fetch seeker social profiles:", response.data.message || "Unknown error");
+      }
+    } catch (error) {
+      console.error("Error fetching seeker social profiles:", error.response?.data || error.message);
+    }
+  };
+
+
+  const openSocialModal = (profile) => {
+    setSelectedSocialProfile(profile);
+  };
+
+  const saveSocialProfiles = async (Id = null) => {
+    if (!selectedSocialProfile) return;
+  
+    const ajaxModal = new bootstrap.Modal(document.getElementById("ajaxModal"));
+    document.getElementById("ajaxModalMessage").textContent = "Saving your details...";
+    ajaxModal.show();
+  
+    try {
+      const response = await axios.put(
+        `${API_URL}/social-profiles-add.php${Id ? `?id=${Id}` : ""}`,
+        {
+          user_id: userId,
+          social_profile_name: selectedSocialProfile.social_profile_name,
+          url: selectedSocialProfile.url,
+          description: selectedSocialProfile.description,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${bearerKey}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+  
+      if (response.data.type === "success") {
+        toast.success(response.data.message);
+  
+        // Close the appropriate modal
+        if (Id) {
+          const socialModalElement = document.getElementById(`socialModal-${Id}`);
+          if (socialModalElement) {
+            const socialModal = bootstrap.Modal.getInstance(socialModalElement);
+            if (socialModal) socialModal.hide();
+          }
+        } else {
+          const addSocialModalElement = document.getElementById("addSocialModal");
+          if (addSocialModalElement) {
+            const addSocialModal = bootstrap.Modal.getInstance(addSocialModalElement);
+            if (addSocialModal) addSocialModal.hide();
+          }
+        }
+
+        window.location.reload();
+      } else {
+        toast.error(response.data.message || "Failed to update details.");
+      }
+    } catch (error) {
+      console.error("Error updating data:", error);
+      toast.error(error.response?.data?.message || "An unexpected error occurred.");
+    } finally {
+      ajaxModal.hide();
+    }
+  };  
+
+
+  const confirmSocialDelete = async (Id) => {
+    if (!Id) return;
+  
+    try {
+      const response = await axios.patch(
+        `${API_URL}/social-profile-delete.php`,
+        { id: Id },
+        {
+          headers: {
+            Authorization: `Bearer ${bearerKey}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+  
+      if (response.data.type === "success") {
+        toast.success(response.data.message);
+
+        window.location.reload();
+      } else {
+        toast.error(response.data.message);
+      }
+    } catch (error) {
+      console.error("Error deleting social profile:", error);
+      toast.error("Error deleting social profile.");
+    }
+  };
+
+  
+
+// useEffect(() => {
+//   if (socialProfiles?.social_profile_name) {
+//     toast.success(`Social Profiles: ${socialProfiles.social_profile_name}`);
+//   } else {
+//     toast.error("Social Profiles not found.");
+//   }
+// }, [socialProfiles]);
+
 
   /*------------Language-------------------*/
   const [languages, setLanguages] = useState([
@@ -192,75 +912,132 @@ const MyAccount = () => {
 
 
 
+  
+  const calculateTimeAgo = (date) => {
+    if (!date) return "Updating...";
+  
+    const utcZero = date.replace(" ", "T") + "Z";
+    const localDate = new Date(utcZero);
+    if (isNaN(localDate.getTime())) {
+      return "1 second ago";
+    }
+    const now = new Date();
+    const diffTime = now - localDate;
+  
+    const diffSeconds = Math.floor(diffTime / 1000);
+    if (diffSeconds < 60) {
+      return `${diffSeconds} second${diffSeconds === 1 ? "" : "s"} ago`;
+    }
+  
+    const diffMinutes = Math.floor(diffTime / (1000 * 60));
+    if (diffMinutes < 60) {
+      return `${diffMinutes} minute${diffMinutes === 1 ? "" : "s"} ago`;
+    }
+  
+    const diffHours = Math.floor(diffMinutes / 60);
+    if (diffHours < 24) {
+      return `${diffHours} hour${diffHours === 1 ? "" : "s"} ago`;
+    }
+  
+    const diffDays = Math.floor(diffHours / 24);
+    return `${diffDays} day${diffDays === 1 ? "" : "s"} ago`;
+  };
+  
+
   return (
     <>
       <Navbar />
-
-      <div className='top_pad'>
+      <div className="top_pad">
         <div className="container py-5">
           <div className="row my_account_page mt-4">
             <div className="col-md-3 mb-4 mb-md-0">
               <JobSidebar />
             </div>
-            <div className="col-md-9 profile_details ">
+            <div className="col-md-9 profile_details">
               <div className="card border-0 shadow bg_lblue">
-                <div className="card-body ">
-                <h1 className='job_head'>
-                    Welcome
-                     <span className='text-green text-capitalize'> "{user.name}" </span> 
-                     to your account
+                <div className="card-body">
+                  <h1 className="job_head">
+                    Welcome <span className="text-green text-capitalize">"{user?.name}"</span> to your account
                   </h1>
-                  <h6>From your account dashboard you can see your saved jobs, applied jobs, and can see your profile and edit as well.</h6>
+                  <h6>
+                    From your account dashboard, you can see your saved jobs, applied jobs, and profile, and edit them as well.
+                  </h6>
                 </div>
-           </div>
+              </div>
 
-              {/* Profile Image Section */}
+              {/* Ajax Loader */}
+              <div className="modal fade" id="ajaxModal" tabIndex="-1" aria-labelledby="ajaxModalLabel" aria-hidden="true">
+                <div className="modal-dialog">
+                  <div className="modal-content">
+                    <div className="modal-header">
+                      <h5 className="modal-title" id="ajaxModalLabel">Processing...</h5>
+                      <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div className="modal-body">
+                      <div id="loader" className="d-flex justify-content-center">
+                        <div className="spinner-border text-primary" role="status"></div>
+                      </div>
+                      <p className="text-center" id="ajaxModalMessage">Please wait...</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
               <div className="card mt-4 shadow border-0 rounded-3">
                 <div className="card-body">
                   <div className="row">
                     <div className="col-md-3 col-lg-2">
                       <div className="job_profile_icon position-relative">
-                        <img src={profileImage} className='profile_image' alt="Profile" />
-                        {!profileImage || profileImage === '/images/blank_user.png' ? (
+                        <img src={profileImage} className="profile_image" alt="Profile" />
+                        {!profileImage || profileImage === "/images/blank_user.png" ? (
                           <>
-                            <input 
-                              type="file" 
-                              id='profile_img' 
+                            <input
+                              type="file"
+                              name="profile_img"
+                              id="profile_img"
                               onChange={handleImageUpload}
+                              disabled={uploading}
                             />
-                            <label className='profile_img_label' htmlFor="profile_img">
+
+                            <label className="profile_img_label" htmlFor="profile_img">
                               <span>Upload <i className="fa-solid fa-plus"></i></span>
                             </label>
                           </>
                         ) : (
-                          <i 
+                          <i
                             className="fa-solid fa-xmark"
-                            onClick={handleRemoveImage}
+                            onClick={() => setSelectedImageId(userData.id)}
+                            data-bs-toggle="modal"
+                            data-bs-target="#removeImageModal"
                           ></i>
                         )}
                       </div>
                     </div>
                     <div className="col-md-9 col-lg-10">
                       <div className="border-bottom pb-3">
-                       <div className="d-flex align-items-center mb-2">
-                         <h4 className='m-0 text-capitalize'>{user.name}</h4>
-                          <Link><i className="fa-solid fa-pencil ms-2" data-bs-toggle="modal" data-bs-target="#exampleModal"></i></Link>
-                       </div>
-                        <h6 className='text-secondary m-0 fw-light'>Profile last updated - Yesterday</h6>
+                        <div className="d-flex align-items-center mb-2">
+                          <h4 className="m-0 text-capitalize">{userData.name}</h4>
+                          <Link>
+                            <i className="fa-solid fa-pencil ms-2" data-bs-toggle="modal" data-bs-target="#editProfileModal"></i>
+                          </Link>
+                        </div>
+                        <h6 className="text-secondary m-0 fw-light">
+                          Profile last updated - {calculateTimeAgo(userData.updated_at)}
+                        </h6>
                       </div>
-                      {/* User Info */}
+
                       <div className='row py-3 jobseeker_details'>
                         <div className="col-md-6">
                           <ul className='p-0 '>
-                            <li><i className="fa-solid fa-location-dot"></i> <span>Chandigarh India</span></li>
-                            <li><i className="fa-solid fa-briefcase"></i> <span>Fresher</span></li>
-                            <li><i className="fa-regular fa-calendar"></i> <span>Add availability to join</span></li>
+                            <li><i className="fa-solid fa-location-dot"></i> <span>{userData.permanent_address}</span></li>
+                            <li><i className="fa-solid fa-briefcase"></i> <span>{userData.work_status}</span></li>
+                            <li><i className="fa-regular fa-calendar"></i> <span>{userData.availability}</span></li>
                           </ul>
                         </div>
                         <div className="col-md-6">
                           <ul className='p-0'>
-                            <li><i className="fa-solid fa-phone"></i> <span>85288522221</span></li>
-                            <li><i className="fa-regular fa-envelope"></i> <span>jobseekernew@yopmail.com</span></li>
+                            <li><i className="fa-solid fa-phone"></i> <span>{userData.phone}</span></li>
+                            <li><i className="fa-regular fa-envelope"></i> <span>{userData.email}</span></li>
                           </ul>
                         </div>
                       </div>
@@ -269,130 +1046,222 @@ const MyAccount = () => {
                 </div>
               </div>
 
-                
-            <div className="modal fade basicModal" id="exampleModal" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+
+              {/* Remove Image  */}
+              <div className="modal fade" id="removeImageModal" tabIndex="-1" aria-hidden="true">
+                <div className="modal-dialog">
+                  <div className="modal-content">
+                    <div className="modal-header">
+                      <h5 className="modal-title">Remove Profile Image</h5>
+                      <button type="button" className="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div className="modal-body">Are you sure you want to remove your profile image?</div>
+                    <div className="modal-footer">
+                      <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                      <button type="button" className="btn btn-danger" onClick={handleRemoveImage} data-bs-dismiss="modal">Remove</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+
+            {/* Edit Profile Modal */}
+            <div className="modal fade basicModal" id="editProfileModal" tabIndex="-1" aria-labelledby="editProfileModalLabel" aria-hidden="true">
               <div className="modal-dialog modal-dialog-centered modal-lg">
                 <div className="modal-content p-3 p-sm-4">
                   <div className="modal-header border-0">
-                    <h1 className="modal-title fs-5" id="exampleModalLabel">Basic Details</h1>
+                    <h1 className="modal-title fs-5" id="editProfileModalLabel">Basic Details</h1>
                     <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                   </div>
                   <div className="modal-body ">
                     <form action="" className=''>
                       <div className='mb-4'>
                         <label htmlFor="">Name</label>
-                        <input type="text" className='form-control' />
+                        <input 
+                          type="text" 
+                          className='form-control' 
+                          name="name" 
+                          value={userData.name} 
+                          onChange={(e) => setUserData({ ...userData, name: e.target.value })} 
+                        />
                       </div>
-                      <div className='mb-4'>
-                        <label htmlFor="">Front End Developer at XYZ Company</label>
+                      <div className="mb-4">
+                        {userData.current_employment === "yes" ? (
+                          <strong>{userData.current_job_title} at {userData.current_company_name}</strong>
+                        ) : (
+                          <strong>Unemployed</strong>
+                        )}
                       </div>
                       <div className='mb-4'>
                         <label htmlFor="">Work Status</label>
-                        <div className="d-flex ">
+                        <div className="d-flex">
                           <div className="form-check me-4">
-                          <input className="form-check-input" type="radio" name="flexRadioDefault"
-                           id="flexRadioDefault1"
-                           checked={!isExperienced}
-                           onChange={handleRadioChange}
-                           />
-                          <label className="form-check-label"htmlFor="flexRadioDefault1">
-                           Fresher
-                          </label>
+                            <input
+                              className="form-check-input"
+                              type="radio"
+                              name="work_status"
+                              id="fresher"
+                              value="fresher"
+                              checked={userData.work_status === "fresher"}
+                              onChange={handleRadioChange}
+                            />
+                            <label className="form-check-label" htmlFor="fresher">
+                              Fresher
+                            </label>
+                          </div>
+                          <div className="form-check experience_radio">
+                            <input
+                              className="form-check-input"
+                              type="radio"
+                              name="work_status"
+                              id="experienced"
+                              value="experienced"
+                              checked={userData.work_status === "experienced"}
+                              onChange={handleRadioChange}
+                            />
+                            <label className="form-check-label" htmlFor="experienced">
+                              Experienced
+                            </label>
+                          </div>
                         </div>
-                        <div className="form-check experience_radio" >
-                          <input className="form-check-input " type="radio" name="flexRadioDefault"
-                           id="flexRadioDefault2" 
-                           checked={isExperienced}
-                           onChange={handleRadioChange}
-                           />
-                          <label className="form-check-label "htmlFor="flexRadioDefault2">
-                           Experienced
-                          </label>
-                        </div>
-                        </div>
-
-                        {isExperienced && (
-                        <div className="row mt-4 experience">
-                        <label htmlFor="">Total experience</label>
+                        {userData.work_status === "experienced" && (
+                          <div className="row mt-4 experience">
+                            <label htmlFor="">Total experience</label>
                             <div className="col-md-6 mb-2 mb-md-0">
-                              <input type="text" className='form-control' placeholder='Enter Years' maxLength={2} name="" id="" />
+                              <input
+                                type="text"
+                                className="form-control"
+                                placeholder="Enter Years"
+                                name="total_experience_years"
+                                value={userData.total_experience_years || ""}
+                                onChange={(e) => setUserData({ ...userData, total_experience_years: e.target.value })} 
+                              />
                             </div>
                             <div className="col-md-6 mb-2 mb-md-0">
-                              <input type="text" className='form-control' placeholder='Enter Months' maxLength={2} name="" id="" />
+                              <input
+                                type="text"
+                                className="form-control"
+                                placeholder="Enter Months"
+                                name="total_experience_months"
+                                value={userData.total_experience_months || ""}
+                                onChange={(e) => setUserData({ ...userData, total_experience_months: e.target.value })} 
+                              />
                             </div>
-                        </div>
+                          </div>
                         )}
-
                       </div>
                       <div className='mb-4'>
-                      <label htmlFor="">Current Salary</label>
-                      <p><small>Salary information helps us find relevant jobs for you</small></p>
-                      <div className="row">
-                        <div className="col-4 col-md-3 col-lg-2">
-                            <select className="form-select" aria-label="Default select example">
+                        <label htmlFor="">Current Salary</label>
+                        <p><small>Salary information helps us find relevant jobs for you</small></p>
+                        <div className="row">
+                          <div className="col-4 col-md-3 col-lg-2">
+                            <select className="form-select" defaultValue="dollar">
                               <option value="rupees">kr</option>
                               <option value="dollar">$</option>
                             </select>
-                        </div>
-                        <div className="col-8 col-md-9 col-lg-10">
-                        <input type="text" className='form-control' placeholder='Eg. 4,50,000' />
+                          </div>
+                          <div className="col-8 col-md-9 col-lg-10">
+                            <input 
+                              type="text" 
+                              name="current_salary"
+                              className='form-control' 
+                              placeholder='Eg. 4,50,000'
+                              value={userData.current_salary ? userData.current_salary.split(" ")[0] : ""} 
+                              onChange={(e) => setUserData({ ...userData, current_salary: e.target.value })} 
+                            />
+                          </div>
                         </div>
                       </div>
-                      </div>
-
-                       <div className='mb-4'>
-                         <div className="row mt-4">
-                        <label htmlFor="">Current Location</label>
-                           <div className="d-flex">
-                             <div className="form-check me-4">
-                              <input className="form-check-input" type="radio" name="RadioLocation" id="RadioLocation1"
-                              checked={!isLocation}
-                              onChange={handleRadioLocation}/>
-                              <label className="form-check-label" htmlFor="RadioLocation1"> Sweden </label>
+                      <div className="mb-4">
+                        <div className="row mt-4">
+                          <label htmlFor="">Current Location</label>
+                          <div className="d-flex">
+                            <div className="form-check me-4">
+                              <input
+                                className="form-check-input"
+                                type="radio"
+                                name="RadioLocation"
+                                id="RadioLocation1"
+                                value="Sweden"
+                                checked={userData.current_location === "Sweden"}
+                                onChange={handleRadioLocation}
+                              />
+                              <label className="form-check-label" htmlFor="RadioLocation1">
+                                Sweden
+                              </label>
                             </div>
                             <div className="form-check locationRadio">
-                              <input className="form-check-input" type="radio" name="RadioLocation" id="RadioLocation2" 
-                               checked={isLocation}
-                               onChange={handleRadioLocation}
+                              <input
+                                className="form-check-input"
+                                type="radio"
+                                name="RadioLocation"
+                                id="RadioLocation2"
+                                value="Outside Sweden"
+                                checked={userData.current_location !== "Sweden"}
+                                onChange={handleRadioLocation}
                               />
-                              <label className="form-check-label" htmlFor="RadioLocation2"> Outside Sweden </label>
+                              <label className="form-check-label" htmlFor="RadioLocation2">
+                                Outside Sweden
+                              </label>
                             </div>
-                        </div>
-                        <div className="row mt-3">
-                          <div className="col-md-6 mb-2 mb-md-0">
-                            <input type="text" className='form-control' placeholder='Enter current location' />
                           </div>
-
-                          {isLocation && (
-                            <div className="col-md-6 mb-2 mb-md-0 country_input">
-                            <input type="text" className='form-control' placeholder='Enter country name' />
+                          <div className="row mt-3">
+                            <div className="col-md-6 mb-2 mb-md-0">
+                              <input
+                                type="text"
+                                className="form-control"
+                                placeholder="Enter current location"
+                                value={userData.current_location || ""}
+                                onChange={(e) =>
+                                  setUserData((prev) => ({
+                                    ...prev,
+                                    current_location: e.target.value,
+                                  }))
+                                }
+                              />
+                            </div>
+                            {userData.current_location !== "Sweden" && (
+                              <div className="col-md-6 mb-2 mb-md-0 country_input">
+                                <input
+                                  type="text"
+                                  className="form-control"
+                                  placeholder="Enter country name"
+                                  value={userData.country_name || ""}
+                                  onChange={(e) =>
+                                    setUserData((prev) => ({
+                                      ...prev,
+                                      country_name: e.target.value,
+                                    }))
+                                  }
+                                />
+                              </div>
+                            )}
                           </div>
-                          )}
                         </div>
-                            
-                        </div>
-                       </div>
-
-                       <div className="mb-4">
+                      </div>
+                      <div className="mb-4">
                         <label htmlFor="">Notice Period</label>
                         <p><small>Lets recruiters know your availability to join</small></p>
                         <div className="mt-3">
-                          <select className="form-select" aria-label="Default select example">
-                            <option value="15 Days or less">15 Days or less</option>
-                            <option value="1 Month">1 Month</option>
-                            <option value="2 Months">2 Months</option>
-                            <option value="3 Months">3 Months</option>
-                            <option value="More than 3 months">More than 3 months</option>
-                            <option value="Serving notice period">Serving notice period</option>
+                          <select
+                            className="form-select"
+                            value={userData.notice_period || "15 days or less"}
+                            onChange={(e) => setUserData({ ...userData, notice_period: e.target.value })}
+                          >
+                            <option value="15 days or less">15 Days or less</option>
+                            <option value="1 month">1 Month</option>
+                            <option value="2 months">2 Months</option>
+                            <option value="3 months">3 Months</option>
+                            <option value="more than 3 months">More than 3 months</option>
+                            <option value="serving notice period">Serving notice period</option>
                           </select>
-                       </div>
+                        </div>
                       </div>
                     </form>
-                
                   </div>
                   <div className="modal-footer border-0">
                     <button type="button" className="btn btn-secondary rounded-pill" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" className="btn btn-primary rounded-pill">Save</button>
+                    <button type="button" className="btn btn-primary rounded-pill" data-bs-dismiss="modal" onClick={saveJobSeekerData}>Save</button>
                   </div>
                 </div>
               </div>
@@ -404,12 +1273,19 @@ const MyAccount = () => {
                 <div className="card-body">
                   <h5>Resume</h5>
                   <p>75% of recruiters discover candidates through their resume</p>
-                  <div className="upload_resume ">
-                    {resume ? (
+
+                  <div className="upload_resume">
+                    {resume || userData.resume ? (
                       <div className="uploaded_file_details d-flex justify-content-between align-items-baseline">
                         <div>
-                          <h6 className='file_name m-0'>{resume.fileName}</h6>
-                          <p><small>Uploaded on Jan 07 2025</small></p>
+                          <h6 className='file_name m-0'>
+                            {userData.resume && (
+                              <a href={`${IMG_URL}/${userData.resume}`} target="_blank" rel="noopener noreferrer">
+                                <img src={`${SITE_URL}/images/PDF.png`} alt="PDF" style={{ width: '80px' }} />
+                              </a>
+                            )}
+                          </h6>
+                          <p><small>Uploaded on {calculateTimeAgo(userData.resume_uploaded_on)}</small></p>
                         </div>
                         <div className='d-flex position-relative'>
                           <i className="fa-solid fa-download me-3" onClick={handleResumeDownload}></i>
@@ -425,601 +1301,870 @@ const MyAccount = () => {
                     )}
                     {resumeError && <p className="text-danger">{resumeError}</p>}
                   </div>
+
                 </div>
               </div>
 
-              {/* Cover Letter Upload Section */}
-              <div className="card mt-4 shadow border-0 rounded-3">
-                <div className="card-body">
-                  <h5>Cover Letter</h5>
-                  <div className="upload_resume ">
-                    {coverLetter ? (
-                      <div className="uploaded_file_details d-flex justify-content-between align-items-baseline">
-                        <div>
-                          <h6 className='file_name m-0'>{coverLetter.fileName}</h6>
-                          <p><small>Uploaded on Jan 07 2025</small></p>
-                        </div>
-                        <div className='d-flex position-relative'>
-                          <i className="fa-solid fa-download me-3" onClick={handleCoverLetterDownload}></i>
-                          <i className="fa-solid fa-trash" onClick={handleRemoveCoverLetter}></i>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className='d-flex flex-column align-items-center justify-content-center'>
-                        <input type="file" id='upload_cover_input' onChange={handleCoverLetterUpload} />
-                        <label htmlFor="upload_cover_input">Upload Cover Letter</label>
-                        <p className='m-0'><small>Supported Formats: doc, docx, pdf, upto 2 MB</small></p>
-                      </div>
-                    )}
-                    {coverLetterError && <p className="text-danger">{coverLetterError}</p>}
+              {/* Remove Resume Modal */}
+              <div className="modal fade" id="removeResumeModal" tabIndex="-1" aria-labelledby="removeResumeModalLabel" aria-hidden="true">
+                <div className="modal-dialog">
+                  <div className="modal-content">
+                    <div className="modal-header">
+                      <h5 className="modal-title" id="removeResumeModalLabel">Remove Resume</h5>
+                      <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div className="modal-body">Are you sure you want to remove your resume?</div>
+                    <div className="modal-footer">
+                      <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                      <button type="button" className="btn btn-danger" onClick={confirmRemoveResume} data-bs-dismiss="modal">Remove</button>
+                    </div>
                   </div>
                 </div>
               </div>
 
-               {/* Skills Section */}     
+
+              {/* Skills Section */}     
               <div className="card mt-4 shadow border-0 rounded-3">
                 <div className="card-body">
-                  <div className="d-flex align-items-center">
-                    <h5 className='m-0 me-3'>Key Skills </h5>
-                    <Link data-bs-toggle="modal" data-bs-target="#skillModal"><i className="fa-solid fa-pencil"></i></Link>
+                  <div className="d-flex justify-content-between">
+                    <h5 className='m-0 me-3'>Key Skills 
+                      {userData.skills && userData.skills.length > 0 && (
+                        <Link data-bs-toggle="modal" data-bs-target="#skillModal"> <i className="fa-solid fa-pencil"></i></Link>
+                      )}
+                    </h5>
+                      {(!userData.skills || Object.keys(userData.skills).length === 0) && (
+                        <Link className="text-green" data-bs-toggle="modal" data-bs-target="#skillModal">
+                          Add Skills
+                        </Link>
+                      )}
                   </div>
                   <div className="mt-4 job_skills">
                     <ul className='d-flex flex-wrap p-0'>
-                      <li className='rounded-pill border px-3 py-1 me-2 mb-2'>React Js</li>
-                      <li className='rounded-pill border px-3 py-1 me-2 mb-2'>Html</li>
-                      <li className='rounded-pill border px-3 py-1 me-2 mb-2'>Javascript</li>
-                      <li className='rounded-pill border px-3 py-1 me-2 mb-2'>Wordpress</li>
+                      {userData.skills && userData.skills.split(',').map((skill, index) => (
+                        <li key={index} className='rounded-pill border px-3 py-1 me-2 mb-2'>{skill.trim()}</li>
+                      ))}
                     </ul>
                   </div>
                 </div>
               </div>
 
-
               <div className="modal fade skillModal" id="skillModal" tabIndex="-1" aria-labelledby="skillModalLabel" aria-hidden="true">
-              <div className="modal-dialog modal-dialog-centered modal-lg">
-                <div className="modal-content p-3 p-sm-4">
-                  <div className="modal-header border-0">
-                    <h1 className="modal-title fs-5" id="skillModalLabel">Key Skills</h1>
-                    <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                  </div>
-                  <div className="modal-body ">
-                    <form action="" className=''>
-                      <div className='mb-4'>
-                        <label htmlFor="">Skills</label>
+                <div className="modal-dialog modal-dialog-centered modal-lg">
+                  <div className="modal-content p-3 p-sm-4">
+                    <div className="modal-header border-0">
+                      <h1 className="modal-title fs-5" id="skillModalLabel">Key Skills</h1>
+                      <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div className="modal-body ">
+                      <form action="" className=''>
+                        <div className='mb-4'>
+                          <label htmlFor="">Skills</label>
 
-                      {skills && skills.length >=1 && (
-                        <div className="all_added_skills py-2">
-                        <ul className="p-0 d-flex flex-wrap m-0">
-                          {skills.map((skill, index) => (
-                            <li key={index} className="rounded-pill border me-2 mb-2 py-1 ps-3 pe-4 position-relative">
-                              {skill}
-                              <i
-                                className="fa-solid fa-xmark "
-                                onClick={() => removeSkill(index)} 
-                              />
-                            </li>
-                          ))}
-                        </ul>
+                          {skills && skills.length >= 1 && (
+                            <div className="all_added_skills py-2">
+                              <ul className="p-0 d-flex flex-wrap m-0">
+                                {skills.map((skill, index) => (
+                                  <li key={index} className="rounded-pill border me-2 mb-2 py-1 ps-3 pe-4 position-relative">
+                                    {skill}
+                                    <i
+                                      className="fa-solid fa-xmark "
+                                      onClick={() => removeSkill(index)} 
+                                    />
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
+
+                          <input type="text" placeholder='Add skills' className='add_Skill_input form-control' 
+                            value={input}
+                            onChange={handleInputChange}
+                            onKeyPress={handleKeyPress}
+                          />
+                          <div className="skill-suggestions">
+                            {loadingSuggestions ? (
+                              <p className="p-2">Loading...</p>
+                            ) : (
+                              suggestions.map((suggestion, index) => (
+                                <div
+                                  key={index}
+                                  className="suggestion-item"
+                                  onClick={() => addSkill(suggestion)}
+                                >
+                                  {suggestion}
+                                </div>
+                              ))
+                            )}
+                          </div>
+
                         </div>
-                      )
-                      }  
-
-                        <input type="text" placeholder='Add skills' className='add_Skill_input form-control' 
-                           value={input}
-                           onChange={(e) => setInput(e.target.value)}
-                           onKeyPress={handleKeyPress}
-                        
-                        />
-                      </div>
-                     
-                    </form>
-                
-                  </div>
-                  <div className="modal-footer border-0">
-                    <button type="button" className="btn btn-secondary rounded-pill" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" className="btn btn-primary rounded-pill">Save</button>
+                      </form>
+                    </div>
+                    <div className="modal-footer border-0">
+                      <button type="button" className="btn btn-secondary rounded-pill" data-bs-dismiss="modal">Cancel</button>
+                      <button type="button" className="btn btn-primary rounded-pill" onClick={() => saveSkills()}>Save</button>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
+
 
 
               {/* Employment Section */}
               <div className="card mt-4 shadow border-0 rounded-3">
                 <div className="card-body">
-                <div className="d-flex justify-content-between mb-3">
-                   <h5>Employment</h5>
-                   <Link className="text-green">Add employment</Link>
-                 </div>
+                  <div className="d-flex justify-content-between mb-3">
+                    <h5>Employment</h5>
+                    {(!employment || Object.keys(employment).length === 0) && (
+                      <Link className="text-green" data-bs-toggle="modal" data-bs-target="#employModal">
+                        Add employment
+                      </Link>
+                    )}
+                  </div>
 
-                 <div className="mt-4 educational_details">
+                  <div className="mt-4 educational_details">
                     <div>
                       <div className="d-flex align-items-center">
-                       <h6 className='m-0 '>Front End Developer  <Link data-bs-toggle="modal" data-bs-target="#employModal" > <i className="fa-solid fa-pencil ms-2"></i></Link></h6> 
+                        {employment && employment.job_profile && Object.keys(employment).length > 0 && (
+                          <h6 className="m-0">
+                            {employment.job_profile}
+                            <Link data-bs-toggle="modal" data-bs-target="#employModal">
+                              <i className="fa-solid fa-pencil ms-2"></i>
+                            </Link>
+                          </h6>
+                        )}
                       </div>
-                      <h6>XYZ Company</h6>
-                      <p className='m-0'><small>Full Time | Jan 2024 - Present </small></p>
+                      {employment && Object.keys(employment).length > 0 ? (
+                        <>
+                          <h6>{employment.current_company_name}</h6>
+                          <p className="m-0">
+                            <small>
+                              {employment.employment_type} | {employment.joining_date}
+                            </small>
+                          </p>
+                        </>
+                      ) : (
+                        <p className="m-0">No employment details added yet</p>
+                      )}
                     </div>
-                 </div>
+                  </div>
+                </div>
+              </div>
+
+
+              <div className="modal fade" id="deleteModal" tabIndex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+                <div className="modal-dialog">
+                  <div className="modal-content">
+                    <div className="modal-header">
+                      <h5 className="modal-title" id="deleteModalLabel">Delete employment data</h5>
+                      <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div className="modal-body">Are you sure you want to delete employment details?</div>
+                    <div className="modal-footer">
+                      <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                      <button type="button" className="btn btn-danger" onClick={() => confirmDelete(employment.id)} data-bs-dismiss="modal">Delete</button>
+                    </div>
+                  </div>
                 </div>
               </div>
 
               <div className="modal fade employModal" id="employModal" tabIndex="-1" aria-labelledby="employModalLabel" aria-hidden="true">
-              <div className="modal-dialog modal-dialog-centered modal-lg">
-                <div className="modal-content p-3 p-sm-4">
-                  <div className="modal-header border-0 p-0">
-                    <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                  </div>
-                  <div className="modal-body ">
-                    <div className="d-flex justify-content-between">
-                    <h1 className="modal-title fs-5" id="employModalLabel">Employment</h1>
-                    <Link className='text-green'>Delete</Link>
+                <div className="modal-dialog modal-dialog-centered modal-lg">
+                  <div className="modal-content p-3 p-sm-4">
+                    <div className="modal-header border-0 p-0">
+                      <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <form action="" className="mt-3">
-                      <div className="mb-4">
-                        <label htmlFor="">Is this your current employment?</label>
-                        <div className="d-flex mt-3">
-                          <div className="form-check me-4">
-                            <input
-                              className="form-check-input"
-                              type="radio"
-                              name="RadioYesNo"
-                              id="RadioYes"
-                              value="yes"
-                              checked={isCurrentEmployment}
-                              onChange={handleRadioEmpChange}
-                            />
-                            <label className="form-check-label" htmlFor="RadioYes">
-                              Yes
-                            </label>
-                          </div>
-                          <div className="form-check locationRadio">
-                            <input
-                              className="form-check-input"
-                              type="radio"
-                              name="RadioYesNo"
-                              id="RadioNo"
-                              value="no"
-                              checked={!isCurrentEmployment}
-                              onChange={handleRadioEmpChange}
-                            />
-                            <label className="form-check-label" htmlFor="RadioNo">
-                              No
-                            </label>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="mb-4">
-                        <label htmlFor="">Employment Type</label>
-                        <select className="form-select" aria-label="Default select example">
-                          <option value="1">Full Time</option>
-                          <option value="2">Part Time</option>
-                          <option value="3">Fixed</option>
-                          <option value="4">Hourly</option>
-                        </select>
-                      </div>
-
-                      <div className="row mt-4">
-                        <label htmlFor="">Total experience</label>
-                        <div className="col-md-6 mb-2 mb-md-0">
-                          <input type="text" className="form-control" placeholder="Enter Years" maxLength={2} />
-                        </div>
-                        <div className="col-md-6 mb-2 mb-md-0">
-                          <input type="text" className="form-control" placeholder="Enter Months" maxLength={2} />
-                        </div>
-                      </div>
-
-                      {/* Change label dynamically based on isCurrentEmployment state */}
-                      <div className="mt-4">
-                        <label htmlFor="">{isCurrentEmployment ? 'Current company name' : 'Previous company name'}</label>
-                        <div className="col-12">
-                          <input
-                            type="text"
-                            className="form-control"
-                            placeholder='XYZ Company'
-                          
-                          />
-                        </div>
-                      </div>
-
-                      {/* Change label dynamically based on isCurrentEmployment state */}
-                      <div className="mt-4">
-                        <label htmlFor="">{isCurrentEmployment ? 'Current job title' : 'Previous job title'}</label>
-                        <div className="col-12">
-                          <input
-                            type="text"
-                            className="form-control"
-                          placeholder='XYZ Company'
-                          />
-                        </div>
-                      </div>
-
-                      <div className="row mt-4">
-                        <label htmlFor="">Joining Date</label>
-                        <div className="col-md-6 mb-2 mb-md-0">
-                          <input type="text" className="form-control" placeholder="Year Eg. 2025" maxLength={4} />
-                        </div>
-                        <div className="col-md-6 mb-2 mb-md-0">
-                          <input type="text" className="form-control" placeholder="Month Eg. Jan" maxLength={8} />
-                        </div>
-                      </div>
-
-                      {/* Conditionally render the worked_till section if "No" is selected */}
-                      {!isCurrentEmployment && (
-                        <div className="row mt-4 worked_till">
-                          <label htmlFor="">Worked Till</label>
-                          <div className="col-md-6 mb-2 mb-md-0">
-                            <input type="text" className="form-control" placeholder="Year Eg. 2025" maxLength={4} />
-                          </div>
-                          <div className="col-md-6 mb-2 mb-md-0">
-                            <input type="text" className="form-control" placeholder="Month Eg. Jan" maxLength={8} />
-                          </div>
-                        </div>
+                    <div className="modal-body ">
+                      <div className="d-flex justify-content-between">
+                      <h1 className="modal-title fs-5" id="employModalLabel">Employment</h1>
+                      {employment && employment.id && Object.keys(employment).length > 0 && (
+                        <Link className='text-green' data-bs-toggle="modal" data-bs-target="#deleteModal">Delete</Link>
                       )}
-
-                      <div className="mt-4">
-                        <label htmlFor="">Current Salary</label>
-                        <div className="row">
-                          <div className="col-4 col-md-3 col-lg-2">
-                            <select className="form-select" aria-label="Default select example">
-                              <option value="rupees">kr</option>
-                              <option value="dollar">$</option>
-                            </select>
-                          </div>
-                          <div className="col-8 col-md-9 col-lg-10">
-                            <input type="text" className="form-control" placeholder="Eg. 4,50,000" />
+                      </div>
+                      <form action="" className="mt-3">
+                        <div className="mb-4">
+                          <label htmlFor="">Is this your current employment?</label>
+                          <div className="d-flex mt-3">
+                            <div className="form-check me-4">
+                              <input
+                                className="form-check-input"
+                                type="radio"
+                                name="RadioYesNo"
+                                id="RadioYes"
+                                value="yes"
+                                checked={employment.current_employment === "yes"}
+                                onChange={handleRadioEmpChange}
+                              />
+                              <label className="form-check-label" htmlFor="RadioYes">
+                                Yes
+                              </label>
+                            </div>
+                            <div className="form-check">
+                              <input
+                                className="form-check-input"
+                                type="radio"
+                                name="RadioYesNo"
+                                id="RadioNo"
+                                value="no"
+                                checked={employment.current_employment === "no"}
+                                onChange={handleRadioEmpChange}
+                              />
+                              <label className="form-check-label" htmlFor="RadioNo">
+                                No
+                              </label>
+                            </div>
                           </div>
                         </div>
-                      </div>
 
-                      <div className="mt-4">
-                        <label htmlFor="">Job Profile</label>
-                        <div className="col-12">
-                          <textarea name="" className="form-control"></textarea>
+                        <div className="mb-4">
+                          <label htmlFor="employment_type">Employment Type</label>
+                          <select value={employment.employment_type || "1"}
+                            onChange={(e) => setEmployment({ ...employment, employment_type: e.target.value })}
+                            className="form-select" defaultValue="1">
+                            <option value="1">Full Time</option>
+                            <option value="2">Part Time</option>
+                            <option value="3">Fixed</option>
+                            <option value="4">Hourly</option>
+                          </select>
                         </div>
-                      </div>
 
-                      <div className="mt-4">
-                        <label htmlFor="">Notice Period</label>
-                        <select className="form-select" aria-label="Default select example">
-                          <option value="15 Days or less">15 Days or less</option>
-                          <option value="1 Month">1 Month</option>
-                          <option value="2 Months">2 Months</option>
-                          <option value="3 Months">3 Months</option>
-                          <option value="More than 3 months">More than 3 months</option>
-                          <option value="Serving notice period">Serving notice period</option>
-                        </select>
-                      </div>
-                    </form>
-                
-                  </div>
-                  <div className="modal-footer border-0">
-                    <button type="button" className="btn btn-secondary rounded-pill" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" className="btn btn-primary rounded-pill">Save</button>
+                        <div className="row mt-4">
+                          <label htmlFor="">Total experience</label>
+                          <div className="col-md-6 mb-2 mb-md-0">
+                              <input
+                                type="text"
+                                className="form-control"
+                                placeholder="Enter Years"
+                                name="total_experience_years"
+                                value={employment.total_experience_years || ""}
+                                onChange={(e) => setEmployment({ ...employment, total_experience_years: e.target.value })} 
+                              />
+                            </div>
+                            <div className="col-md-6 mb-2 mb-md-0">
+                              <input
+                                type="text"
+                                className="form-control"
+                                placeholder="Enter Months"
+                                name="total_experience_months"
+                                value={employment.total_experience_months || ""}
+                                onChange={(e) => setEmployment({ ...employment, total_experience_months: e.target.value })} 
+                              />
+                            </div>
+                        </div>
+
+                        {/* Change label dynamically based on isCurrentEmployment state */}
+                        <div className="mt-4">
+                        <label htmlFor="">{isCurrentEmployment ? 'Current company name' : 'Previous company name'}</label>
+                          <div className="col-12">
+                            <input
+                              type="text" 
+                              className="form-control"
+                              placeholder='XYZ Company'
+                              value={employment.current_company_name ?? ''} 
+                              onChange={(e) => setEmployment({ ...employment, current_company_name: e.target.value })} 
+                            />
+                          </div>
+                        </div>
+
+                        {/* Change label dynamically based on isCurrentEmployment state */}
+                        <div className="mt-4">
+                        <label htmlFor="">{isCurrentEmployment ? 'Current job title' : 'Previous job title'}</label>
+                          <div className="col-12">
+                            <input
+                              type="text"
+                              className="form-control"
+                              placeholder='ABC Job Title'
+                              value={employment.current_job_title ?? ''} 
+                              onChange={(e) => setEmployment({ ...employment, current_job_title: e.target.value })} 
+                            />
+                          </div>
+                        </div>
+
+
+                        <div className="row mt-4">
+                          <label htmlFor="">Joining Date</label>
+                          <div className="col-md-12 mb-2 mb-md-0">
+                          <input 
+                            type="date" 
+                            className='form-control' 
+                            name="joining_date" 
+                            value={employment.joining_date ?? ''} 
+                            onChange={(e) => setEmployment({ ...employment, joining_date: e.target.value })} 
+                          />
+                          </div>
+                        </div>
+
+                        {/* Conditionally render the worked_till section if "No" is selected */}
+                        {!isCurrentEmployment && (
+                          <div className="row mt-4 worked_till">
+                            <label htmlFor="">Worked Till</label>
+                            <div className="col-md-12 mb-2 mb-md-0">
+                            <input 
+                              type="date" 
+                              className='form-control' 
+                              name="worked_till" 
+                              value={employment.worked_till ?? ''} 
+                              onChange={(e) => setEmployment({ ...employment, worked_till: e.target.value })} 
+                            />
+                            </div>
+                          </div>
+                        )}
+
+                        <div className="mt-4">
+                          <label htmlFor="">Current Salary</label>
+                          <div className="row">
+                            <div className="col-4 col-md-3 col-lg-2">
+                              <select className="form-select" defaultValue="dollar">
+                                <option value="rupees">kr</option>
+                                <option value="dollar">$</option>
+                              </select>
+                            </div>
+                            <div className="col-8 col-md-9 col-lg-10">
+                              <input type="text" className="form-control" placeholder="Eg. 4,50,000"
+                                value={employment.current_salary ? employment.current_salary.split(" ")[0] : ""} 
+                                onChange={(e) => setEmployment({ ...employment, current_salary: e.target.value })} 
+                              />
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="mt-4">
+                          <label htmlFor="">Job Profile</label>
+                          <div className="col-12">
+                            <input className="form-control" type="text" placeholder="Enter job profile"
+                              value={employment.job_profile ?? ''} 
+                              onChange={(e) => setEmployment({ ...employment, job_profile: e.target.value })} 
+                            />
+                          </div>
+                        </div>
+
+                        <div className="mt-4">
+                          <label htmlFor="">Notice Period</label>
+                          <select
+                            className="form-select"
+                            value={employment.notice_period || "15 days or less"}
+                            onChange={(e) => setEmployment({ ...employment, notice_period: e.target.value })}
+                          >
+                            <option value="15 Days or less">15 Days or less</option>
+                            <option value="1 Month">1 Month</option>
+                            <option value="2 Months">2 Months</option>
+                            <option value="3 Months">3 Months</option>
+                            <option value="More than 3 months">More than 3 months</option>
+                            <option value="Serving notice period">Serving notice period</option>
+                          </select>
+                        </div>
+                      </form>
+                  
+                    </div>
+                    <div className="modal-footer border-0">
+                      <button type="button" className="btn btn-secondary rounded-pill" data-bs-dismiss="modal">Cancel</button>
+                      <button type="button" className="btn btn-primary rounded-pill" data-bs-dismiss="modal" onClick={saveEmploymentData}>Save</button>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-              
+
+
               {/* Education Section */}
-              <div className="card mt-4 shadow border-0 rounded-3">
-                <div className="card-body">
-                <div className="d-flex justify-content-between mb-3">
-                   <h5>Education</h5>
-                   <Link className="text-green" data-bs-toggle="modal" data-bs-target="#AddEducation">Add education</Link>
-                 </div>
+              {education.length > 0 ? (
+                education.map((edu, index) => (
+                  <div key={index} className="card mt-4 shadow border-0 rounded-3">
+                    <div className="card-body">
+                      <div className="d-flex justify-content-between mb-3">
+                        <h5>Education</h5>
+                        {!edu || Object.keys(edu).length === 0 ? (
+                          <Link
+                            className="text-green"
+                            data-bs-toggle="modal"
+                            data-bs-target="#educationModal"
+                            onClick={() => openEducationModal({})}
+                          >
+                            Add education
+                          </Link>
+                        ) : null}
+                      </div>
 
-                 <div className="mt-4 employment_details">
-                    <div className='mb-3'>
-                      <div className="d-flex align-items-center">
-                       <h6 className='m-0 '>BCA Computers  <Link data-bs-toggle="modal" data-bs-target="#EditEducation"> <i className="fa-solid fa-pencil ms-2"></i></Link></h6> 
-                      </div>
-                      <h6 className='m-0'>XYZ University</h6>
-                      <p className='m-0'><small>Full Time | 2021-2024 </small></p>
-                    </div>
-
-                    <div>
-                      <div className="d-flex align-items-center">
-                       <h6 className='m-0 '>Class XII  <Link> <i className="fa-solid fa-pencil ms-2"></i></Link></h6> 
-                      </div>
-                      <h6 className='m-0'>CBSE</h6>
-                      <p className='m-0'><small>Full Time | 2021 </small></p>
-                    </div>
-
-                 </div>
-                </div>
-              </div>
-
-              <div className="modal AddEducationModal" id="AddEducation" tabIndex="-1" aria-labelledby="AddEducationLabel" aria-hidden="true">
-              <div className="modal-dialog modal-dialog-centered modal-lg">
-                <div className="modal-content p-3 p-sm-4">
-                  <div className="modal-header border-0 pb-0">
-                    <h1 className="modal-title fs-5" id="AddEducationLabel">Education</h1>
-                    <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                  </div>
-                  <div className="modal-body ">
-                    <h6 className='text-muted'>Details of course,university and more, help recruiter to identify your background</h6>
-                    <form action="" className=''>
-                      <div className='mt-4 mb-4'>
-                        <label htmlFor="">Education</label>
-                        <select className="form-select" aria-label="Default select example">
-                          <option selected>Select education</option>
-                          <option value="1">Doctrate/PHP</option>
-                          <option value="2">Masters/Post Graduation</option>
-                          <option value="3">Graduation/Diploma</option>
-                          <option value="4">12th</option>
-                          <option value="5">10th</option>
-                        </select>
-                      </div>
-                      <div className='mb-4'>
-                        <label htmlFor="">University/Institute</label>
-                        <input type="text" className='form-control' placeholder='Enter institute name' />
-                      </div>
-                      <div className='mb-4'>
-                        <label htmlFor="">Course</label>
-                        <input type="text" className='form-control' placeholder='Enter course name' />
-                      </div>
-                      <div className='mb-4'>
-                        <label htmlFor="">Specialization</label>
-                        <input type="text" className='form-control' placeholder='Enter your specialization' />
-                      </div>
-                      <div className='mb-4'>
-                      <label htmlFor="">Course Type</label>
-                      <div class="form-check">
-                        <input class="form-check-input" type="radio" name="courseType" id="fullTime"  />
-                        <label class="form-check-label" for="fullTime">
-                          Full Time
-                        </label>
-                      </div>
-                      <div class="form-check">
-                        <input class="form-check-input" type="radio" name="courseType" id="partTime" />
-                        <label class="form-check-label" for="partTime">
-                          Part Time
-                        </label>
-                      </div>
-                      <div class="form-check">
-                        <input class="form-check-input" type="radio" name="courseType" id="corespondence" />
-                        <label class="form-check-label" for="corespondence">
-                         Correspondence
-                        </label>
-                      </div>
-                      </div>
-                      <div className='mb-4'>
-                        <label htmlFor="">Course Duration</label>
-                       <div className="row flex-column flex-md-row align-items-center">
-                        <div className="col">
-                          <input type="text" className='form-control' placeholder='Starting Year' />
+                      <div className="mt-4 employment_details">
+                        <div className="mb-3">
+                          {edu && Object.keys(edu).length > 0 ? (
+                            <>
+                              <div className="d-flex align-items-center">
+                                <h6 className="m-0">
+                                  {edu.specialization
+                                    ? `${edu.course} - ${edu.specialization}`
+                                    : edu.course}
+                                  <Link
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#educationModal"
+                                    onClick={() => openEducationModal(edu)}
+                                  >
+                                    <i className="fa-solid fa-pencil ms-2"></i>
+                                  </Link>
+                                </h6>
+                              </div>
+                              <h6 className="m-0">{edu.institute}</h6>
+                              <p className="m-0">
+                                <small>
+                                  {edu.course_type} | {edu.course_duration}
+                                </small>
+                              </p>
+                            </>
+                          ) : (
+                            <p className="m-0">No education details available.</p>
+                          )}
                         </div>
-                        <div className="col-1 text-center"> <span>To</span></div>
-                        <div className="col">
-                          <input type="text" className='form-control' placeholder='Ending Year' />
+                      </div>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="card mt-4 shadow border-0 rounded-3">
+                  <div className="card-body">
+                    <div className="d-flex justify-content-between mb-3">
+                      <h5>Education</h5>
+                      <Link
+                          className="text-green"
+                          data-bs-toggle="modal"
+                          data-bs-target="#educationModal"
+                          onClick={() => openEducationModal({})}
+                        >
+                          Add education
+                        </Link>
+                    </div>
+
+                    <div className="mt-4 employment_details">
+                    <p className="m-0">No education details available.</p>
+
+                    </div>
+                  </div>
+                </div>
+
+              )}
+
+
+              <div className="modal fade" id="educationDeleteModal" tabIndex="-1" aria-labelledby="educationDeleteModalLabel" aria-hidden="true">
+                <div className="modal-dialog">
+                  <div className="modal-content">
+                    <div className="modal-header">
+                      <h5 className="modal-title" id="educationDeleteModalLabel">Delete education data</h5>
+                      <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div className="modal-body">Are you sure you want to delete education details?</div>
+                    <div className="modal-footer">
+                      <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                      <button type="button" className="btn btn-danger" onClick={() => confirmEducationDelete(selectedEducation.id)} data-bs-dismiss="modal">Delete</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+
+                {/* Education Modal (Outside .map()) */}
+                {selectedEducation && (
+                  <div className="modal fade" id="educationModal" tabIndex="-1" aria-labelledby="educationModalLabel" aria-hidden="true">
+                    <div className="modal-dialog modal-dialog-centered modal-lg">
+                      <div className="modal-content p-3 p-sm-4">
+                        <div className="modal-header border-0 pb-0">
+                          <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
-                       </div>
-                      </div>
-                      <div className='mb-4'>
-                        <label htmlFor="">Grading System</label>
-                        <select className="form-select" aria-label="Default select example">
-                          <option value="Percentage">% Marks of 100 Maximum</option>
-                          <option value="Cgpa">CGPA</option>
-                          <option value="Pass">Course Require a Pass</option>
-                        </select>
-                      </div>
-                      <div className='mb-4'>
-                        <label htmlFor="">Marks</label>
-                        <input type="text" className='form-control' maxLength={3} placeholder='Enter marks' />
-                      </div>
-                     
-                    </form>
-                
-                  </div>
-                  <div className="modal-footer border-0">
-                    <button type="button" className="btn btn-secondary rounded-pill" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" className="btn btn-primary rounded-pill">Save</button>
-                  </div>
-                </div>
-              </div>
-             </div>       
+                        <div className="modal-body">
+                          <div className="d-flex justify-content-between">
+                            <h1 className="modal-title fs-5 m-0" id="educationModalLabel">Edit Education</h1>
+                            {selectedEducation && selectedEducation.id && Object.keys(selectedEducation).length > 0 && (
+                              <Link className="text-green" data-bs-toggle="modal" data-bs-target="#educationDeleteModal">Delete</Link>
+                            )}
+                          </div>
+                          <h6 className="text-muted">Details of your course and university help recruiters understand your background.</h6>
 
-              <div className="modal EditEducationModal" id="EditEducation" tabIndex="-1" aria-labelledby="EditEducationLabel" aria-hidden="true">
-              <div className="modal-dialog modal-dialog-centered modal-lg">
-                <div className="modal-content p-3 p-sm-4">
-                  <div className="modal-header border-0 pb-0">
-                    <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                  </div>
-                  <div className="modal-body ">
-                    <div className="d-flex justify-content-between">
-                     <h1 className="modal-title fs-5 m-0" id="EditEducationLabel">Education</h1>
-                     <Link className='text-green'>Delete</Link>
-                    </div>
-                    <h6 className='text-muted'>Details of course,university and more, help recruiter to identify your background</h6>
-                    <form action="" className=''>
-                      <div className='mt-4 mb-4'>
-                        <label htmlFor="">Education</label>
-                        <select className="form-select" aria-label="Default select example">
-                          <option selected>Select education</option>
-                          <option value="1">Doctrate/PHP</option>
-                          <option value="2">Masters/Post Graduation</option>
-                          <option value="3">Graduation/Diploma</option>
-                          <option value="4">12th</option>
-                          <option value="5">10th</option>
-                        </select>
-                      </div>
-                      <div className='mb-4'>
-                        <label htmlFor="">University/Institute</label>
-                        <input type="text" className='form-control' placeholder='Enter institute name' />
-                      </div>
-                      <div className='mb-4'>
-                        <label htmlFor="">Course</label>
-                        <input type="text" className='form-control' placeholder='Enter course name' />
-                      </div>
-                      <div className='mb-4'>
-                        <label htmlFor="">Specialization</label>
-                        <input type="text" className='form-control' placeholder='Enter your specialization' />
-                      </div>
-                      <div className='mb-4'>
-                      <label htmlFor="">Course Type</label>
-                      <div class="form-check">
-                        <input class="form-check-input" type="radio" name="courseType" id="fullTime"  />
-                        <label class="form-check-label" for="fullTime">
-                          Full Time
-                        </label>
-                      </div>
-                      <div class="form-check">
-                        <input class="form-check-input" type="radio" name="courseType" id="partTime" />
-                        <label class="form-check-label" for="partTime">
-                          Part Time
-                        </label>
-                      </div>
-                      <div class="form-check">
-                        <input class="form-check-input" type="radio" name="courseType" id="corespondence" />
-                        <label class="form-check-label" for="corespondence">
-                         Correspondence
-                        </label>
-                      </div>
-                      </div>
-                      <div className='mb-4'>
-                        <label htmlFor="">Course Duration</label>
-                       <div className="row flex-column flex-md-row align-items-center">
-                        <div className="col">
-                          <input type="text" className='form-control' placeholder='Starting Year' />
+                          <form>
+                            <div className="mt-4 mb-4">
+                              <label>Education</label>
+                              <select
+                                value={selectedEducation.education || ""}
+                                onChange={(e) => setSelectedEducation({ ...selectedEducation, education: e.target.value })}
+                                className="form-select"
+                              >
+                                <option value="">Select education</option>
+                                <option value="1">Doctorate/PHD</option>
+                                <option value="2">Masters/Post Graduation</option>
+                                <option value="3">Graduation/Diploma</option>
+                                <option value="4">12th</option>
+                                <option value="5">10th</option>
+                              </select>
+                            </div>
+
+                            <div className="mb-4">
+                              <label>University/Institute</label>
+                              <input
+                                type="text"
+                                className="form-control"
+                                placeholder="Enter institute name"
+                                value={selectedEducation.institute || ""}
+                                onChange={(e) => setSelectedEducation({ ...selectedEducation, institute: e.target.value })}
+                              />
+                            </div>
+
+                            <div className="mb-4">
+                              <label>Course</label>
+                              <input
+                                type="text"
+                                className="form-control"
+                                placeholder="Enter course name"
+                                value={selectedEducation.course || ""}
+                                onChange={(e) => setSelectedEducation({ ...selectedEducation, course: e.target.value })}
+                              />
+                            </div>
+
+                            <div className="mb-4">
+                              <label>Specialization</label>
+                              <input
+                                type="text"
+                                className="form-control"
+                                placeholder="Enter your specialization"
+                                value={selectedEducation.specialization || ""}
+                                onChange={(e) => setSelectedEducation({ ...selectedEducation, specialization: e.target.value })}
+                              />
+                            </div>
+
+                            <div className="mb-4">
+                              <label>Course Type</label>
+                              <div className="form-check">
+                                <input
+                                  className="form-check-input"
+                                  type="radio"
+                                  name="courseType"
+                                  checked={selectedEducation.course_type === "Full Time"}
+                                  onChange={() => setSelectedEducation({ ...selectedEducation, course_type: "Full Time" })}
+                                />
+                                <label className="form-check-label">Full Time</label>
+                              </div>
+                              <div className="form-check">
+                                <input
+                                  className="form-check-input"
+                                  type="radio"
+                                  name="courseType"
+                                  checked={selectedEducation.course_type === "Part Time"}
+                                  onChange={() => setSelectedEducation({ ...selectedEducation, course_type: "Part Time" })}
+                                />
+                                <label className="form-check-label">Part Time</label>
+                              </div>
+                              <div className="form-check">
+                                <input
+                                  className="form-check-input"
+                                  type="radio"
+                                  name="courseType"
+                                  checked={selectedEducation.course_type === "Correspondence"}
+                                  onChange={() => setSelectedEducation({ ...selectedEducation, course_type: "Correspondence" })}
+                                />
+                                <label className="form-check-label">Correspondence</label>
+                              </div>
+                            </div>
+
+                            <div className="mb-4">
+                              <label>Course Duration</label>
+                              <div className="row flex-column flex-md-row align-items-center">
+                                <div className="col">
+                                  <input
+                                    type="text"
+                                    className="form-control"
+                                    placeholder="Starting Year"
+                                    value={selectedEducation.course_starting_year || ""}
+                                    onChange={(e) => setSelectedEducation({ ...selectedEducation, course_starting_year: e.target.value })}
+                                  />
+                                </div>
+                                <div className="col-1 text-center"> <span>To</span></div>
+                                <div className="col">
+                                  <input
+                                    type="text"
+                                    className="form-control"
+                                    placeholder="Ending Year"
+                                    value={selectedEducation.course_ending_year || ""}
+                                    onChange={(e) => setSelectedEducation({ ...selectedEducation, course_ending_year: e.target.value })}
+                                  />
+                                </div>
+                              </div>
+                            </div>
+
+                            {selectedEducation.grading_system === 'Cgpa' ? (
+                              <div className="mb-4">
+                                {/* <label htmlFor="">{selectedEducation.grading_system.toUpperCase()}</label> */}
+                                <label>Marks</label>
+                                <input
+                                  type="text"
+                                  className="form-control"
+                                  placeholder="Enter marks"
+                                  value={(selectedEducation.marks ? selectedEducation.marks + ' ' : '') + selectedEducation.grading_system.toUpperCase()}
+                                  onChange={(e) => setSelectedEducation({ ...selectedEducation, marks: e.target.value })}
+                                />
+                              </div>
+                            ) : (
+                              <div className="mb-4">
+                                <label>Marks</label>
+                                <input
+                                  type="text"
+                                  className="form-control"
+                                  placeholder="Enter marks"
+                                  value={selectedEducation.marks || ""}
+                                  onChange={(e) => setSelectedEducation({ ...selectedEducation, marks: e.target.value })}
+                                />
+                              </div>
+                            )}
+
+                          </form>
                         </div>
-                        <div className="col-1 text-center"> <span>To</span></div>
-                        <div className="col">
-                          <input type="text" className='form-control' placeholder='Ending Year' />
+
+                        <div className="modal-footer border-0">
+                          <button type="button" className="btn btn-secondary rounded-pill" data-bs-dismiss="modal">Cancel</button>
+                          <button type="button" className="btn btn-primary rounded-pill" data-bs-dismiss="modal" onClick={saveEducationData}>Save</button>
                         </div>
-                       </div>
                       </div>
-                      <div className='mb-4'>
-                        <label htmlFor="">Grading System</label>
-                        <select className="form-select" aria-label="Default select example">
-                          <option value="Percentage">% Marks of 100 Maximum</option>
-                          <option value="Cgpa">CGPA</option>
-                          <option value="Pass">Course Require a Pass</option>
-                        </select>
-                      </div>
-                      <div className='mb-4'>
-                        <label htmlFor="">Marks</label>
-                        <input type="text" className='form-control' maxLength={3} placeholder='Enter marks' />
-                      </div>
-                     
-                    </form>
-                
-                  </div>
-                  <div className="modal-footer border-0">
-                    <button type="button" className="btn btn-secondary rounded-pill" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" className="btn btn-primary rounded-pill">Save</button>
-                  </div>
-                </div>
-              </div>
-             </div>     
-
-
-              {/* Online Profile Section */}
-              <div className="card mt-4 shadow border-0 rounded-3">
-                <div className="card-body">
-                <div className="d-flex justify-content-between mb-3">
-                  <div>
-                  <h5 className='m-0'>Online Profile</h5>
-                  <p><small>Add link to online professional profiles (e.g. LinkedIn, etc.)</small></p>
-                  </div>
-                   <Link className="text-green" data-bs-toggle="modal" data-bs-target="#ProfileModal" >Add </Link>
-                 </div>
-
-                 <div className="mt-4 online_profile">
-                    <div className='mb-3'>
-                      <div className="d-flex align-items-center">
-                       <h6 className='m-0 '>Instagram <Link data-bs-toggle="modal" data-bs-target="#EditProfileModal"> <i className="fa-solid fa-pencil ms-2"></i></Link></h6> 
-                      </div>
-                      <p className='m-0 text-green'>https://www.instagram.com/_user1099?igsh=d3dVtM200dGJ6</p>
                     </div>
-                    <div className='mb-3'>
-                      <div className="d-flex align-items-center">
-                       <h6 className='m-0 '>Linkedin <Link> <i className="fa-solid fa-pencil ms-2"></i></Link></h6> 
+                  </div>
+                )}
+
+
+                  {/* Social Profiles */}
+                  <div className="card mt-4 shadow border-0 rounded-3">
+                    <div className="card-body">
+                      <div className="d-flex justify-content-between mb-3">
+                        <div>
+                          <h5 className="m-0">Online Profile</h5>
+                          <p>
+                            <small>Add link to online professional profiles (e.g. LinkedIn, etc.)</small>
+                          </p>
+                        </div>
+                        {/* {(!socialProfiles || Object.keys(socialProfiles).length === 0) && (
+                          <Link className="text-green" data-bs-toggle="modal" data-bs-target="#addSocialModal">
+                            Add
+                          </Link>
+                        )} */}
+                        <Link className="text-green" data-bs-toggle="modal" data-bs-target="#addSocialModal">
+                          Add
+                        </Link>
                       </div>
-                      <p className='m-0 text-green'>https://www.linkedin.com/_user1099?igsh=d3dVtM200dGJ6</p>
+
+                      <div className="mt-4 online_profile">
+                        {socialProfiles && socialProfiles.length > 0 ? (
+                          socialProfiles.map((social_profiles, index) => (
+                            <div key={index} className="mb-3">
+                              <div className="d-flex align-items-center">
+                                <h6 className="m-0">
+                                  {social_profiles.social_profile_name}{" "}
+                                  <Link
+                                    data-bs-toggle="modal"
+                                    data-bs-target={`#socialModal-${social_profiles.id}`}
+                                    onClick={() => openSocialModal(social_profiles)}
+                                  >
+                                    <i className="fa-solid fa-pencil ms-2"></i>
+                                  </Link>
+                                </h6>
+                              </div>
+                              <p className="m-0 text-green">{social_profiles.url}</p>
+                            </div>
+                          ))
+                        ) : (
+                          <p>No online profiles added yet</p>
+                        )}
+                      </div>
                     </div>
+                  </div>
 
-                 </div>
-                </div>
-              </div>
+                  {/* Modal for Editing Social Profiles */}
+                  {socialProfiles.map((profile) => (
+                    <div key={profile.id}>
+                      {/* Edit/Add Social Profile Modal */}
+                      <div
+                        className="modal fade"
+                        id={`socialModal-${profile.id}`}
+                        tabIndex="-1"
+                        aria-labelledby={`socialModal-${profile.id}-Label`}
+                        aria-hidden="true"
+                      >
+                        <div className="modal-dialog modal-dialog-centered modal-lg">
+                          <div className="modal-content p-3 p-sm-4">
+                            <div className="modal-header border-0 pb-0">
+                              <h1 className="modal-title fs-5" id={`socialModal-${profile.id}-Label`}>
+                                {profile.id ? "Edit Online Profile" : "Add Online Profile"}
+                              </h1>
+                              <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div className="modal-body">
+                              <div className="d-flex justify-content-between">
+                                <h6 className="text-muted">Add link to online professional profiles (e.g. LinkedIn, etc.)</h6>
+                                {profile.id && (
+                                  <Link
+                                    className="text-green"
+                                    data-bs-toggle="modal"
+                                    data-bs-target={`#deleteSocialModal-${profile.id}`}
+                                  >
+                                    Delete
+                                  </Link>
+                                )}
+                              </div>
 
-              <div className="modal ProfileModal" id="ProfileModal" tabIndex="-1" aria-labelledby="ProfileModalLabel" aria-hidden="true">
-              <div className="modal-dialog modal-dialog-centered modal-lg">
-                <div className="modal-content p-3 p-sm-4">
-                <div className="modal-header border-0 pb-0">
-                    <h1 className="modal-title fs-5" id="AddEducationLabel">Online Profiles</h1>
-                    <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                  </div>
-                  <div className="modal-body ">
-                    <h6 className='text-muted'>Add link to online professional profiles (e.g. LinkedIn, etc.)</h6>
-                    <form action="" className=''>
-                    
-                      <div className=' mt-4 mb-4'>
-                        <label htmlFor="">Social profile</label>
-                        <input type="text" className='form-control' placeholder='Enter Social Profile Name' />
+                              <form>
+                                <div className="mt-4 mb-4">
+                                  <label htmlFor={`social_profile_name-${profile.id}`}>Social Profile</label>
+                                  <input
+                                    type="text"
+                                    className="form-control"
+                                    placeholder="Enter Social Profile Name"
+                                    value={profile.social_profile_name || ""}
+                                    onChange={(e) =>
+                                      setSelectedSocialProfile((prev) => ({
+                                        ...prev,
+                                        social_profile_name: e.target.value,
+                                      }))
+                                    }
+                                  />
+                                </div>
+                                <div className="mb-4">
+                                  <label htmlFor={`url-${profile.id}`}>URL</label>
+                                  <input
+                                    type="url"
+                                    className="form-control"
+                                    placeholder="Enter Social Profile URL"
+                                    value={profile.url || ""}
+                                    onChange={(e) =>
+                                      setSelectedSocialProfile((prev) => ({
+                                        ...prev,
+                                        url: e.target.value,
+                                      }))
+                                    }
+                                  />
+                                </div>
+                                <div className="mb-4">
+                                  <label htmlFor={`description-${profile.id}`}>Description</label>
+                                  <textarea
+                                    name="description"
+                                    className="form-control"
+                                    rows={3}
+                                    placeholder="Type here..."
+                                    value={profile.description || ""}
+                                    onChange={(e) =>
+                                      setSelectedSocialProfile((prev) => ({
+                                        ...prev,
+                                        description: e.target.value,
+                                      }))
+                                    }
+                                  ></textarea>
+                                </div>
+                              </form>
+                            </div>
+                            <div className="modal-footer border-0">
+                              <button type="button" className="btn btn-secondary rounded-pill" data-bs-dismiss="modal">
+                                Cancel
+                              </button>
+                              <button type="button" className="btn btn-primary rounded-pill" onClick={() => saveSocialProfiles(profile.id)}>
+                                Save
+                              </button>
+                            </div>
+                          </div>
+                        </div>
                       </div>
-                      <div className='mb-4'>
-                        <label htmlFor="">URL</label>
-                        <input type="url" className='form-control' placeholder='Enter Social Profile URL' />
-                      </div>
-                      <div className='mb-4'>
-                        <label htmlFor="">Description</label>
-                       <textarea name="" className='form-control' rows={3} placeholder='Type here...' id=""></textarea>
-                      </div>
-                   
-                     
-                    </form>
-                
-                  </div>
-                  <div className="modal-footer border-0">
-                    <button type="button" className="btn btn-secondary rounded-pill" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" className="btn btn-primary rounded-pill">Save</button>
-                  </div>
-                </div>
-              </div>
-             </div>
 
-              <div className="modal EditProfileModal" id="EditProfileModal" tabIndex="-1" aria-labelledby="EditProfileModalLabel" aria-hidden="true">
-              <div className="modal-dialog modal-dialog-centered modal-lg">
-                <div className="modal-content p-3 p-sm-4">
-                  <div className="modal-header border-0 pb-0">
-                    <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                  </div>
-                  <div className="modal-body ">
-                    <div className="d-flex justify-content-between">
-                     <h1 className="modal-title fs-5 m-0" id="EditProfileModalLabel">Online Profiles</h1>
-                     <Link className='text-green'>Delete</Link>
+                      {/* Delete Social Profile Modal */}
+                      <div
+                        className="modal fade"
+                        id={`deleteSocialModal-${profile.id}`}
+                        tabIndex="-1"
+                        aria-labelledby={`deleteSocialModal-${profile.id}-Label`}
+                        aria-hidden="true"
+                      >
+                        <div className="modal-dialog">
+                          <div className="modal-content">
+                            <div className="modal-header">
+                              <h5 className="modal-title" id={`deleteSocialModal-${profile.id}-Label`}>
+                                Delete Social Profile
+                              </h5>
+                              <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div className="modal-body">Are you sure you want to delete this social profile?</div>
+                            <div className="modal-footer">
+                              <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">
+                                Cancel
+                              </button>
+                              <button type="button" className="btn btn-danger" onClick={() => confirmSocialDelete(profile.id)} data-bs-dismiss="modal">
+                                Delete
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                    <h6 className='text-muted'>Add link to online professional profiles (e.g. LinkedIn, etc.)</h6>
-                    <form action="" className=''>
-                    
-                      <div className=' mt-4 mb-4'>
-                        <label htmlFor="">Social profile</label>
-                        <input type="text" className='form-control' placeholder='Enter Social Profile Name' />
-                      </div>
-                      <div className='mb-4'>
-                        <label htmlFor="">URL</label>
-                        <input type="url" className='form-control' placeholder='Enter Social Profile URL' />
-                      </div>
-                      <div className='mb-4'>
-                        <label htmlFor="">Description</label>
-                       <textarea name="" className='form-control' rows={3} placeholder='Type here...' id=""></textarea>
-                      </div>
-                   
-                     
-                    </form>
-                
-                  </div>
-                  <div className="modal-footer border-0">
-                    <button type="button" className="btn btn-secondary rounded-pill" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" className="btn btn-primary rounded-pill">Save</button>
-                  </div>
-                </div>
-              </div>
-             </div>
+                  ))}
 
-               {/* Personal details Section */}     
+
+                  {/* Modal for Adding New Social Profile */}
+                  <div className="modal fade" id="addSocialModal" tabIndex="-1" aria-labelledby="addSocialModalLabel" aria-hidden="true">
+                    <div className="modal-dialog modal-dialog-centered modal-lg">
+                      <div className="modal-content p-3 p-sm-4">
+                        <div className="modal-header border-0 pb-0">
+                          <h1 className="modal-title fs-5" id="addSocialModalLabel">Add Online Profile</h1>
+                          <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div className="modal-body">
+                          <h6 className="text-muted">Add link to online professional profiles (e.g. LinkedIn, etc.)</h6>
+                          <form>
+                            <div className="mt-4 mb-4">
+                              <label htmlFor="social_profile_name">Social profile</label>
+                              <input
+                                type="text"
+                                className="form-control"
+                                placeholder="Enter Social Profile Name"
+                                value={selectedSocialProfile?.social_profile_name || ""}
+                                onChange={(e) =>
+                                  setSelectedSocialProfile((prev) => ({
+                                    ...prev,
+                                    social_profile_name: e.target.value,
+                                  }))
+                                }
+                              />
+                            </div>
+                            <div className="mb-4">
+                              <label htmlFor="url">URL</label>
+                              <input
+                                type="url"
+                                className="form-control"
+                                placeholder="Enter Social Profile URL"
+                                value={selectedSocialProfile?.url || ""}
+                                onChange={(e) =>
+                                  setSelectedSocialProfile((prev) => ({
+                                    ...prev,
+                                    url: e.target.value,
+                                  }))
+                                }
+                              />
+                            </div>
+                            <div className="mb-4">
+                              <label htmlFor="description">Description</label>
+                              <textarea
+                                name="description"
+                                className="form-control"
+                                rows={3}
+                                placeholder="Type here..."
+                                value={selectedSocialProfile?.description || ""}
+                                onChange={(e) =>
+                                  setSelectedSocialProfile((prev) => ({
+                                    ...prev,
+                                    description: e.target.value,
+                                  }))
+                                }
+                              ></textarea>
+                            </div>
+                          </form>
+                        </div>
+                        <div className="modal-footer border-0">
+                          <button type="button" className="btn btn-secondary rounded-pill" data-bs-dismiss="modal">
+                            Cancel
+                          </button>
+                          <button type="button" className="btn btn-primary rounded-pill" onClick={() => saveSocialProfiles()}>Save</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+              {/* Personal details Section */}     
               <div className="card mt-4 shadow border-0 rounded-3">
                 <div className="card-body">
                  <div className="d-flex align-items-center">
@@ -1068,220 +2213,219 @@ const MyAccount = () => {
                 </div>
               </div>
               <div className="modal PersonalDetailModal " id="PersonalDetailModal" tabIndex="-1" aria-labelledby="PersonalDetailModalLabel" aria-hidden="true">
-              <div className="modal-dialog modal-dialog-centered modal-lg">
-                <div className="modal-content p-3 p-sm-4">
-                  <div className="modal-header border-0 pb-0">
-                    <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                  </div>
-                  <div className="modal-body ">
-                    <div className="">
-                     <h1 className="modal-title fs-5 m-0" id="PersonalDetailModalLabel">Personal details</h1>
-                     <h6 className='text-muted'>This informations help recuiter to know you better</h6>
+                <div className="modal-dialog modal-dialog-centered modal-lg">
+                  <div className="modal-content p-3 p-sm-4">
+                    <div className="modal-header border-0 pb-0">
+                      <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <form action="" className=''>
-                    <div className='mt-4 mb-4'>
-                        <label htmlFor="">Gender</label>
-                        <select className="form-select" aria-label="Default select example">
-                          <option selected>Select gender</option>
-                          <option value="Male">Male</option>
-                          <option value="Female">Female</option>
-                          <option value="Transgender">Transgender</option>
-                        </select>
-                    </div>
-                    <div className='mb-4'>
-                        <label htmlFor="">Maritial Status</label>
-                        <select className="form-select" aria-label="Default select example">
-                          <option selected>Select status</option>
-                          <option value="Single">Single</option>
-                          <option value="Married">Married</option>
-                          <option value="Widowed">Widowed</option>
-                          <option value="Divorced">Divorced</option>
-                          <option value="Seperated">Seperated</option>
-                          <option value="Other">Other</option>
-                        </select>
-                    </div>
-                      <div className='mb-4'>
-                        <label htmlFor="">Date of birth</label>
-                       <div className="row flex-column flex-md-row align-items-center">
-                        <div className="col-md-4 col-12 mb-2">
-                          <input type="text" className='form-control' maxLength={2} placeholder='Enter Date' />
-                        </div>
-                        <div className="col-md-4 col-12 mb-2">
-                          <input type="text" className='form-control' maxLength={2} placeholder='Enter Month' />
-                        </div>
-                        <div className="col-md-4 col-12 mb-2">
-                          <input type="text" className='form-control' maxLength={4} placeholder='Enter Year' />
-                        </div>
-                       </div>
+                    <div className="modal-body ">
+                      <div className="">
+                      <h1 className="modal-title fs-5 m-0" id="PersonalDetailModalLabel">Personal details</h1>
+                      <h6 className='text-muted'>This informations help recuiter to know you better</h6>
+                      </div>
+                      <form action="" className=''>
+                      <div className='mt-4 mb-4'>
+                          <label htmlFor="">Gender</label>
+                          <select className="form-select" defaultValue="">
+                            <option value="" disabled>Select gender</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Transgender">Transgender</option>
+                          </select>
                       </div>
                       <div className='mb-4'>
-                        <label htmlFor="">Category</label>
-                        <select className="form-select" aria-label="Default select example">
-                          <option value="General">General</option>
-                          <option value="SC">SC</option>
-                          <option value="ST">ST</option>
-                          <option value="OBC">OBC</option>
-                          <option value="Other">Other</option>
-                        </select>
+                          <label htmlFor="">Maritial Status</label>
+                          <select className="form-select" defaultValue="">
+                            <option value="" disabled>Select status</option>
+                            <option value="Single">Single</option>
+                            <option value="Married">Married</option>
+                            <option value="Widowed">Widowed</option>
+                            <option value="Divorced">Divorced</option>
+                            <option value="Seperated">Seperated</option>
+                            <option value="Other">Other</option>
+                          </select>
                       </div>
-
-                  <div className='abled_section'>
-                    <div className="mb-4">
-                      <label htmlFor="">Are you differently abled?</label>
-                      <div className="d-flex mt-2">
-                        <div className="form-check me-4">
-                          <input
-                            className="form-check-input"
-                            type="radio"
-                            name="AbledYesNo"
-                            id="AbledYes"
-                            value="Yes"
-                            onChange={(e) => setIsDifferentlyAbled(e.target.value)}
-                          />
-                          <label className="form-check-label" htmlFor="AbledYes">
-                            Yes
-                          </label>
+                        <div className='mb-4'>
+                          <label htmlFor="">Date of birth</label>
+                        <div className="row flex-column flex-md-row align-items-center">
+                          <div className="col-md-4 col-12 mb-2">
+                            <input type="text" className='form-control' maxLength={2} placeholder='Enter Date' />
+                          </div>
+                          <div className="col-md-4 col-12 mb-2">
+                            <input type="text" className='form-control' maxLength={2} placeholder='Enter Month' />
+                          </div>
+                          <div className="col-md-4 col-12 mb-2">
+                            <input type="text" className='form-control' maxLength={4} placeholder='Enter Year' />
+                          </div>
                         </div>
-                        <div className="form-check locationRadio">
-                          <input
-                            className="form-check-input"
-                            type="radio"
-                            name="AbledYesNo"
-                            id="AbledNo"
-                            value="No"
-                            onChange={(e) => setIsDifferentlyAbled(e.target.value)}
-                          />
-                          <label className="form-check-label" htmlFor="AbledNo">
-                            No
-                          </label>
                         </div>
-                      </div>
-                    </div>
-
-                    {isDifferentlyAbled === "Yes" && (
-                      <>
-                        <div className="mb-4 abled_type">
-                          <label htmlFor="">Type</label>
-                          <select
-                            className="form-select"
-                            aria-label="Default select example"
-                            value={abledType}
-                            onChange={(e) => setAbledType(e.target.value)}
-                          >
-                            <option value="Blindness">Blindness</option>
-                            <option value="Low Vision">Low Vision</option>
-                            <option value="Hearing Impairment">Hearing Impairment</option>
-                            <option value="Speech and Language Disability">Speech and Language Disability</option>
-                            <option value="Dwarfism">Dwarfism</option>
-                            <option value="Acid Attack Victim">Acid Attack Victim</option>
-                            <option value="Mental Illness">Mental Illness</option>
-                            <option value="Multiple Disabilities">Multiple Disabilities</option>
-                            <option value="Others">Others</option>
+                        <div className='mb-4'>
+                          <label htmlFor="">Category</label>
+                          <select className="form-select" defaultValue="General">
+                            <option value="General">General</option>
+                            <option value="SC">SC</option>
+                            <option value="ST">ST</option>
+                            <option value="OBC">OBC</option>
+                            <option value="Other">Other</option>
                           </select>
                         </div>
 
-                        {abledType === "Others" && (
-                          <div className="mb-4 describe_abled">
-                            <label htmlFor="">Describe</label>
+                    <div className='abled_section'>
+                      <div className="mb-4">
+                        <label htmlFor="">Are you differently abled?</label>
+                        <div className="d-flex mt-2">
+                          <div className="form-check me-4">
+                            <input
+                              className="form-check-input"
+                              type="radio"
+                              name="AbledYesNo"
+                              id="AbledYes"
+                              value="Yes"
+                              onChange={(e) => setIsDifferentlyAbled(e.target.value)}
+                            />
+                            <label className="form-check-label" htmlFor="AbledYes">
+                              Yes
+                            </label>
+                          </div>
+                          <div className="form-check locationRadio">
+                            <input
+                              className="form-check-input"
+                              type="radio"
+                              name="AbledYesNo"
+                              id="AbledNo"
+                              value="No"
+                              onChange={(e) => setIsDifferentlyAbled(e.target.value)}
+                            />
+                            <label className="form-check-label" htmlFor="AbledNo">
+                              No
+                            </label>
+                          </div>
+                        </div>
+                      </div>
+
+                      {isDifferentlyAbled === "Yes" && (
+                        <>
+                          <div className="mb-4 abled_type">
+                            <label htmlFor="">Type</label>
+                            <select
+                              className="form-select"
+                              value={abledType}
+                              onChange={(e) => setAbledType(e.target.value)}
+                            >
+                              <option value="Blindness">Blindness</option>
+                              <option value="Low Vision">Low Vision</option>
+                              <option value="Hearing Impairment">Hearing Impairment</option>
+                              <option value="Speech and Language Disability">Speech and Language Disability</option>
+                              <option value="Dwarfism">Dwarfism</option>
+                              <option value="Acid Attack Victim">Acid Attack Victim</option>
+                              <option value="Mental Illness">Mental Illness</option>
+                              <option value="Multiple Disabilities">Multiple Disabilities</option>
+                              <option value="Others">Others</option>
+                            </select>
+                          </div>
+
+                          {abledType === "Others" && (
+                            <div className="mb-4 describe_abled">
+                              <label htmlFor="">Describe</label>
+                              <textarea
+                                name=""
+                                id=""
+                                placeholder="Specify about your differently abled condition"
+                                className="form-control"
+                              ></textarea>
+                            </div>
+                          )}
+
+                          <div className="mb-4 assistance">
+                            <label htmlFor="">Do you need assistance at your workplace?</label>
                             <textarea
                               name=""
                               id=""
-                              placeholder="Specify about your differently abled condition"
+                              rows={3}
+                              placeholder="Type here (ex: wheelchair)"
                               className="form-control"
                             ></textarea>
                           </div>
-                        )}
-
-                        <div className="mb-4 assistance">
-                          <label htmlFor="">Do you need assistance at your workplace?</label>
-                          <textarea
-                            name=""
-                            id=""
-                            rows={3}
-                            placeholder="Type here (ex: wheelchair)"
-                            className="form-control"
-                          ></textarea>
-                        </div>
-                      </>
-                    )}
-                  </div>
-
-                    <div className="mb-4">
-                      <label htmlFor="">Permanent Address</label>
-                       <input type="text" className='form-control' placeholder='Enter your permanent address' />
-                    </div>
-                    <div className="mb-4">
-                      <label htmlFor="">Hometown</label>
-                       <input type="text" className='form-control' placeholder='Enter your hometown' />
-                    </div>
-                    <div className="mb-4">
-                      <label htmlFor="">Pincode</label>
-                       <input type="text" className='form-control' maxLength={6} placeholder='Enter your pincode' />
+                        </>
+                      )}
                     </div>
 
-                  <div className="language_section mb-4">
-                    <label htmlFor="">Language Proficiency</label>
+                      <div className="mb-4">
+                        <label htmlFor="">Permanent Address</label>
+                        <input type="text" className='form-control' placeholder='Enter your permanent address' />
+                      </div>
+                      <div className="mb-4">
+                        <label htmlFor="">Hometown</label>
+                        <input type="text" className='form-control' placeholder='Enter your hometown' />
+                      </div>
+                      <div className="mb-4">
+                        <label htmlFor="">Pincode</label>
+                        <input type="text" className='form-control' maxLength={6} placeholder='Enter your pincode' />
+                      </div>
 
-                    { languages.length === 0 ? (
-                      <p className='mt-2 fw-semibold' style={{ cursor: "pointer", color: "green" }}  
-                       onClick={addLanguageRow} >
-                       Add another language 
-                      </p>
-                     ) : (languages.map((row, index) => (
-                          <div className="row mt-3" key={index}>
-                            <div className="col-md-6 mb-2 mb-md-0">
-                              <label htmlFor="">Language</label>
-                              <input
-                                type="text"
-                                className="form-control"
-                                placeholder="Enter language"
-                                value={row.language}
-                                onChange={(e) => handleLanguageChange(index, e.target.value)}
-                              />
+                    <div className="language_section mb-4">
+                      <label htmlFor="">Language Proficiency</label>
+
+                      { languages.length === 0 ? (
+                        <p className='mt-2 fw-semibold' style={{ cursor: "pointer", color: "green" }}  
+                        onClick={addLanguageRow} >
+                        Add another language 
+                        </p>
+                      ) : (languages.map((row, index) => (
+                            <div className="row mt-3" key={index}>
+                              <div className="col-md-6 mb-2 mb-md-0">
+                                <label htmlFor="">Language</label>
+                                <input
+                                  type="text"
+                                  className="form-control"
+                                  placeholder="Enter language"
+                                  value={row.language}
+                                  onChange={(e) => handleLanguageChange(index, e.target.value)}
+                                />
+                              </div>
+                              <div className="col-md-6 mb-2 mb-md-0">
+                                <label htmlFor="">Proficiency</label>
+                                <select
+                                  className="form-select"
+                                  value={row.proficiency}
+                                  onChange={(e) => handleProficiencyChange(index, e.target.value)}
+                                >
+                                  <option value="Beginner">Beginner</option>
+                                  <option value="Proficient">Proficient</option>
+                                  <option value="Expert">Expert</option>
+                                </select>
+                              </div>
+                              <div className="d-flex mt-1 fw-semibold justify-content-between text-green">
+                                <span
+                                  style={{ cursor: "pointer", color: "green" }}
+                                  onClick={addLanguageRow}
+                                >  Add another language
+                                </span>
+                                <span style={{ cursor: "pointer" }}
+                                  onClick={() => deleteLanguageRow(index)}
+                                > Delete
+                                </span>
+                                
+                              </div>
                             </div>
-                            <div className="col-md-6 mb-2 mb-md-0">
-                              <label htmlFor="">Proficiency</label>
-                              <select
-                                className="form-select"
-                                aria-label="Default select example"
-                                value={row.proficiency}
-                                onChange={(e) => handleProficiencyChange(index, e.target.value)}
-                              >
-                                <option value="Beginner">Beginner</option>
-                                <option value="Proficient">Proficient</option>
-                                <option value="Expert">Expert</option>
-                              </select>
-                            </div>
-                            <div className="d-flex mt-1 fw-semibold justify-content-between text-green">
-                              <span
-                                style={{ cursor: "pointer", color: "green" }}
-                                onClick={addLanguageRow}
-                              >  Add another language
-                              </span>
-                              <span style={{ cursor: "pointer" }}
-                                onClick={() => deleteLanguageRow(index)}
-                              > Delete
-                              </span>
-                              
-                            </div>
-                          </div>
-                         ))
-                       )
-                     }
-                  </div>
-                     
-                    </form>
-                
-                  </div>
-                  <div className="modal-footer border-0">
-                    <button type="button" className="btn btn-secondary rounded-pill" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" className="btn btn-primary rounded-pill">Save</button>
+                          ))
+                        )
+                      }
+                    </div>
+                      
+                      </form>
+                  
+                    </div>
+                    <div className="modal-footer border-0">
+                      <button type="button" className="btn btn-secondary rounded-pill" data-bs-dismiss="modal">Cancel</button>
+                      <button type="button" className="btn btn-primary rounded-pill">Save</button>
+                    </div>
                   </div>
                 </div>
               </div>
-             </div>
 
-               {/* Certification Section */}     
+
+              {/* Certification Section */}     
               <div className="card mt-4 shadow border-0 rounded-3">
                 <div className="card-body">
                 <div className="d-flex justify-content-between mb-3">
@@ -1348,8 +2492,7 @@ const MyAccount = () => {
                           <span className='ms-2 '>This certificate does not expire</span>
                         </div>
                       </div>
-                   
-                     
+
                     </form>
                 
                   </div>
@@ -1366,6 +2509,17 @@ const MyAccount = () => {
         </div>
       </div>
 
+      <ToastContainer 
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
       <Footer />
     </>
   );

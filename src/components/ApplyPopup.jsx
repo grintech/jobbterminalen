@@ -27,7 +27,7 @@ const ApplyPopup = ({ jobId }) => {
     resume: null,
   });
 
-  // Update formData when jobId or userId changes
+  // Update formData when jIobId or userd changes
   useEffect(() => {
     setFormData((prevData) => ({
       ...prevData,

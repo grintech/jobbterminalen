@@ -72,7 +72,7 @@ const AllEmployers = () => {
         </div>
 
         <div className="container py-5">
-          <h3 className=" mb-5">Here is the list of all the companies!</h3>
+          <h3 className="mb-5">Here is the list of all the companies!</h3>
 
           {/* Loading and Error States */}
           {loading ? (
