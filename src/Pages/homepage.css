@@ -1,14 +1,20 @@
 /*-------Hero banner--------------*/
-.homepage .hero_banner{padding:160px 0 60px 0; background: unset !important; color: #000;}
-.homepage .hero_banner::before{display: none;}
+.homepage .hero_banner{
+  padding:160px 0 90px 0; 
+  /* padding:160px 0 60px 0;  */
+  /* background: unset !important;  */
+  /* color: #000; */
+}
+/* .homepage .hero_banner::before{display: none;} */
 .hero_banner{
-    background: url(/images/hero1.jpg);
+    /* background: url(/images/homebanner_new.png); */
+    background: #003479;
     background-size: cover;
     /* background-position: center center; */
     padding: 160px 0 100px 0;
     color: white;
     position: relative;
-    background-color: #d2e3f9;
+    /* background-color: #d2e3f9; */
   }
   .hero_banner::before{
     position: absolute;
@@ -17,9 +23,10 @@
     height: 100%;
     top: 0;
     left: 0;
-    background-color: #000;
+    /* background-color: #000; */
     opacity: 0.6;
   }
+ 
 
   .hero_banner .banner_search{
     padding-top: 10px;

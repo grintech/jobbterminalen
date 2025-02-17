@@ -559,6 +559,9 @@ input[type="checkbox"]:focus{box-shadow: none !important; }
   top: 103%;
   left: -129px;
 }
+.user_dropdown .dropdown-toggle{
+  background-color: #003479; color: #fff;border: 0 !important; border-radius: 50px;
+}
 
 .jobseeker_menu li{ background-color: #d2e3f9; padding: 6px 10px; border-radius: 6px;}
 .jobseeker_menu li .fa-solid.fa-bookmark{ color: #000;}
@@ -872,4 +875,33 @@ input[type="checkbox"]:focus{box-shadow: none !important; }
   z-index: 1000;
   margin-top: 5px;
   border-radius: 12px;
+}
+
+
+
+/* Change background color of success to green */
+.Toastify__toast--success {
+  background-color: #4caf50; /* Green */
+  color: white; /* Text color */
+  font-family: Arial, sans-serif; /* Font style */
+}
+.Toastify__toast--success .Toastify__toast-icon svg{fill: #fff !important;}
+
+/* Change background color of error to red */
+.Toastify__toast--error {
+  background-color: #f44336; /* Red */
+  color: white; /* Text color */
+  font-family: Arial, sans-serif;
+}
+.Toastify__toast--error .Toastify__toast-icon svg{fill: #fff !important;}
+
+/* Change the background for the container */
+.Toastify__toast-container {
+  border-radius: 10px; /* Rounded corners */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Modify the progress bar color */
+.Toastify__progress-bar {
+  background-color: #00bcd4; /* Cyan */
 }

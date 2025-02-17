@@ -88,7 +88,7 @@ const AllJobPost = () => {
                 <select
                   className="form-select"
                   aria-label="Default select example"
-                  onChange={(e) => setFilter({ experience_required: e.target.value })}
+                  onChange={(e) => setFilter({ experience: e.target.value })}
                 >
                   <option default>Experience</option>
                   <option value="fresher">Fresher</option>
@@ -185,16 +185,7 @@ const AllJobPost = () => {
                           </li>
                           <li>
                             <div className="btn btn-sm btn-green me-2 mb-2"><span>Experience -</span>&nbsp;&nbsp;
-                              {/* {typeof job.experience_required === 'string'
-                                ? job.experience_required.toLowerCase() === 'fresher'
-                                  ? 'Fresher'
-                                  : parseInt(job.experience_required) === 1
-                                    ? `${job.experience_required} year`
-                                    : parseInt(job.experience_required) === 0
-                                      ? ''
-                                      : `${job.experience_required} years`
-                                : job.experience_required
-                              } */}
+                            
                               {job.experience_required}
                             </div>
                           </li>

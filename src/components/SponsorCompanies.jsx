@@ -230,7 +230,7 @@ const SponsorCompanies = () => {
 
      <ToastContainer 
         position="top-right"
-        autoClose={3000}
+        // autoClose={3000}
         hideProgressBar
         newestOnTop={false}
         closeOnClick

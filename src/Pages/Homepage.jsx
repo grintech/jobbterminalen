@@ -68,7 +68,7 @@ const Homepage = () => {
         {homeBannerPlace === "home_top" && <HomeBanners />}
       </div>
 
-      <div className="home_job_types pb-5">
+      <div className="home_job_types py-5">
         <div className="container">
           <div className="row justify-content-center">
             {/* <div className="inside_card mb-4">

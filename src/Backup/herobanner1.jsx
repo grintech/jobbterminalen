@@ -81,7 +81,7 @@ const HeroBanner = () => {
           <div className="col-lg-3 border-end mb-2 mb-lg-0">
             <div className="d-flex align-items-center">
               <i className="fa-solid fa-briefcase"></i>
-              <select className="form-select" name="experience_required">
+              <select className="form-select" name="experience">
                 <option value="">Experience</option>
                 <option value="1">1 year</option>
                 <option value="2">2 years</option>

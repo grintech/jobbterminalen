@@ -6,11 +6,11 @@ import { FilterProvider } from './store/context.jsx'
 import { AuthProvider } from './store/authContext.jsx'
 
 createRoot(document.getElementById('root')).render(
-  <StrictMode>
     <AuthProvider>
       <FilterProvider>
       <App />
       </FilterProvider>
     </AuthProvider>
-  </StrictMode>,
+  // <StrictMode>
+  // </StrictMode>,
 )

@@ -6,7 +6,7 @@ const HeroBanner = () => {
   const [filters, setFilters] = useState({
     skills: "",
     location: "",
-    experience_required: "",
+    experience: "",
     jobType: "",
   });
 
@@ -76,8 +76,8 @@ const HeroBanner = () => {
               <i className="fa-solid fa-briefcase"></i>
               <select
                 className="form-select"
-                name="experience_required"
-                value={filters.experience_required}
+                name="experience"
+                value={filters.experience}
                 onChange={handleInputChange}
               >
                 <option value="">Experience</option>
