@@ -2164,9 +2164,7 @@ const MyAccount = () => {
                     </div>
                   </div>
 
-
-
-                                 {/* Personal details Section */}     
+              {/* Personal details Section */}     
               <div className="card mt-4 shadow border-0 rounded-3">
                 <div className="card-body">
                  <div className="d-flex align-items-center">
@@ -2427,8 +2425,8 @@ const MyAccount = () => {
               </div>
 
 
-                             {/* Certification Section */}     
-                             <div className="card mt-4 shadow border-0 rounded-3">
+              {/* Certification Section */}     
+              <div className="card mt-4 shadow border-0 rounded-3">
                 <div className="card-body">
                 <div className="d-flex justify-content-between mb-3">
                    <h5>Certification</h5>
