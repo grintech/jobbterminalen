@@ -23,12 +23,13 @@ const Filter = () => {
   };
 
   const experienceMap = {
-    Fresher: "fresher",
+    Fresher: "0",
     "1 Year": "1",
     "2 Years": "2",
     "3+ Years": "3",
     "5+ Years": "5",
   };
+  
 
   const categoryMap = {
     IT: "it",

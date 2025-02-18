@@ -15,37 +15,59 @@ const AllEmployers = () => {
     per_page: 12,
   }); // Pagination state
 
-  const bearerKey = import.meta.env.VITE_BEARER_KEY; // Make sure this contains the correct token
+  const [cities, setCities] = useState({}); // Store city names for companies
+
+  const bearerKey = import.meta.env.VITE_BEARER_KEY; 
   const API_URL = import.meta.env.VITE_API_URL;
   const IMG_URL = import.meta.env.VITE_IMG_URL;
 
   // Function to fetch companies data
-  const fetchCompanies = (page) => {
-    setLoading(true);
-    axios.get(`${API_URL}/company_list.php?page=${page}`, {
+  const fetchCompanies = async (page) => {
+    try {
+      setLoading(true);
+      const response = await axios.get(`${API_URL}/company_list.php?page=${page}`, {
         headers: {
           Authorization: `Bearer ${bearerKey}`,
-          "Content-Type": "multipart/form-data",
         },
-      })
-      .then((response) => {
-        console.log("Fetched Data:", response.data); 
-        if (response.data.type === "success") {
-          setCompanies(response.data.data); 
-          setPagination({
-            total_records: response.data.pagination.total_records,
-            total_pages: response.data.pagination.total_pages,
-            current_page: response.data.pagination.current_page,
-            per_page: response.data.pagination.per_page,
-          });
-        }
-        setLoading(false); 
-      })
-      .catch((error) => {
-        console.error("Error fetching companies:", error);
-        setError("Failed to load companies"); 
-        setLoading(false); 
       });
+
+      // console.log("Fetched Data:", response.data);
+      
+      if (response.data.type === "success") {
+        const companyList = response.data.data || [];
+        setCompanies(companyList);
+        
+        // Fetch city names for each company
+        const cityPromises = companyList.map(async (company) => {
+          if (company.latitude && company.longitude) {
+            return getCityName(company.latitude, company.longitude);
+          }
+          return "City not found";
+        });
+
+        const cityNames = await Promise.all(cityPromises);
+
+        // Convert cityNames array into an object {companyId: cityName}
+        const cityMap = companyList.reduce((acc, company, index) => {
+          acc[company.id] = cityNames[index];
+          return acc;
+        }, {});
+
+        setCities(cityMap);
+
+        setPagination({
+          total_records: response.data.pagination.total_records,
+          total_pages: response.data.pagination.total_pages,
+          current_page: response.data.pagination.current_page,
+          per_page: response.data.pagination.per_page,
+        });
+      }
+    } catch (error) {
+      console.error("Error fetching companies:", error);
+      setError("Failed to load companies"); 
+    } finally {
+      setLoading(false);
+    }
   };
 
   // Fetch companies on initial render and when current_page changes
@@ -63,6 +85,32 @@ const AllEmployers = () => {
     }
   };
 
+  // Function to fetch city name using latitude and longitude
+  async function getCityName(latitude, longitude) {
+    const apiKey = import.meta.env.VITE_GOOGLE_API_KEY;
+    const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${apiKey}`;
+
+    try {
+      const response = await fetch(url);
+      const data = await response.json();
+
+      if (data.status === "OK") {
+        for (let result of data.results) {
+          for (let component of result.address_components) {
+            if (component.types.includes("locality")) {
+              return component.long_name;
+            }
+          }
+        }
+        return "City not found";
+      } else {
+        throw new Error("Geocoding API error: " + data.status);
+      }
+    } catch (error) {
+      console.error("Error fetching city name:", error);
+      return "City not found";
+    }
+  }
   return (
     <>
       <div className="all_employers_page">
@@ -115,7 +163,7 @@ const AllEmployers = () => {
                         <div className="d-flex justify-content-between align-items-center border-top pt-3">
                           <div className="text-muted me-2">
                             <i className="fa-solid fa-location-dot me-1 "></i>
-                            {company.company_address}
+                            {cities[company.id] ? `${cities[company.id]}` : ""}
                           </div>
                           <p className="text_blue text-center m-0">{company.job_count} Jobs</p>
                         </div>
