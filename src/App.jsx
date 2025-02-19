@@ -5,7 +5,6 @@ import Register from './components/Register'
 import Login from './components/Login'
 import CategoryList from './components/CategoryList'
 import JobDetail from './components/JobDetail'
-import ProfilePage from './Pages/recruiter/ProfilePage'
 import Contact from './components/Contact'
 import About from './components/About'
 import AllJobPost from './Pages/AllJobPost'
@@ -79,7 +78,6 @@ const App = () => {
 
 
       
-        <Route path='/rec-profile' element={ <ProfilePage />} />
         <Route path='/job/category/:slug' element={ <CategoryList />} />
         {/* <Route path='/job-detail' element={ <JobDetail />} /> */}
         <Route path='/jobs/:slug' element={ <JobDetail />} />
