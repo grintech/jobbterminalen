@@ -99,7 +99,7 @@ const SavedJobs = () => {
     <>
       <Navbar />
       <div className="top_pad">
-        <div className="container py-5">
+        <div className="container pb-5">
             <div className="row mt-4">
             <div className="col-md-3 mb-4 mb-md-0">
               <JobSidebar />

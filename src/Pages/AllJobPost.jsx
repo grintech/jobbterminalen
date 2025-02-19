@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { useFilterContext } from "../store/context";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import HeroBannerJobs from "../components/HeroBannerJobs";
 
 const AllJobPost = () => {
   const { filters, setFilter } = useFilterContext();
@@ -61,7 +62,7 @@ const AllJobPost = () => {
   return (
     <>
       <Navbar />
-      <div className="hero_banner d-flex flex-column align-items-center justify-content-center ">
+      {/* <div className="hero_banner d-flex flex-column align-items-center justify-content-center ">
         <h1 className="fw-bold position-relative">Job Vacancies</h1>
         <div className="banner_search container d-flex align-items-center justify-content-center mt-4">
           <i className="fa-solid fa-magnifying-glass search_icon"></i>
@@ -119,7 +120,8 @@ const AllJobPost = () => {
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
+      <HeroBannerJobs />
 
       <div className="container d-flex flex-column py-5 all_job_posts">
         <h4 className="mb-4">All Jobs</h4>

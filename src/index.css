@@ -562,6 +562,9 @@ input[type="checkbox"]:focus{box-shadow: none !important; }
 .user_dropdown .dropdown-toggle{
   background-color: #003479; color: #fff;border: 0 !important; border-radius: 50px;
 }
+.user_dropdown .dropdown-toggle:active{
+  background-color: #003479; color: #fff;border: 0 !important; border-radius: 50px;
+}
 
 .jobseeker_menu li{ background-color: #d2e3f9; padding: 6px 10px; border-radius: 6px;}
 .jobseeker_menu li .fa-solid.fa-bookmark{ color: #000;}

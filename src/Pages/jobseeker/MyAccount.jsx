@@ -1294,7 +1294,7 @@ const MyAccount = () => {
     <>
       <Navbar />
       <div className="top_pad">
-        <div className="container py-5">
+        <div className="container pb-5">
           <div className="row my_account_page mt-4">
             <div className="col-md-3 mb-4 mb-md-0">
               <JobSidebar />
@@ -1375,15 +1375,34 @@ const MyAccount = () => {
                       <div className='row py-3 jobseeker_details'>
                         <div className="col-md-6">
                           <ul className='p-0 '>
-                            <li><i className="fa-solid fa-location-dot "></i> <span className="text-capitalize">{userData.current_location}</span></li>
-                            <li><i className="fa-solid fa-briefcase "></i> <span className="text-capitalize">{userData.work_status}</span></li>
-                            <li><i className="fa-regular fa-calendar "></i> <span className="text-capitalize">{userData.notice_period}</span></li>
+                            
+                            <li>
+                              <i className="fa-solid fa-location-dot me-2"></i>
+                              {userData.current_location ? <span className="text-capitalize">{userData.current_location} </span> : <span>Please fill data</span> }
+                            </li>
+
+                            <li>
+                              <i className="fa-solid fa-briefcase me-2"></i> 
+                              {userData.work_status ?<span className="text-capitalize">{userData.work_status}</span> : <span>Please fill data</span>}
+                            </li>
+
+                            <li>
+                              <i className="fa-regular fa-calendar me-2"></i> 
+                              {userData.dob ? <span className="text-capitalize">{userData.dob}</span> : <span>Please fill data</span> }
+                              
+                              </li>
                           </ul>
                         </div>
                         <div className="col-md-6">
                           <ul className='p-0'>
-                            <li><i className="fa-solid fa-phone"></i> <span>{userData.phone}</span></li>
-                            <li><i className="fa-regular fa-envelope"></i> <span>{userData.email}</span></li>
+                            <li>
+                              <i className="fa-solid fa-phone me-2"></i>
+                              {userData.phone ? <span>{userData.phone}</span> : <span>Please fill data</span> }
+                            </li>
+                            <li>
+                              <i className="fa-regular fa-envelope me-2"></i>
+                              {userData.email ? <span>{userData.email}</span> : <span>Please fill data</span> }
+                            </li>
                           </ul>
                         </div>
                       </div>
@@ -2525,36 +2544,44 @@ const MyAccount = () => {
                     <div className="row">
                       <div className="col-md-6">
                         <label htmlFor="">Personal</label>
-                        <p>{userData.gender ?? ''} , {userData.maritial_status ?? ''} </p>
+                        <p>
+                        {userData.gender && userData.maritial_status
+                          ? `${userData.gender}, ${userData.maritial_status}`
+                          : userData.gender
+                          ? `${userData.gender}`
+                          : userData.maritial_status
+                          ? `${userData.maritial_status}`
+                          : "Please add data"}
+                        </p>
                       </div>
                      
                       <div className="col-md-6">
                         <label htmlFor="">Date of birth</label>
-                        <p>{userData.dob ?? ''}</p>
+                        <p>{userData.dob ? <span>{userData.dob}</span> : <span>Please add data</span> }</p>
                       </div>
                       <div className="col-md-6">
                         <label htmlFor="">Category</label>
-                        <p>{userData.category ?? ''}</p>
+                        <p>{userData.category ? <span>{userData.category}</span> : <span>Please add data</span> }</p>
                       </div>
                       <div className="col-md-6">
                         <label htmlFor="">Address</label>
-                        <p>{userData.permanent_address ?? ''}</p>
+                        <p>{userData.permanent_address ? <span>{userData.permanent_address}</span> : <span>Please add data</span> }</p>
                       </div>
                       <div className="col-md-6">
                         <label htmlFor="">Zipcode</label>
-                        <p>{userData.pincode ?? ''}</p>
+                        <p>{userData.pincode ? <span>{userData.pincode}</span> : <span>Please add data</span> }</p>
                       </div>
                       <div className="col-md-6">
                         <label htmlFor="">City</label>
-                        <p>{userData.city ?? ''}</p>
+                        <p>{userData.city ? <span>{userData.city}</span> : <span>Please add data</span> }</p>
                       </div>
                       <div className="col-md-6">
                         <label htmlFor="">State</label>
-                        <p>{userData.state ?? ''}</p>
+                        <p>{userData.state ? <span>{userData.state}</span> : <span>Please add data</span> }</p>
                       </div>
                       <div className="col-md-6">
                         <label htmlFor="">Country</label>
-                        <p>{userData.country_name ?? ''}</p>
+                        <p>{userData.country_name ? <span>{userData.country_name}</span> : <span>Please add data</span> }</p>
                       </div>
                     </div>
                  </div>
@@ -2595,8 +2622,8 @@ const MyAccount = () => {
                             className="form-select"
                             value={userData.gender || ""}
                             onChange={(e) => setUserData({ ...userData, gender: e.target.value })}
-                            defaultValue="">
-                            <option value="" disabled>Select gender</option>
+                            >
+                            <option value="" >Select gender</option>
                             <option value="Male">Male</option>
                             <option value="Female">Female</option>
                             <option value="Transgender">Transgender</option>
@@ -2608,8 +2635,8 @@ const MyAccount = () => {
                             className="form-select"
                             value={userData.maritial_status || ""}
                             onChange={(e) => setUserData({ ...userData, maritial_status: e.target.value })}
-                            defaultValue="">
-                            <option value="" disabled>Select status</option>
+                            >
+                            <option value="" >Select status</option>
                             <option value="Single">Single</option>
                             <option value="Married">Married</option>
                             <option value="Widowed">Widowed</option>
