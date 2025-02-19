@@ -492,8 +492,9 @@ const JobDetail = () => {
 
 
                 <div className="card job_list_card mb-4">
-                  <div className="card-body key_skills">
-                    <h4>Key Skills</h4>
+                <div className="card-body key_skills">
+                  <h4>Key Skills</h4>
+                  {jobDetails.skills ? (
                     <ul className="d-flex flex-wrap">
                       {jobDetails.skills.split(',').map((skill, index) => (
                         <li className="mb-2 text-capitalize" key={index}>
@@ -501,8 +502,11 @@ const JobDetail = () => {
                         </li>
                       ))}
                     </ul>
-                  </div>
+                  ) : (
+                    <p>No key skills listed for this job.</p>
+                  )}
                 </div>
+              </div>
 
 
                 <div className="card job_list_card mb-4">

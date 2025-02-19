@@ -14,6 +14,7 @@ const CompanySingle = () => {
   const [jobs, setJobs] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [city, setCity] = useState("");
   const { slug } = useParams();
 
   const bearerKey = import.meta.env.VITE_BEARER_KEY;
@@ -23,35 +24,72 @@ const CompanySingle = () => {
   const { user } = useAuthContext();
   const userId = user ? user.id : null;
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setIsLoading(true);
-        setError(null);
+useEffect(() => {
+  const fetchData = async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
 
-        const response = await fetch(`${API_URL}/company-single.php?slug=${slug}`, {
-          headers: {
-            Authorization: `Bearer ${bearerKey}`,
-            "Content-Type": "multipart/form-data",
-          },
-        });
+      const response = await fetch(`${API_URL}/company-single.php?slug=${slug}`, {
+        headers: {
+          Authorization: `Bearer ${bearerKey}`,
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
-        const result = await response.json();
-        if (result.type === "success") {
-          setCompanyData(result.data);
-          setJobs(result.jobs);
-        } else {
-          setError(result.message || "Failed to fetch company data");
-        }
-      } catch (err) {
-        setError("An error occurred while fetching company data.");
-      } finally {
-        setIsLoading(false);
+      const result = await response.json();
+      if (result.type === "success") {
+        setCompanyData(result.data);
+        setJobs(result.jobs);
+      } else {
+        setError(result.message || "Failed to fetch company data");
       }
-    };
+    } catch (err) {
+      setError("An error occurred while fetching company data.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-    fetchData();
-  }, [slug]);
+  fetchData();
+}, [slug]);
+
+useEffect(() => {
+  if (companyData?.latitude && companyData?.longitude) {
+    getCityName(companyData.latitude, companyData.longitude)
+      .then((cityName) => setCity(cityName))
+      .catch((err) => console.error("Error getting city name:", err));
+  }
+}, [companyData]);
+
+
+
+  async function getCityName(latitude, longitude) {
+    const apiKey = import.meta.env.VITE_GOOGLE_API_KEY;
+    const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${apiKey}`;
+
+    try {
+      const response = await fetch(url);
+      const data = await response.json();
+
+      if (data.status === "OK") {
+        for (let result of data.results) {
+          for (let component of result.address_components) {
+            if (component.types.includes("locality")) {
+              return component.long_name;
+            }
+          }
+        }
+        return "City not found";
+      } else {
+        throw new Error("Geocoding API error: " + data.status);
+      }
+    } catch (error) {
+      console.error("Error fetching city name:", error);
+      return null;
+    }
+  }
+
 
   const calculateTimeAgo = (date) => {
     // Convert the input date to the correct UTC format (ISO string)
@@ -167,6 +205,7 @@ const CompanySingle = () => {
                       <h5>{companyData.company_name}</h5>
                       <div className="d-flex align-items-center">
                         <i className="fa-solid fa-location-dot me-1"></i>
+                        {/* {city ? `${city} ` : ""} */}
                         {companyData.company_address || 'Location not provided'}
                       </div>
                     </div>

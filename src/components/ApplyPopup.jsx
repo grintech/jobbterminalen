@@ -3,7 +3,7 @@ import axios from "axios";
 import Popup from "reactjs-popup";
 import { useAuthContext } from "../store/authContext";
 
-import { toast } from 'react-toastify';
+import { ToastContainer, toast } from 'react-toastify';
 
 const ApplyPopup = ({ jobId }) => {
   const { user } = useAuthContext();
