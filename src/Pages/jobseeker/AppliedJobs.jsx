@@ -136,10 +136,7 @@ const Appliedjobs = () => {
         </div>
       );
     }
-    
-    if (error) {
-      return <p className="text-danger">{error}</p>;
-    }
+
 
   return (
     <>
@@ -165,37 +162,35 @@ const Appliedjobs = () => {
              </div>
 
              <div className="jobs_applied">
-                {appliedJobs.length > 0 && <h1 className="job_head">Total Applies({applicationsCount})</h1>}
+              {appliedJobs.length > 0 ? (
+                <>
+                  <h1 className="job_head">Total Applies({applicationsCount})</h1>
                   <div className="card border-0 shadow">
                     <div className="card-body">
                       <div className="row">
                         <div className="col-lg-4 border-end p-0">
                           <div className="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
-                            {appliedJobs.length > 0 ? (
-                              <ul>
-                                {appliedJobs.map((job, index) => (
-                                  <button
-                                    key={index}
-                                    className={`nav-link border-bottom ${selectedJobIndex === index ? 'active' : ''}`}
-                                    onClick={() => setSelectedJobIndex(index)}
-                                    type="button"
-                                  >
-                                    <li className="text-start py-3">
-                                      <div className="company_card">
-                                        <h6>{job.job_title}</h6>
-                                        <p className="text-secondary fw-semibold">{job.company_name}</p>
-                                        <span className="border bg-white rounded-pill d-inline-flex align-items-center py-1 px-2">
-                                          <i className="fa-solid fa-check-circle me-1"></i>
-                                          <small>{calculatePostedTime(job.application_date)}</small>
-                                        </span>
-                                      </div>
-                                    </li>
-                                  </button>
-                                ))}
-                              </ul>
-                            ) : (
-                              <p>No jobs applied yet.</p>
-                            )}
+                            <ul>
+                              {appliedJobs.map((job, index) => (
+                                <button
+                                  key={index}
+                                  className={`nav-link border-bottom ${selectedJobIndex === index ? 'active' : ''}`}
+                                  onClick={() => setSelectedJobIndex(index)}
+                                  type="button"
+                                >
+                                  <li className="text-start py-3">
+                                    <div className="company_card">
+                                      <h6>{job.job_title}</h6>
+                                      <p className="text-secondary fw-semibold">{job.company_name}</p>
+                                      <span className="border bg-white rounded-pill d-inline-flex align-items-center py-1 px-2">
+                                        <i className="fa-solid fa-check-circle me-1"></i>
+                                        <small>{calculatePostedTime(job.application_date)}</small>
+                                      </span>
+                                    </div>
+                                  </li>
+                                </button>
+                              ))}
+                            </ul>
                           </div>
                         </div>
 
@@ -255,118 +250,106 @@ const Appliedjobs = () => {
                                           </>
                                         )}
                                       </li>
-
                                     </ul>
                                   </div>
 
                                   <div className="border-bottom py-3">
                                     <h5 className='text-dark'>Activity on this job</h5>
-                                      <div className="d-inline-flex border rounded-2 card-body">
-                                          <div className='d-flex border-end px-3'>
-                                            <h4 className='m-0 me-2'>{appliedJobs[selectedJobIndex].job_count}</h4>
-                                            <p className='m-0'>Total <br />applications</p>
-                                          </div>
-                                          {appliedJobs[selectedJobIndex].status === "Applied" ? (
-                                            <div className='d-flex px-3'>
-                                              <h4 className='m-0 me-2'>0</h4>
-                                              <p className='m-0'>Applications <br />viewed by recruiter</p>
-                                            </div>
-                                          ) : (
-                                            <div className='d-flex px-3'>
-                                              <h4 className='m-0 me-2'>1</h4>
-                                              <p className='m-0'>Applications <br />viewed by recruiter</p>
-                                            </div>
-                                          )}
+                                    <div className="d-inline-flex border rounded-2 card-body">
+                                      <div className='d-flex border-end px-3'>
+                                        <h4 className='m-0 me-2'>{appliedJobs[selectedJobIndex].job_count}</h4>
+                                        <p className='m-0'>Total <br />applications</p>
                                       </div>
+                                      {appliedJobs[selectedJobIndex].status === "Applied" ? (
+                                        <div className='d-flex px-3'>
+                                          <h4 className='m-0 me-2'>0</h4>
+                                          <p className='m-0'>Applications <br />viewed by recruiter</p>
+                                        </div>
+                                      ) : (
+                                        <div className='d-flex px-3'>
+                                          <h4 className='m-0 me-2'>1</h4>
+                                          <p className='m-0'>Applications <br />viewed by recruiter</p>
+                                        </div>
+                                      )}
+                                    </div>
                                   </div>
 
                                   <div className="py-3">
                                     <h5 className='text-dark'>Similar Jobs</h5>
                                     <div className="row">
-
-                                    {similarJobs.length > 0 ? (
-                                      similarJobs.map((job) => (
-                                        <div className="col-md-6 col-sm-6 mb-4" key={job.id}>
-                                          <div className="card company_list_card h-100">
-                                            <div className="card-body">
-                                              <div className="d-flex justify-content-between">
-                                                <Link to={`/companies/${job.company_slug}`}>
-                                                  <div className="logo_div border-0 shadow">
-                                                    <img
-                                                      src={`${IMG_URL}/${job.company_profile}`}
-                                                      alt="company_logo"
-                                                    />
+                                      {similarJobs.length > 0 ? (
+                                        similarJobs.map((job) => (
+                                          <div className="col-md-6 col-sm-6 mb-4" key={job.id}>
+                                            <div className="card company_list_card h-100">
+                                              <div className="card-body">
+                                                <div className="d-flex justify-content-between">
+                                                  <Link to={`/companies/${job.company_slug}`}>
+                                                    <div className="logo_div border-0 shadow">
+                                                      <img
+                                                        src={`${IMG_URL}/${job.company_profile}`}
+                                                        alt="company_logo"
+                                                      />
+                                                    </div>
+                                                  </Link>
+                                                  <div className="d-flex align-items-center">
+                                                    <Link className="btn-light shadow me-2">
+                                                      <i className="fa-solid fa-share"></i>
+                                                    </Link>
                                                   </div>
-                                                </Link>
-                                                <div className="d-flex align-items-center">
-                                                  {/* <button
-                                                    className={`btn-light border-0 shadow me-2 ${isJobSaved(job.id) ? 'btn-primary' : ''}`}
-                                                    onClick={() => toggleSavedJob(job.id)}
-                                                  >
-                                                    <i
-                                                      className={`fa-bookmark ${isJobSaved(job.id) ? 'fa-solid' : 'fa-regular'}`}
-                                                    ></i>
-                                                  </button> */}
-                                                  <Link className="btn-light shadow me-2">
-                                                    <i className="fa-solid fa-share"></i>
+                                                </div>
+
+                                                <div className="py-2">
+                                                  <Link to={`/companies/${job.company_slug}`}>
+                                                    <h5 className="py-2 m-0">{job.company_name}</h5>
+                                                  </Link>
+                                                  <Link to={`/jobs/${job.slug}`}>
+                                                    <h6 className="m-0">{job.title}</h6>
                                                   </Link>
                                                 </div>
-                                              </div>
 
-                                              <div className="py-2">
-                                                <Link to={`/companies/${job.company_slug}`}>
-                                                  <h5 className="py-2 m-0">{job.company_name}</h5>
-                                                </Link>
-                                                <Link to={`/jobs/${job.slug}`}>
-                                                  <h6 className="m-0">{job.title}</h6>
-                                                </Link>
-                                              </div>
+                                                <p className="main_desc">{job.company_tagline}</p>
 
-                                              <p className="main_desc">{job.company_tagline}</p>
-
-                                              <ul className="p-0 d-flex flex-wrap">
-                                                {job.job_type && (
+                                                <ul className="p-0 d-flex flex-wrap">
+                                                  {job.job_type && (
+                                                    <li>
+                                                      <div className="btn btn-sm btn-green me-2 mb-2 text-capitalize">
+                                                        {job.job_type}
+                                                      </div>
+                                                    </li>
+                                                  )}
                                                   <li>
                                                     <div className="btn btn-sm btn-green me-2 mb-2 text-capitalize">
-                                                      {job.job_type}
+                                                      <span>Salary -</span> {job.salary_range} {job.salary_currency}
                                                     </div>
                                                   </li>
-                                                )}
-                                                <li>
-                                                  <div className="btn btn-sm btn-green me-2 mb-2 text-capitalize">
-                                                    <span>Salary -</span> {job.salary_range} {job.salary_currency}
-                                                  </div>
-                                                </li>
-                                                <li>
-                                                  <div className="btn btn-sm btn-green me-2 mb-2 text-capitalize">
-                                                    <span>Experience -</span> {job.experience_required}
-                                                  </div>
-                                                </li>
-                                                {job.job_location && (
                                                   <li>
-                                                    <div className="btn btn-sm btn-green me-2 mb-2 text-start text-capitalize">
-                                                      <i className="fa-solid fa-location-dot"></i> {job.job_location}
+                                                    <div className="btn btn-sm btn-green me-2 mb-2 text-capitalize">
+                                                      <span>Experience -</span> {job.experience_required}
                                                     </div>
                                                   </li>
-                                                )}
-                                              </ul>
+                                                  {job.job_location && (
+                                                    <li>
+                                                      <div className="btn btn-sm btn-green me-2 mb-2 text-start text-capitalize">
+                                                        <i className="fa-solid fa-location-dot"></i> {job.job_location}
+                                                      </div>
+                                                    </li>
+                                                  )}
+                                                </ul>
 
-                                              <p className="text-muted m-0">
-                                                <small className="badge text-bg-light">
-                                                  {calculateTimeAgo(job.created_at)}
-                                                </small>
-                                              </p>
+                                                <p className="text-muted m-0">
+                                                  <small className="badge text-bg-light">
+                                                    {calculateTimeAgo(job.created_at)}
+                                                  </small>
+                                                </p>
+                                              </div>
                                             </div>
                                           </div>
-                                        </div>
-                                      ))
-                                    ) : (
-                                      <p>No similar jobs found.</p>
-                                    )}
-
+                                        ))
+                                      ) : (
+                                        <p>No similar jobs found.</p>
+                                      )}
                                     </div>
                                   </div>
-
                                 </div>
                               </div>
                             )}
@@ -375,7 +358,20 @@ const Appliedjobs = () => {
                       </div>
                     </div>
                   </div>
+                </>
+              ) : (
+                <div className="card mt-4 border-0 shadow">
+                  <div className="card-body text-center">
+                    <img className='job_search' src="/public/images/job_search.png" alt="job_search" style={{ width: '200px' }}  />
+                    <h4>No jobs applied yet!</h4>
+                    <p>Tap on apply button on a job detail page to apply on it.</p>
+                    <Link to='/jobs'>
+                      <div className="btn btn-register">Search jobs</div>
+                    </Link>
+                  </div>
                 </div>
+              )}
+            </div>
 
             </div>
           </div>
