@@ -126,42 +126,39 @@ const Appliedjobs = () => {
     };
     
 
-    if (isLoading) {
-      return (
-        <div className="loading-screen d-flex flex-column justify-content-center align-items-center">
-          <div className="spinner-grow text-primary" role="status">
-            <span className="visually-hidden">Loading...</span>
-          </div>
-          <p className="mt-2">Fetching data...</p>
-        </div>
-      );
-    }
+    // if (isLoading) {
+    //   return (
+    //     <div className="loading-screen d-flex flex-column justify-content-center align-items-center">
+    //       <div className="spinner-grow text-primary" role="status">
+    //         <span className="visually-hidden">Loading...</span>
+    //       </div>
+    //       <p className="mt-2">Fetching data...</p>
+    //     </div>
+    //   );
+    // }
 
 
   return (
     <>
       <Navbar />
       <div className='top_pad'>
-        <div className="container py-5">
+        <div className="container pb-5">
           <div className="row mt-4">
             <div className="col-md-3 mb-4 mb-md-0">
               <JobSidebar />
             </div>
             <div className="col-md-9">
-              <div className="no_saved_jobs d-none mb-4">
-             <div className="card mt-4 border-0 shadow">
-                <div className="card-body text-center">
-                  <img className='job_search' src="/public/images/job_search.png"  alt="job_search" />
-                  <h4>No applied jobs !</h4>
-                  <p>Tap on apply button on a job detail page to apply on it.</p>
-                  <Link to='/jobs'>
-                  <div className=" btn btn-register">Search jobs</div>
-                  </Link>
+            {isLoading ? (
+              <div className="loading-screen d-flex flex-column justify-content-center align-items-center">
+                <div className="spinner-grow text-primary" role="status">
+                  <span className="visually-hidden">Loading...</span>
                 </div>
+                <p className='mt-2'>Fetching data...</p>
               </div>
-             </div>
-
-             <div className="jobs_applied">
+            ) : error ? (
+              <p className="text-center text-danger">{error}</p>
+            ) : appliedJobs.length > 0 ? (
+              <div className="jobs_applied">
               {appliedJobs.length > 0 ? (
                 <>
                   <h1 className="job_head">Total Applies({applicationsCount})</h1>
@@ -360,7 +357,7 @@ const Appliedjobs = () => {
                   </div>
                 </>
               ) : (
-                <div className="card mt-4 border-0 shadow">
+                <div className="card  border-0 shadow">
                   <div className="card-body text-center">
                     <img className='job_search' src="/public/images/job_search.png" alt="job_search" style={{ width: '200px' }}  />
                     <h4>No jobs applied yet!</h4>
@@ -372,6 +369,10 @@ const Appliedjobs = () => {
                 </div>
               )}
             </div>
+            ) : (
+              <p>No application found</p>
+            ) }
+          
 
             </div>
           </div>

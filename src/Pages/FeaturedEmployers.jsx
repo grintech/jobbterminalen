@@ -62,16 +62,13 @@ const FeaturedEmployers = () => {
         <div className="fea_emp_page">
         <Navbar />
         <div className="hero_banner d-flex flex-column align-items-center justify-content-center ">
-          <h1 className="fw-bold position-relative"> </h1>
+          <h1 className="fw-bold position-relative"> Featured Companies</h1>
         </div>
 
         <div className="container py-5">
-          <h3 className="text-center mb-5">Featured Companies</h3>
+          <h3 className="mb-5">Here is the list of featured companies!</h3>
           <div className="row">
-            
-          {/* <div className="col-lg-3 mb-5 mb-lg-0">
-            <Filter />
-          </div> */}
+         
           <div className="col-lg-12">
 
             { loading ? (
