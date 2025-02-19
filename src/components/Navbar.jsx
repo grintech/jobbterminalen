@@ -38,9 +38,9 @@ const Navbar = () => {
         :
         <div className="user_dropdown">
         <div className="dropdown">
-            <button className="btn border dropdown-toggle rounded-circle user_logo" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-            {/* <i className="fa-solid fa-user "></i> */}
-            <img src="/images/job-logo1.png" className='w-100 h-100 rounded-circle' alt="logo" />
+            <button className="btn border dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+         
+            <p className='ml-4 mb-0'>{user.name}</p>
             </button>
             <ul className="dropdown-menu">
                 <li><Link to='/my-account' className="dropdown-item"><i className="fa-regular fa-user me-2"></i>My Account</Link></li>
