@@ -40,37 +40,54 @@ const Categories = () => {
     fetchCategories();
   }, []);
 
-  if (loading) {
-    return <p className="text-center">Loading categories...</p>;
-  }
+  // if (loading) {
+  //   return <p className="text-center">Loading categories...</p>;
+  // }
 
-  if (error) {
-    return <p className="text-center text-danger">{error}</p>;
-  }
+  // if (error) {
+  //   return <p className="text-center text-danger">{error}</p>;
+  // }
 
   return (
     <div className="popular_categories container pb-4">
       <h4 className="mb-4 text-center">Popular Categories</h4>
-      <div className="row justify-content-center flex-wrap">
-        {categories.slice(0,12).map((category) => (
-          <div key={category.id} className="col-lg-2 col-md-3 col-sm-4 col-4 mb-4">
-            <Link to={`/job/category/${category.name.toLowerCase()}`} className="cat_card">
-              <div className="card">
-                <div className="card-body text-center">
-                  {/* <i className="fa-solid fa-folder"></i> */}
-                  <img src={`${IMG_URL}/${category.image}`} alt="" />
-                  <h5 className="mt-3">{category.name}</h5>
+       {loading ? (
+              <div className="loading-screen d-flex flex-column justify-content-center align-items-center">
+                <div className="spinner-grow text-primary" role="status">
+                  <span className="visually-hidden">Loading...</span>
                 </div>
+                <p className='mt-2'>Fetching data...</p>
               </div>
-            </Link>
-          </div>
-        ))}
-      </div>
-      <div className="d-flex justify-content-center">
-        <Link to="/jobs/category" className="btn btn-login text-green">
-          View more
-        </Link>
-      </div>
+            ) : error ? (
+              <p className="text-center text-danger">{error}</p>
+            ) : categories.length > 0 ? (
+              <>
+              <div className="row justify-content-center flex-wrap">
+                {categories.slice(0,12).map((category) => (
+                  <div key={category.id} className="col-lg-2 col-md-3 col-sm-4 col-4 mb-4">
+                    <Link to={`/job/category/${category.name.toLowerCase()}`} className="cat_card">
+                      <div className="card">
+                        <div className="card-body text-center">
+                          {/* <i className="fa-solid fa-folder"></i> */}
+                          <img src={`${IMG_URL}/${category.image}`} alt="" />
+                          <h5 className="mt-3">{category.name}</h5>
+                        </div>
+                      </div>
+                    </Link>
+                  </div>
+                ))}
+              </div>
+              <div className="d-flex justify-content-center">
+                <Link to="/jobs/category" className="btn btn-login text-green">
+                  View more
+                </Link>
+              </div>
+              </>
+            ) : (
+              <p>Can't found categories</p>
+            ) }
+
+      
     </div>
   );
 };

@@ -1029,9 +1029,9 @@ const MyAccount = () => {
                       <div className='row py-3 jobseeker_details'>
                         <div className="col-md-6">
                           <ul className='p-0 '>
-                            <li><i className="fa-solid fa-location-dot"></i> <span>{userData.permanent_address}</span></li>
-                            <li><i className="fa-solid fa-briefcase"></i> <span>{userData.work_status}</span></li>
-                            <li><i className="fa-regular fa-calendar"></i> <span>{userData.availability}</span></li>
+                            <li><i className="fa-solid fa-location-dot "></i> <span className="text-capitalize">{userData.current_location}</span></li>
+                            <li><i className="fa-solid fa-briefcase "></i> <span className="text-capitalize">{userData.work_status}</span></li>
+                            <li><i className="fa-regular fa-calendar "></i> <span className="text-capitalize">{userData.notice_period}</span></li>
                           </ul>
                         </div>
                         <div className="col-md-6">

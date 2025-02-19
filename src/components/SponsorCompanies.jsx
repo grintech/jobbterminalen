@@ -148,10 +148,12 @@ const SponsorCompanies = () => {
       {/* Loading and Error States */}
       {loading ? (
         <div className="text-center my-5">
-          <div className="spinner-border" role="status">
-            <span className="sr-only">Loading...</span>
-          </div>
-          <p>Loading...</p>
+           <div className="loading-screen d-flex flex-column justify-content-center align-items-center">
+                <div className="spinner-grow text-primary" role="status">
+                  <span className="visually-hidden">Loading...</span>
+                </div>
+                <p className='mt-2'>Fetching data...</p>
+              </div>
         </div>
       ) : error ? (
         <div className="text-center text-danger">
@@ -159,7 +161,7 @@ const SponsorCompanies = () => {
         </div>
       ) : (
         <>
-          {/* Industry Tabs */}
+         
           <ul className="d-flex justify-content-center flex-wrap p-0 mt-3 all_comp_tabs">
             <li
               key="All"

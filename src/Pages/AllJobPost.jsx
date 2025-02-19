@@ -178,14 +178,9 @@ const AllJobPost = () => {
                               <div className="btn btn-sm btn-green me-2 mb-2 text-capitalize">{job.job_type}</div>
                             </li>
                           )}
-                          <li>
-                            <div className="btn btn-sm btn-green me-2 mb-2">
-                              <span>Salary -</span> {job.salary_currency} {job.salary_range}
-                            </div>
-                          </li>
+                         
                           <li>
                             <div className="btn btn-sm btn-green me-2 mb-2"><span>Experience -</span>&nbsp;&nbsp;
-                            
                               {job.experience_required}
                             </div>
                           </li>
@@ -196,6 +191,11 @@ const AllJobPost = () => {
                               </div>
                             </li>
                           )}
+                           <li>
+                            <div className="btn btn-sm btn-green me-2 mb-2">
+                              <span>Salary -</span> {job.salary_currency} {job.salary_range}
+                            </div>
+                          </li>
 
                         </ul>
                       </div>

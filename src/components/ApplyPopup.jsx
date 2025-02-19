@@ -129,7 +129,7 @@ const ApplyPopup = ({ jobId }) => {
   };
 
   return (
-    <Popup trigger={<button className="btn btn-primary"> Apply </button>} modal>
+    <Popup trigger={<button className="btn btn-sm btn-primary"> Apply </button>} modal>
       {(close) => (
         <div className="popup-container p-4">
           <div className="d-flex justify-content-between align-items-center">

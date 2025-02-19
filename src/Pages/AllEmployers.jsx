@@ -129,52 +129,56 @@ const AllEmployers = () => {
 
           {/* Pagination */}
 
-          
-          <div className="d-flex justify-content-center">
-            <nav aria-label="Page navigation example" className="mt-3">
-              <ul className="pagination">
-                <li
-                  className={`page-item ${pagination.current_page === 1 ? "disabled" : ""}`}
-                >
-                  <Link
-                    className="page-link"
-                    aria-label="Previous"
-                    onClick={() => paginate(pagination.current_page - 1)}
-                  >
-                    <span aria-hidden="true"><i className="fa-solid fa-arrow-left"></i></span>
-                  </Link>
-                </li>
-                {[...Array(pagination.total_pages)].map((_, index) => (
+          {
+            pagination.total_pages > 1 && (
+            <div className="d-flex justify-content-center">
+              <nav aria-label="Page navigation example" className="mt-3">
+                <ul className="pagination">
                   <li
-                    key={index}
+                    className={`page-item ${pagination.current_page === 1 ? "disabled" : ""}`}
+                  >
+                    <Link
+                      className="page-link"
+                      aria-label="Previous"
+                      onClick={() => paginate(pagination.current_page - 1)}
+                    >
+                      <span aria-hidden="true"><i className="fa-solid fa-arrow-left"></i></span>
+                    </Link>
+                  </li>
+                  {[...Array(pagination.total_pages)].map((_, index) => (
+                    <li
+                      key={index}
+                      className={`page-item ${
+                        pagination.current_page === index + 1 ? "active" : ""
+                      }`}
+                    >
+                      <Link
+                        className="page-link"
+                        onClick={() => paginate(index + 1)}
+                      >
+                        {index + 1}
+                      </Link>
+                    </li>
+                  ))}
+                  <li
                     className={`page-item ${
-                      pagination.current_page === index + 1 ? "active" : ""
+                      pagination.current_page === pagination.total_pages ? "disabled" : ""
                     }`}
                   >
                     <Link
                       className="page-link"
-                      onClick={() => paginate(index + 1)}
+                      aria-label="Next"
+                      onClick={() => paginate(pagination.current_page + 1)}
                     >
-                      {index + 1}
+                      <span aria-hidden="true"><i className="fa-solid fa-arrow-right"></i></span>
                     </Link>
                   </li>
-                ))}
-                <li
-                  className={`page-item ${
-                    pagination.current_page === pagination.total_pages ? "disabled" : ""
-                  }`}
-                >
-                  <Link
-                    className="page-link"
-                    aria-label="Next"
-                    onClick={() => paginate(pagination.current_page + 1)}
-                  >
-                    <span aria-hidden="true"><i className="fa-solid fa-arrow-right"></i></span>
-                  </Link>
-                </li>
-              </ul>
-            </nav>
-          </div>
+                </ul>
+              </nav>
+            </div>
+            )
+
+          }
 
 
         </div>
