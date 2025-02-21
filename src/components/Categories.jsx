@@ -78,13 +78,16 @@ const Categories = () => {
                 ))}
               </div>
               <div className="d-flex justify-content-center">
-                <Link to="/jobs/category" className="btn btn-login text-green">
+                <Link to="/jobs/category" className="btn btn-login text-theme">
                   View more
                 </Link>
               </div>
               </>
             ) : (
-              <p>Can't found categories</p>
+              <div className='text-center text-theme'>
+              <img src="/images/no-data.webp" className='no_data' alt='' /> 
+              <p>No categories available at the moment.</p>
+              </div>
             ) }
 
       

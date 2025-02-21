@@ -32,7 +32,9 @@ const CompaniesSlider = () => {
           },
         });
 
-        if (response.data.type === 'success') {
+        if (response.data.type === "success" && response.data.data.length === 0) {
+          setError("No companies available at the moment.");
+        } else if (response.data.type === 'success') {
           setCompanyData(response.data.data);
         } else {
           setError(`API Error: ${response.data.message}`);
@@ -155,10 +157,15 @@ const CompaniesSlider = () => {
               </div>
             </div>
           ) : error ? (
-            <div className="text-center text-danger">
+            <div className="text-center text-theme">
+            <div className='text-center text-theme'>
+              <img src="/images/no-data.webp" className='no_data' alt='' /> 
               <p>{error}</p>
+              </div>
+              
             </div>
           ) : (
+            <>
             <Swiper
               className="pb-4 mt-4"
               modules={[Navigation, A11y]}
@@ -203,12 +210,15 @@ const CompaniesSlider = () => {
                 </SwiperSlide>
               ))}
             </Swiper>
-          )}
-          <div className="d-flex justify-content-center">
-            <Link to="/companies" className="btn btn-outline-login">
+
+             <div className="d-flex justify-content-center">
+              <Link to="/companies" className="btn btn-outline-login">
               View all companies
-            </Link>
-          </div>
+              </Link>
+            </div>
+
+            </>
+          )}
         </div>
       </div>
     </div>

@@ -487,11 +487,11 @@ const Register = () => {
                     </div>
                     <p className="mb-3">
                       By signing up, you agree to our
-                      <Link className="text-green mx-1" to="/terms-and-conditions">
+                      <Link className="text-theme mx-1" to="/terms-and-conditions">
                         Terms of use
                       </Link>
                       and
-                      <Link className="text-green mx-1" to="/privacy-policy">
+                      <Link className="text-theme mx-1" to="/privacy-policy">
                         Privacy Policy
                       </Link>
                     </p>
@@ -524,7 +524,7 @@ const Register = () => {
 
                     <p className="mb-3 text-center">
                       Already have an account?
-                      <Link to="/login" className="text-green mx-1">
+                      <Link to="/login" className="text-theme mx-1">
                         Login Instead
                       </Link>
                     </p>
