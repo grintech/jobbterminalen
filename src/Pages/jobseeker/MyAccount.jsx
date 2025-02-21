@@ -1303,7 +1303,7 @@ const MyAccount = () => {
               <div className="card border-0 shadow bg_lblue">
                 <div className="card-body">
                   <h1 className="job_head">
-                    Welcome <span className="text-green text-capitalize">"{user?.name}"</span> to your account
+                    Welcome <span className="text-theme text-capitalize">"{user?.name}"</span> to your account
                   </h1>
                   <h6>
                     From your account dashboard, you can see your saved jobs, applied jobs, and profile, and edit them as well.
@@ -1698,7 +1698,7 @@ const MyAccount = () => {
                       )}
                     </h5>
                       {(!userData.skills || Object.keys(userData.skills).length === 0) && (
-                        <Link className="text-green" data-bs-toggle="modal" data-bs-target="#skillModal">
+                        <Link className="text-theme" data-bs-toggle="modal" data-bs-target="#skillModal">
                           Add Skills
                         </Link>
                       )}
@@ -1781,7 +1781,7 @@ const MyAccount = () => {
                   <div className="d-flex justify-content-between mb-3">
                     <h5>Employment</h5>
                     {(!employment || Object.keys(employment).length === 0) && (
-                      <Link className="text-green" data-bs-toggle="modal" data-bs-target="#employModal">
+                      <Link className="text-theme" data-bs-toggle="modal" data-bs-target="#employModal">
                         Add employment
                       </Link>
                     )}
@@ -1843,7 +1843,7 @@ const MyAccount = () => {
                       <div className="d-flex justify-content-between">
                       <h1 className="modal-title fs-5" id="employModalLabel">Employment</h1>
                       {employment && employment.id && Object.keys(employment).length > 0 && (
-                        <Link className='text-green' data-bs-toggle="modal" data-bs-target="#deleteModal">Delete</Link>
+                        <Link className='text-theme' data-bs-toggle="modal" data-bs-target="#deleteModal">Delete</Link>
                       )}
                       </div>
                       <form action="" className="mt-3">
@@ -2039,7 +2039,7 @@ const MyAccount = () => {
                         <h5>Education</h5>
                         {!edu || Object.keys(edu).length === 0 ? (
                           <Link
-                            className="text-green"
+                            className="text-theme"
                             data-bs-toggle="modal"
                             data-bs-target="#educationModal"
                             onClick={() => openEducationModal({})}
@@ -2088,7 +2088,7 @@ const MyAccount = () => {
                     <div className="d-flex justify-content-between mb-3">
                       <h5>Education</h5>
                       <Link
-                          className="text-green"
+                          className="text-theme"
                           data-bs-toggle="modal"
                           data-bs-target="#educationModal"
                           onClick={() => openEducationModal({})}
@@ -2138,7 +2138,7 @@ const MyAccount = () => {
                               {selectedEducation.id ? "Edit Education" : "Add Education"}
                             </h1>
                             {selectedEducation && selectedEducation.id && Object.keys(selectedEducation).length > 0 && (
-                              <Link className="text-green" data-bs-toggle="modal" data-bs-target="#educationDeleteModal">Delete</Link>
+                              <Link className="text-theme" data-bs-toggle="modal" data-bs-target="#educationDeleteModal">Delete</Link>
                             )}
                           </div>
                           <h6 className="text-muted">Details of your course and university help recruiters understand your background.</h6>
@@ -2301,11 +2301,11 @@ const MyAccount = () => {
                           </p>
                         </div>
                         {/* {(!socialProfiles || Object.keys(socialProfiles).length === 0) && (
-                          <Link className="text-green" data-bs-toggle="modal" data-bs-target="#addSocialModal">
+                          <Link className="text-theme" data-bs-toggle="modal" data-bs-target="#addSocialModal">
                             Add
                           </Link>
                         )} */}
-                        <Link className="text-green" data-bs-toggle="modal" data-bs-target="#addSocialModal">
+                        <Link className="text-theme" data-bs-toggle="modal" data-bs-target="#addSocialModal">
                           Add
                         </Link>
                       </div>
@@ -2326,7 +2326,7 @@ const MyAccount = () => {
                                   </Link>
                                 </h6>
                               </div>
-                              <p className="m-0 text-green">{social_profiles.url}</p>
+                              <p className="m-0 text-theme">{social_profiles.url}</p>
                             </div>
                           ))
                         ) : (
@@ -2360,7 +2360,7 @@ const MyAccount = () => {
                                   <h6 className="text-muted">Add link to online professional profiles (e.g. LinkedIn, etc.)</h6>
                                   {profile.id && (
                                     <Link
-                                      className="text-green"
+                                      className="text-theme"
                                       data-bs-toggle="modal"
                                       data-bs-target={`#deleteSocialModal-${profile.id}`}
                                     >
@@ -2839,7 +2839,7 @@ const MyAccount = () => {
                                       <option value="Expert">Expert</option>
                                     </select>
                                   </div>
-                                  <div className="d-flex mt-1 fw-semibold justify-content-end text-green">
+                                  <div className="d-flex mt-1 fw-semibold justify-content-end text-theme">
                                     <span
                                       style={{ cursor: "pointer" }}
                                       onClick={() => showDeleteLanguageModal(index)}
@@ -2878,7 +2878,7 @@ const MyAccount = () => {
                 <div className="card-body">
                   <div className="d-flex justify-content-between mb-3">
                     <h5>Certification</h5>
-                    <Link className="text-green" data-bs-toggle="modal" data-bs-target="#certificateModal">Add</Link>
+                    <Link className="text-theme" data-bs-toggle="modal" data-bs-target="#certificateModal">Add</Link>
                   </div>
 
                   <div className="mt-4 certification_details">
@@ -2896,7 +2896,7 @@ const MyAccount = () => {
                               </Link>
                             </h6>
                           </div>
-                          <p className="m-0 text-green">{certificate.certification_url}</p>
+                          <p className="m-0 text-theme">{certificate.certification_url}</p>
                           <p className="m-0">
                             {certificate.expire_on ? (
                               <small>
@@ -3052,7 +3052,7 @@ const MyAccount = () => {
                         <h6 className='text-muted'>Edit details of Certifications you have achieved/completed</h6>
                         {certificate.id && (
                             <Link
-                              className="text-green"
+                              className="text-theme"
                               data-bs-toggle="modal"
                               data-bs-target="#deleteCertificate"
                               onClick={() => setSelectedCertificate(certificate)}

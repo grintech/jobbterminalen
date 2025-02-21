@@ -111,7 +111,7 @@ const Login = () => {
                         required
                       />
                     </div>
-                    <Link to="/forgot-password" className="text-end text-green m-0">
+                    <Link to="/forgot-password" className="text-end text-theme m-0">
                       Forget Password?
                     </Link>
                     <div className="col-12 py-4">
@@ -137,7 +137,7 @@ const Login = () => {
 
                     <p className="mb-3 text-center">
                       Already have an account?
-                      <Link to="/register" className="text-green ms-1">
+                      <Link to="/register" className="text-theme ms-1">
                         Signup
                       </Link>
                     </p>

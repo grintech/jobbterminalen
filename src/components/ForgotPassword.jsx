@@ -140,7 +140,7 @@ const ForgetPassword = () => {
 
                   <p className="mb-3 text-center">
                     New on our platform?
-                    <Link to="/register" className="text-green ms-2">
+                    <Link to="/register" className="text-theme ms-2">
                       Create an account
                     </Link>
                   </p>

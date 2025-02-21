@@ -35,7 +35,7 @@ const SponsorCompanies = () => {
     })
     .catch((error) => {
       console.error('Error fetching industries:', error);
-      setError('Failed to load industries');
+      setError('No companies found');
       setLoading(false);
     });
   }, []);
@@ -57,7 +57,7 @@ const SponsorCompanies = () => {
     })
     .catch((error) => {
       console.error('Error fetching companies:', error);
-      setError('Failed to load companies');
+      setError('No companies found.');
       setLoading(false);
     });
   }, []);
@@ -144,6 +144,7 @@ const SponsorCompanies = () => {
     <>
     <div className="sponsor_companies container py-5">
       <h4 className="text-center">Sponsored Companies</h4>
+     
 
       {/* Loading and Error States */}
       {loading ? (
@@ -156,8 +157,9 @@ const SponsorCompanies = () => {
               </div>
         </div>
       ) : error ? (
-        <div className="text-center text-danger">
-          <p>{error}</p>
+        <div className='text-center text-theme'>
+          <img src="/images/no-data.webp" className='no_data' alt='' />
+          <p>{error === "No companies found." ? "No companies available at the moment." : error}</p>
         </div>
       ) : (
         <>

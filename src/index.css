@@ -422,7 +422,7 @@ input[type='checkbox']{
 }
 
 
-.text-green{color:#003479 !important}
+.text-theme{color:#003479 !important}
 .top_pad{padding-top: 110px; min-height: 85vh;}
 .top_pad2{padding-top: 80px; min-height: 85vh;}
 
@@ -908,3 +908,6 @@ input[type="checkbox"]:focus{box-shadow: none !important; }
 .Toastify__progress-bar {
   background-color: #00bcd4; /* Cyan */
 }
+
+
+.no_data{width: 100px !important; height: 100px !important;}
