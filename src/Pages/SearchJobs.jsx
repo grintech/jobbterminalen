@@ -132,7 +132,7 @@ const SearchJobs = () => {
   }, [search]);
 
   return (
-    <>
+    <div className="search_jobs_page">
       <Navbar />
       <div className="top_pad2">
         <HeroBanner />
@@ -151,7 +151,14 @@ const SearchJobs = () => {
                 <p className="mt-2">Fetching data...</p>
               </div>
                 ) : error ? (
-                  <p className="text-danger">{error}</p>
+                  <div className="msg_card  mb-4">
+                  <div className="card border-0 shadow">
+                   <div className="card-body text-center p-4">
+                   <img className="job_search" src="/images/no-job.png" alt="job_search" />
+                   <h6 className="text-theme">{error == "No data found" ? "No data found at the moment.Please try later" :error}</h6>
+                 </div>
+                 </div>
+                 </div>
                 ) : jobs.length > 0 ? (
                   <div className="row">
                     {jobs.map((job) => (
@@ -205,7 +212,14 @@ const SearchJobs = () => {
                     ))}
                   </div>
                 ) : (
-                  <p>No jobs found.</p>
+                  <div className="msg_card  mb-4">
+                  <div className="card border-0 shadow">
+                   <div className="card-body text-center p-4">
+                   <img className="job_search" src="/images/no-job.png" alt="job_search" />
+                   <h6 className="text-theme">No data found at the moment.Please try later</h6>
+                   </div>
+                  </div>
+                 </div>
                 )}
             </div>
           </div>
@@ -225,7 +239,7 @@ const SearchJobs = () => {
         draggable
         pauseOnHover
       />
-    </>
+    </div>
   );
 };
 

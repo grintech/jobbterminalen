@@ -14,7 +14,7 @@ const ProjectBasis = () => {
                 <h5 className='mb-3'>Jobs Feed</h5>
                 <div className="card all_cat_filters mb-4">
                 <div className="card-body">
-                    <h5>Apply Filter <i class="bi bi-filter"></i></h5>
+                    <h5>Apply Filter <i className="bi bi-filter"></i></h5>
                     <hr />
                     <div className='d-flex flex-wrap'>
                     <div className="form-check  me-5">
@@ -140,7 +140,7 @@ const ProjectBasis = () => {
             <div className="card_sticky">
              <div className="card all_cat_filters">
              <div className="card-body">
-                <h5>Apply Filter <i class="bi bi-filter"></i></h5>
+                <h5>Apply Filter <i className="bi bi-filter"></i></h5>
                 <hr />
                 <div>
                 <div className="accordion border-0" id="accordionExample1">

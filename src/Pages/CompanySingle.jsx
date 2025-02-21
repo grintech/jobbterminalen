@@ -166,7 +166,7 @@ useEffect(() => {
 
   
   return (
-    <>
+    < div className="company_single_page" >
       <Navbar />
       <div className="hero_banner company_banner d-flex flex-column align-items-center justify-content-center position-relative">
         <h1 className="fw-bold position-relative">{companyData?.company_name || ''}</h1>
@@ -184,9 +184,14 @@ useEffect(() => {
             </div>
           </>
         ) : error ? (
-          <div className="alert alert-danger text-center my-5" role="alert">
-            {error}
+          <div className="msg_card my-5">
+            <div className="card border-0 shadow">
+            <div className="card-body text-center p-4">
+           <img className="job_search" src="/images/no-data1.png" alt="job_search" />
+           <h6 className="text-theme">{error == "No data found" ? "No details found at the moment.Please try later" : error}</h6>
+           </div>
           </div>
+           </div>
         ) : (
           
           <div className="col-md-12 mx-auto">
@@ -379,8 +384,11 @@ useEffect(() => {
           </div>
         )}
       </div>
-     {!isLoading && <Footer />}
-    </>
+
+       {!isLoading && <Footer />}
+       {/* <Footer /> */}
+
+    </ div>
   );
 };
 

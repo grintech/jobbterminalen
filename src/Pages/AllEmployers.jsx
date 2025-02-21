@@ -139,7 +139,12 @@ const AllEmployers = () => {
           ) : (
             <div className="row">
               {companies.length === 0 ? (
-                <p className="text-danger"> No companies found.</p>
+                <div className="text-center text-theme " >
+                <div className='text-center text-theme'>
+                  <img src="/images/no-data1.png" className='no_company' alt='' /> 
+                  <h6>No companies found at the moment.Please try later.</h6>
+                  </div>
+                </div>
               ) : (
                 companies.map((company) => (
                   <div className="col-lg-3 col-md-4 col-sm-6 mb-5" key={company.id}>
