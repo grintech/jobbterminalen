@@ -911,3 +911,11 @@ input[type="checkbox"]:focus{box-shadow: none !important; }
 
 
 .no_data{width: 100px !important; height: 100px !important;}
+.all_jobs_page .msg_card img{width: 200px; margin-bottom: 15px;}
+.category_listing .msg_card img{width: 200px; margin-bottom: 15px;}
+.job_details .msg_card img{width: 200px; margin-bottom: 15px;}
+.search_jobs_page .msg_card img{width: 200px; margin-bottom: 15px;}
+.company_single_page .msg_card img{width: 200px; margin-bottom: 15px;}
+
+.all_employers_page .no_company{width: 180px ;}
+.fea_emp_page .no_company{width: 180px ;}

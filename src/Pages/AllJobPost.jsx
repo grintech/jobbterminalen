@@ -60,7 +60,7 @@ const AllJobPost = () => {
   };
 
   return (
-    <>
+    <div className="all_jobs_page">
       <Navbar />
       {/* <div className="hero_banner d-flex flex-column align-items-center justify-content-center ">
         <h1 className="fw-bold position-relative">Job Vacancies</h1>
@@ -135,10 +135,19 @@ const AllJobPost = () => {
                 <div className="spinner-grow text-primary" role="status">
                   <span className="visually-hidden">Loading...</span>
                 </div>
-                <p className='mt-2'>Fetching data...</p>
+                <p className='mt-2'>Fetching jobs...</p>
               </div>
             ) : error ? (
-              <p className="text-center text-danger">{error}</p>
+             <>
+                 <div className="msg_card">
+                  <div className="card border-0 shadow">
+                    <div className="card-body text-center p-4">
+                    <img className="job_search" src="/images/no-job.png" alt="job_search" />
+                    <h6 className="text-theme">{error === "No data found" ? "No jobs found at the moment.." : "No data found"}</h6>
+                 </div>
+                 </div>
+                 </div>
+             </>
             ) : jobs.length > 0 ? (
               <div className="row">
                 {jobs.map((job) => (
@@ -206,7 +215,16 @@ const AllJobPost = () => {
                 ))}
               </div>
             ) : (
-              <p>No jobs found</p>
+              <>
+              <div className="msg_card">
+               <div className="card  border-0 shadow">
+                 <div className="card-body text-center p-4">
+                 <img className="job_search" src="/images/no-job.png" alt="job_search" />
+                 <h6 className="text-theme">{error === "No data found" ? "No jobs found at the moment.." : "No jobs found at the moment.."}</h6>
+              </div>
+              </div>
+              </div>
+            </>
             )}
 
             {/* Pagination */}
@@ -274,7 +292,7 @@ const AllJobPost = () => {
       </div>
 
       <Footer />
-    </>
+    </div>
   );
 };
 

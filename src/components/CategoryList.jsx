@@ -177,12 +177,19 @@ const CategoryList = () => {
                     <div className="spinner-grow text-primary" role="status">
                       <span className="visually-hidden">Loading...</span>
                     </div>
-                    <p className="mt-2">Fetching data...</p>
+                    <p className="mt-2">Fetching categories...</p>
                   </div>
                 ) : error ? (
-                  <div className="text-center text-danger">
-                    <p>{error}</p>
+                  <>
+                  <div className="msg_card">
+                   <div className="card border-0 shadow">
+                     <div className="card-body text-center p-4">
+                     <img className="job_search" src="/images/no-job.png" alt="job_search" />
+                     <h6 className="text-theme">No categories found at the moment. Please try later.</h6>
                   </div>
+                  </div>
+                  </div>
+              </>
                 ) : (
                   categoryData.map((job) => (
                     <div className="col-lg-4 col-md-6 col-sm-6 mb-4" key={job.id}>

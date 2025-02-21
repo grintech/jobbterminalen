@@ -148,7 +148,7 @@ const JobDetail = () => {
         if (response.data.type === 'success') {
           setJobDetails(response.data.data);
         } else {
-          setError('Job details not found');
+          setError('Job details not found. Please try later');
         }
       } catch (err) {
         setError('An error occurred while fetching the job details.');
@@ -313,10 +313,19 @@ const JobDetail = () => {
             <div className="spinner-grow text-primary" role="status">
               <span className="visually-hidden">Loading...</span>
            </div>
-            <p className='mt-2'>Fetching data...</p>
+            <p className='mt-2'>Fetching details...</p>
           </div>
           ) : error ? (
-            <p className="text-center text-danger">{error}</p>
+            <div className="container top_pad">
+               <div className="msg_card  mb-4">
+               <div className="card border-0 shadow">
+                <div className="card-body text-center p-4">
+                <img className="job_search" src="/images/no-job.png" alt="job_search" />
+                <h6 className="text-theme">{error}</h6>
+              </div>
+              </div>
+              </div>
+            </div>
           ) : jobDetails ? (
            <>
             <div className="hero_banner company_banner d-flex flex-column align-items-center justify-content-center position-relative">
@@ -603,10 +612,20 @@ const JobDetail = () => {
 
            </>
           ) : (
-            <p>No data found</p>
+            <div className="container top_pad">
+            <div className="msg_card  mb-4">
+            <div className="card border-0 shadow">
+             <div className="card-body text-center p-4">
+             <img className="job_search" src="/images/no-job.png" alt="job_search" />
+             <h6 className="text-theme">No details found.Please try later</h6>
+           </div>
+           </div>
+           </div>
+         </div>
         )}
 
-        {jobDetails&&<Footer />}
+        {!loading && <Footer />}
+         {/* <Footer /> */}
 
       </div>
     </>

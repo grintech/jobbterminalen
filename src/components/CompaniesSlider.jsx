@@ -151,18 +151,18 @@ const CompaniesSlider = () => {
 
         <div className="col-md-9">
           {loading ? (
-            <div className="text-center my-5">
-              <div className="spinner-border" role="status">
-                <span className="sr-only">Loading...</span>
-              </div>
-            </div>
+             <div className="loading-screen d-flex flex-column justify-content-center align-items-center">
+             <div className="spinner-grow text-primary" role="status">
+               <span className="visually-hidden">Loading...</span>
+             </div>
+             <p className='mt-2'>Fetching companies...</p>
+           </div>
           ) : error ? (
-            <div className="text-center text-theme">
+            <div className="text-center text-theme bg-white p-4 rounded-3" >
             <div className='text-center text-theme'>
-              <img src="/images/no-data.webp" className='no_data' alt='' /> 
+              <img src="/images/no-company.webp" className='no_data' alt='' /> 
               <p>{error}</p>
               </div>
-              
             </div>
           ) : (
             <>

@@ -79,7 +79,12 @@ const FeaturedEmployers = () => {
                  <p className="mt-2">Fetching data...</p>
                </div>
             ) : error ? (
-              <p className="text-danger">{error}</p>
+              <div className="text-center text-theme " >
+                <div className='text-center text-theme'>
+                  <img src="/images/no-data1.png" className='no_company' alt='' /> 
+                  <h6>{error}</h6>
+                  </div>
+                </div>
             ) : featuredCompanies ? (
                 <div className="row mt-4">
                   {featuredCompanies.map((company) => (
@@ -115,7 +120,12 @@ const FeaturedEmployers = () => {
                   ))}
                 </div>
             ): (
-              <p>No jobs found</p>
+              <div className="text-center text-theme " >
+              <div className='text-center text-theme'>
+                <img src="/images/no-data1.png" className='no_company' alt='' /> 
+                <h6>No companies found at the moment.Please try later.</h6>
+                </div>
+              </div>
             )
           } 
 

@@ -131,17 +131,17 @@ const Navbar = () => {
         </div>
         }
 
-        <ul className="employer p-0 ms-2 m-0">
-                <li className="nav-item dropdown">
-                <Link className="nav-link dropdown-toggle"  role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    For Employers
-                </Link>
-                <ul className="dropdown-menu">
-                    <li><Link  to={`${empLogin}`} className="dropdown-item" >Employer Login</Link></li>
-                </ul>
-                </li>
+        <ul className="employer p-0 ms-lg-2 m-0">
+            <li className="nav-item dropdown">
+            <Link className="nav-link dropdown-toggle"  role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                For Employers
+            </Link>
+            <ul className="dropdown-menu">
+                <li><Link  to={`${empLogin}`} className="dropdown-item" >Employer Login</Link></li>
+            </ul>
+            </li>
         </ul>
-        
+
         </div>
     </div>
       </nav>

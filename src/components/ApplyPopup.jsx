@@ -250,7 +250,7 @@ const ApplyPopup = ({ jobId }) => {
                     </a>
                   </h6>
                   <div className="ms-2 mt-1 text-danger">
-                    <i class="fa-solid fa-trash" onClick={handleRemoveResume}></i>
+                    <i className="fa-solid fa-trash" onClick={handleRemoveResume}></i>
                   </div>
                 </div>
               )}
