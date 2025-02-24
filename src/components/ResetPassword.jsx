@@ -3,11 +3,13 @@ import { useLocation, Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
+import { useTranslation } from "react-i18next";
 
 const bearerKey = import.meta.env.VITE_BEARER_KEY;
 const API_URL = import.meta.env.VITE_API_URL;
 
 const ResetPassword = () => {
+  const { t } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -84,26 +86,16 @@ const ResetPassword = () => {
     <Navbar />
     <div className="register_page">
       <div className="d-flex register_container justify-content-center align-items-center">
-        <div className="">
+        <div >
           <div className="container h-100 py-5">
+            <div className="col-md-7 col-lg-5 col-xxl-4 col-11 mx-auto">
             <form
               className="register_form d-flex flex-column justify-content-center align-items-center"
               onSubmit={handleSubmit}
             >
-              <div className="">
-                {/* <div className="d-flex justify-content-center mb-5">
-                  <Link to="/">
-                  <img
-                    className="logo text-center"
-                    style={{ height: "70px" }}
-                    src="/images/job-logo1.png"
-                    alt="logo"
-                  />
-                  </Link>
-                </div> */}
-
-                <h1>Reset your Password</h1>
-                <p> Enter your new password to reset.</p>
+              <div >
+                <h1>{t("Reset_title")}</h1>
+                <p>{t("Reset_text")}</p>
 
                 {alert.message && (
                   <div
@@ -125,13 +117,13 @@ const ResetPassword = () => {
                 <div className="row mt-4">
                   <div className="col-12 mb-3">
                     <label htmlFor="password" className="mb-2">
-                      New Password <span>*</span>
+                    {t("NewPassword")} <span>*</span>
                     </label>
                     <input
                       type="password"
                       className="form-control"
                       name="password"
-                      placeholder="Enter your password"
+                      placeholder={t("NewPassPlaceholder")}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       required
@@ -140,13 +132,13 @@ const ResetPassword = () => {
 
                   <div className="col-12 mb-3">
                     <label htmlFor="confirmPassword" className="mb-2">
-                      Confirm Password <span>*</span>
+                    {t("Confirm_Password")} <span>*</span>
                     </label>
                     <input
                       type="password"
                       className="form-control"
                       name="confirmPassword"
-                      placeholder="Confirm your password"
+                      placeholder={t("NewConfPassPlaceholder")}
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
                       required
@@ -159,23 +151,24 @@ const ResetPassword = () => {
                       className="btn btn-register w-100"
                       disabled={loading}
                     >
-                      {loading ? "Resetting..." : "Reset"}
+                      {loading ? t("Resetting") : t("Reset")}
                     </button>
                   </div>
 
                   <p className="mb-3 text-center">
-                    New on our platform?
+                    {t("New_platform")}
                     <Link to="/register" className="text-theme ms-2">
-                      Create an account
+                    {t("Create_account")}
                     </Link>
                   </p>
 
                   <p className="text-center m-0">
-                    Copyright ©2024 by Jobbterminal All Rights Reserved.
+                  {t("Copyright")}
                   </p>
                 </div>
               </div>
             </form>
+            </div>
           </div>
         </div>
 

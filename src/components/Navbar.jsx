@@ -1,9 +1,15 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import { useAuthContext } from '../store/authContext';
+import { useTranslation } from 'react-i18next';
 
 
 const Navbar = () => {
+    const { t, i18n } = useTranslation();
+
+    const changeLanguage = (language) => {
+      i18n.changeLanguage(language);
+    };
 
     const { user, loading , logout} = useAuthContext();
     const empLogin = import.meta.env.VITE_EMP_URL;
@@ -17,7 +23,7 @@ const Navbar = () => {
             <img src="/images/job-logo1.png" alt="logo" />
         </Link>
 
-        <div className='ms-auto pe-3 d-block d-lg-none'>
+        <div className='ms-auto pe-2 pe-sm-3 d-block d-lg-none'>
         <div className="d-flex align-items-center">
         <ul className="employer p-0 me-2 m-0">
                 <li className="nav-item dropdown">
@@ -40,7 +46,8 @@ const Navbar = () => {
         <div className="dropdown">
             <button className="btn border dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
          
-            <p className='ml-4 mb-0'>{user.name}</p>
+            <p className='ml-4 mb-0'>{user.name.split(" ")[0]}</p>
+
             </button>
             <ul className="dropdown-menu">
                 <li><Link to='/my-account' className="dropdown-item"><i className="fa-regular fa-user me-2"></i>My Account</Link></li>
@@ -49,6 +56,10 @@ const Navbar = () => {
             </div>
         </div>
         }
+         <select className='lang_select ms-2' onChange={(e) => changeLanguage(e.target.value)} defaultValue={i18n.language}>
+         <option value="en">EN</option>
+         <option value="sv">SV</option>
+         </select>
 
         </div>
 
@@ -121,7 +132,8 @@ const Navbar = () => {
             <button className="btn border dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
             {/* <i className="fa-solid fa-user "></i> */}
             {/* <img src="/images/job-logo1.png" className='w-100 h-100 rounded-circle' alt="logo" /> */}
-            <p className='ml-4 mb-0'>{user.name}</p>
+            <p className='ml-4 mb-0'>{user.name.split(" ")[0]}</p>
+
             </button>
             <ul className="dropdown-menu">
                 <li><Link to='/my-account' className="dropdown-item"><i className="fa-regular fa-user me-2"></i>My Account</Link></li>
@@ -141,6 +153,12 @@ const Navbar = () => {
             </ul>
             </li>
         </ul>
+
+        <select className='lang_select ms-lg-2 d-none d-lg-block' onChange={(e) => changeLanguage(e.target.value)} defaultValue={i18n.language}>
+        <option value="en">EN</option>
+        <option value="sv">SV</option>
+      </select>
+
 
         </div>
     </div>

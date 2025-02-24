@@ -25,7 +25,7 @@ const PopularJob = () => {
                       clickable: true,
                     }}
                   >
-                    <SwiperSlide className="">
+                    <SwiperSlide >
                       <div className="card-body py-5 px-4 px-md-5">
                         <div className="row">
                           <div className=" col-sm-6 mb-4">
@@ -97,7 +97,7 @@ const PopularJob = () => {
                         </div>
                       </div>
                     </SwiperSlide>
-                    <SwiperSlide className="">
+                    <SwiperSlide >
                       <div className="card-body py-5 px-4 px-md-5">
                         <div className="row">
                           <div className=" col-sm-6 mb-4">

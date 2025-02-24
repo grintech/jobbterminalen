@@ -38,6 +38,7 @@ li{
 }
 
 .navbar .navbar-toggler {border-radius: 4px;}
+.navbar .navbar-toggler:focus {box-shadow: none;}
 .navbar .navbar-toggler-icon {width: 1.45em !important;}
 
 .navbar .navbar-nav .dropdown .nav-link::after{
@@ -71,6 +72,9 @@ li{
 .navbar .navbar-nav .dropdown-item{
   padding: 5px 30px;
   font-size: .95rem !important;
+}
+.user_dropdown .dropdown-item{
+  font-size: .85rem !important;
 }
 .navbar .navbar-nav .dropdown-item:hover{
   color: #003479;
@@ -400,6 +404,7 @@ input[type='checkbox']{
   border: 1px solid #dee2e6 !important;
   width: 100% !important;
   overflow: hidden;
+  background-color: #fff;
 }
 .ReactFlagsSelect-module_flagsSelect__2pfa2  button::after{border: 0 !important;}
 .ReactFlagsSelect-module_flagsSelect__2pfa2  button:nth-child(1){width: 100% !important;}
@@ -451,7 +456,8 @@ input[type="checkbox"]:focus{box-shadow: none !important; }
   box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
   margin: 50px 0 80px 0;
   padding: 40px 30px;
-  width: 480px;
+  /* width: 480px;
+   */
   margin: auto;
 }
 
@@ -473,7 +479,7 @@ input[type="checkbox"]:focus{box-shadow: none !important; }
 
 .register_form h1{font-size: 25px;}
 .register_form p{ font-size: 14px; color: #6F6F6F;line-height: 1.5; font-weight: 400;letter-spacing: .5px;}
-.register_form .job_role .form-check{ background-color: whitesmoke; padding: 10px 40px; border-radius: 8px;}
+.register_form .job_role .form-check{ background-color: #fff; padding: 10px 40px; border-radius: 8px;}
 
 .register_form .form-check-input:checked {background-color: #003479; border-color: #003479;}
 /*---------- Location ------------*/
@@ -534,6 +540,8 @@ input[type="checkbox"]:focus{box-shadow: none !important; }
   border-radius: 8px;
   outline: none;
   transition: border-color 0.3s;
+  margin-right: 7px;
+  margin-bottom: 5px;
 }
 
 .form-group input:focus{box-shadow: unset !important;}
@@ -759,8 +767,12 @@ input[type="checkbox"]:focus{box-shadow: none !important; }
 
 @media screen and (max-width:600px) {
   /* .employer{display: none;} */
-  .btn-register, .btn-login {font-size: .75rem; padding: 5px 13px; }
-  .navbar .btn-register, .navbar .btn-login {margin: 0 5px !important;}
+ .navbar .btn-register, .navbar .btn-login {font-size: .75rem; padding: 5px 10px; }
+  .navbar .btn-register, .navbar .btn-login {margin: 0px !important;}
+  .navbar .nav-item .nav-link {font-size: .8rem;}
+  .lang_select {
+   padding: 4px 1px !important;font-size: 13px;
+  }
   .navbar-brand img {height: 50px;}
     .both_btns{border: 0 !important; margin-right: 0 !important;}
     .hero_banner .banner_search .fa-solid {font-size: 15px;}
@@ -789,7 +801,9 @@ input[type="checkbox"]:focus{box-shadow: none !important; }
   .hero_banner h1{font-size: 22px;}
   .page_not_found .error{font-size: 4rem;}
 .page_not_found .message{font-size: 1rem;}
-.register_container .register_form{padding: 30px 20px; width: 400px;}
+.register_container .register_form{padding: 30px 20px;
+   /* width: 400px; */
+  }
   .home_job_types .inside_card h5{font-size: 13px; }
   .home_job_types .inside_card i{font-size: 19px; color: #003479; }
   .home_job_types .inside_card{height:100px; width: 130px; }
@@ -801,25 +815,49 @@ input[type="checkbox"]:focus{box-shadow: none !important; }
   .home_job_types .inside_card{height:100px; width: 180px; }
 }
 @media screen and (max-width:475px) {
-  .register_container .register_form{padding: 30px 20px; width: 360px;}
+  .register_container .register_form{padding: 30px 20px;
+     /* width: 380px; */
+    }
+    .otp-input {
+      width: 40px;height: 40px !important;
+    }
   
 }
-@media screen and (max-width:425px) {
-  .register_container .register_form{padding: 30px 20px; width: 350px;}
+@media screen and (max-width:400px) {
+  .register_container .register_form{padding: 30px 20px;
+     /* width: 350px; */
+    }
+  .navbar .btn-register, .navbar .btn-login {font-size: .65rem; padding: 5px 8px; }
+  .navbar .nav-item .nav-link {font-size: .7rem;}
+  .lang_select { padding: 3px 0px !important;font-size: 12px; }
+  .navbar-brand img {height: 40px;}
+  .navbar .navbar-toggler { padding: 1px 6px !important;}
+  .navbar .navbar-toggler-icon {
+    width: 1.05em !important;
+    padding: 0px 5px !important;
+ }
+ .user_dropdown .dropdown-toggle {font-size: 13px;}
 }
+
 @media screen and (max-width:375px) {
-  .register_container .register_form{padding: 30px 10px; width: 320px;}
+ 
+    .otp-input {
+      width: 35px;height: 35px !important;
+    }
   .home_job_types .inside_card h5{font-size: 14px; }
   .home_job_types .inside_card i{font-size: 22px; color: #003479; }
   .home_job_types .inside_card{height:100px; width: 150px; }
 }
 @media screen and (max-width:350px) {
-  .register_container .register_form{padding: 30px 10px; width: 310px;}
+  .otp-input {
+    width: 30px;height: 30px !important;font-size: 13px;
+  }
 }
 
 @media screen and (max-width:330px) {
   .navbar-brand img {height: 40px;}
-  .register_container .register_form{padding: 30px 10px;width: 300px;}
+
+ 
 }
 
 .popup-content {
@@ -919,3 +957,7 @@ input[type="checkbox"]:focus{box-shadow: none !important; }
 
 .all_employers_page .no_company{width: 180px ;}
 .fea_emp_page .no_company{width: 180px ;}
+.lang_select{ border: 1px solid #003479; border-radius: 4px; padding: 3px; background: #003479;
+  color: white;}
+.lang_select:focus{box-shadow: none !important;outline: none !important;}
+.lang_select option{color: #fff;}

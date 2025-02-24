@@ -37,7 +37,7 @@ const Faq = () => {
                 <div className="col-lg-8">
                 <div className="tab-content" id="v-pills-tabContent">
                     <div className="tab-pane fade show active" id="v-pills-home" role="tabpanel" aria-labelledby="v-pills-home-tab" tabIndex="0">
-                    <div className="">
+                    <div >
                       <h4>General Questions</h4>
                       <div className="accordion" id="accordionExample">
                         <div className="accordion-item">
@@ -105,7 +105,7 @@ const Faq = () => {
                     </div>
 
                     <div className="tab-pane fade" id="v-pills-profile" role="tabpanel" aria-labelledby="v-pills-profile-tab" tabIndex="0">
-                    <div className="">
+                    <div >
                       <h4>Payment Questions</h4>
                          <div className="accordion" id="accordionExample">
                         <div className="accordion-item">

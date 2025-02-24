@@ -71,7 +71,7 @@ const LocationPopup = () => {
       {showPopup && (
         <div className="location-popup">
           <div className="popup-content">
-            <h5>Jobbterminalen wants to</h5>
+            <h5>JobbTerminalenen wants to</h5>
             <p className="m-0"><i className="fa-solid fa-location-dot me-2 text-muted"> </i>Know your location</p>
             <p>
               We need your location access to provide personalized job

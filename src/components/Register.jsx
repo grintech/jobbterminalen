@@ -5,12 +5,15 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
+import { useTranslation } from "react-i18next";
 
 const bearerKey = import.meta.env.VITE_BEARER_KEY;
 const API_URL = import.meta.env.VITE_API_URL;
 const EmpLogin = import.meta.env.VITE_EMP_URL;
 
 const Register = () => {
+  const { t } = useTranslation();
+
   const [loading, setLoading] = useState(false);
 
   const [selected, setSelected] = useState("");
@@ -269,6 +272,12 @@ const Register = () => {
       setTimeout(() => setAlert({ type: "", message: "" }), 3000);
       return;
     }
+    if (!formData.name || !formData.email ) {
+      setAlert({ type: "error", message: "Please fill the form!" });
+      setTimeout(() => setAlert({ type: "", message: "" }), 3000);
+      return;
+    }
+   
     if (!selected || !formData.phone) {
       setAlert({ type: "error", message: "Please select a country code and enter a phone number!" });
       setTimeout(() => setAlert({ type: "", message: "" }), 3000);
@@ -346,27 +355,11 @@ const Register = () => {
         <div className="d-flex register_container">
           <div className="col-12">
             <div className="container h-100 py-5">
-              <div className="d-flex justify-content-center">
-            
-              </div>
+              <div className="col-md-8 col-lg-6 col-xl-5 mx-auto">
               <form onSubmit={handleSubmit} className="register_form  ">
-
-                {/* <div className="d-flex justify-content-center mb-5">
-                <Link to='/'> <img
-                      className="logo text-center"
-                      style={{ height: "70px" }}
-                      src="/images/job-logo1.png"
-                      alt="logo"
-                    /></Link>
-                </div> */}
-
                 <div className="d-flex flex-column ">
-                  <h1>Register</h1>
-                  <p>"Join JobbTerminal Today – Unlock Opportunities, Build Your Future!"</p>
-
-                {/* Alert Section */}
-              
-
+                  <h1>{t("Register")}</h1>
+                  <p>"{t("Register_Text")}"</p>
 
                   <div className="row">
                     <div className="col-12 d-flex job_role mb-5">
@@ -382,7 +375,7 @@ const Register = () => {
                             onChange={handleInputChange}
                           />
                           <label className="form-check-label" htmlFor="flexRadioDefault1">
-                            Job Seeker
+                            {t("JobSeeker")}
                           </label>
                         </div>
                       </div>
@@ -398,14 +391,14 @@ const Register = () => {
                             onChange={handleInputChange}
                           />
                           <label className="form-check-label" htmlFor="flexRadioDefault2">
-                            Recruiter
+                            {t("Recruiter")}
                           </label>
                         </div>
                       </div>
                     </div>
                     <div className="col-12 mb-3">
                       <label htmlFor="name" className="mb-2">
-                        Full name <span>*</span>
+                        {t("Full_Name")} <span>*</span>
                       </label>
                       <input
                         type="text"
@@ -413,12 +406,12 @@ const Register = () => {
                         name="name"
                         value={formData.name}
                         onChange={handleInputChange}
-                        placeholder="Enter name"
+                        placeholder={t("Name_placeholder")}
                       />
                     </div>
                     <div className="col-12 mb-3">
                       <label htmlFor="email" className="mb-2">
-                        Email <span>*</span>
+                        {t("Email")} <span>*</span>
                       </label>
                       <input
                         type="email"
@@ -426,12 +419,12 @@ const Register = () => {
                         name="email"
                         value={formData.email}
                         onChange={handleInputChange}
-                        placeholder="Enter email"
+                        placeholder={t("Email_placeholder")}
                       />
                     </div>
                     <div className="col-12 mb-3">
                       <label htmlFor="phone" className="mb-2">
-                        Phone number <span>*</span>
+                        {t("Phone")} <span>*</span>
                       </label>
                       <div className="row">
                         <div className="col-sm-4 mb-4 mb-sm-0">
@@ -439,7 +432,7 @@ const Register = () => {
                         selected={selected}
                         onSelect={(code) => setSelected(code)}
                         searchable
-                        placeholder="Select"
+                        placeholder={t("Select")}
                         customLabels={customLabels}
                         className="w-100"
                       />
@@ -454,14 +447,14 @@ const Register = () => {
                             onChange={handleInputChange}
                             maxLength="10"
                             pattern="\d*"
-                            placeholder="Enter phone number"
+                            placeholder={t("Phone_placeholder")}
                           />
                         </div>
                       </div>
                     </div>
                     <div className="col-md-6 mb-3">
                       <label htmlFor="password" className="mb-2">
-                        Password <span>*</span>
+                        {t("Password")} <span>*</span>
                       </label>
                       <input
                         className="form-control"
@@ -469,12 +462,12 @@ const Register = () => {
                         name="password"
                         value={formData.password}
                         onChange={handleInputChange}
-                        placeholder="Password"
+                        placeholder={t("Pass_placeholder")}
                       />
                     </div>
                     <div className="col-md-6 mb-3">
                       <label htmlFor="confirmPassword" className="mb-2">
-                        Confirm Password <span>*</span>
+                        {t("Confirm_Password")} <span>*</span>
                       </label>
                       <input
                         className="form-control"
@@ -482,17 +475,17 @@ const Register = () => {
                         name="confirmPassword"
                         value={formData.confirmPassword}
                         onChange={handleInputChange}
-                        placeholder="Confirm Password"
+                        placeholder={t("ConfirmPass_placeholder")}
                       />
                     </div>
-                    <p className="mb-3">
-                      By signing up, you agree to our
+                    <p className="mb-3 text-center">
+                      {t("BySigning")}
                       <Link className="text-theme mx-1" to="/terms-and-conditions">
-                        Terms of use
+                        {t("Terms")}
                       </Link>
                       and
                       <Link className="text-theme mx-1" to="/privacy-policy">
-                        Privacy Policy
+                        {t("Privacy")}
                       </Link>
                     </p>
 
@@ -502,7 +495,7 @@ const Register = () => {
                       className="btn btn-register w-100"
                       disabled={loading}
                       >
-                        {loading ? "Registering..." : "Sign up"}
+                        {loading ? t("Registering") : t("Register")}
                       </button>
                     </div>
 
@@ -523,17 +516,15 @@ const Register = () => {
                 )}
 
                     <p className="mb-3 text-center">
-                      Already have an account?
-                      <Link to="/login" className="text-theme mx-1">
-                        Login Instead
-                      </Link>
+                      {t("Already-account")}
+                      <Link to="/login" className="text-theme mx-1">{t("Login")}</Link>
                     </p>
-                    <p className="text-center m-0">
-                      Copyright ©2024 by Jobbterminal All Rights Reserved.
-                    </p>
+                    <p className="text-center m-0">{t("Copyright")}</p>
                   </div>
                 </div>
               </form>
+            
+              </div>
             </div>
           </div>
          

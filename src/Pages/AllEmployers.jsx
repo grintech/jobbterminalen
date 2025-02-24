@@ -153,7 +153,7 @@ const AllEmployers = () => {
                         <div className="logo_div me-3 mb-3 shadow ">
                           <Link  to={`/companies/${company.slug}`}>
                             <img
-                              className=""
+                              
                               src={`${IMG_URL}/${company.company_profile}`}
                               alt={company.company_name}
                             />

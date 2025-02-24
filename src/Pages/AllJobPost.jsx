@@ -174,7 +174,7 @@ const AllJobPost = () => {
                         </div>
                         <div className="py-2 ">
                           {/* <Link to={`/companies/${job.companies_slug}`}> */}
-                            <h5 className="">{job.company_name}</h5>
+                            <h5 >{job.company_name}</h5>
                           {/* </Link> */}
 
                           {/* <Link to="/job-detail"> */}

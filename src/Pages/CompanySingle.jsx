@@ -307,7 +307,7 @@ useEffect(() => {
                                               className="rounded"
                                             />
                                           </div>
-                                          <div className="">
+                                          <div >
                                           {userId ? (
                                               <ApplyPopup jobId={job.id}>
                                                 Apply

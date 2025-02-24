@@ -94,7 +94,7 @@ const FeaturedEmployers = () => {
                       <div className="card-body ">
                         <div className="logo_div me-3 mb-3 shadow position-relative">
                         <img
-                            className=""
+                            
                             src={`${IMG_URL}/${company.featured_company.company_profile}`}
                             alt={company.featured_company.company_name}
                         />
