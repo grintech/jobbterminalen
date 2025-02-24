@@ -21,7 +21,7 @@ const LogoSlider = () => {
               Featured <br /> Companies
             </h6>
             <Swiper
-              className=""
+              
               // install Swiper modules
               modules={[A11y, Autoplay]}
               loop={true}

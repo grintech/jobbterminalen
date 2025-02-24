@@ -59,7 +59,10 @@ const Categories = () => {
                 <p className='mt-2'>Fetching data...</p>
               </div>
             ) : error ? (
-              <p className="text-center text-danger">{error}</p>
+              <div className='text-center text-theme'>
+              <img src="/images/no-data.webp" className='no_data' alt='' /> 
+              <p>{error}</p>
+              </div>
             ) : categories.length > 0 ? (
               <>
               <div className="row justify-content-center flex-wrap">

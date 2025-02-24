@@ -4,11 +4,15 @@ import axios from "axios";
 import { useAuthContext } from "../store/authContext";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
+import { useTranslation } from "react-i18next";
+
 
 const bearerKey = import.meta.env.VITE_BEARER_KEY;
-  const API_URL = import.meta.env.VITE_API_URL;
+const API_URL = import.meta.env.VITE_API_URL;
 
 const Login = () => {
+  const { t } = useTranslation();
+
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [alert, setAlert] = useState({ show: false, type: "", message: "" });
 
@@ -75,23 +79,24 @@ const Login = () => {
         <div className="d-flex register_container justify-content-center align-items-center">
           <div className="w-100">
             <div className="container h-100 py-5">
+              <div className="col-md-7 col-lg-5 col-xxl-4 col-12 mx-auto">
               <form
                 className="register_form d-flex flex-column justify-content-center align-items-center"
                 onSubmit={handleSubmit}
               >
                 <div>
-                  <h1>Sign In</h1>
-                  <p>Welcome back! Sign in to access JobbTerminal</p>
+                  <h1>{t("Login")}</h1>
+                  <p>{t("Login-Text")}</p>
                   <div className="row">
                     <div className="col-12 mb-3">
                       <label htmlFor="email" className="mb-2">
-                        Username / Email <span>*</span>
+                      {t("Username-Email")} <span>*</span>
                       </label>
                       <input
                         type="email"
                         className="form-control"
                         name="email"
-                        placeholder="Enter username or email"
+                        placeholder={t("User-placeholder") }
                         value={formData.email}
                         onChange={handleInputChange}
                         required
@@ -99,24 +104,24 @@ const Login = () => {
                     </div>
                     <div className="col-12 mb-3">
                       <label htmlFor="password" className="mb-2">
-                        Password <span>*</span>
+                        {t("Password")} <span>*</span>
                       </label>
                       <input
                         type="password"
                         className="form-control"
                         name="password"
-                        placeholder="Password"
+                        placeholder={t("Password")}
                         value={formData.password}
                         onChange={handleInputChange}
                         required
                       />
                     </div>
                     <Link to="/forgot-password" className="text-end text-theme m-0">
-                      Forget Password?
+                      {t("Forget-Password?")}
                     </Link>
                     <div className="col-12 py-4">
                       <button type="submit" className="btn btn-register w-100">
-                        Sign In
+                      {t("Login")}
                       </button>
                     </div>
 
@@ -136,17 +141,19 @@ const Login = () => {
                     )}
 
                     <p className="mb-3 text-center">
-                      Already have an account?
+                      {t("Already-account")}
                       <Link to="/register" className="text-theme ms-1">
-                        Signup
+                       {t("Register")}
                       </Link>
                     </p>
                     <p className="text-center m-0">
-                      Copyright ©2024 by Jobbterminal All Rights Reserved.
+                      {t("Copyright")}
                     </p>
                   </div>
                 </div>
               </form>
+
+              </div>
             </div>
           </div>
         </div>

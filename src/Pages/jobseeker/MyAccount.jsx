@@ -2611,7 +2611,7 @@ const MyAccount = () => {
                       <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div className="modal-body ">
-                      <div className="">
+                      <div >
                       <h1 className="modal-title fs-5 m-0" id="PersonalDetailModalLabel">Personal details</h1>
                       <h6 className='text-muted'>This informations help recuiter to know you better</h6>
                       </div>

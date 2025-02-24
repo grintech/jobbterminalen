@@ -19,7 +19,7 @@ const Login = () => {
                 <div className="container">
                     <div className="row py-5">
                         <div className="col-lg-5 col-md-9 mx-auto  ">
-                            <div className="">
+                            <div >
                                 <ul
                                     className="nav nav-pills mb-3 d-flex justify-content-center select_tab mb-4"
                                     id="pills-tab"
@@ -61,7 +61,7 @@ const Login = () => {
                                             <div className="card-body">
                                                 <h4 className="fw-bold py-3">Login</h4>
                                                 <form id="login_form" action="">
-                                                    <div className="">
+                                                    <div >
                                                         <label htmlFor="">Email ID</label>
                                                         <input
                                                             type="email"
@@ -123,7 +123,7 @@ const Login = () => {
                                             <div className="card-body">
                                                 <h4 className="fw-bold py-3">Login</h4>
                                                 <form id="login_form" action="">
-                                                    <div className="">
+                                                    <div >
                                                         <label htmlFor="">Email ID</label>
                                                         <input
                                                             type="email"

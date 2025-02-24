@@ -10,8 +10,10 @@ import PopularJob from "../components/PopularJob";
 import HomeBanners from "../components/HomeBanners";
 import axios from "axios";
 import "./homepage.css";
+import { useTranslation } from "react-i18next";
 
 const Homepage = () => {
+  const { t } = useTranslation();
   const [homeBannerPlace, setHomeBannerPlace] = useState(""); 
   const bearerKey = import.meta.env.VITE_BEARER_KEY;
   const API_URL = import.meta.env.VITE_API_URL;
@@ -86,7 +88,7 @@ const Homepage = () => {
                 <div className="card">
                   <div className="card-body text-center d-flex flex-column align-items-center justify-content-center">
                     <i className="fa-solid fa-home"></i>
-                    <h5 className='text-center mt-2 mb-0'>Remote</h5>
+                    <h5 className='text-center mt-2 mb-0'>{t("Remote")}</h5>
                   </div>
                 </div>
               </Link>
@@ -96,7 +98,7 @@ const Homepage = () => {
                 <div className="card">
                   <div className="card-body text-center d-flex flex-column align-items-center justify-content-center">
                     <i className="fa-solid fa-building"></i>
-                    <h5 className='text-center mt-2 mb-0'>Work From Office</h5>
+                    <h5 className='text-center mt-2 mb-0'>{t("WorkFromOffice")}</h5>
                   </div>
                 </div>
               </Link>
@@ -106,7 +108,7 @@ const Homepage = () => {
                 <div className="card">
                   <div className="card-body text-center d-flex flex-column align-items-center justify-content-center">
                     <i className="fa-solid fa-briefcase"></i>
-                    <h5 className='text-center mt-2 mb-0'>Hybrid</h5>
+                    <h5 className='text-center mt-2 mb-0'>{t("Hybrid")}</h5>
                   </div>
                 </div>
               </Link>
@@ -116,7 +118,7 @@ const Homepage = () => {
                 <div className="card">
                   <div className="card-body text-center d-flex flex-column align-items-center justify-content-center">
                     <i className="fa-solid fa-person"></i>
-                    <h5 className='text-center mt-2 mb-0'>Student Jobs</h5>
+                    <h5 className='text-center mt-2 mb-0'>{t("StudentJobs")}</h5>
                   </div>
                 </div>
               </Link>
@@ -126,7 +128,7 @@ const Homepage = () => {
                 <div className="card">
                   <div className="card-body text-center d-flex flex-column align-items-center justify-content-center">
                     <i className="fa-solid fa-clock"></i>
-                    <h5 className='text-center mt-2 mb-0'>Part Time Jobs</h5>
+                    <h5 className='text-center mt-2 mb-0'>{t("PartTimeJobs")}</h5>
                   </div>
                 </div>
               </Link>
@@ -136,7 +138,7 @@ const Homepage = () => {
                 <div className="card">
                   <div className="card-body text-center d-flex flex-column align-items-center justify-content-center">
                     <i className="fa-solid fa-user-graduate"></i>
-                    <h5 className='text-center mt-2 mb-0'>Internship Jobs</h5>
+                    <h5 className='text-center mt-2 mb-0'>{t("InternshipJobs")}</h5>
                   </div>
                 </div>
               </Link>

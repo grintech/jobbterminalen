@@ -23,7 +23,7 @@ const Register = () => {
         <div className="container py-5">
           <div className="row align-items-center ">
             <div className="col-lg-6 col-md-9 col-12 mx-auto">
-              <div className="">
+              <div >
                 <ul className="nav nav-pills mb-3 d-flex justify-content-center select_tab mb-4"
                   id="pills-tab"
                   role="tablist"

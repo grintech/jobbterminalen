@@ -3,12 +3,15 @@ import { useLocation, useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
+import { useTranslation } from "react-i18next";
 
 const bearerKey = import.meta.env.VITE_BEARER_KEY;
 const API_URL = import.meta.env.VITE_API_URL;
 
 
 const VerifyOtp = () => {
+  const { t } = useTranslation();
+
   const inputsRef = useRef([]);
   const location = useLocation();
   const navigate = useNavigate();
@@ -116,28 +119,18 @@ const VerifyOtp = () => {
         <Navbar />
         <div className="register_page">
       <div className="d-flex register_container justify-content-center align-items-center">
-        <div className="">
+        <div >
           <div className="container h-100 py-5">
+            <div className="col-md-11 col-11 mx-auto">
             <form
               className="register_form d-flex flex-column justify-content-center align-items-center"
               onSubmit={handleSubmit}
               onPaste={handlePaste}
             >
-              <div className="">
-                {/* <div className="d-flex justify-content-center mb-5">
-                  <Link to="/">
-                  <img
-                    className="logo text-center"
-                    style={{ height: "70px" }}
-                    src="/images/job-logo1.png"
-                    alt="logo"
-                  />
-                  </Link>
-                </div> */}
-
-                <h1>OTP Verification</h1>
-                {/* <p>Please enter the OTP sent to your email: {email}</p> */}
-                <p>Please enter the OTP sent to your email.</p>
+              <div >
+               
+                <h1>{t("Otp_title")}</h1>
+                <p>{t("Otp_text")}</p>
 
                 {alert.message && (
                   <div
@@ -156,8 +149,10 @@ const VerifyOtp = () => {
                   </div>
                 )}
 
-                <div id="otp-form" className="row mt-4">
-                  {Array.from({ length: 6 }, (_, index) => (
+                <div id="otp-form" className="d-flex flex-column align-items-center mt-4">
+
+                 <div>
+                 {Array.from({ length: 6 }, (_, index) => (
                     <input
                       key={index}
                       type="text"
@@ -169,6 +164,7 @@ const VerifyOtp = () => {
                       ref={(el) => (inputsRef.current[index] = el)}
                     />
                   ))}
+                 </div>
 
                   <div className="col-12 py-4 px-0">
                     <button
@@ -176,23 +172,24 @@ const VerifyOtp = () => {
                       className="btn btn-register w-100"
                       disabled={loading}
                     >
-                      {loading ? "Verifying..." : "Submit"}
+                      {loading ? t("Verifying") : t("Submit")}
                     </button>
                   </div>
 
                   <p className="mb-3 text-center">
-                    New on our platform?
+                    {t("New_platform")}
                     <Link to="/register" className="text-theme ms-2">
-                      Create an account
+                    {t("Create_account")}
                     </Link>
                   </p>
 
                   <p className="text-center m-0">
-                    Copyright ©2024 by Jobbterminal All Rights Reserved.
+                  {t("Copyright")}
                   </p>
                 </div>
               </div>
             </form>
+            </div>
           </div>
         </div>
 

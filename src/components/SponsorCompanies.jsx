@@ -158,7 +158,7 @@ const SponsorCompanies = () => {
         </div>
       ) : error ? (
         <div className='text-center text-theme'>
-          <img src="/images/no-data.webp" className='no_data' alt='' />
+          <img src="/images/no-company.webp" className='no_data' alt='' />
           <p>{error === "No companies found." ? "No companies available at the moment." : error}</p>
         </div>
       ) : (

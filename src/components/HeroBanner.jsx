@@ -1,8 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { useTranslation } from "react-i18next";
 
 const HeroBanner = () => {
+const { t } = useTranslation();
+
   const [formData, setFormData] = useState({
     skills: "",
     location: "",
@@ -85,8 +88,8 @@ const HeroBanner = () => {
 
   return (
     <div className="hero_banner d-flex flex-column align-items-center justify-content-center">
-      <h1 className="fw-bold position-relative">Find your dream job now</h1>
-      <h5 className="position-relative">Over 7,00,000+ jobs to explore</h5>
+      <h1 className="fw-bold position-relative">{t("HeroTitle")}</h1>
+      <h5 className="position-relative">{t("HeroText")}</h5>
 
       <div className="banner_search container d-flex align-items-center justify-content-center mt-4 shadow">
         <i className="fa-solid fa-magnifying-glass search_icon"></i>
@@ -98,7 +101,7 @@ const HeroBanner = () => {
               <input
                 className="w-100"
                 type="text"
-                placeholder="Enter Skills / Designation"
+                placeholder={t("EnterSkill")}
                 name="skills"
                 value={formData.skills}
                 onChange={handleChange}
@@ -131,7 +134,7 @@ const HeroBanner = () => {
               <input
                 className="w-100"
                 type="text"
-                placeholder="Location"
+                placeholder={t("EnterLocation")}
                 name="location"
                 value={formData.location}
                 onChange={handleChange}
@@ -149,10 +152,10 @@ const HeroBanner = () => {
                 value={formData.job_type}
                 onChange={handleChange}
               >
-                <option value="">Job Type</option>
-                <option value="remote">Remote</option>
-                <option value="work-from-office">WFO</option>
-                <option value="hybrid">Hybrid</option>
+                <option value="">{t("JobType")}</option>
+                <option value="remote">{t("Remote")}</option>
+                <option value="work-from-office">{t("WorkFromOffice")}</option>
+                <option value="hybrid">{t("Hybrid")}</option>
               </select>
             </div>
           </div>
@@ -164,7 +167,7 @@ const HeroBanner = () => {
               className="btn-register w-100"
               onClick={handleSearch}
             >
-              Search
+              {t("Search")}
             </button>
           </div>
         </div>
