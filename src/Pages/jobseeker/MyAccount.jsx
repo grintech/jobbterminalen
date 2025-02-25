@@ -1691,25 +1691,36 @@ const MyAccount = () => {
               {/* Skills Section */}     
               <div className="card mt-4 shadow border-0 rounded-3">
                 <div className="card-body">
-                  <div className="d-flex justify-content-between">
-                    <h5 className='m-0 me-3'>Key Skills 
-                      {userData.skills && userData.skills.length > 0 && (
-                        <Link data-bs-toggle="modal" data-bs-target="#skillModal"> <i className="fa-solid fa-pencil"></i></Link>
-                      )}
-                    </h5>
-                      {(!userData.skills || Object.keys(userData.skills).length === 0) && (
-                        <Link className="text-theme" data-bs-toggle="modal" data-bs-target="#skillModal">
-                          Add Skills
-                        </Link>
-                      )}
-                  </div>
-                  <div className="mt-4 job_skills">
-                    <ul className='d-flex flex-wrap p-0'>
-                      {userData.skills && userData.skills.split(',').map((skill, index) => (
-                        <li key={index} className='rounded-pill border px-3 py-1 me-2 mb-2'>{skill.trim()}</li>
+                <div className="d-flex justify-content-between">
+                  <h5 className="m-0 me-3">
+                    Key Skills 
+                    {userData.skills && userData.skills.length > 0 && (
+                      <Link data-bs-toggle="modal" data-bs-target="#skillModal">
+                        <i className="fa-solid fa-pencil"></i>
+                      </Link>
+                    )}
+                  </h5>
+                  {(!userData.skills || userData.skills.length === 0) && (
+                    <Link className="text-theme" data-bs-toggle="modal" data-bs-target="#skillModal">
+                      Add Skills
+                    </Link>
+                  )}
+                </div>
+
+                <div className="mt-4 job_skills">
+                  {userData.skills && userData.skills.length > 0 ? (
+                    <ul className="d-flex flex-wrap p-0">
+                      {userData.skills.split(',').map((skill, index) => (
+                        <li key={index} className="rounded-pill border px-3 py-1 me-2 mb-2">
+                          {skill.trim()}
+                        </li>
                       ))}
                     </ul>
-                  </div>
+                  ) : (
+                    <p className="m-0">No skills added yet</p>
+                  )}
+                </div>
+
                 </div>
               </div>
 

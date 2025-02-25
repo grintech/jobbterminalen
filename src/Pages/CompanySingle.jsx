@@ -284,7 +284,7 @@ useEffect(() => {
                                     alt="company-img"
                                   />
                                   <img
-                                    src={`${IMG_URL}/${companyData.company_gallery.split(',')[3]}`}
+                                    src={`${IMG_URL}/${companyData.company_gallery.split(',')[0]}`}
                                     className="w-100 rounded shadow"
                                     alt="company-img"
                                   />

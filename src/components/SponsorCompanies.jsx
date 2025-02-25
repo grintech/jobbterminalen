@@ -192,7 +192,7 @@ const SponsorCompanies = () => {
                 <div className="card h-100">
                   <div className="card-body text-center">
                     <img
-                      src={company.company_logo ? `${IMG_URL}/${company.company_logo.split(',')[0]}` : '/images/company3.gif'}
+                      src={company.company_profile ? `${IMG_URL}/${company.company_profile}` : '/images/company3.gif'}
                       alt="company-logo"
                       className="img-fluid"
                     />
