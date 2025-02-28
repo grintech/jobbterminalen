@@ -179,7 +179,7 @@ const AllJobPost = () => {
 
                           {/* <Link to="/job-detail"> */}
                           <Link to={`/jobs/${job.slug}`}>
-                            <h6 className="m-0">{job.title}</h6>
+                            <h6 className="m-0" dangerouslySetInnerHTML={{ __html: job.title }}></h6>
                           </Link>
                         </div>
                         <p className="main_desc">Trusted global solutions company.</p>

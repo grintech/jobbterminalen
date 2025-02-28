@@ -92,25 +92,35 @@ useEffect(() => {
 
 
   const calculateTimeAgo = (date) => {
-    // Convert the input date to the correct UTC format (ISO string)
-    const utcZero = date.replace(" ", "T") + "Z"; // Ensure it's in ISO format with a 'Z' for UTC
-    
-    // Create Date object from the UTC date and convert it to the local time zone
+    if (!date) return "Updating...";
+  
+    const utcZero = date.replace(" ", "T") + "Z";
     const localDate = new Date(utcZero);
-
-    const now = new Date();
-
-    const diffTime = now - localDate;
-
-    const diffHours = Math.floor(diffTime / (1000 * 60 * 60)); 
-
-    if (diffHours < 24) {
-      return `${diffHours} hour${diffHours === 1 ? '' : 's'} ago`;
+    if (isNaN(localDate.getTime())) {
+      return "1 second ago";
     }
-
-    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-    return `${diffDays} day${diffDays === 1 ? '' : 's'} ago`;
+    const now = new Date();
+    const diffTime = now - localDate;
+  
+    const diffSeconds = Math.floor(diffTime / 1000);
+    if (diffSeconds < 60) {
+      return `${diffSeconds} second${diffSeconds === 1 ? "" : "s"} ago`;
+    }
+  
+    const diffMinutes = Math.floor(diffTime / (1000 * 60));
+    if (diffMinutes < 60) {
+      return `${diffMinutes} minute${diffMinutes === 1 ? "" : "s"} ago`;
+    }
+  
+    const diffHours = Math.floor(diffMinutes / 60);
+    if (diffHours < 24) {
+      return `${diffHours} hour${diffHours === 1 ? "" : "s"} ago`;
+    }
+  
+    const diffDays = Math.floor(diffHours / 24);
+    return `${diffDays} day${diffDays === 1 ? "" : "s"} ago`;
   };
+  
 
   const handleApplyClick = (jobId) => {
     if (!userId) {
@@ -320,7 +330,7 @@ useEffect(() => {
                                           </div>
                                         </div>
                                         <Link to={`/jobs/${job.slug}`}>
-                                          <h5>{job.title}</h5>
+                                          <h5 dangerouslySetInnerHTML={{ __html: job.title }}></h5>
                                         </Link>
                                         <p className="text-muted d-flex align-items-center">
                                           <i className="fa-regular fa-clock me-2"></i>
