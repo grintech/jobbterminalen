@@ -1,37 +1,40 @@
-import React, { useEffect } from "react";
-import { useGeolocated } from "react-geolocated";
-import Cookies from 'js-cookie';
+import React, { useEffect, useState } from "react";
+import Cookies from "js-cookie";
 
 const GeoLocation = () => {
-    const { coords, isGeolocationAvailable, isGeolocationEnabled } =
-        useGeolocated({
-            positionOptions: {
-                enableHighAccuracy: false,
-            },
-            userDecisionTimeout: 5000,
-        });
+    const [location, setLocation] = useState(() => {
+        const latitude = localStorage.getItem("latitude");
+        const longitude = localStorage.getItem("longitude");
+        return latitude && longitude
+            ? { latitude: parseFloat(latitude), longitude: parseFloat(longitude) }
+            : null;
+    });
 
     useEffect(() => {
-        if (coords) {
-
-            Cookies.set('latitude', coords.latitude, { sameSite: 'None', secure: true });
-            Cookies.set('longitude', coords.longitude, { sameSite: 'None', secure: true }); 
-
-            // console.log("Latitude:", coords.latitude);
-            // console.log("Longitude:", coords.longitude);
-            // console.log("Altitude:", coords.altitude);
-            // console.log("Heading:", coords.heading);
-            // console.log("Speed:", coords.speed);
+        if (!location) {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        const { latitude, longitude } = position.coords;
+                        localStorage.setItem("latitude", latitude.toString());
+                        localStorage.setItem("longitude", longitude.toString());
+                        Cookies.set("latitude", latitude.toString(), { sameSite: "None", secure: true });
+                        Cookies.set("longitude", longitude.toString(), { sameSite: "None", secure: true });
+                        setLocation({ latitude, longitude });
+                    },
+                    (error) => {
+                        console.error("Geolocation error:", error.message);
+                    }
+                );
+            } else {
+                console.error("Geolocation is not supported by this browser.");
+            }
+        } else {
+            // Ensure Cookies are always updated with the latest stored location
+            Cookies.set("latitude", location.latitude.toString(), { sameSite: "None", secure: true });
+            Cookies.set("longitude", location.longitude.toString(), { sameSite: "None", secure: true });
         }
-    }, [coords]);
-
-    // if (!isGeolocationAvailable) {
-    //     console.log("Your browser does not support Geolocation");
-    // } else if (!isGeolocationEnabled) {
-    //     console.log("Geolocation is not enabled");
-    // } else if (!coords) {
-    //     console.log("Getting the location data…");
-    // }
+    }, [location]);
 
     return null;
 };

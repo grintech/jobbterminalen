@@ -170,7 +170,9 @@ const AllEmployers = () => {
                             <i className="fa-solid fa-location-dot me-1 "></i>
                             {cities[company.id] ? `${cities[company.id]}` : ""}
                           </div>
-                          <p className="text_blue text-center m-0">{company.job_count} Jobs</p>
+                          <Link to={`/companies/${company.slug}`}>
+                              <p className="text_blue text-center m-0">{company.job_count} Jobs</p>
+                          </Link>
                         </div>
                       </div>
                     </div>
