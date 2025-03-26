@@ -94,11 +94,20 @@ const SavedCompanies = () => {
                             ) : error ? (
                                 <p className="text-danger">{error}</p>
                             ) : savedCompanies.length === 0 ? (
-                                <div className="text-center">
-                                    <img className='img-fluid' src={`${SITE_URL}/images/no-saved-companies.png`} alt="No saved companies" />
-                                    <p>No saved companies! Tap on the save icon on a company to save it.</p>
-                                    <div className="btn btn-register">Search companies</div>
+                              <div className="no_saved_jobs mb-4">
+                              <div className="card mt-4 border-0 shadow">
+                                <div className="card-body text-center">
+                                  <img
+                                    className="job_search"
+                                    src="/images/company_search.png"
+                                    alt="job_search"  
+                                  />
+                                  <h4>No saved companies!</h4>
+                                  <p>Tap on save icon on a job to save it.</p>
+                                  <div className="btn btn-register">Search companies</div>
                                 </div>
+                              </div>
+                            </div>
                             ) : (
                                 <div className='row'>
                                     <h3 className="mb-5">Companies saved by you ({savedCompanies.length})</h3>
@@ -159,6 +168,17 @@ const SavedCompanies = () => {
                     </div>
                 </div>
             </div>
+               <ToastContainer 
+                      position="top-right"
+                      autoClose={3000}
+                      hideProgressBar
+                      newestOnTop={false}
+                      closeOnClick
+                      rtl={false}
+                      pauseOnFocusLoss
+                      draggable
+                      pauseOnHover
+                />
             <Footer />
         </>
     );

@@ -3,8 +3,12 @@ import Footer from '../components/Footer';
 import Navbar from '../components/Navbar';
 import { Link } from 'react-router-dom';
 import Filter from '../components/Filter';
+import { useTranslation } from 'react-i18next';
 
 const FeaturedEmployers = () => {
+  
+  const { t } = useTranslation();
+
   const [featuredCompanies, setFeaturedCompanies] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -26,7 +30,7 @@ const FeaturedEmployers = () => {
         });
 
         if (!response.ok) {
-          throw new Error('No Companies Found');
+          throw new Error('No Companies Found.Please try again later!');
         }
         
         const data = await response.json();
@@ -62,11 +66,11 @@ const FeaturedEmployers = () => {
         <div className="fea_emp_page">
         <Navbar />
         <div className="hero_banner d-flex flex-column align-items-center justify-content-center ">
-          <h1 className="fw-bold position-relative"> Featured Companies</h1>
+          <h1 className="fw-bold position-relative">{t("FeaturedCompanies")}</h1>
         </div>
 
         <div className="container py-5">
-          <h3 className="mb-5">Here is the list of featured companies!</h3>
+          <h3 className="mb-5">{t("CompanySmlHead2")}</h3>
           <div className="row">
          
           <div className="col-lg-12">
@@ -82,7 +86,14 @@ const FeaturedEmployers = () => {
               <div className="text-center text-theme " >
                 <div className='text-center text-theme'>
                   <img src="/images/no-data1.png" className='no_company' alt='' /> 
-                  <h6>{error}</h6>
+                  <h6>{ error === "Failed to fetch" ? (
+                  <p className="text-center text-theme">Failed to fetch featured companies.</p>
+                    ) : (
+                      <p className="text-center text-theme" >
+                        {error}
+                      </p>
+                    )}
+                </h6>
                   </div>
                 </div>
             ) : featuredCompanies ? (

@@ -28,18 +28,18 @@ const Navbar = () => {
         <ul className="employer p-0 me-2 m-0">
                 <li className="nav-item dropdown">
                     <Link className="nav-link dropdown-toggle"  role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        For Employers
+                       {t("ForEmployers")}
                     </Link>
                     <ul className="dropdown-menu">
-                        <li><Link to={`${empLogin}`} className="dropdown-item" >Employer Login</Link></li>
+                        <li><Link to={`${empLogin}`} className="dropdown-item" >{t("EmpLogin")}</Link></li>
                     </ul>
                 </li>
         </ul>
 
         {!user ? 
         <form className=" d-flex both_btns " role="search">
-            <Link to='/login' className="btn btn-login mx-2" type="submit"><i className="fa-solid fa-user me-1"></i>Login</Link>
-            {/* <Link to='/register' className="btn btn-register mx-2 d-none d-sm-block" type="submit"><i className="fa-solid fa-user-pen me-1"></i>Register</Link> */}
+            <Link to='/login' className="btn btn-login mx-2" type="submit"><i className="fa-solid fa-user me-1"></i>{t("Login")}</Link>
+          
         </form>
         :
         <div className="user_dropdown">
@@ -50,8 +50,8 @@ const Navbar = () => {
 
             </button>
             <ul className="dropdown-menu">
-                <li><Link to='/my-account' className="dropdown-item"><i className="fa-regular fa-user me-2"></i>My Account</Link></li>
-                <li><Link className="dropdown-item" onClick={logout}><i className="fa-solid fa-right-from-bracket me-2"></i>Logout</Link></li>
+                <li><Link to='/my-account' className="dropdown-item"><i className="fa-regular fa-user me-2"></i>{t("MyAccount")}</Link></li>
+                <li><Link className="dropdown-item" onClick={logout}><i className="fa-solid fa-right-from-bracket me-2"></i>{t("Logout")}</Link></li>
             </ul>
             </div>
         </div>
@@ -72,32 +72,15 @@ const Navbar = () => {
 
         <ul className="navbar-nav mx-auto d-lg-flex mb-2 mb-lg-0">
             <li className="nav-item">
-                <Link to="/" className="nav-link" aria-current="page">Home</Link>
+                <Link to="/" className="nav-link" aria-current="page">{t("Home")}</Link>
             </li>
             <li className="nav-item">
-                <Link to="/about" className="nav-link">About</Link>
+                <Link to="/about" className="nav-link">{t("About")}</Link>
             </li>
             <li className="nav-item">
-                <Link to="/jobs" className="nav-link">Jobs</Link>
+                <Link to="/jobs" className="nav-link">{t("Jobs")}</Link>
             </li>
             
-            {/* <li className="nav-item dropdown">
-                <Link
-                className="nav-link dropdown-toggle"
-                type="button"
-                data-bs-toggle="dropdown"
-                aria-expanded="false"
-                >
-                Jobs <i style={{ fontSize: "14px" }} className="fa-solid fa-chevron-down"></i>
-                </Link>
-                <ul className="dropdown-menu">
-                <li><Link to="/jobs" className="dropdown-item">Job Lists</Link></li>
-                <li><Link to="#" className="dropdown-item">Student Jobs</Link></li>
-                <li><Link to="#" className="dropdown-item">Internship Jobs</Link></li>
-                <li><Link to="#" className="dropdown-item">Freelancer Jobs</Link></li>
-                <li><Link to="#" className="dropdown-item">Part Time Jobs</Link></li>
-                </ul>
-            </li> */}
             <li className="nav-item dropdown">
                 <Link
                 className="nav-link dropdown-toggle"
@@ -105,22 +88,22 @@ const Navbar = () => {
                 data-bs-toggle="dropdown"
                 aria-expanded="false"
                 >
-                Companies <i style={{ fontSize: "14px" }} className="fa-solid fa-chevron-down"></i>
+                {t("Companies")} <i style={{ fontSize: "14px" }} className="fa-solid fa-chevron-down"></i>
                 </Link>
                 <ul className="dropdown-menu">
-                <li><Link to="/companies" className="dropdown-item">All Companies</Link></li>
-                <li><Link to="/companies/featured" className="dropdown-item">Featured Companies</Link></li>
+                <li><Link to="/companies" className="dropdown-item">{t("AllCompanies")}</Link></li>
+                <li><Link to="/companies/featured" className="dropdown-item">{t("FeaturedCompanies")}</Link></li>
                 </ul>
             </li>
             <li className="nav-item">
-                <Link to="/contact" className="nav-link">Contact Us</Link>
+                <Link to="/contact" className="nav-link">{t("ContactUs")}</Link>
             </li>
             </ul>
         { !user ? (
         <>
             <div className='d-none d-lg-block pe-2'>
             <form className="d-flex  both_btns" role="search">
-                <Link to='/login' className="btn btn-login me-2" type="submit">Login<i className="fa-solid fa-user ms-1"></i></Link>
+                <Link to='/login' className="btn btn-login me-2" type="submit">{t("Login")}<i className="fa-solid fa-user ms-1"></i></Link>
                 
             </form>
             </div>
@@ -130,26 +113,25 @@ const Navbar = () => {
         <div className="user_dropdown d-none d-lg-block">
         <div className="dropdown">
             <button className="btn border dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-            {/* <i className="fa-solid fa-user "></i> */}
-            {/* <img src="/images/job-logo1.png" className='w-100 h-100 rounded-circle' alt="logo" /> */}
+          
             <p className='ml-4 mb-0'>{user.name.split(" ")[0]}</p>
 
             </button>
             <ul className="dropdown-menu">
-                <li><Link to='/my-account' className="dropdown-item"><i className="fa-regular fa-user me-2"></i>My Account</Link></li>
-                <li><Link className="dropdown-item" onClick={logout}><i className="fa-solid fa-right-from-bracket me-2"></i>Logout</Link></li>
+                <li><Link to='/my-account' className="dropdown-item"><i className="fa-regular fa-user me-2"></i>{t("MyAccount")}</Link></li>
+                <li><Link className="dropdown-item" onClick={logout}><i className="fa-solid fa-right-from-bracket me-2"></i>{t("Logout")}</Link></li>
             </ul>
             </div>
         </div>
         }
 
-        <ul className="employer p-0 ms-lg-2 m-0">
+        <ul className="d-none d-lg-block employer p-0 ms-lg-2 m-0">
             <li className="nav-item dropdown">
             <Link className="nav-link dropdown-toggle"  role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                For Employers
+            {t("ForEmployers")}
             </Link>
             <ul className="dropdown-menu">
-                <li><Link  to={`${empLogin}`} className="dropdown-item" >Employer Login</Link></li>
+                <li><Link  to={`${empLogin}`} className="dropdown-item" >{t("EmpLogin")}</Link></li>
             </ul>
             </li>
         </ul>

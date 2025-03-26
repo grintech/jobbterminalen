@@ -4,8 +4,10 @@ import Footer from './Footer'
 import { Link } from 'react-router-dom'
 import ReactFlagsSelect from "react-flags-select"; 
 import axios from 'axios';
+import { useTranslation } from 'react-i18next';
 
 const Contact = () => {
+    const { t } = useTranslation();
 
     const bearerKey = import.meta.env.VITE_BEARER_KEY; // Make sure this contains the correct token
     const API_URL = import.meta.env.VITE_API_URL;
@@ -241,12 +243,12 @@ const Contact = () => {
     }));
 };
 
-const handleFileChange = (e) => {
+ const handleFileChange = (e) => {
     setFormData(prevState => ({
         ...prevState,
         attachment: e.target.files[0]
     }));
-};
+ };
 
 const handleRadioChange = (e) => {
     setFormData(prevState => ({
@@ -314,7 +316,7 @@ const handleSubmit = async (e) => {
         <div className="contact_page">
             <Navbar />
             <div className="hero_banner d-flex flex-column align-items-center justify-content-center ">
-                <h1 className='fw-bold position-relative'>Contact Us</h1>
+                <h1 className='fw-bold position-relative'>{t("ContactTitle")}</h1>
            </div>
             <div className="container py-5">
                 <div className="row align-items-center">
@@ -325,52 +327,53 @@ const handleSubmit = async (e) => {
                     <form className='register_form' onSubmit={handleSubmit}>
                      <div className="card shadow border-0 ">
                        <div className="card-body py-4">
-                            <h3 className='mb-3 text-center'>Contact Us</h3>
+                            <h3 className='mb-3 text-center'>{t("ContactTitle")}</h3>
                             <div className='px-3'>
                                 <div className="row">
                                     <div className="col-12 mb-3">
-                                        <label htmlFor="">Name <span>*</span></label>
-                                        <input type="text" className='form-control' placeholder='Enter your name' name="name" onChange={handleChange} required />
+                                        <label htmlFor="">{t("Full_Name")} <span>*</span></label>
+                                        <input type="text" className='form-control' placeholder={t("Name_placeholder")} name="name" onChange={handleChange} required />
                                     </div>
                                     <div className="col-12 mb-3">
-                                        <label htmlFor="">Email <span>*</span></label>
-                                        <input type="email" className='form-control' placeholder='Enter your email' name="email" onChange={handleChange} required />
+                                        <label htmlFor="">{t("Email")} <span>*</span></label>
+                                        <input type="email" className='form-control' placeholder={t("Email_placeholder")} name="email" onChange={handleChange} required />
                                     </div>
                                     <div className="col-12 mb-3">
-                                        <label htmlFor="">Phone Number <span>*</span></label>
+                                        <label htmlFor="">{t("Phone")}<span>*</span></label>
                                         <div className="phone-input-container row ">
                                             <div className="col-sm-4 mb-3 mb-sm-0">
                                                 <ReactFlagsSelect
                                                     selected={selected}
                                                     onSelect={(code) => setSelected(code)}
                                                     searchable
-                                                    placeholder="Select"
+                                                    placeholder={t("Select")}
                                                     customLabels={customLabels}
                                                     className="w-100"
                                                 />
                                             </div>
                                             <div className="col-sm-8">
                                                 <input
-                                                    type="tel"
-                                                    placeholder="Phone..."
+                                                    type="text"
+                                                    placeholder={t("Phone_placeholder")}
                                                     name="phone"
                                                     value={formData.phone}
                                                     onChange={handleChange}
                                                     onInput={e => e.target.value = e.target.value.replace(/[^0-9]/g, '')}
-                                                    className="form-control form_custom_input"
+                                                    className="form-control"
                                                     inputMode="numeric"
                                                     pattern="[0-9]{9,12}"
                                                     maxLength="11"
                                                     required
+                                                   
                                                 />
                                             </div>
                                         </div>
                                     </div>
                                     <div className="col-12 mb-3">
-                                        <label htmlFor="">Description <span>*</span></label>
+                                        <label htmlFor="">{t("Description")}<span>*</span></label>
                                         <textarea
                                             className='form-control'
-                                            placeholder='Your message'
+                                            placeholder={t("Desc_placeholder")}
                                             name="description"
                                             onChange={handleChange}
                                             rows={4}
@@ -387,7 +390,7 @@ const handleSubmit = async (e) => {
                                                 onChange={handleRadioChange}
                                             />
                                             <label className="form-check-label" htmlFor="flexRadioDefault1">
-                                                Job Seeker
+                                            {t("JobSeeker")}
                                             </label>
                                         </div>
                                         <div className="form-check me-3">
@@ -399,12 +402,12 @@ const handleSubmit = async (e) => {
                                                 onChange={handleRadioChange}
                                             />
                                             <label className="form-check-label" htmlFor="flexRadioDefault2">
-                                                Interested Recruiter
+                                            {t("Recruiter")}
                                             </label>
                                         </div>
                                     </div>
                                     <div className="col-12 mb-3">
-                                        <label htmlFor="">Attach File</label>
+                                        <label htmlFor="">{t("AttachFile")}</label>
                                         <input type="file" className='form-control' onChange={handleFileChange} />
                                     </div>
                                     <div className="col-12">
@@ -422,7 +425,7 @@ const handleSubmit = async (e) => {
                                             style={{ height: "50px" }}
                                             className="btn btn-register rounded-2 fs-6 w-100"
                                         >
-                                            Submit
+                                            {t("Submit")}
                                         </button>
                                     </div>
                                 </div>
@@ -441,9 +444,9 @@ const handleSubmit = async (e) => {
                             <div className="contact_icon shadow rounded-2 mb-3">
                             <i className="fa-solid fa-phone"></i>
                             </div>
-                            <h5>Phone</h5>
-                            <p className="text-muted">Start working with us that can provide everything</p>
-                            <Link className='text-primary'>+91 534-468-854</Link>
+                            <h5>{t("ContactSmlHead1")}</h5>
+                            <p className="text-muted">{t("ContactSmlText1")}</p>
+                            <Link className='text-primary'>{t("ContactLink1")}</Link>
                         </div>
                     </div>
                  </div>
@@ -453,9 +456,9 @@ const handleSubmit = async (e) => {
                             <div className="contact_icon shadow rounded-2 mb-3">
                             <i className="fa-regular fa-envelope"></i>
                             </div>
-                            <h5>Email</h5>
-                            <p className="text-muted">Start working with us that can provide everything</p>
-                            <Link className='text-primary'>info@example.com</Link>
+                            <h5>{t("ContactSmlHead2")}</h5>
+                            <p className="text-muted">{t("ContactSmlText2")}</p>
+                            <Link className='text-primary'>{t("ContactLink2")}</Link>
                         </div>
                     </div>
                  </div>
@@ -465,9 +468,9 @@ const handleSubmit = async (e) => {
                             <div className="contact_icon shadow rounded-2 mb-3">
                             <i className="fa-solid fa-location-dot"></i>
                             </div>
-                            <h5>Address</h5>
-                            <p className="text-muted">Start working with us that can provide everything</p>
-                            <p className='text-primary m-0'>#123 Street Road (121565)</p>
+                            <h5>{t("ContactSmlHead3")}</h5>
+                            <p className="text-muted">{t("ContactSmlText2")}</p>
+                            <p className='text-primary m-0'>{t("ContactLink3")}</p>
                         </div>
                     </div>
                  </div>

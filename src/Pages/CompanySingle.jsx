@@ -6,7 +6,7 @@ import axios from "axios";
 
 import ApplyPopup from "../components/ApplyPopup";
 import { useAuthContext } from "../store/authContext";
-import { toast } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import HomeBanners from "../components/HomeBanners";
 
 const CompanySingle = () => {
@@ -181,7 +181,6 @@ useEffect(() => {
       <div className="hero_banner company_banner d-flex flex-column align-items-center justify-content-center position-relative">
         <h1 className="fw-bold position-relative">{companyData?.company_name || ''}</h1>
       </div>
-
 
       <div className={`container ${isLoading ? 'py-5' : ''} `}>
         {isLoading ? (
@@ -394,9 +393,21 @@ useEffect(() => {
           </div>
         )}
       </div>
-
+      
        {!isLoading && <Footer />}
        {/* <Footer /> */}
+
+       <ToastContainer 
+          position="top-right"
+          autoClose={3000}
+          hideProgressBar
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+        />
 
     </ div>
   );

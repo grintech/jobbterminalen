@@ -34,6 +34,10 @@ import GeoLocation from './components/GeoLocation'
 import SearchJobs from './Pages/SearchJobs'
 import { ToastContainer } from "react-toastify";
 import HomeBanners from './components/HomeBanners'
+import FraudAlert from './Pages/FraudAlert'
+import Sitemap from './Pages/Sitemap'
+import Feedback from './Pages/Feedback'
+import HelpCenter from './Pages/HelpCenter'
 
 
 const App = () => {
@@ -43,7 +47,7 @@ const App = () => {
     <ScrollToTop />
     <BackToTop />
     <GeoLocation />
-    <ToastContainer 
+    {/* <ToastContainer 
         position="top-right"
         autoClose={3000}
         hideProgressBar
@@ -53,7 +57,7 @@ const App = () => {
         pauseOnFocusLoss
         draggable
         pauseOnHover
-      />
+      /> */}
       {/* <HomeBanners /> */}
       <Routes >
         <Route path='/' element={ <Homepage />} />
@@ -73,9 +77,14 @@ const App = () => {
         <Route path='/jobs/category' element={ <AllCategories />} />
         <Route path='/companies/:slug' element={ <CompanySingle />} />
         <Route path='/job-post' element={ <JobPost />} />
-        <Route path='*' element={ <PageNotFound />} />
+      
         <Route path='/work-type' element={ <ProjectBasis />} />
 
+        <Route path='/fraud-alert' element={ <FraudAlert />} />
+        <Route path='/sitemap' element={ <Sitemap />} />
+        <Route path='/feedback' element={ <Feedback />} />
+        <Route path='/help' element={ <HelpCenter />} />
+        <Route path='*' element={ <PageNotFound />} />
 
       
         <Route path='/job/category/:slug' element={ <CategoryList />} />

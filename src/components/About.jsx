@@ -2,13 +2,25 @@ import React from 'react'
 import Navbar from './Navbar'
 import { Link } from 'react-router-dom'
 import Footer from './Footer'
+import { useTranslation } from 'react-i18next'
+import { Helmet } from 'react-helmet-async'
+
+
 const About = () => {
+    const { t } = useTranslation();
+
   return (
-    <>
+    <>  
+      <Helmet>
+        <title>About JobbTerminalen - Your Trusted Job Portal in Sweden</title>
+        <meta name="description" content="Learn more about JobbTerminalen, Sweden's leading job portal connecting job seekers with top employers. Find your dream job with us!" />
+        <meta name="keywords" content="About JobbTerminalen, job portal Sweden, career opportunities, employment platform, job search, hiring solutions" />
+      </Helmet>
+
         <div className="about_page">
             <Navbar />
             <div className="hero_banner d-flex flex-column align-items-center justify-content-center ">
-                <h1 className='fw-bold position-relative'>About Us</h1>
+                <h1 className='fw-bold position-relative'>{t("AboutTitle")}</h1>
              </div>
              {/* <div className="position-relative"><div className="shape overflow-hidden text-white"><svg viewBox="0 0 2880 48" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M0 48H1437.5H2880V0H2160C1442.5 52 720 0 720 0H0V48Z" fill="currentColor"></path></svg></div></div> */}
 
@@ -17,7 +29,7 @@ const About = () => {
                     <div className="col-lg-5 mb-4 mb-lg-0">
                        <div className="row ">
                         <div className="col-7 ">
-                        <img src="/images/bg1.png" className='w-100 h-100' alt="about1" />
+                        <img src="/images/bg1.png" style={{objectFit:"cover"}} className='w-100 h-100' alt="about1" />
                         </div>
                         <div className="col-5 h-100">
                          <img src="/images/about1.jpg" className='w-100 mb-3' alt="about2" />
@@ -26,16 +38,15 @@ const About = () => {
                        </div>
                     </div>
                     <div className="col-lg-6 offset-lg-1 about_right">
-                        <h4 className=''>Millions of jobs. <br />
-                        Find the one that's right for you.</h4>
-                        <p className="text-muted">Lorem, ipsum dolor sit amet consectetur adipisicing elit. Velit hic iusto commodi quo praesentium adipisci rem perspiciatis nesciunt, recusandae excepturi autem! Odit exercitationem voluptates est non ab sint laboriosam in!</p>
-                        <ul className="list-unstyled text-muted mb-0 mt-3"><li className="mb-1"><span className="text-primary h5 me-2"><i className="fa-solid fa-check-circle"></i></span>Digital Marketing Solutions for Tomorrow</li><li className="mb-1"><span className="text-primary h5 me-2"><i className="fa-solid fa-check-circle"></i></span>Our Talented &amp; Experienced Marketing Agency</li><li className="mb-1"><span className="text-primary h5 me-2"><i className="fa-solid fa-check-circle"></i></span>Create your own skin to match your brand</li></ul>
+                        <h2 className=''>{t("AboutHead")}<br/>{t("AboutHead1")}</h2>
+                        <p className="text-muted">{t("AboutText")}</p>
+                        <ul className="list-unstyled text-muted mb-0 mt-3"><li className="mb-1"><span className="text-primary h5 me-2"><i className="fa-solid fa-check-circle"></i></span>{t("Aboutlist1")}</li><li className="mb-1"><span className="text-primary h5 me-2"><i className="fa-solid fa-check-circle"></i></span>{t("Aboutlist2")}</li><li className="mb-1"><span className="text-primary h5 me-2"><i className="fa-solid fa-check-circle"></i></span>{t("Aboutlist3")}</li></ul>
                     </div>
                 </div>
                 <div className="mt-5 py-4">
                  <div className="col-lg-7 col-md-9 col-12 text-center mx-auto">
-                 <h4 className='text-center'>Here's why you'll love our platform</h4>
-                 <p className="text-muted ">Search all the open positions on the web. Get your own personalized salary estimate. Read reviews on over 30000+ companies worldwide.</p>
+                 <h4 className='text-center'>{t("AboutHead2")}</h4>
+                 <p className="text-muted ">{t("AboutText2")}</p>
                  </div>
 
                  <div className="row  contact_us_details mt-4">
@@ -45,9 +56,9 @@ const About = () => {
                               <div className="contact_icon shadow rounded-2 mb-3">
                               <i className="fa-solid fa-phone"></i>
                               </div>
-                                <h5>24/7 Support</h5>
-                                <p className="text-muted">Lorem ipsum, dolor sit amet consectetur adipisicing elit. Explicabo, non.</p>
-                                <Link className='text-primary'>Read more <i className="fa-solid fa-arrow-right"></i></Link>
+                                <h5>{t("AboutSmallHead1")}</h5>
+                                <p className="text-muted">{t("AboutSmltext1")}</p>
+                                <Link className='text-primary'>{t("Readmore")} <i className="fa-solid fa-arrow-right"></i></Link>
                             </div>
                         </div>
                     </div>
@@ -57,9 +68,9 @@ const About = () => {
                               <div className="contact_icon shadow rounded-2 mb-3">
                               <i className="fa-solid fa-microchip"></i>
                               </div>
-                                <h5>Tech & Startup Jobs</h5>
-                                <p className="text-muted">Lorem ipsum, dolor sit amet consectetur adipisicing elit. Explicabo, non.</p>
-                                <Link className='text-primary'>Read more <i className="fa-solid fa-arrow-right"></i></Link>
+                              <h5>{t("AboutSmallHead2")}</h5>
+                                <p className="text-muted">{t("AboutSmltext2")}</p>
+                                <Link className='text-primary'>{t("Readmore")} <i className="fa-solid fa-arrow-right"></i></Link>
                             </div>
                         </div>
                     </div>
@@ -69,9 +80,9 @@ const About = () => {
                               <div className="contact_icon shadow rounded-2 mb-3">
                               <i className="fa-solid fa-chart-line"></i>
                               </div>
-                                <h5>Quick & Easy</h5>
-                                <p className="text-muted">Lorem ipsum, dolor sit amet consectetur adipisicing elit. Explicabo, non.</p>
-                                <Link className='text-primary'>Read more <i className="fa-solid fa-arrow-right"></i></Link>
+                              <h5>{t("AboutSmallHead3")}</h5>
+                                <p className="text-muted">{t("AboutSmltext3")}</p>
+                                <Link className='text-primary'>{t("Readmore")} <i className="fa-solid fa-arrow-right"></i></Link>
                             </div>
                         </div>
                     </div>
@@ -81,20 +92,20 @@ const About = () => {
                               <div className="contact_icon shadow rounded-2 mb-3">
                               <i className="fa-regular fa-clock"></i>
                               </div>
-                                <h5>Save Time</h5>
-                                <p className="text-muted">Lorem ipsum, dolor sit amet consectetur adipisicing elit. Explicabo, non.</p>
-                                <Link className='text-primary'>Read more <i className="fa-solid fa-arrow-right"></i></Link>
+                              <h5>{t("AboutSmallHead4")}</h5>
+                                <p className="text-muted">{t("AboutSmltext4")}</p>
+                                <Link className='text-primary'>{t("Readmore")} <i className="fa-solid fa-arrow-right"></i></Link>
                             </div>
                         </div>
                     </div>
                   
                 </div>
                 </div>
-                <div className="mt-5 py-4">
-                 <div className="col-lg-7 col-md-9 col-12 text-center mx-auto">
-                 <h4 className='text-center'>Have Question ? Get in touch!</h4>
-                 <p className="text-muted ">Lorem, ipsum dolor sit amet consectetur adipisicing elit. Optio aspernatur blanditiis libero dolorem, delectus obcaecati.</p>
-                 <Link to='/contact' className='btn btn-register fs-6 px-4 py-2 '>Contact Us</Link>
+                <div className="mt-5 py-4 bg-white">
+                 <div className="col-lg-7 col-md-9 col-12 text-center mx-auto p-3">
+                 <h4 className='text-center'>{t("CallActionHead")}</h4>
+                 <p className="text-muted ">{t("CallActionText")}</p>
+                 <Link to='/contact' className='btn btn-register fs-6 px-4 py-2 '>{t("CallActionBtn")}</Link>
                  </div>
                  </div>
             </div>

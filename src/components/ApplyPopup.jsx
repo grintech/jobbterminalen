@@ -129,15 +129,17 @@ const ApplyPopup = ({ jobId }) => {
   };
 
   return (
+    <>
     <Popup trigger={<button className="btn btn-sm btn-primary"> Apply </button>} modal>
       {(close) => (
         <div className="popup-container p-4">
-          <div className="d-flex justify-content-between align-items-center">
-            <h3>Apply for {jobTitle}</h3>
+          <div className="d-flex justify-content-end ">
             <button type="button" onClick={close} className="btn-close" aria-label="Close"></button>
           </div>
+          <h1 className="mt-3 text-start fs-4">Apply for {jobTitle}</h1>
 
           <p className="text-muted text-start">Please complete the form below to apply for a position with us.</p>
+
 
           <form className="form-container" onSubmit={(e) => handleFormSubmit(e, close)}>
             <input type="hidden" name="job_id" value={formData.job_id} />
@@ -220,11 +222,11 @@ const ApplyPopup = ({ jobId }) => {
               <label className="form-label" htmlFor="resume">Resume:</label>
               <p className="text-muted text-start">75% of recruiters discover candidates through their resume.</p>
               
-              <div className="file-input">
+              <div className="file-input mb-2">
                 <div className="input-box" onClick={() => fileInputRef.current.click()}>
-                  <h4>
+                  <h5>
                     <i className="fa-solid fa-upload"></i> Choose File to Upload
-                  </h4>
+                  </h5>
                 </div>
                 <input
                   ref={fileInputRef}
@@ -237,32 +239,48 @@ const ApplyPopup = ({ jobId }) => {
 
               {/* Show Existing Resume with Link */}
               {formData.resume && (
-                <div className="d-flex justify-content-center">
+                <div className="d-flex justify-content-center mb-2">
                   <h6 className="mt-2 text-success mb-0">
-                    Selected file: 
-                    <a 
+                    Selected file:  {fileName}
+                    {/* <a 
                       href={`${formData.resume}`} 
                       target="_blank" 
                       rel="noopener noreferrer"
                       className="ms-2 text-primary"
                     >
                       {fileName} (Click to open)
-                    </a>
+                    </a> */}
+                   
                   </h6>
-                  <div className="ms-2 mt-1 text-danger">
+                  <div className="ms-3 mt-1 text-danger">
                     <i className="fa-solid fa-trash" onClick={handleRemoveResume}></i>
                   </div>
                 </div>
               )}
 
-              <small className="text-muted text-start">Supported Formats: doc, docx, rtf, pdf, up to 2 MB</small>
+              {!formData.resume && <small className="text-muted text-start ">Supported Formats: doc, docx, rtf, pdf, up to 2 MB</small> }
             </div>
 
-            <button className="btn btn-primary w-100 mt-3" type="submit">Apply</button>
+            <button className="btn btn-register rounded-2 w-100 mt-3" type="submit">Apply</button>
           </form>
+
+
         </div>
       )}
     </Popup>
+
+     <ToastContainer 
+          position="top-right"
+          autoClose={3000}
+          hideProgressBar
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+        />
+      </>
   );
 };
 

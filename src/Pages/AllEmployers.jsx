@@ -3,8 +3,13 @@ import Navbar from "../components/Navbar";
 import { Link } from "react-router-dom";
 import Footer from "../components/Footer";
 import axios from "axios";
+import { useTranslation } from "react-i18next";
+import { Helmet } from "react-helmet-async";
 
 const AllEmployers = () => {
+
+  const { t } = useTranslation();
+
   const [companies, setCompanies] = useState([]); 
   const [loading, setLoading] = useState(true); 
   const [error, setError] = useState(null); 
@@ -113,14 +118,21 @@ const AllEmployers = () => {
   }
   return (
     <>
+        <Helmet>
+        <title>Top Companies Hiring in Sweden - JobbTerminalen</title>
+        <meta name="description" content="Discover top companies hiring in Sweden. Browse company profiles, job openings, and find the best workplace for your career growth on JobbTerminalen." />
+        <meta name="keywords" content="companies in Sweden, top employers, hiring companies, job portal Sweden, company profiles, career opportunities, best workplaces" />
+        
+      </Helmet>
+
       <div className="all_employers_page">
         <Navbar />
         <div className="hero_banner d-flex flex-column align-items-center justify-content-center ">
-          <h1 className="fw-bold position-relative">Companies</h1>
+          <h1 className="fw-bold position-relative">{t("Companies")}</h1>
         </div>
 
         <div className="container py-5">
-          <h3 className="mb-5">Here is the list of all the companies!</h3>
+          <h3 className="mb-5">{t("CompanySmlHead1")}</h3>
 
           {/* Loading and Error States */}
           {loading ? (
@@ -129,13 +141,23 @@ const AllEmployers = () => {
                 <div className="spinner-grow text-primary" role="status">
                   <span className="visually-hidden">Loading...</span>
                 </div>
-              <p className='mt-2'>Fetching data...</p>
+               <p className='mt-2'>Fetching data...</p>
               </div>
             </>
           ) : error ? (
-            <div className="text-center text-danger">
-              <p>{error}</p>
-            </div>
+            <div className="text-center text-theme " >
+              <div className='text-center text-theme'>
+                <img src="/images/no-data1.png" className='no_company' alt='' /> 
+                <h6>{ error === "Failed to fetch" ? (
+                <p className="text-center text-theme">Failed to fetch companies.Please try later!</p>
+                  ) : (
+                    <p className="text-center text-theme" >
+                      {error}
+                    </p>
+                  )}
+              </h6>
+                </div>
+              </div>
           ) : (
             <div className="row">
               {companies.length === 0 ? (
