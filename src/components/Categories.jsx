@@ -7,46 +7,46 @@ const Categories = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const bearerKey = import.meta.env.VITE_BEARER_KEY; // Make sure this contains the correct token
+  const bearerKey = import.meta.env.VITE_BEARER_KEY; 
   const API_URL = import.meta.env.VITE_API_URL;
   const IMG_URL = import.meta.env.VITE_IMG_URL;
 
   
   useEffect(() => {
+    // Load cached data from localStorage first (if available)
+    const storedCategories = localStorage.getItem('categories');
+    
+    if (storedCategories) {
+      setCategories(JSON.parse(storedCategories));
+      setLoading(false); // Show cached data immediately
+    }
+  
     const fetchCategories = async () => {
       try {
         const response = await axios.get(`${API_URL}/get_main_categories.php`, {
-          headers: {
-            Authorization: `Bearer ${bearerKey}`, // Ensure the Bearer token is valid
-          },
+          headers: { Authorization: `Bearer ${bearerKey}` },
         });
-
-        console.log(response.data);
-
-        // Access the `categories` property from the API response
+  
         if (response.data.type === 'success' && Array.isArray(response.data.categories)) {
           setCategories(response.data.categories);
+          
+          // ✅ Save fresh data to localStorage
+          localStorage.setItem('categories', JSON.stringify(response.data.categories));
         } else {
           setError('Unexpected API response');
         }
-        setLoading(false);
       } catch (err) {
         console.error('Error fetching categories:', err.response || err.message);
         setError('Failed to load categories');
-        setLoading(false);
       }
+      setLoading(false);
     };
-
+  
     fetchCategories();
   }, []);
+  
 
-  // if (loading) {
-  //   return <p className="text-center">Loading categories...</p>;
-  // }
-
-  // if (error) {
-  //   return <p className="text-center text-danger">{error}</p>;
-  // }
+  
 
   return (
     <div className="popular_categories container pb-4">
@@ -70,8 +70,7 @@ const Categories = () => {
                   <div key={category.id} className="col-lg-2 col-md-3 col-sm-4 col-4 mb-4">
                     <Link to={`/job/category/${category.name.toLowerCase()}`} className="cat_card">
                       <div className="card">
-                        <div className="card-body text-center">
-                          {/* <i className="fa-solid fa-folder"></i> */}
+                        <div className="card-body text-center">                      
                           <img src={`${IMG_URL}/${category.image}`} alt="" />
                           <h5 className="mt-3">{category.name}</h5>
                         </div>

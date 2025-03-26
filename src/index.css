@@ -339,7 +339,7 @@ input[type='checkbox']{
 .contact_page .register_form label {font-weight: 600;}
 /*---------- About Page ----------*/
 .about_page .hero_banner h1, .contact_page .hero_banner h1{font-size: 30px;}
-.about_page h4{font-weight: 600; line-height: 1.5;}
+.about_page h2{font-weight: 600;font-size: 28px;}
 .about_page h5{font-weight: 600; line-height: 1.5; font-size: 17px;}
 .text-muted {
   color: #7a8ba3 !important;
@@ -390,6 +390,10 @@ input[type='checkbox']{
   bottom: 50px; 
   border: 0;
 }
+.faq_section .accordion-button:not(.collapsed)::after {
+  background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round'><path d='M2 5L8 11L14 5'/></svg>") !important;
+}
+.faq_section .accordion-body{color: grey !important;font-size: 15px;}
 
 .pagination .page-link{color: #003479;}
 .pagination .page-item .page-link.active {background-color: #003479;color: white; border-color: #003479;}
@@ -628,7 +632,7 @@ input[type="checkbox"]:focus{box-shadow: none !important; }
   color: rgb(100, 100, 100);
   font-size: 14px;
 }
-.jobs_applied .nav-pills .nav-link{color: #000; border-radius: 0 !important;}
+.jobs_applied .nav-pills .nav-link{color: #000; border-radius: 0 !important; width: 99%;}
 .jobs_applied .nav-pills .nav-link.active{background-color: #ecf5ff !important; color: #000 !important; border-radius: 0 !important;}
 .jobs_applied .fa-check{color: #47b749;}
 .jobs_applied .fa-hourglass-start{color: rgb(245, 167, 66);}
@@ -730,6 +734,17 @@ input[type="checkbox"]:focus{box-shadow: none !important; }
   border-radius: 8px;
 }
 
+.homepage .herotext { font-size: 25px;}
+
+.sitemap_page .all_links ul li a{color: #003479;}
+#feedback_wrapper {padding-top: 70px;}
+.feedback_form label{font-size: 16px !important; font-weight: 300;margin-bottom: 5px; color: grey;}
+.feedback_form input{padding: 10px 10px; border-radius: 4px; border: 1px solid #ccc; font-size: 14px;}
+.feedback_form textarea{padding: 10px 10px; border-radius: 4px; border: 1px solid #ccc; font-size: 14px;}
+.feedback_form select{padding: 10px 10px; border-radius: 4px; border: 1px solid #ccc; font-size: 14px;}
+.feedback_form select:focus{box-shadow: none;}
+.feedback_form input:focus, .feedback_form textarea:focus{box-shadow: none; border-color: #003479;}
+.feedback_form .btn-register{height: 55px; border-radius: 4px;font-size: 18px;}
 /*-------- Media Query --------------*/
 @media screen and (min-width:992px) {
   .navbar .navbar-nav .dropdown:hover .dropdown-menu {
@@ -798,16 +813,23 @@ input[type="checkbox"]:focus{box-shadow: none !important; }
 }
 
 @media screen and (max-width:600px) {
+  .homepage .hero_banner h1 { font-size: 22px;}
+  .homepage .herotext { font-size: 18px;}
+  .about_page h2{font-weight: 600;font-size: 24px;}
+
   .hero_banner h1{font-size: 22px;}
   .page_not_found .error{font-size: 4rem;}
-.page_not_found .message{font-size: 1rem;}
-.register_container .register_form{padding: 30px 20px;
+  .page_not_found .message{font-size: 1rem;}
+  .register_container .register_form{padding: 30px 20px;
    /* width: 400px; */
   }
   .home_job_types .inside_card h5{font-size: 13px; }
   .home_job_types .inside_card i{font-size: 19px; color: #003479; }
   .home_job_types .inside_card{height:100px; width: 130px; }
- 
+  .navbar .navbar-nav .dropdown-item {
+    padding: 5px 30px;
+    font-size: .75rem !important;
+}
 }
 @media screen and (max-width:525px) {
   .home_job_types .inside_card h5{font-size: 15px; }
@@ -815,43 +837,59 @@ input[type="checkbox"]:focus{box-shadow: none !important; }
   .home_job_types .inside_card{height:100px; width: 180px; }
 }
 @media screen and (max-width:475px) {
+  .homepage .herotext { font-size: 17px;}
+  .about_page h2{font-weight: 600;font-size: 22px;}
   .register_container .register_form{padding: 30px 20px;
      /* width: 380px; */
     }
     .otp-input {
       width: 40px;height: 40px !important;
     }
-  
+    .navbar-nav .dropdown-menu {width: max-content;}
+    .navbar .navbar-nav .dropdown-item {
+      padding: 5px 30px;
+      font-size: .65rem !important;
+   }
 }
 @media screen and (max-width:400px) {
   .register_container .register_form{padding: 30px 20px;
      /* width: 350px; */
     }
-  .navbar .btn-register, .navbar .btn-login {font-size: .65rem; padding: 5px 8px; }
+  .navbar .btn-register, .navbar .btn-login {font-size: .6rem; padding: 5px 8px; }
   .navbar .nav-item .nav-link {font-size: .7rem;}
   .lang_select { padding: 3px 0px !important;font-size: 12px; }
-  .navbar-brand img {height: 40px;}
+  .navbar-brand img {height: 35px;}
   .navbar .navbar-toggler { padding: 1px 6px !important;}
   .navbar .navbar-toggler-icon {
     width: 1.05em !important;
     padding: 0px 5px !important;
  }
  .user_dropdown .dropdown-toggle {font-size: 13px;}
+ .employer .nav-item .nav-link{font-size: .7rem !important;}
+ .navbar .employer .dropdown-item{
+  font-size: .65rem !important;
+}
 }
 
 @media screen and (max-width:375px) {
  
-    .otp-input {
-      width: 35px;height: 35px !important;
-    }
+  .otp-input {width: 35px;height: 35px !important;}
   .home_job_types .inside_card h5{font-size: 14px; }
   .home_job_types .inside_card i{font-size: 22px; color: #003479; }
   .home_job_types .inside_card{height:100px; width: 150px; }
+  .navbar .btn-register, .navbar .btn-login {font-size: .6rem; padding: 5px 8px; }
+  .lang_select { padding: 3px 0px !important;font-size: 12px; }
+  .employer .nav-item .nav-link{font-size: .7rem !important;}
+  
 }
 @media screen and (max-width:350px) {
   .otp-input {
     width: 30px;height: 30px !important;font-size: 13px;
   }
+  .employer .nav-item .nav-link{font-size: .6rem !important;}
+  .navbar .employer .dropdown-item{font-size: .6rem !important;}
+  .navbar .btn-register, .navbar .btn-login {font-size: .55rem; padding: 5px 8px; }
+  .lang_select { padding: 3px 0px !important;font-size: 11px; }
 }
 
 @media screen and (max-width:330px) {
@@ -871,14 +909,15 @@ input[type="checkbox"]:focus{box-shadow: none !important; }
 .file-input {
   text-align: center;
   padding: 10px;
-  border: 2px dashed #007bff;
+  /* border: 2px dashed #007bff; */
+  border: 2px dashed #003479;
   border-radius: 8px;
   cursor: pointer;
 }
 
 .file-input .input-box {
   padding: 10px;
-  color: #007bff;
+  color: #003479;
   font-weight: bold;
 }
 
@@ -921,6 +960,7 @@ input[type="checkbox"]:focus{box-shadow: none !important; }
 
 
 /* Change background color of success to green */
+.Toastify__toast-container {box-shadow: none !important;}
 .Toastify__toast--success {
   background-color: #4caf50; /* Green */
   color: white; /* Text color */
@@ -937,10 +977,7 @@ input[type="checkbox"]:focus{box-shadow: none !important; }
 .Toastify__toast--error .Toastify__toast-icon svg{fill: #fff !important;}
 
 /* Change the background for the container */
-.Toastify__toast-container {
-  border-radius: 10px; /* Rounded corners */
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
+
 
 /* Modify the progress bar color */
 .Toastify__progress-bar {
@@ -961,3 +998,8 @@ input[type="checkbox"]:focus{box-shadow: none !important; }
   color: white;}
 .lang_select:focus{box-shadow: none !important;outline: none !important;}
 .lang_select option{color: #fff;}
+
+.popup-container {
+  height: 80vh;
+  overflow-y: scroll;
+}

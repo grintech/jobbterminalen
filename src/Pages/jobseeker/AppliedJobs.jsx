@@ -167,7 +167,7 @@ const Appliedjobs = () => {
                       <div className="row">
                         <div className="col-lg-4 border-end p-0">
                           <div className="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
-                            <ul>
+                            <ul className="p-0">
                               {appliedJobs.map((job, index) => (
                                 <button
                                   key={index}

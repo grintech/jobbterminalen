@@ -2,128 +2,144 @@ import React from 'react'
 import Navbar from '../components/Navbar'
 import { Link } from 'react-router-dom'
 import Footer from '../components/Footer'
+import { useTranslation,Trans } from 'react-i18next'
 
 const TermsAndConditions = () => {
+
+  const { t } = useTranslation();
+
   return (
     <>
         <div className="terms_page">
           <Navbar />
           <div className="hero_banner d-flex flex-column align-items-center justify-content-center ">
-           <h1 className="fw-bold position-relative">Terms And Conditions</h1>
+           <h1 className="fw-bold position-relative">{t("TermsTitle")}</h1>
           </div>
      
           <div className="terms_section py-4">
             <div className="container">
               <div className="col-12">
                 <div className='py-4 border-bottom'>
-                <h3 className='mb-3'>Terms and Conditions</h3>
-                <p className='mb-2'><strong>Effective Date: </strong>[Insert Date]</p>
-                <p className='mb-2'>Welcome to [ Website Name]! By accessing or using our job portal (the “Service”), you agree to be bound by these Terms and Conditions. Please read them carefully before using our platform.</p>
+                <h3 className='mb-3'>{t("TermsTitle")}</h3>
+                <p className='mb-2'>{t("TermEffectiveDate")}</p>
+                <p className='mb-2'>{t("TermsIntro")}</p>
                 </div>
 
                 <div className='py-4 border-bottom'>
-                <h4 className='mb-3'>1. Definitions</h4>
+                <h4 className='mb-3'>{t("TermsDefinition")}</h4>
               <ul className=''>
-                <li className='mb-2'><strong>Job Seeker:</strong> An individual registering on the platform to search and apply for job opportunities.
+                <li className='mb-2'>
+                <Trans i18nKey="TermsDefinitionText" components={{ strong: <strong /> }} />
                 </li>
-                <li className='mb-2'><strong>Recruiter/Employer:</strong> An individual or entity posting job opportunities or seeking candidates for employment.</li>
-                <li className='mb-2'><strong>User:</strong> Refers to both Job Seekers and Recruiters collectively.</li>
-                <li className='mb-2'><strong>We/Us/Our:</strong> Refers to [ Website Name], the owner and operator of this job portal.</li>
+                <li className='mb-2'>
+                <Trans i18nKey="TermsDefinitionText1" components={{ strong: <strong /> }} />
+                </li>
+                <li className='mb-2'>
+                <Trans i18nKey="TermsDefinitionText2" components={{ strong: <strong /> }} />
+                </li>
+                <li className='mb-2'>
+                <Trans i18nKey="TermsDefinitionText3" components={{ strong: <strong /> }} />
+                </li>
+               
               </ul>
                 </div>
                 
                 <div className='py-4 border-bottom'>
-                <h4 className='mb-3'>2. Acceptance of Terms</h4>
-                <p className="mb-2">By using the Service, you confirm that you:</p>
+                <h4 className='mb-3'>{t("TermsAcceptance")}</h4>
+                <p className="mb-2">{t("TermsAcceptanceText")}</p>
                 <ul className=''>
-                  <li className='mb-2'>Have read and understood these terms. </li>
-                  <li className='mb-2'>Agree to comply with all applicable laws and regulations.</li>
-                  <li className='mb-2'>Are at least 18 years old or of legal working age in your jurisdiction.</li>
+                  <li className='mb-2'>{t("TermsAcceptanceText1")}</li>
+                  <li className='mb-2'>{t("TermsAcceptanceText2")}</li>
+                  <li className='mb-2'>{t("TermsAcceptanceText3")}</li>
                 </ul>
-                <p>If you do not agree to these terms, you must not use the Service.</p>
+                <p>{t("TermsAcceptanceText4")}</p>
                 </div>
                 
                 <div className='py-4 border-bottom'>
-                <h4 className='mb-3'>3. Account Registration</h4>
+                <h4 className='mb-3'>{t("TermsAccountRegistration")}</h4>
                 <ul className=''>
-                  <li className='mb-2'>Users must provide accurate and complete information during registration.</li>
-                  <li className='mb-2'>You are responsible for maintaining the confidentiality of your login credentials.</li>
-                  <li className='mb-2'>We reserve the right to suspend or terminate accounts if false information is provided or these Terms are violated.</li>
+                  <li className='mb-2'>{t("TermsAccountRegistrationText")}</li>
+                  <li className='mb-2'>{t("TermsAccountRegistrationText1")}</li>
+                  <li className='mb-2'>{t("TermsAccountRegistrationText2")}</li>
                 </ul>
                 </div>
                 
                 <div className='py-4 border-bottom'>
-                <h4 className='mb-3'>4. User Responsibilities</h4>
-                <h6 className='mb-2 fw-bold'>For Job Seekers:</h6>
+                <h4 className='mb-3'>{t("TermsUserResponsibility")}</h4>
+                <h6 className='mb-2 fw-bold'>{t("TermsUserResponsibilityHead")}</h6>
                 <ul className=''>
-                  <li className='mb-2'>You agree to provide truthful and accurate information in your resume and profile.</li>
-                  <li className='mb-2'>You will not use the platform to solicit, spam, or engage in fraudulent activities.</li>
+                  <li className='mb-2'>{t("TermsUserResponsibilityText")}</li>
+                  <li className='mb-2'>{t("TermsUserResponsibilityText1")}</li>
                 </ul>
-                <h6 className='mb-2 fw-bold'>For Recruiters:</h6>
+                <h6 className='mb-2 fw-bold'>{t("TermsUserResponsibilityHead1")}</h6>
                 <ul className=''>
-                  <li className='mb-2'>You are responsible for ensuring that job postings comply with all applicable laws, including labor laws and anti-discrimination regulations.</li>
-                  <li className='mb-2'>You will not post false or misleading job advertisements.</li>
-                </ul>
-                </div>
-
-                <div className='py-4 border-bottom'>
-                <h4 className='mb-3'>5. Prohibited Activities</h4>
-                <p className="mb-2">Users must not:</p>
-                <ul className=''>
-                  <li className='mb-2'>Upload or distribute harmful, unlawful, or offensive content.</li>
-                  <li className='mb-2'>Impersonate any person or entity.</li>
-                  <li className='mb-2'>Attempt to hack or disrupt the functionality of the platform.</li>
-                  <li className='mb-2'>Collect data or information about other users without consent..</li>
+                  <li className='mb-2'>{t("TermsUserResponsibilityText2")}</li>
+                  <li className='mb-2'>{t("TermsUserResponsibilityText3")}</li>
                 </ul>
                 </div>
 
                 <div className='py-4 border-bottom'>
-                <h4 className='mb-3'>6. Fees and Payments</h4>
+                <h4 className='mb-3'>{t("TermsProhibitedActivities")}</h4>
+                <p className="mb-2">{t("TermsProhibitedActivitiesText")}</p>
                 <ul className=''>
-                  <li className='mb-2'>Certain services may require payment, such as premium job postings or featured profiles.</li>
-                  <li className='mb-2'>All fees are non-refundable unless explicitly stated otherwise.</li>
+                  <li className='mb-2'>{t("TermsProhibitedActivitiesText1")}</li>
+                  <li className='mb-2'>{t("TermsProhibitedActivitiesText2")}</li>
+                  <li className='mb-2'>{t("TermsProhibitedActivitiesText3")}</li>
+                  <li className='mb-2'>{t("TermsProhibitedActivitiesText4")}</li>
                 </ul>
                 </div>
 
                 <div className='py-4 border-bottom'>
-                  <h4 className='mb-3'>7. Privacy Policy</h4>
-                  <p className="mb-2">Our Privacy Policy explains how we collect, use, and protect your personal information. By using the Service, you consent to the practices described in our<Link to='/privacy-policy'> Privacy Policy.</Link> </p>
-                </div>
-
-                <div className='py-4 border-bottom'>
-                <h4 className='mb-3'>8. Limitation of Liability</h4>
+                <h4 className='mb-3'>{t("TermsFeesPayment")}</h4>
                 <ul className=''>
-                  <li className='mb-2'>We are not responsible for the accuracy, legality, or validity of job postings or user profiles.</li>
-                  <li className='mb-2'>We do not guarantee that Job Seekers will secure employment or that Employers will find suitable candidates.</li>
-                  <li className='mb-2'>We are not liable for any loss or damage resulting from your use of the platform.</li>
+                  <li className='mb-2'>{t("TermsFeesPaymentText")}</li>
+                  <li className='mb-2'>{t("TermsFeesPaymentText1")}</li>
                 </ul>
                 </div>
 
                 <div className='py-4 border-bottom'>
-                <h4 className='mb-3'>9. Intellectual Property</h4>
+                  <h4 className='mb-3'>{t("TermsPrivacyPolicy")}</h4> 
+                  <p className="mb-2">
+                  <Trans i18nKey="TermsPrivacyPolicyText" components={{b:<b/>, Link: <Link to='/privacy-policy' /> }} />
+                </p>
+                </div>
+
+                <div className='py-4 border-bottom'>
+                <h4 className='mb-3'>{t("TermsLimitationOfLiability")}</h4>
                 <ul className=''>
-                  <li className='mb-2'>All content, trademarks, and materials on the platform are the property of [ Website Name] unless otherwise stated.</li>
-                  <li className='mb-2'>Users may not reproduce, modify, or distribute platform content without prior written consent.</li>
+                  <li className='mb-2'>{t("TermsLimitationOfLiabilityText")}</li>
+                  <li className='mb-2'>{t("TermsLimitationOfLiabilityText1")}</li>
+                  <li className='mb-2'>{t("TermsLimitationOfLiabilityText2")}</li>
                 </ul>
                 </div>
 
                 <div className='py-4 border-bottom'>
-                  <h4 className='mb-3'>10. Termination of Service</h4>
-                  <p className="mb-2">We reserve the right to suspend or terminate your account at our discretion if you violate these Terms or engage in prohibited activities.</p>
-                </div>
-
-                <div className='py-4 border-bottom'>
-                  <h4 className='mb-3'>11. Amendments</h4>
-                  <p className="mb-2">We may update these Terms from time to time. The latest version will always be available on our website. Your continued use of the Service after changes signifies your acceptance of the updated Terms.</p>
-                </div>
-
-                <div className='py-4 border-bottom'>
-                <h4 className='mb-3'>12. Contact Information</h4>
-                <p className="mb-2">For questions about these Terms and Conditions, you may contact us at:</p>
+                <h4 className='mb-3'>{t("TermsIntellectualProperty")}</h4>
                 <ul className=''>
-                  <li className='mb-2'>[Website Name]</li>
-                  <li className='mb-2'><strong>Email:</strong> [Insert Email Address]</li>
-                  <li className='mb-2'><strong>Phone:</strong> [Insert Phone Number]</li>
+                  <li className='mb-2'>{t("TermsIntellectualPropertyText")}</li>
+                  <li className='mb-2'>{t("TermsIntellectualPropertyText1")}</li>
+                </ul>
+                </div>
+
+                <div className='py-4 border-bottom'>
+                  <h4 className='mb-3'>{t("TermsTermination")}</h4>
+                  <p className="mb-2">{t("TermsTerminationText")}</p>
+                </div>
+
+                <div className='py-4 border-bottom'>
+                  <h4 className='mb-3'>{t("TermsAmendments")}</h4>
+                  <p className="mb-2">{t("TermsAmendmentsText")}</p>
+                </div>
+
+                <div className='py-4 border-bottom'>
+                <h4 className='mb-3'>{t("TermsContactUs")}</h4>
+                <p className="mb-2">{t("TermsContactUsText")}</p>
+                <ul className=''>
+                  <li className='mb-2'>{t("CompanyName")}</li>
+                  <li className='mb-2'>
+                    <Trans i18nKey="ContactEmail" components={{strong: <strong /> }} />
+                    </li>
+                  <li className='mb-2'>  <Trans i18nKey="ContactPhone" components={{strong: <strong /> }} /></li>
                 </ul>
                 </div>
 

@@ -11,11 +11,13 @@
     background: #003479;
     background-size: cover;
     /* background-position: center center; */
-    padding: 160px 0 100px 0;
+    padding: 160px 0 75px 0;
     color: white;
     position: relative;
     /* background-color: #d2e3f9; */
   }
+  .homepage .hero_banner h1 {font-size: 35px;}
+  .hero_banner h1 {font-size: 30px;}
   .hero_banner::before{
     position: absolute;
     content: "";
@@ -63,6 +65,7 @@
     border: 0;
     height: 45px;
     padding: 4px 10px;
+    color: grey;
   }
   
   /*-----------------*/

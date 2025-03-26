@@ -50,7 +50,7 @@ const PopularJob = () => {
 
   // Define how many jobs per slide
   const jobsPerSlide = 6;
-  
+
   // Split jobs into chunks based on jobsPerSlide
   const slides = [];
   for (let i = 0; i < jobs.length; i += jobsPerSlide) {
@@ -59,9 +59,22 @@ const PopularJob = () => {
 
   return (
     <>
-      {isLoading && <p>Loading jobs...</p>}
-      {error && <p style={{ color: "red" }}>{error}</p>}
-      {!isLoading && !error && (
+      {isLoading ? (
+         <div className="loading-screen d-flex flex-column justify-content-center align-items-center">
+         <div className="spinner-grow text-primary" role="status">
+           <span className="visually-hidden">Loading...</span>
+         </div>
+         <p className="mt-2">Fetching jobs...</p>
+       </div>
+      ) : error ? (
+        error === "Failed to fetch" ? (
+          <p className="text-center text-theme">Failed to fetch jobs data</p>
+        ) : (
+          <p className="text-center text-theme" >
+            {error}
+          </p>
+        )
+      ) : (
         <div className="container py-5">
           <div className="popular_jobs">
             <div className="row">
@@ -84,15 +97,29 @@ const PopularJob = () => {
                           <div className="card-body py-5 px-4 px-md-5">
                             <div className="row">
                               {jobGroup.map((job) => (
-                                <div className="col-sm-6 mb-4" key={job.category_name}>
+                                <div
+                                  className="col-sm-6 mb-4"
+                                  key={job.category_name}
+                                >
                                   <div className="card">
-                                    <Link to={`/job/category/${job.category_name.toLowerCase()}`} className="card-body d-flex justify-content-between align-items-baseline">
+                                    <Link
+                                      to={`/job/category/${job.category_name.toLowerCase()}`}
+                                      className="card-body d-flex justify-content-between align-items-baseline"
+                                    >
                                       <div>
-                                        <h6 dangerouslySetInnerHTML={{ __html: job.category_name }}></h6>
+                                        <h6
+                                          dangerouslySetInnerHTML={{
+                                            __html: job.category_name,
+                                          }}
+                                        ></h6>
                                         <p className="m-0 text-muted">
-                                          <span>{job.job_count} {job.job_count === 1 ? "Job" : "Jobs"}</span>
+                                          <span>
+                                            {job.job_count}{" "}
+                                            {job.job_count === 1
+                                              ? "Job"
+                                              : "Jobs"}
+                                          </span>
                                         </p>
-
                                       </div>
                                       <i className="ms-2 fa-solid fa-chevron-right text-muted"></i>
                                     </Link>
@@ -109,11 +136,16 @@ const PopularJob = () => {
               </div>
               <div className="offset-lg-2 col-lg-4 text-center">
                 <img src="/images/popular1.png" className="pop_img" alt="job" />
-                <p className="m-0 text-center text-white" style={{ fontWeight: "500" }}>
+                <p
+                  className="m-0 text-center text-white"
+                  style={{ fontWeight: "500" }}
+                >
                   Discover jobs across popular roles
                 </p>
                 <p className="m-0 text-center text-light">
-                  <small>Select a role and we'll show you all the related jobs!</small>
+                  <small>
+                    Select a role and we'll show you all the related jobs!
+                  </small>
                 </p>
               </div>
             </div>
