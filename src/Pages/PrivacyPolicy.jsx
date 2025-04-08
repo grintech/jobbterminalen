@@ -2,12 +2,22 @@ import React from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { Trans, useTranslation } from "react-i18next";
+import { Helmet } from "react-helmet-async";
 
 const PrivacyPolicy = () => {
   const { t } = useTranslation();
 
   return (
     <>
+      <Helmet>
+      <title>Privacy Policy - JobbTerminalen</title>
+      <meta name="description" content="Read the JobbTerminalen Privacy Policy to understand how we collect, use, and protect your personal information while using our job portal services." />
+      <meta name="keywords" content="Privacy Policy, data protection, JobbTerminalen privacy, personal data, GDPR compliance, user information, data security" />
+      <meta property="og:title" content="Privacy Policy - JobbTerminalen" />
+      <meta property="og:description" content="Read the JobbTerminalen Privacy Policy to understand how we collect, use, and protect your personal information while using our job portal services." />
+    </Helmet>
+
+
       <div className="policy_page">
         <Navbar />
         <div className="hero_banner d-flex flex-column align-items-center justify-content-center ">

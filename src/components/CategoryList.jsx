@@ -5,6 +5,7 @@ import Footer from "./Footer";
 import axios from "axios";
 import { ToastContainer, toast } from 'react-toastify';
 import { useAuthContext } from "../store/authContext"; // Assuming you have authContext for user
+import { Helmet } from "react-helmet-async";
 
 const CategoryList = () => {
   const { slug } = useParams();
@@ -148,146 +149,151 @@ const CategoryList = () => {
 
   return (
     <>
-      <Navbar />
-      
-      <div className="category_listing py-5">
-        <div className="container top_pad">
-            {loginAlert && (
-           <div className="d-flex">
-              <div className="alert alert-danger alert-dismissible fade show w-25" role="alert">
-              Please login to save jobs.
+      <Helmet>
+        
+      </Helmet>
+      <div>
+        <Navbar />
+        
+        <div className="category_listing py-5">
+          <div className="container top_pad">
+              {loginAlert && (
+            <div className="d-flex">
+                <div className="alert alert-danger alert-dismissible fade show w-25" role="alert">
+                Please login to save jobs.
+              </div>
             </div>
-          </div>
-            )}
-          <div className="row">
-            <div className="col-lg-3 mb-5 mb-lg-0">
-              <div className="card_sticky">
-                <div className="card all_cat_filters">
-                  <div className="card-body">
-                    <h5>All Filters</h5>
+              )}
+            <div className="row">
+              <div className="col-lg-3 mb-5 mb-lg-0">
+                <div className="card_sticky">
+                  <div className="card all_cat_filters">
+                    <div className="card-body">
+                      <h5>All Filters</h5>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
 
-            <div className="col-lg-9">
-              <div className="row">
-                {loading ? (
-                  <div className="loading-screen d-flex flex-column justify-content-center align-items-center">
-                    <div className="spinner-grow text-primary" role="status">
-                      <span className="visually-hidden">Loading...</span>
+              <div className="col-lg-9">
+                <div className="row">
+                  {loading ? (
+                    <div className="loading-screen d-flex flex-column justify-content-center align-items-center">
+                      <div className="spinner-grow text-primary" role="status">
+                        <span className="visually-hidden">Loading...</span>
+                      </div>
+                      <p className="mt-2">Fetching categories...</p>
                     </div>
-                    <p className="mt-2">Fetching categories...</p>
-                  </div>
-                ) : error ? (
-                  <>
-                  <div className="msg_card">
-                   <div className="card border-0 shadow">
-                     <div className="card-body text-center p-4">
-                     <img className="job_search" src="/images/no-job.png" alt="job_search" />
-                     <h6 className="text-theme">No categories found at the moment. Please try later.</h6>
-                  </div>
-                  </div>
-                  </div>
-              </>
-                ) : (
-                  categoryData.map((job) => (
-                    <div className="col-lg-4 col-md-6 col-sm-6 mb-4" key={job.id}>
-                      <div className="card company_list_card h-100">
-                        <div className="card-body">
-                          <div className="d-flex justify-content-between">
-                            <Link to={`/companies/${job.company_slug}`}>
-                              <div className="logo_div border-0 shadow">
-                                <img
-                                  src={`${IMG_URL}/${job.company_profile}`}
-                                  alt="company_logo"
-                                />
-                              </div>
-                            </Link>
-                            <div className="d-flex align-items-center">
-                              <button
-                                className={`btn-light border-0 shadow me-2 ${
-                                  isJobSaved(job.id) ? "btn-primary" : ""
-                                }`}
-                                onClick={() => toggleSavedJob(job.id)}
-                              >
-                                <i
-                                  className={`fa-bookmark  ${
-                                    isJobSaved(job.id) ? "fa-solid" : "fa-regular"
+                  ) : error ? (
+                    <>
+                    <div className="msg_card">
+                    <div className="card border-0 shadow">
+                      <div className="card-body text-center p-4">
+                      <img className="job_search" src="/images/no-job.png" alt="job_search" />
+                      <h6 className="text-theme">No categories found at the moment. Please try later.</h6>
+                    </div>
+                    </div>
+                    </div>
+                </>
+                  ) : (
+                    categoryData.map((job) => (
+                      <div className="col-lg-4 col-md-6 col-sm-6 mb-4" key={job.id}>
+                        <div className="card company_list_card h-100">
+                          <div className="card-body">
+                            <div className="d-flex justify-content-between">
+                              <Link to={`/companies/${job.company_slug}`}>
+                                <div className="logo_div border-0 shadow">
+                                  <img
+                                    src={`${IMG_URL}/${job.company_profile}`}
+                                    alt="company_logo"
+                                  />
+                                </div>
+                              </Link>
+                              <div className="d-flex align-items-center">
+                                <button
+                                  className={`btn-light border-0 shadow me-2 ${
+                                    isJobSaved(job.id) ? "btn-primary" : ""
                                   }`}
-                                ></i>
-                                {/* {isJobSaved(job.id) ? "Saved" : "Save"} */}
-                              </button>
-                              <Link className="btn-light shadow me-2">
-                                <i className="fa-solid fa-share"></i>
+                                  onClick={() => toggleSavedJob(job.id)}
+                                >
+                                  <i
+                                    className={`fa-bookmark  ${
+                                      isJobSaved(job.id) ? "fa-solid" : "fa-regular"
+                                    }`}
+                                  ></i>
+                                  {/* {isJobSaved(job.id) ? "Saved" : "Save"} */}
+                                </button>
+                                <Link className="btn-light shadow me-2">
+                                  <i className="fa-solid fa-share"></i>
+                                </Link>
+                              </div>
+                            </div>
+                            <div className="py-2">
+                              <Link to={`/companies/${job.company_slug}`}>
+                                <h5 className="py-2 m-0">{job.company_name}</h5>
+                              </Link>
+                              <Link to={`/jobs/${job.slug}`}>
+                                <h6 className=" m-0">{job.title}</h6>
                               </Link>
                             </div>
-                          </div>
-                          <div className="py-2">
-                            <Link to={`/companies/${job.company_slug}`}>
-                              <h5 className="py-2 m-0">{job.company_name}</h5>
-                            </Link>
-                            <Link to={`/jobs/${job.slug}`}>
-                              <h6 className=" m-0">{job.title}</h6>
-                            </Link>
-                          </div>
-                          <p className="main_desc">{job.company_tagline}</p>
-                          <ul className="p-0 d-flex flex-wrap">
-                            {job.job_type && (
+                            <p className="main_desc">{job.company_tagline}</p>
+                            <ul className="p-0 d-flex flex-wrap">
+                              {job.job_type && (
+                                <li>
+                                  <div className="btn btn-sm btn-green me-2 mb-2 text-capitalize">
+                                    {job.job_type}
+                                  </div>
+                                </li>
+                              )}
                               <li>
                                 <div className="btn btn-sm btn-green me-2 mb-2 text-capitalize">
-                                  {job.job_type}
+                                  <span>Salary -</span> {job.salary_range}{" "}
+                                  {job.salary_currency}
                                 </div>
                               </li>
-                            )}
-                            <li>
-                              <div className="btn btn-sm btn-green me-2 mb-2 text-capitalize">
-                                <span>Salary -</span> {job.salary_range}{" "}
-                                {job.salary_currency}
-                              </div>
-                            </li>
-                            <li>
-                              <div className="btn btn-sm btn-green me-2 mb-2 text-capitalize">
-                                <span>Experience -</span>&nbsp;&nbsp; {job.experience_required}
-                              </div>
-                            </li>
-                            {job.job_location && (
                               <li>
-                                <div className="btn btn-sm btn-green me-2 mb-2 text-start text-capitalize">
-                                  <i className="fa-solid fa-location-dot "></i>
-                                  &nbsp;&nbsp;{job.job_location}
+                                <div className="btn btn-sm btn-green me-2 mb-2 text-capitalize">
+                                  <span>Experience -</span>&nbsp;&nbsp; {job.experience_required}
                                 </div>
                               </li>
-                            )}
-                          </ul>
-                          <p className=" text-muted m-0">
-                            <small className="badge text-bg-light">
-                              {calculateTimeAgo(job.created_at)}
-                            </small>
-                          </p>
+                              {job.job_location && (
+                                <li>
+                                  <div className="btn btn-sm btn-green me-2 mb-2 text-start text-capitalize">
+                                    <i className="fa-solid fa-location-dot "></i>
+                                    &nbsp;&nbsp;{job.job_location}
+                                  </div>
+                                </li>
+                              )}
+                            </ul>
+                            <p className=" text-muted m-0">
+                              <small className="badge text-bg-light">
+                                {calculateTimeAgo(job.created_at)}
+                              </small>
+                            </p>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))
-                )}
+                    ))
+                  )}
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-      <Footer />
+        <Footer />
 
-      <ToastContainer 
-        position="top-right"
-        autoClose={3000}
-        hideProgressBar
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-      />
+        <ToastContainer 
+          position="top-right"
+          autoClose={3000}
+          hideProgressBar
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+        />
+      </div>
     </>
   );
 };

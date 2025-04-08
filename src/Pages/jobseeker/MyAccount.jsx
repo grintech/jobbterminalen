@@ -1459,11 +1459,11 @@ const MyAccount = () => {
               <div className="card border-0 shadow bg_lblue">
                 <div className="card-body">
                   <h1 className="job_head">
-                    Welcome
-                    <span className="text-theme text-capitalize">
+                    <span>Welcome</span>
+                    <span className="text-theme text-capitalize mx-1">
                       "{user?.name}"
                     </span>
-                    to your account
+                    <span>to your account</span>
                   </h1>
                   <h6>
                     From your account dashboard, you can see your saved jobs,
@@ -3832,7 +3832,7 @@ const MyAccount = () => {
                           <input
                             type="text"
                             className="form-control"
-                            placeholder="Enter your country"
+                            placeholder="Enter your state"
                             value={userData.country_name}
                             onChange={(e) =>
                               setUserData({

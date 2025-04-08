@@ -29,11 +29,11 @@ const About = () => {
                     <div className="col-lg-5 mb-4 mb-lg-0">
                        <div className="row ">
                         <div className="col-7 ">
-                        <img src="/images/bg1.png" style={{objectFit:"cover"}} className='w-100 h-100' alt="about1" />
+                        <img src="/images/bg1.png" loading="lazy" style={{objectFit:"cover"}} className='w-100 h-100' alt="about1" />
                         </div>
                         <div className="col-5 h-100">
-                         <img src="/images/about1.jpg" className='w-100 mb-3' alt="about2" />
-                         <img src="/images/about2.jpg" className='w-100' alt="about3" />
+                         <img src="/images/about1.jpg" loading="lazy" className='w-100 mb-3' alt="about2" />
+                         <img src="/images/about2.jpg" loading="lazy" className='w-100' alt="about3" />
                         </div>
                        </div>
                     </div>

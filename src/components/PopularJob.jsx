@@ -65,7 +65,7 @@ const PopularJob = () => {
            <span className="visually-hidden">Loading...</span>
          </div>
          <p className="mt-2">Fetching jobs...</p>
-       </div>
+        </div>
       ) : error ? (
         error === "Failed to fetch" ? (
           <p className="text-center text-theme">Failed to fetch jobs data</p>
@@ -103,7 +103,7 @@ const PopularJob = () => {
                                 >
                                   <div className="card">
                                     <Link
-                                      to={`/job/category/${job.category_name.toLowerCase()}`}
+                                      to={`/job/category/${job.category_name.trim().toLowerCase().replace(/\s+/g, '-')}`}
                                       className="card-body d-flex justify-content-between align-items-baseline"
                                     >
                                       <div>
