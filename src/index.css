@@ -217,7 +217,7 @@ li{
 .register_form input[type='file']{font-size: 14px; height: 35px;}
 .register_form input[type='url']{font-size: 14px; height: 40px;}
 .register_form input[type='email']{font-size: 14px; height: 40px;}
-.register_form input[type='password']{font-size: 14px; height: 40px;}
+.register_form input[type='password']{font-size: 14px; height: 40px; padding-right: 35px;}
 .register_form select{font-size: 14px; height: 40px;}
 .register_form select:focus{box-shadow: none;}
 .register_form textarea{box-shadow: none;font-size: 14px; }

@@ -5,6 +5,8 @@ import { useAuthContext } from "../store/authContext";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
 import { useTranslation } from "react-i18next";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
+
 
 
 const bearerKey = import.meta.env.VITE_BEARER_KEY;
@@ -12,6 +14,8 @@ const API_URL = import.meta.env.VITE_API_URL;
 
 const Login = () => {
   const { t } = useTranslation();
+  const [showPassword, setShowPassword] = useState(false); 
+
 
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [alert, setAlert] = useState({ show: false, type: "", message: "" });
@@ -106,16 +110,32 @@ const Login = () => {
                       <label htmlFor="password" className="mb-2">
                         {t("Password")} <span>*</span>
                       </label>
-                      <input
-                        type="password"
-                        className="form-control"
-                        name="password"
-                        placeholder={t("Password")}
-                        value={formData.password}
-                        onChange={handleInputChange}
-                        required
-                      />
+                      <div className="position-relative">
+                        <input
+                          type={showPassword ? "text" : "password"}
+                          className="form-control"
+                          name="password"
+                          placeholder={t("Password")}
+                          value={formData.password}
+                          onChange={handleInputChange}
+                          required
+                        />
+                        <span
+                          onClick={() => setShowPassword((prev) => !prev)}
+                          style={{
+                            position: "absolute",
+                            top: "45%",
+                            right: "15px",
+                            transform: "translateY(-50%)",
+                            cursor: "pointer",
+                            color: "#6c757d",
+                          }}
+                        >
+                          {showPassword ? <FaEye /> : <FaEyeSlash />}
+                        </span>
+                      </div>
                     </div>
+
                     <Link to="/forgot-password" className="text-end text-theme m-0">
                       {t("Forget-Password?")}
                     </Link>

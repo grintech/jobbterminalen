@@ -6,6 +6,7 @@ import axios from "axios";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
 import { useTranslation } from "react-i18next";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 const bearerKey = import.meta.env.VITE_BEARER_KEY;
 const API_URL = import.meta.env.VITE_API_URL;
@@ -13,6 +14,8 @@ const EmpLogin = import.meta.env.VITE_EMP_URL;
 
 const Register = () => {
   const { t } = useTranslation();
+  const [showPassword, setShowPassword] = useState(false);
+  const [showPassword1, setShowPassword1] = useState(false);
 
   const [loading, setLoading] = useState(false);
 
@@ -456,27 +459,57 @@ const Register = () => {
                       <label htmlFor="password" className="mb-2">
                         {t("Password")} <span>*</span>
                       </label>
-                      <input
-                        className="form-control"
-                        type="password"
-                        name="password"
-                        value={formData.password}
-                        onChange={handleInputChange}
-                        placeholder={t("Pass_placeholder")}
-                      />
+                      <div className="position-relative">
+                        <input
+                          className="form-control"
+                          type={showPassword ? "text" : "password"}
+                          name="password"
+                          value={formData.password}
+                          onChange={handleInputChange}
+                          placeholder={t("Pass_placeholder")}
+                        />
+                        <span
+                          onClick={() => setShowPassword((prev) => !prev)}
+                          style={{
+                            position: "absolute",
+                            top: "45%",
+                            right: "10px",
+                            transform: "translateY(-50%)",
+                            cursor: "pointer",
+                            color: "#6c757d",
+                          }}
+                        >
+                          {showPassword ? <FaEye /> : <FaEyeSlash />}
+                        </span>
+                      </div>    
                     </div>
                     <div className="col-md-6 mb-3">
                       <label htmlFor="confirmPassword" className="mb-2">
                         {t("Confirm_Password")} <span>*</span>
                       </label>
+                      <div className="position-relative">
                       <input
                         className="form-control"
-                        type="password"
+                        type={showPassword1 ? "text" : "password"}
                         name="confirmPassword"
                         value={formData.confirmPassword}
                         onChange={handleInputChange}
                         placeholder={t("ConfirmPass_placeholder")}
                       />
+                      <span
+                          onClick={() => setShowPassword1((prev) => !prev)}
+                          style={{
+                            position: "absolute",
+                            top: "45%",
+                            right: "10px",
+                            transform: "translateY(-50%)",
+                            cursor: "pointer",
+                            color: "#6c757d",
+                          }}
+                        >
+                           {showPassword1 ? <FaEye /> : <FaEyeSlash />}
+                        </span>
+                        </div>
                     </div>
                     <p className="mb-3 text-center">
                       {t("BySigning")}
