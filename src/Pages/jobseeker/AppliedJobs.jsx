@@ -156,7 +156,15 @@ const Appliedjobs = () => {
                 <p className='mt-2'>Fetching data...</p>
               </div>
             ) : error ? (
-              <p className="text-center text-danger">{error}</p>
+              // <p className="text-center text-theme">{error}</p>
+              <div className="card  border-0 shadow">
+              <div className="card-body text-center">
+                <img className='job_search' src="/public/images/job_search.png" alt="job_search" style={{ width: '100px' }}  />
+                {/* <h4>No jobs applied yet!</h4> */}
+                <p className="text-center text-theme">{error}</p>
+               
+              </div>
+            </div>
             ) : appliedJobs.length > 0 ? (
               <div className="jobs_applied">
               {appliedJobs.length > 0 ? (

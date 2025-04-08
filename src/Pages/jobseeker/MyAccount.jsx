@@ -1991,17 +1991,16 @@ const MyAccount = () => {
                                 rel="noopener noreferrer"
                               >
                                 <img
-                                  src={`${SITE_URL}/images/PDF.png`}
+                                  src={`${SITE_URL}/admin/uploads/frontend_image/PDF.png`}
                                   alt="PDF"
-                                  style={{ width: "80px" }}
+                                  style={{ width: "45px" }}
                                 />
                               </a>
                             )}
                           </h6>
                           <p>
                             <small>
-                              Uploaded on
-                              {calculateTimeAgo(userData.resume_uploaded_on)}
+                              Uploaded on {calculateTimeAgo(userData.resume_uploaded_on)}
                             </small>
                           </p>
                         </div>

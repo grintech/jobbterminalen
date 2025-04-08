@@ -4,6 +4,7 @@ import axios from "axios";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
 import { useTranslation } from "react-i18next";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 const bearerKey = import.meta.env.VITE_BEARER_KEY;
 const API_URL = import.meta.env.VITE_API_URL;
@@ -12,6 +13,9 @@ const ResetPassword = () => {
   const { t } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
+
+  const [showPassword, setShowPassword] = useState(false);
+  const [showPassword1, setShowPassword1] = useState(false);
 
   const { session_token } = location.state || {}; // Access session_token from location state
   const [password, setPassword] = useState("");
@@ -119,8 +123,9 @@ const ResetPassword = () => {
                     <label htmlFor="password" className="mb-2">
                     {t("NewPassword")} <span>*</span>
                     </label>
+                    <div className="position-relative">
                     <input
-                      type="password"
+                     type={showPassword ? "text" : "password"}
                       className="form-control"
                       name="password"
                       placeholder={t("NewPassPlaceholder")}
@@ -128,14 +133,30 @@ const ResetPassword = () => {
                       onChange={(e) => setPassword(e.target.value)}
                       required
                     />
+                     <span
+                      onClick={() => setShowPassword((prev) => !prev)}
+                      style={{
+                        position: "absolute",
+                        top: "45%",
+                        right: "10px",
+                        transform: "translateY(-50%)",
+                        cursor: "pointer",
+                        color: "#6c757d",
+                      }}
+                    >
+                      {showPassword ? <FaEye /> : <FaEyeSlash />}
+                    </span>
+                    </div>
                   </div>
 
                   <div className="col-12 mb-3">
                     <label htmlFor="confirmPassword" className="mb-2">
                     {t("Confirm_Password")} <span>*</span>
                     </label>
+
+                    <div className="position-relative">
                     <input
-                      type="password"
+                      type={showPassword1 ? "text" : "password"}
                       className="form-control"
                       name="confirmPassword"
                       placeholder={t("NewConfPassPlaceholder")}
@@ -143,6 +164,20 @@ const ResetPassword = () => {
                       onChange={(e) => setConfirmPassword(e.target.value)}
                       required
                     />
+                      <span
+                      onClick={() => setShowPassword1((prev) => !prev)}
+                      style={{
+                        position: "absolute",
+                        top: "45%",
+                        right: "10px",
+                        transform: "translateY(-50%)",
+                        cursor: "pointer",
+                        color: "#6c757d",
+                      }}
+                    >
+                      {showPassword1 ? <FaEye /> : <FaEyeSlash />}
+                    </span>
+                    </div>
                   </div>
 
                   <div className="col-12 py-4">
