@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom'
 import ReactFlagsSelect from "react-flags-select"; 
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
+import { Helmet } from 'react-helmet-async';
 
 const Contact = () => {
     const { t } = useTranslation();
@@ -312,7 +313,15 @@ const handleSubmit = async (e) => {
 };
 
   return (
-    <>
+    <>  
+        <Helmet >
+           <title>Contact Us - JobbTerminalen</title>
+           <meta name="description" content="Get in touch with JobbTerminalen for assistance with job searches, employer services, or general inquiries. We're here to help you navigate your career journey in Sweden." />
+           <meta name="keywords" content="Contact JobbTerminalen, job search assistance, employer services, career support Sweden, job portal contact" />
+           <meta property='og:title' content="Contact Us - JobbTerminalen" />
+           <meta property='og:description' content="Get in touch with JobbTerminalen for assistance with job searches, employer services, or general inquiries. We're here to help you navigate your career journey in Sweden." />
+        </Helmet>
+        
         <div className="contact_page">
             <Navbar />
             <div className="hero_banner d-flex flex-column align-items-center justify-content-center ">

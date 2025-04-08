@@ -78,7 +78,7 @@ const resources = {
       "AboutTitle" : "About Us",
       "AboutHead" : "Millions of jobs.",
       "AboutHead1" : "Find the one that's right for you.",
-      "AboutText" : "Lorem ipsum dolor sit amet consectetur adipisicing elit. Velit hic iusto commodi quo praesentium adipisci rem perspiciatis nesciunt, recusandae excepturi autem! Odit exercitationem voluptates est non ab sint laboriosam in!",
+      "AboutText" : "Embark on your career journey with our extensive job listings. Whether you're seeking your first job, a career change, or advancement in your current field, we connect you with opportunities that align with your aspirations and skills. Explore diverse industries and find the perfect fit for your professional growth.",
       "Aboutlist1" : "Digital Marketing Solutions for Tomorrow",
       "Aboutlist2" : "Our Talented & Experienced Marketing Agency",
       "Aboutlist3" : "Create your own skin to match your brand",
@@ -535,7 +535,7 @@ const resources = {
       "AboutTitle" : "Om oss",
       "AboutHead" : "Miljoner jobb.",
       "AboutHead1" : "Hitta den som är rätt för dig.",
-      "AboutText" : "Lorem ipsum dolor sit amet consectetur adipisicing elit. Velit hic iusto commodi quo praesentium adipisci rem perspiciatis nesciunt, recusandae excepturi autem! Odit exercitationem voluptates est non ab sint laboriosam in!",
+      "AboutText" : "Påbörja din karriärresa med våra omfattande jobbannonser. Oavsett om du söker ditt första jobb, en karriärförändring eller avancemang inom ditt nuvarande område, kopplar vi ihop dig med möjligheter som stämmer överens med dina ambitioner och färdigheter. Utforska olika branscher och hitta det som passar perfekt för din professionella utveckling.",
       "Aboutlist1" : "Digitala marknadsföringslösningar för morgondagen",
       "Aboutlist2" : "Vår begåvade och erfarna marknadsföringsbyrå",
       "Aboutlist3" : "Skapa din egen hud för att matcha ditt varumärke",
@@ -799,7 +799,6 @@ const resources = {
       "FraudHead3Text4": "Håll dig säker och glad jobbsökning!",
       "FraudBackToHome": "<Link>Tillbaka till startsidan</Link>",
       
-
 
       /*--- Feedback Page ---*/
       "FeedbackTitle": "Skicka feedback",

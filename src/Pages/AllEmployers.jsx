@@ -5,6 +5,8 @@ import Footer from "../components/Footer";
 import axios from "axios";
 import { useTranslation } from "react-i18next";
 import { Helmet } from "react-helmet-async";
+import { useAuthContext } from "../store/authContext";
+import { toast, ToastContainer } from "react-toastify";
 
 const AllEmployers = () => {
 
@@ -12,6 +14,7 @@ const AllEmployers = () => {
 
   const [companies, setCompanies] = useState([]); 
   const [loading, setLoading] = useState(true); 
+   const [likedCards, setLikedCards] = useState({}); // State to track liked companies
   const [error, setError] = useState(null); 
   const [pagination, setPagination] = useState({
     total_records: 0,
@@ -25,6 +28,8 @@ const AllEmployers = () => {
   const bearerKey = import.meta.env.VITE_BEARER_KEY; 
   const API_URL = import.meta.env.VITE_API_URL;
   const IMG_URL = import.meta.env.VITE_IMG_URL;
+  const { user } = useAuthContext();
+    const userId = user ? user.id : null;
 
   // Function to fetch companies data
   const fetchCompanies = async (page) => {
@@ -116,9 +121,81 @@ const AllEmployers = () => {
       return "City not found";
     }
   }
+
+
+   // Fetch saved (bookmarked) companies for the user after page refresh
+    useEffect(() => {
+      if (userId) {
+        axios
+          .get(`${API_URL}/bookmarked-companies-list.php?user_id=${userId}`, {
+            headers: {
+              Authorization: `Bearer ${bearerKey}`,
+              "Content-Type": "multipart/form-data",
+            },
+          })
+          .then((response) => {
+            if (response.data.type === "success") {
+              const savedCompanyIds = response.data.data.map(
+                (company) => company.company_id
+              );
+              setLikedCards(
+                savedCompanyIds.reduce((acc, id) => ({ ...acc, [id]: true }), {})
+              );
+            }
+          })
+          .catch((error) => {
+            console.error("Error fetching saved companies:", error);
+          });
+      }
+    }, [userId]);
+  
+    // Toggle like/unlike company
+    const toggleLike = async (companyId) => {
+      if (!userId) {
+        toast.error("Please login to like companies.");
+        return;
+      }
+  
+      try {
+        const formData = new FormData();
+        formData.append("user_id", userId);
+        formData.append("company_id", companyId);
+  
+        const response = await axios.post(
+          `${API_URL}/bookmark-companies.php`,
+          formData,
+          {
+            headers: {
+              Authorization: `Bearer ${bearerKey}`,
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+  
+        if (response.data.type === "success") {
+          setLikedCards((prevState) => ({
+            ...prevState,
+            [companyId]: !prevState[companyId],
+          }));
+  
+          // Show a toast message based on whether the company is saved or unsaved
+          const actionMessage = likedCards[companyId]
+            ? "Company Unsaved"
+            : "Company Saved";
+          toast.success(actionMessage);
+        } else {
+          toast.error("Failed to toggle like.");
+        }
+      } catch (error) {
+        console.error("Error while toggling like:", error);
+        toast.error("Error while saving company. Please try again.");
+      }
+    };
+
+
   return (
     <>
-        <Helmet>
+      <Helmet>
         <title>Top Companies Hiring in Sweden - JobbTerminalen</title>
         <meta name="description" content="Discover top companies hiring in Sweden. Browse company profiles, job openings, and find the best workplace for your career growth on JobbTerminalen." />
         <meta name="keywords" content="companies in Sweden, top employers, hiring companies, job portal Sweden, company profiles, career opportunities, best workplaces" />
@@ -172,6 +249,17 @@ const AllEmployers = () => {
                   <div className="col-lg-3 col-md-4 col-sm-6 mb-5" key={company.id}>
                     <div className="card company_list_card border-0 shadow h-100">
                       <div className="card-body">
+                         <div className="text-end">
+                         <i
+                              className={`fa-heart ${
+                                likedCards[company.id]
+                                  ? "fa-solid"
+                                  : "fa-regular"
+                              }`}
+                              onClick={() => toggleLike(company.id)}
+                              style={{ cursor: "pointer",fontSize:"20px" }}
+                            ></i>
+                          </div>
                         <div className="logo_div me-3 mb-3 shadow ">
                           <Link  to={`/companies/${company.slug}`}>
                             <img
@@ -262,6 +350,18 @@ const AllEmployers = () => {
 
         <Footer />
       </div>
+
+       <ToastContainer
+          position="top-right"
+          autoClose={3000}
+          hideProgressBar
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+        />
     </>
   );
 };

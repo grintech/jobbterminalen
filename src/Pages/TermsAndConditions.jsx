@@ -3,13 +3,23 @@ import Navbar from '../components/Navbar'
 import { Link } from 'react-router-dom'
 import Footer from '../components/Footer'
 import { useTranslation,Trans } from 'react-i18next'
+import { Helmet } from 'react-helmet-async'
 
 const TermsAndConditions = () => {
 
   const { t } = useTranslation();
 
   return (
-    <>
+    <>  
+      <Helmet>
+        <title>Terms & Conditions - JobbTerminalen</title>
+        <meta name="description" content="Review the Terms & Conditions of JobbTerminalen to understand the rules, policies, and user agreements for using our job portal services." />
+        <meta name="keywords" content="Terms & Conditions, user agreement, JobbTerminalen terms, legal policy, job portal rules, service policies, website terms" />
+        <meta property="og:title" content="Terms & Conditions - JobbTerminalen" />
+        <meta property="og:description" content="Review the Terms & Conditions of JobbTerminalen to understand the rules, policies, and user agreements for using our job portal services." />
+     </Helmet>
+
+
         <div className="terms_page">
           <Navbar />
           <div className="hero_banner d-flex flex-column align-items-center justify-content-center ">

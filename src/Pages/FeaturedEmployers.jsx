@@ -4,6 +4,7 @@ import Navbar from '../components/Navbar';
 import { Link } from 'react-router-dom';
 import Filter from '../components/Filter';
 import { useTranslation } from 'react-i18next';
+import { Helmet } from 'react-helmet-async';
 
 const FeaturedEmployers = () => {
   
@@ -63,7 +64,16 @@ const FeaturedEmployers = () => {
 
   return (
     <>
-        <div className="fea_emp_page">
+      <Helmet>
+        <title>Featured Companies Hiring in Sweden - JobbTerminalen</title>
+        <meta name="description" content="Explore featured companies hiring in Sweden. Find top employers, company profiles, and job openings to advance your career with JobbTerminalen." />
+        <meta name="keywords" content="featured companies, top employers Sweden, hiring companies, job portal Sweden, company profiles, career opportunities, best workplaces, job listings Sweden" />
+        <meta property="og:title" content="Featured Companies Hiring in Sweden - JobbTerminalen" />
+        <meta property="og:description" content="Explore featured companies hiring in Sweden. Find top employers, company profiles, and job openings to advance your career with JobbTerminalen." />
+      </Helmet>
+
+
+      <div className="fea_emp_page">
         <Navbar />
         <div className="hero_banner d-flex flex-column align-items-center justify-content-center ">
           <h1 className="fw-bold position-relative">{t("FeaturedCompanies")}</h1>

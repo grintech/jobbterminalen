@@ -60,7 +60,7 @@ const Categories = () => {
               </div>
             ) : error ? (
               <div className='text-center text-theme'>
-              <img src="/images/no-data.webp" className='no_data' alt='' /> 
+              <img src="/images/no-data.webp" className='no_data' alt='No category' /> 
               <p>{error}</p>
               </div>
             ) : categories.length > 0 ? (
@@ -68,10 +68,11 @@ const Categories = () => {
               <div className="row justify-content-center flex-wrap">
                 {categories.slice(0,12).map((category) => (
                   <div key={category.id} className="col-lg-2 col-md-3 col-sm-4 col-4 mb-4">
-                    <Link to={`/job/category/${category.name.toLowerCase()}`} className="cat_card">
+                    <Link  
+                    to={`/job/category/${category.name.trim().toLowerCase().replace(/\s+/g, '-')}`} className="cat_card">
                       <div className="card">
                         <div className="card-body text-center">                      
-                          <img src={`${IMG_URL}/${category.image}`} alt="" />
+                          <img src={`${IMG_URL}/${category.image}`} alt={category.name} />
                           <h5 className="mt-3">{category.name}</h5>
                         </div>
                       </div>
@@ -87,8 +88,8 @@ const Categories = () => {
               </>
             ) : (
               <div className='text-center text-theme'>
-              <img src="/images/no-data.webp" className='no_data' alt='' /> 
-              <p>No categories available at the moment.</p>
+               <img src="/images/no-data.webp" className='no_data' alt='No category' /> 
+               <p>No categories available at the moment.</p>
               </div>
             ) }
 
