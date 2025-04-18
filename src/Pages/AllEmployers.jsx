@@ -224,7 +224,7 @@ const AllEmployers = () => {
           ) : error ? (
             <div className="text-center text-theme " >
               <div className='text-center text-theme'>
-                <img src="/images/no-data1.png" className='no_company' alt='' /> 
+                <img loading='lazy' src="/images/no-data1.png" className='no_company' alt='' /> 
                 <h6>{ error === "Failed to fetch" ? (
                 <p className="text-center text-theme">Failed to fetch companies.Please try later!</p>
                   ) : (
@@ -240,7 +240,7 @@ const AllEmployers = () => {
               {companies.length === 0 ? (
                 <div className="text-center text-theme " >
                 <div className='text-center text-theme'>
-                  <img src="/images/no-data1.png" className='no_company' alt='' /> 
+                  <img loading='lazy' src="/images/no-data1.png" className='no_company' alt='' /> 
                   <h6>No companies found at the moment.Please try later.</h6>
                   </div>
                 </div>
@@ -263,7 +263,7 @@ const AllEmployers = () => {
                         <div className="logo_div me-3 mb-3 shadow ">
                           <Link  to={`/companies/${company.slug}`}>
                             <img
-                              
+                              loading='lazy'
                               src={`${IMG_URL}/${company.company_profile}`}
                               alt={company.company_name}
                             />

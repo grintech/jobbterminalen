@@ -5,8 +5,9 @@ import Navbar from './Navbar';
 import Footer from './Footer';
 import { useAuthContext } from '../store/authContext';
 import HomeBanners from './HomeBanners';
-import ApplyPopup from './ApplyPopup';
+// import ApplyPopup from './ApplyPopup';
 import { ToastContainer, toast } from 'react-toastify';
+
 
 const JobDetail = () => {
   const { slug } = useParams(); // Capture the slug from the URL
@@ -16,6 +17,13 @@ const JobDetail = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [saved, setSaved] = useState(false);
+
+  const [expanded, setExpanded] = useState(false);
+  const text = jobDetails?.description || "";
+  
+  // Check if the text is long enough to require the "Read more" button
+  const isLongText = text.length > 120; 
+
 
   const { user } = useAuthContext();
   const userId = user ? user.id : null;
@@ -147,6 +155,7 @@ const JobDetail = () => {
 
         if (response.data.type === 'success') {
           setJobDetails(response.data.data);
+          console.log(response.data.data);
         } else {
           setError('Job details not found. Please try later');
         }
@@ -320,7 +329,7 @@ const JobDetail = () => {
                <div className="msg_card  mb-4">
                <div className="card border-0 shadow">
                 <div className="card-body text-center p-4">
-                <img className="job_search" src="/images/no-job.png" alt="job_search" />
+                <img loading='lazy' className="job_search" src="/images/no-job.png" alt="job_search" />
                 <h6 className="text-theme">{error}</h6>
               </div>
               </div>
@@ -338,19 +347,33 @@ const JobDetail = () => {
                   <div className="d-flex align-items-center justify-content-between flex-wrap">
                     <div className="d-flex align-items-center py-2">
                       <div className="logo_div me-3">
+                        <Link to={`/companies/${jobDetails?.company_slug}`}>
                         <img
+                         loading='lazy'
                           src={`${IMG_URL}/${jobDetails.company_profile}`}
                           alt={jobDetails.company_name}
                           className="rounded"
                         />
+
+                        </Link>
                       </div>
                       <div>
-                      <h4 className="job_title text-capitalize">{jobDetails.title}</h4>
+                      <h4 className="job_title text-capitalize">{stripHtml(jobDetails.title)}</h4>
                       <h6 className="job_company">{jobDetails.company_name}</h6>
                       </div>
                     </div>
                     
                     <div className="d-flex py-2">
+                    {userId ? (
+                         <Link to='/apply-job' state={{ jobId: jobDetails.id }} className="btn btn-primary" > Apply </Link>
+                      ) : (
+                        <button className="btn btn-primary" onClick={() => handleApplyClick(jobDetails.job_id)}>
+                          Apply
+                        </button>
+                      )}
+                    </div>
+
+                    {/* <div className="d-flex py-2">
                     {userId ? (
                         <ApplyPopup jobId={jobDetails.id}>
                           Apply
@@ -360,7 +383,8 @@ const JobDetail = () => {
                           Apply
                         </button>
                       )}
-                    </div>
+                    </div> */}
+
                   </div>
 
                   <div className="job_details mt-2">
@@ -417,13 +441,13 @@ const JobDetail = () => {
             
                 <div className="row py-3">
                   {/* Sidebar Section */}
-                  <div className="col-lg-4 mb-4 mb-lg-0">
+                  <div className="col-lg-4 mb-4 mb-lg-0 d-none">
                     <div className="card_sticky">
                       <div className="card company_list_card mb-4">
                         <div className="card-body px-4 py-4">
                           <div className="logo_div">
-                            <Link to={`/companies/${jobDetails.companies_slug}`}>
-                              <img
+                            <Link to={`/companies/${jobDetails?.company_slug}`}>
+                              <img loading='lazy'
                                 src={`${IMG_URL}/${jobDetails.company_profile}`}
                                 alt="Company Logo"
                               />
@@ -450,26 +474,45 @@ const JobDetail = () => {
                   </div>
 
                   {/* Job Details Section */}
-                  <div className="col-lg-8 mx-auto">
-                    {/* Job Info */}
-                    <div className="card job_list_card mb-4">
-                      <div className="card-body">
-                        <div className="container job-highlights">
-                        <h6 className="job_company">**Job Highlights:**</h6>
-                          <p>
-                            We are hiring for the {jobDetails.title} position at {jobDetails.company_name}, located in {jobDetails.job_location}. This is a {jobDetails.job_type} opportunity, offering a salary range of {jobDetails.salary_range} ({jobDetails.salary_currency}) or an hourly rate of {jobDetails.hourly_rate}. Ideal candidates should have {jobDetails.experience_required} experience and possess skills in {jobDetails.skills}. A {jobDetails.qulification} is preferred. With {jobDetails.total_vacancies} openings available, this is a great chance to join a dynamic team. Apply now to be part of an exciting opportunity! 🚀
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-
-
+                  <div className="col-12 mx-auto">
                     <div className="card job_list_card mb-4">
                       <div className="card-body">
                       <div className="container job-description">
-                          <h6 className="job_company">**Job Description:**</h6>
-                          <p className="mt-2">{getPlainText(stripHtml(jobDetails?.description))}</p>
+                          <h5 className="job_company">Job Description:</h5>
+                          <div>
+                          <p
+                            className={`job-description-text ${expanded ? "expanded" : ""}`}
+                            dangerouslySetInnerHTML={{ __html: getPlainText(stripHtml(text)) }}
+                          ></p>
+                          
+                          {/* Display the "Read more" button only if the text is long enough */}
+                          {isLongText && (
+                            <button
+                              onClick={() => setExpanded(!expanded)}
+                              className="read-more-btn"
+                            >
+                              {expanded ? "Read less" : "Read more"}
+                            </button>
+                          )}
                         </div>
+
+                          {/* <p className="mt-2">{getPlainText(stripHtml(jobDetails?.description))}</p> */}
+
+                      </div>
+                      <div className="card-body key_skills m-0">
+                      <h5> Skills</h5>
+                      {jobDetails.skills ? (
+                        <ul className="d-flex flex-wrap p-0 m-0">
+                          {jobDetails.skills.split(',').map((skill, index) => (
+                            <li className="mb-2 text-capitalize" key={index}>
+                              {skill.trim()}
+                            </li>
+                          ))}
+                        </ul>
+                      ) : (
+                        <p>No key skills listed for this job.</p>
+                      )}
+                    </div>
                       </div>
                     </div>
 
@@ -478,15 +521,16 @@ const JobDetail = () => {
                       <div className="card-body">
                       <div className="container job-details">
                           <strong>Role: </strong><p>{jobDetails.title}</p>
-                          <strong>Industry Type: </strong><p>{jobDetails.company_industry}</p>
-                          <strong>Employment Type: </strong><p>{jobDetails.job_type}</p>
-                          <strong>Role Category: </strong><p>{jobDetails.parent_category_name}</p>
+                          <strong>Industry Type: </strong><p className='text-capitalize' >{jobDetails.company_industry}</p>
+                          <strong>Employment Type: </strong><p className='text-capitalize' >{jobDetails.job_type}</p>
+                          {jobDetails.parent_category_name && <div><strong>Category: </strong><p>{jobDetails.parent_category_name}</p></div>}
+                          
                         </div>
                       </div>
                     </div>
 
 
-                    <div className="card job_list_card mb-4">
+                    {/* <div className="card job_list_card mb-4">
                     <div className="card-body key_skills">
                       <h4>Key Skills</h4>
                       {jobDetails.skills ? (
@@ -501,7 +545,7 @@ const JobDetail = () => {
                         <p>No key skills listed for this job.</p>
                       )}
                     </div>
-                  </div>
+                  </div> */}
 
 
                     <div className="card job_list_card mb-4">
@@ -534,7 +578,7 @@ const JobDetail = () => {
                               <div className="d-flex justify-content-between">
                                 <Link to={`/companies/${job.company_slug}`}>
                                   <div className="logo_div border-0 shadow">
-                                    <img
+                                    <img loading='lazy'
                                       src={`${IMG_URL}/${job.company_profile}`}
                                       alt="company_logo"
                                     />
@@ -616,7 +660,7 @@ const JobDetail = () => {
             <div className="msg_card  mb-4">
             <div className="card border-0 shadow">
              <div className="card-body text-center p-4">
-             <img className="job_search" src="/images/no-job.png" alt="job_search" />
+             <img loading='lazy' className="job_search" src="/images/no-job.png" alt="job_search" />
              <h6 className="text-theme">No details found.Please try later</h6>
            </div>
            </div>
@@ -625,7 +669,18 @@ const JobDetail = () => {
         )}
 
         {!loading && <Footer />}
-         {/* <Footer /> */}
+        {/* <Footer /> */}
+         <ToastContainer 
+            position="top-right"
+            autoClose={3000}
+            hideProgressBar
+            newestOnTop={false}
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+           />
 
       </div>
     </>

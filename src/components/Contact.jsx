@@ -330,7 +330,7 @@ const handleSubmit = async (e) => {
             <div className="container py-5">
                 <div className="row align-items-center">
                 <div className="col-lg-5 mx-auto">
-                 <img src="/images/contact1.avif" className='w-100 rounded-3' alt="contact-img" />
+                 <img loading='lazy' src="/images/contact1.avif" className='w-100 rounded-3' alt="contact-img" />
                  </div>
                     <div className="col-lg-5 mx-auto">
                     <form className='register_form' onSubmit={handleSubmit}>

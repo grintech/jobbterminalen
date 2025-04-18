@@ -14,7 +14,7 @@ const Footer = () => {
             <div className="container pt-4">
               <div className="row">
                 <div className="col-lg-4 col-md-4  col-sm-6 order-5 order-sm-1">
-                <Link className="navbar-brand" > <img src="/images/foot_logo.png" alt="logo" /></Link>
+                <Link className="navbar-brand" > <img loading='lazy' src="/images/foot_logo.png" alt="logo" /></Link>
                 <h5 className='mt-3'>{ t("ConnectWithUs")}</h5>
                 <p>{ t("FooterText")}</p>
                 <div className="d-flex social_links flex-wrap mb-3">
@@ -66,7 +66,7 @@ const Footer = () => {
               </div>
             </div>
             <div className="d-flex justify-content-center border-top py-3">
-                <p className='m-0 text-center'>{ t("Copyright")}</p>
+                <p className='m-0 px-2 text-center'>{ t("Copyright")}</p>
             </div>
         </footer>
     </>

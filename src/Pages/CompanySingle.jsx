@@ -3,8 +3,7 @@ import Navbar from "../components/Navbar";
 import { Link, useParams } from "react-router-dom";
 import Footer from "../components/Footer";
 import axios from "axios";
-
-import ApplyPopup from "../components/ApplyPopup";
+// import ApplyPopup from "../components/ApplyPopup";
 import { useAuthContext } from "../store/authContext";
 import { toast, ToastContainer } from "react-toastify";
 import HomeBanners from "../components/HomeBanners";
@@ -24,43 +23,43 @@ const CompanySingle = () => {
   const { user } = useAuthContext();
   const userId = user ? user.id : null;
 
-useEffect(() => {
-  const fetchData = async () => {
-    try {
-      setIsLoading(true);
-      setError(null);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
 
-      const response = await fetch(`${API_URL}/company-single.php?slug=${slug}`, {
-        headers: {
-          Authorization: `Bearer ${bearerKey}`,
-          "Content-Type": "multipart/form-data",
-        },
-      });
+        const response = await fetch(`${API_URL}/company-single.php?slug=${slug}`, {
+          headers: {
+            Authorization: `Bearer ${bearerKey}`,
+            "Content-Type": "multipart/form-data",
+          },
+        });
 
-      const result = await response.json();
-      if (result.type === "success") {
-        setCompanyData(result.data);
-        setJobs(result.jobs);
-      } else {
-        setError(result.message || "Failed to fetch company data");
+        const result = await response.json();
+        if (result.type === "success") {
+          setCompanyData(result.data);
+          setJobs(result.jobs);
+        } else {
+          setError(result.message || "Failed to fetch company data");
+        }
+      } catch (err) {
+        setError("An error occurred while fetching company data.");
+      } finally {
+        setIsLoading(false);
       }
-    } catch (err) {
-      setError("An error occurred while fetching company data.");
-    } finally {
-      setIsLoading(false);
+    };
+
+    fetchData();
+  }, [slug]);
+
+  useEffect(() => {
+    if (companyData?.latitude && companyData?.longitude) {
+      getCityName(companyData.latitude, companyData.longitude)
+        .then((cityName) => setCity(cityName))
+        .catch((err) => console.error("Error getting city name:", err));
     }
-  };
-
-  fetchData();
-}, [slug]);
-
-useEffect(() => {
-  if (companyData?.latitude && companyData?.longitude) {
-    getCityName(companyData.latitude, companyData.longitude)
-      .then((cityName) => setCity(cityName))
-      .catch((err) => console.error("Error getting city name:", err));
-  }
-}, [companyData]);
+  }, [companyData]);
 
 
 
@@ -93,7 +92,7 @@ useEffect(() => {
 
   const calculateTimeAgo = (date) => {
     if (!date) return "Updating...";
-  
+
     const utcZero = date.replace(" ", "T") + "Z";
     const localDate = new Date(utcZero);
     if (isNaN(localDate.getTime())) {
@@ -101,26 +100,26 @@ useEffect(() => {
     }
     const now = new Date();
     const diffTime = now - localDate;
-  
+
     const diffSeconds = Math.floor(diffTime / 1000);
     if (diffSeconds < 60) {
       return `${diffSeconds} second${diffSeconds === 1 ? "" : "s"} ago`;
     }
-  
+
     const diffMinutes = Math.floor(diffTime / (1000 * 60));
     if (diffMinutes < 60) {
       return `${diffMinutes} minute${diffMinutes === 1 ? "" : "s"} ago`;
     }
-  
+
     const diffHours = Math.floor(diffMinutes / 60);
     if (diffHours < 24) {
       return `${diffHours} hour${diffHours === 1 ? "" : "s"} ago`;
     }
-  
+
     const diffDays = Math.floor(diffHours / 24);
     return `${diffDays} day${diffDays === 1 ? "" : "s"} ago`;
   };
-  
+
 
   const handleApplyClick = (jobId) => {
     if (!userId) {
@@ -174,7 +173,7 @@ useEffect(() => {
   }, []);
 
 
-  
+
   return (
     < div className="company_single_page" >
       <Navbar />
@@ -189,20 +188,20 @@ useEffect(() => {
               <div className="spinner-grow text-primary" role="status">
                 <span className="visually-hidden">Loading...</span>
               </div>
-            <p className='mt-2'>Fetching data...</p>
+              <p className='mt-2'>Fetching data...</p>
             </div>
           </>
         ) : error ? (
           <div className="msg_card my-5">
             <div className="card border-0 shadow">
-            <div className="card-body text-center p-4">
-           <img className="job_search" src="/images/no-data1.png" alt="job_search" />
-           <h6 className="text-theme">{error == "No data found" ? "No details found at the moment.Please try later" : error}</h6>
-           </div>
+              <div className="card-body text-center p-4">
+                <img loading="lazy" className="job_search" src="/images/no-data1.png" alt="job_search" />
+                <h6 className="text-theme">{error == "No data found" ? "No details found at the moment.Please try later" : error}</h6>
+              </div>
+            </div>
           </div>
-           </div>
         ) : (
-          
+
           <div className="col-md-12 mx-auto">
             <div className="card company_profile border-0 shadow">
               <div className="card-body">
@@ -210,6 +209,7 @@ useEffect(() => {
                   <div className="d-flex align-items-center py-2">
                     <div className="logo_div me-3">
                       <img
+                        loading="lazy"
                         src={`${IMG_URL}/${companyData.company_profile}`}
                         alt={companyData.company_name}
                         className="rounded"
@@ -235,88 +235,98 @@ useEffect(() => {
               {bannerPlace === "companies_top" && <HomeBanners />}
             </div>
             <div className="company_details py-5">
-                    <div className="col-md-12 mx-auto">
-                      <div className="row">
-                        <div className="col-lg-8">
-                          <div className="card border-0 shadow">
-                            <div className="card-body py-4 px-4">
-                              <h4 className="mb-3">About Company :</h4>
-                              <div dangerouslySetInnerHTML={{ __html: companyData.company_about }} />
-                                {companyData.company_gallery.length == 1 && (
-                                  <div className="row">
-                                    <div className="col-12 mt-3">
-                                    <img
-                                    src={`${IMG_URL}/${companyData.company_gallery.split(',')[0]}`}
-                                    className="w-100 rounded shadow h-100"
-                                    alt="company-img"
-                                    />
-                                      </div>
-                                  </div>
-                                )}
+              <div className="col-md-12 mx-auto">
+                <div className="row">
+                  <div className="col-lg-8">
+                    <div className="card border-0 shadow">
+                      <div className="card-body py-4 px-4">
+                        <h4 className="mb-3">About Company :</h4>
+                        <div dangerouslySetInnerHTML={{ __html: companyData.company_about }} />
+                        {companyData.company_gallery.length == 1 && (
+                          <div className="row">
+                            <div className="col-12 mt-3">
+                              <img loading="lazy"
+                                src={`${IMG_URL}/${companyData.company_gallery.split(',')[0]}`}
+                                className="w-100 rounded shadow h-100"
+                                alt="company-img"
+                              />
+                            </div>
+                          </div>
+                        )}
 
-                              {companyData.company_gallery.split(',').length == 2 && (
+                        {companyData.company_gallery.split(',').length == 2 && (
+                          <div className="row">
+                            <div className="col-12 mt-3">
                               <div className="row">
-                                <div className="col-12 mt-3">
-                                  <div className="row">
-                                    <div className="col-lg-6 mb-4 mb-lg-0">
-                                    <img
+                                <div className="col-lg-6 mb-4 mb-lg-0">
+                                  <img loading="lazy"
                                     src={`${IMG_URL}/${companyData.company_gallery.split(',')[0]}`}
-                                    className="w-100 rounded shadow h-100"
-                                    alt="company-img"
-                                    />
-                                    </div>
-                                    <div className="col-lg-6 mb-4 mb-lg-0">
-                                    <img
-                                    src={`${IMG_URL}/${companyData.company_gallery.split(',')[1]}`}
-                                    className="w-100 rounded shadow h-100"
-                                    alt="company-img"
-                                    />
-                                    </div>
-                                  </div>
-                                  </div>
-                              </div>
-                              )}
-
-                            {companyData.company_gallery.split(',').length >= 3 && (
-                              <div className="row">
-                                <div className="col-md-7 mb-4 mb-md-0">
-                                  <img
-                                    src={`${IMG_URL}/${companyData.company_gallery.split(',')[2]}`}
                                     className="w-100 rounded shadow h-100"
                                     alt="company-img"
                                   />
                                 </div>
-                                <div className="col-md-5">
-                                  <img
+                                <div className="col-lg-6 mb-4 mb-lg-0">
+                                  <img loading="lazy"
                                     src={`${IMG_URL}/${companyData.company_gallery.split(',')[1]}`}
-                                    className="w-100 rounded shadow mb-4"
-                                    alt="company-img"
-                                  />
-                                  <img
-                                    src={`${IMG_URL}/${companyData.company_gallery.split(',')[0]}`}
-                                    className="w-100 rounded shadow"
+                                    className="w-100 rounded shadow h-100"
                                     alt="company-img"
                                   />
                                 </div>
                               </div>
-                            )}
+                            </div>
+                          </div>
+                        )}
+
+                        {companyData.company_gallery.split(',').length >= 3 && (
+                          <div className="row">
+                            <div className="col-md-7 mb-4 mb-md-0">
+                              <img loading="lazy"
+                                src={`${IMG_URL}/${companyData.company_gallery.split(',')[2]}`}
+                                className="w-100 rounded shadow h-100"
+                                alt="company-img"
+                              />
+                            </div>
+                            <div className="col-md-5">
+                              <img loading="lazy"
+                                src={`${IMG_URL}/${companyData.company_gallery.split(',')[1]}`}
+                                className="w-100 rounded shadow mb-4"
+                                alt="company-img"
+                              />
+                              <img loading="lazy"
+                                src={`${IMG_URL}/${companyData.company_gallery.split(',')[0]}`}
+                                className="w-100 rounded shadow"
+                                alt="company-img"
+                              />
+                            </div>
+                          </div>
+                        )}
 
 
-                              <div className="row mt-4">
-                             { jobs.length >0 && <h4 className="mb-3">Vacancies :</h4>}
-                                {jobs.map((job) => (
-                                  <div className="col-md-6 mb-4" key={job.id}>
-                                    <div className="card company_list_card border-0 shadow">
-                                      <div className="card-body">
-                                        <div className="d-flex justify-content-between">
-                                          <div className="logo_div me-3 mb-3">
-                                            <img
-                                              src={`${IMG_URL}/${companyData.company_profile}`}
-                                              alt={job.title}
-                                              className="rounded"
-                                            />
-                                          </div>
-                                          <div >
+                        <div className="row mt-4">
+                          {jobs.length > 0 && <h4 className="mb-3">Vacancies :</h4>}
+                          {jobs.map((job) => (
+                            <div className="col-md-6 mb-4" key={job.id}>
+                              <div className="card company_list_card border-0 shadow">
+                                <div className="card-body">
+                                  <div className="d-flex justify-content-between">
+                                    <div className="logo_div me-3 mb-3">
+                                      <img loading="lazy"
+                                        src={`${IMG_URL}/${companyData.company_profile}`}
+                                        alt={job.title}
+                                        className="rounded"
+                                      />
+                                    </div>
+                                    <div>
+                                      {userId ? (
+                                        <Link to='/apply-job' state={{ jobId: job.id }} className="btn btn-primary btn-sm" > Apply </Link>
+                                      ) : (
+                                        <button className="btn btn-sm btn-primary" onClick={() => handleApplyClick(job.id)}>
+                                          Apply
+                                        </button>
+                                      )}
+                                    </div>
+
+                                    {/* <div >
                                           {userId ? (
                                               <ApplyPopup jobId={job.id}>
                                                 Apply
@@ -326,88 +336,89 @@ useEffect(() => {
                                                 Apply
                                               </button>
                                             )}
-                                          </div>
-                                        </div>
-                                        <Link to={`/jobs/${job.slug}`}>
-                                          <h5 dangerouslySetInnerHTML={{ __html: job.title }}></h5>
-                                        </Link>
-                                        <p className="text-muted d-flex align-items-center">
-                                          <i className="fa-regular fa-clock me-2"></i>
-                                          Posted {calculateTimeAgo(job.created_at)}
-                                        </p>
-                                        <div className="d-flex justify-content-between">
-                                          <div className="btn-sm btn-green me-2 mb-2">
-                                            {job.job_type || 'Not specified'}
-                                          </div>
-                                          <div className="text-muted">
-                                            <span className="text_blue fw-bold me-1">{job.salary_currency || 'N/A'}</span>
-                                            {job.salary_range || 'N/A'}
-                                          </div>
-                                        </div>
-                                        
-                                      </div>
+                                          </div> */}
+
+                                  </div>
+                                  <Link to={`/jobs/${job.slug}`}>
+                                    <h5 dangerouslySetInnerHTML={{ __html: job.title }}></h5>
+                                  </Link>
+                                  <p className="text-muted d-flex align-items-center">
+                                    <i className="fa-regular fa-clock me-2"></i>
+                                    Posted {calculateTimeAgo(job.created_at)}
+                                  </p>
+                                  <div className="d-flex justify-content-between">
+                                    <div className="btn-sm btn-green me-2 mb-2">
+                                      {job.job_type || 'Not specified'}
+                                    </div>
+                                    <div className="text-muted">
+                                      <span className="text_blue fw-bold me-1">{job.salary_currency || 'N/A'}</span>
+                                      {job.salary_range || 'N/A'}
                                     </div>
                                   </div>
-                                ))}
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="col-lg-4 company_info_card">
-                          <div className="card_sticky">
-                            <div className="card shadow border-0">
-                              <div className="card-body">
-                                <iframe
-                                  height="200px"
-                                  src={`https://www.google.com/maps?q=${companyData.latitude},${companyData.longitude}&hl=en&z=14&output=embed`}
-                                  className="rounded w-100"
-                                  allowFullScreen=""
-                                ></iframe>
-                                <div className="mt-3">
-                                  <div className="d-flex align-items-baseline justify-content-between mt-2">
-                                    <span className="text-muted fw-medium">Industry:</span>
-                                    <span className='text-end'>{companyData.company_industry}</span>
-                                  </div>
-                                  <div className="d-flex align-items-baseline justify-content-between mt-2">
-                                    <span className="text-muted fw-medium">Tagline:</span>
-                                    <span className='text-end'>{companyData.company_tagline}</span>
-                                  </div>
-                                  <div className="d-flex align-items-baseline justify-content-between mt-2">
-                                    <span className="text-muted fw-medium">Website:</span>
-                                    <Link className='text-end' style={{wordBreak:"break-all"}} to={companyData.company_website} target="_blank">
-                                      {companyData.company_website}
-                                    </Link>
-                                  </div>
-                                  <div className="d-flex align-items-baseline justify-content-between mt-2">
-                                    <span className="text-muted fw-medium">Location:</span>
-                                    <span className='text-end'>{companyData.company_address}</span>
-                                  </div>
+
                                 </div>
                               </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="col-lg-4 company_info_card">
+                    <div className="card_sticky">
+                      <div className="card shadow border-0">
+                        <div className="card-body">
+                          <iframe
+                            height="200px"
+                            src={`https://www.google.com/maps?q=${companyData.latitude},${companyData.longitude}&hl=en&z=14&output=embed`}
+                            className="rounded w-100"
+                            allowFullScreen=""
+                          ></iframe>
+                          <div className="mt-3">
+                            <div className="d-flex align-items-baseline justify-content-between mt-2">
+                              <span className="text-muted fw-medium">Industry:</span>
+                              <span className='text-end'>{companyData.company_industry}</span>
+                            </div>
+                            <div className="d-flex align-items-baseline justify-content-between mt-2">
+                              <span className="text-muted fw-medium">Tagline:</span>
+                              <span className='text-end'>{companyData.company_tagline}</span>
+                            </div>
+                            <div className="d-flex align-items-baseline justify-content-between mt-2">
+                              <span className="text-muted fw-medium">Website:</span>
+                              <Link className='text-end' style={{ wordBreak: "break-all" }} to={companyData.company_website} target="_blank">
+                                {companyData.company_website}
+                              </Link>
+                            </div>
+                            <div className="d-flex align-items-baseline justify-content-between mt-2">
+                              <span className="text-muted fw-medium">Location:</span>
+                              <span className='text-end'>{companyData.company_address}</span>
                             </div>
                           </div>
                         </div>
                       </div>
                     </div>
                   </div>
+                </div>
+              </div>
+            </div>
           </div>
         )}
       </div>
-      
-       {!isLoading && <Footer />}
-       {/* <Footer /> */}
 
-       <ToastContainer 
-          position="top-right"
-          autoClose={3000}
-          hideProgressBar
-          newestOnTop={false}
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-        />
+      {!isLoading && <Footer />}
+      {/* <Footer /> */}
+
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
 
     </ div>
   );

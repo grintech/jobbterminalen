@@ -203,11 +203,11 @@ const SavedJobs = () => {
                                   : job.experience_required} */}
                               </div>
                             </li>
-                            {job.job_location && (
+                            {job.city && (
                               <li>
                                 <div className="btn btn-sm btn-green me-2 mb-2 text-start text-capitalize">
                                   <i className="fa-solid fa-location-dot "></i>
-                                  &nbsp;&nbsp;{job.job_location}
+                                  &nbsp;&nbsp;{job.city}
                                 </div>
                               </li>
                             )}

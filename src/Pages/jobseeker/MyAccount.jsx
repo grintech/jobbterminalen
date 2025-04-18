@@ -22,11 +22,10 @@ const MyAccount = () => {
   const [suggestions, setSuggestions] = useState([]);
   const [employment, setEmployment] = useState([]);
   const [education, setEducation] = useState([]);
-  const [selectedEducation, setSelectedEducation] = useState(null);
+  // const [selectedEducation, setSelectedEducation] = useState(null);
   const [socialProfiles, setSocialProfiles] = useState([]);
   const [selectedSocialProfile, setSelectedSocialProfile] = useState({});
 
-  const [isCurrentEmployment, setIsCurrentEmployment] = useState(true);
   const [isDifferentlyAbled, setIsDifferentlyAbled] = useState(
     userData.differently_abled || null
   );
@@ -45,14 +44,49 @@ const MyAccount = () => {
     lifetime_validity: false,
   });
 
-  const handleRadioEmpChange = (event) => {
-    const value = event.target.value;
-    setIsCurrentEmployment(value === "yes");
-    setEmployment((prevData) => ({
-      ...prevData,
-      current_employment: value,
-    }));
+  const handleNumericInput = (e, key, maxLength, setData, data) => {
+    let value = e.target.value.replace(/\D/g, ""); // Remove non-digits
+    if (value.length > maxLength) {
+      value = value.slice(0, maxLength);
+    }
+    setData({ ...data, [key]: value });
   };
+  
+
+  const defaultEmploymentForm = {
+    id: "",
+    current_employment: "yes",
+    employment_type: "",
+    total_experience: "",
+    current_company_name: "",
+    current_job_title: "",
+    joining_date: "",
+    worked_till: "",
+    current_salary: "",
+    job_profile: "",
+    notice_period: "",
+  };
+
+  const defaultEducationForm = {
+    id: "",
+    education: "",
+    institute: "",
+    course: "",
+    specialization: "",
+    course_type: "",
+    course_starting_year: "",
+    course_ending_year: "",
+    marks: "",
+    board: "",
+    passing_year: "",
+    school_medium: "",
+  }
+  const [employmentForm, setEmploymentForm] = useState(defaultEmploymentForm);
+
+  const [educationData, setEducationData] = useState(defaultEducationForm);
+  
+  const isSchoolLevel = educationData.education === "4" || educationData.education === "5";
+
 
   const handleRadioChange = (event) => {
     const { value } = event.target;
@@ -318,7 +352,7 @@ const MyAccount = () => {
                 language: lang.trim(),
                 proficiency: userDetails.language_proficiency
                   .split(",")
-                  [index].trim(),
+                [index].trim(),
               }));
             setLanguages(languageArray);
           }
@@ -566,13 +600,13 @@ const MyAccount = () => {
     const totalExperience =
       userData.total_experience_years && userData.total_experience_months
         ? userData.total_experience_years +
-          " - " +
-          userData.total_experience_months
+        " - " +
+        userData.total_experience_months
         : userData.total_experience_years
-        ? userData.total_experience_years
-        : userData.total_experience_months
-        ? userData.total_experience_months
-        : "";
+          ? userData.total_experience_years
+          : userData.total_experience_months
+            ? userData.total_experience_months
+            : "";
 
     // Show ajaxModal with dynamic message
     const ajaxModal = new bootstrap.Modal(document.getElementById("ajaxModal"));
@@ -630,6 +664,8 @@ const MyAccount = () => {
     }
   };
 
+  // Employment Starts -------
+
   const fetchEmployment = async (userId) => {
     try {
       const response = await axios.get(
@@ -642,48 +678,62 @@ const MyAccount = () => {
       );
 
       if (response.data.type === "success") {
-        const employmentDetails = response.data.data;
+        const employmentDetailsArray = response.data.data;
 
-        // console.log("Employment Details:", employmentDetails);
+        // Map each employment object
+        const updatedEmploymentDetails = employmentDetailsArray.map((employment) => {
+          // Convert employment type
+          switch (employment.employment_type) {
+            case "1":
+              employment.employment_type = "Full Time";
+              break;
+            case "2":
+              employment.employment_type = "Part Time";
+              break;
+            case "3":
+              employment.employment_type = "Fixed";
+              break;
+            case "4":
+              employment.employment_type = "Hourly";
+              break;
+            case "null":
+            case null:
+            case "":
+              employment.employment_type = "Not specified";
+              break;
+          }
 
-        if (employmentDetails.employment_type === "1") {
-          employmentDetails.employment_type = "Full Time";
-        } else if (employmentDetails.employment_type === "2") {
-          employmentDetails.employment_type = "Part Time";
-        } else if (employmentDetails.employment_type === "3") {
-          employmentDetails.employment_type = "Fixed";
-        } else if (employmentDetails.employment_type === "4") {
-          employmentDetails.employment_type = "Hourly";
-        }
+          // Format total experience
+          if (
+            employment.total_experience &&
+            employment.total_experience.includes(" - ")
+          ) {
+            const experienceParts = employment.total_experience.split(" - ");
+            const monthsPart = experienceParts[1]
+              ? experienceParts[1].split(" ")[0]
+              : null;
 
-        if (
-          employmentDetails.total_experience &&
-          employmentDetails.total_experience.includes(" - ")
-        ) {
-          const experienceParts =
-            employmentDetails.total_experience.split(" - ");
-          const monthsPart = experienceParts[1]
-            ? experienceParts[1].split(" ")[0]
-            : null;
+            employment.total_experience_months = monthsPart
+              ? `${monthsPart} Month${parseInt(monthsPart, 10) > 1 ? "s" : ""}`
+              : "";
+          } else {
+            employment.total_experience_months = "";
+          }
 
-          employmentDetails.total_experience_months = monthsPart
-            ? `${monthsPart} Month${parseInt(monthsPart, 10) > 1 ? "s" : ""}`
-            : "";
-        } else {
-          employmentDetails.total_experience_months = "";
-        }
+          if (employment.total_experience) {
+            const yearsPart = employment.total_experience.split(" ")[0];
 
-        if (employmentDetails.total_experience) {
-          const yearsPart = employmentDetails.total_experience.split(" ")[0];
+            employment.total_experience_years = yearsPart
+              ? `${yearsPart} Year${parseInt(yearsPart, 10) > 1 ? "s" : ""}`
+              : "";
+          } else {
+            employment.total_experience_years = "";
+          }
 
-          employmentDetails.total_experience_years = yearsPart
-            ? `${yearsPart} Year${parseInt(yearsPart, 10) > 1 ? "s" : ""}`
-            : "";
-        } else {
-          employmentDetails.total_experience_years = "";
-        }
+          return employment;
+        });
 
-        setEmployment(employmentDetails);
+        setEmployment(updatedEmploymentDetails);
       } else {
         console.error(
           "Failed to fetch seeker employment:",
@@ -698,83 +748,127 @@ const MyAccount = () => {
     }
   };
 
-  const saveEmploymentData = async () => {
-    // Calculate total experience
-    const totalExperience =
-      employment.total_experience_years && employment.total_experience_months
-        ? employment.total_experience_years +
-          " - " +
-          employment.total_experience_months
-        : employment.total_experience_years
-        ? employment.total_experience_years
-        : employment.total_experience_months
-        ? employment.total_experience_months
-        : "";
-
-    // Show ajaxModal with dynamic message
+  const saveNewEmploymentData = async () => {
     const ajaxModal = new bootstrap.Modal(document.getElementById("ajaxModal"));
-    document.getElementById("ajaxModalMessage").textContent =
-      "Saving your details...";
+    document.getElementById("ajaxModalMessage").textContent = "Saving your details...";
     ajaxModal.show();
-
+  
     try {
+      // Prepare payload: remove empty fields
+      const payload = Object.fromEntries(
+        Object.entries(employmentForm).filter(
+          ([key, value]) => value !== "" && value !== null && value !== undefined
+        )
+      );
+  
       const response = await axios.put(
         `${API_URL}/employment-details-save.php?user_id=${userId}`,
-        {
-          current_employment: employment.current_employment,
-          employment_type: employment.employment_type,
-          total_experience: totalExperience,
-          current_company_name: employment.current_company_name,
-          current_job_title: employment.current_job_title,
-          joining_date: employment.joining_date,
-          worked_till: employment.worked_till,
-          current_salary: employment.current_salary,
-          job_profile: employment.job_profile,
-          notice_period: employment.notice_period,
-        },
+        payload,
         {
           headers: {
             Authorization: `Bearer ${bearerKey}`,
-            "Content-Type": "application/json",
           },
         }
       );
-
+  
       if (response.data.type === "success") {
-        toast.success("Details updated successfully!");
-        setEmployment((prevData) => ({
-          ...prevData,
-          current_employment: employment.current_employment,
-          employment_type: employment.employment_type,
-          total_experience: totalExperience,
-          current_company_name: employment.current_company_name,
-          current_job_title: employment.current_job_title,
-          joining_date: employment.joining_date,
-          worked_till: employment.worked_till,
-          current_salary: employment.current_salary,
-          job_profile: employment.job_profile,
-          notice_period: employment.notice_period,
-        }));
-
-        const employModal = bootstrap.Modal.getInstance(
-          document.getElementById("employModal")
-        );
+        toast.success("Employment data saved successfully!");
+  
+        const employModal = bootstrap.Modal.getInstance(document.getElementById("AddemployModal"));
         employModal.hide();
-
-        // Fetch updated employment data
+  
+        setEmploymentForm(defaultEmploymentForm); // reset form
+  
         fetchEmployment(userId);
       } else {
         toast.error(response.data.message || "Failed to update details.");
       }
     } catch (error) {
-      console.error("Error updating data:", error);
-      toast.error(
-        error.response?.data?.message || "An unexpected error occurred."
-      );
+      console.error("Save Error:", error);
+      toast.error(error.response?.data?.message || "An unexpected error occurred.");
     } finally {
       ajaxModal.hide();
     }
   };
+  
+
+  const editEmploymentData = async (id) => {
+    try {
+      const response = await axios.get(`${API_URL}/employment-edit.php?id=${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${bearerKey}`,
+          },
+        }
+      );
+      const data = response.data.data;
+      console.log(data);
+      if (data) {
+        setEmploymentForm({
+          id: id,
+          current_employment: data.current_employment || "yes",
+          employment_type: data.employment_type || "",
+          total_experience: data.total_experience || "",
+          current_company_name: data.current_company_name || "",
+          current_job_title: data.current_job_title || "",
+          joining_date: data.joining_date || "",
+          worked_till: data.worked_till || "",
+          current_salary: data.current_salary || "",
+          job_profile: data.job_profile || "",
+          notice_period: data.notice_period || "",
+        });
+
+      }
+    } catch (error) {
+      console.error("Error fetching employment data:", error);
+      toast.error("Failed to load employment data.");
+    }
+  };
+
+
+  const updateEmploymentData = async () => {
+    const ajaxModal = new bootstrap.Modal(document.getElementById("ajaxModal"));
+    document.getElementById("ajaxModalMessage").textContent = "Updating your details...";
+    ajaxModal.show();
+  
+    try {
+      // Filter out empty or null/undefined fields
+      const payload = Object.fromEntries(
+        Object.entries(employmentForm).filter(
+          ([_, value]) => value !== "" && value !== null && value !== undefined
+        )
+      );
+  
+      const response = await axios.put(
+        `${API_URL}/employment-details-save.php?user_id=${userId}`,
+        payload,
+        {
+          headers: {
+            Authorization: `Bearer ${bearerKey}`,
+          },
+        }
+      );
+  
+      if (response.data.type === "success") {
+        toast.success("Employment details updated successfully!");
+  
+        // Close the modal
+        const employModal = bootstrap.Modal.getInstance(document.getElementById("employModal"));
+        employModal.hide();
+  
+        fetchEmployment(userId);
+      } else {
+        toast.error(response.data.message || "Failed to update.");
+      }
+    } catch (error) {
+      console.error("Update Error:", error);
+      toast.error("Something went wrong while updating.");
+    } finally {
+      ajaxModal.hide();
+    }
+  };
+  
+
 
   const confirmDelete = async (Id) => {
     if (!Id) return;
@@ -811,6 +905,91 @@ const MyAccount = () => {
       ajaxModal.hide();
     }
   };
+
+  // Employment Ends ---------
+
+
+  // Education Starts ---------
+
+  // const openEducationModal = (edu) => {
+  //   setSelectedEducation(edu);
+  // };
+
+  // const saveEducationData = async () => {
+  //   if (!selectedEducation) return;
+
+  //   // Calculate course duration
+  //   const combinedDuration =
+  //     selectedEducation.course_starting_year &&
+  //       selectedEducation.course_ending_year
+  //       ? selectedEducation.course_starting_year +
+  //       " - " +
+  //       selectedEducation.course_ending_year
+  //       : selectedEducation.course_starting_year
+  //         ? selectedEducation.course_starting_year
+  //         : selectedEducation.course_ending_year
+  //           ? selectedEducation.course_ending_year
+  //           : "";
+
+  //   // Show ajaxModal with dynamic message
+  //   const ajaxModal = new bootstrap.Modal(document.getElementById("ajaxModal"));
+  //   document.getElementById("ajaxModalMessage").textContent =
+  //     "Saving your details...";
+  //   ajaxModal.show();
+
+  //   try {
+  //     const response = await axios.put(
+  //       `${API_URL}/education-save.php?user_id=${userId}`,
+  //       {
+  //         education: selectedEducation.education,
+  //         institute: selectedEducation.institute,
+  //         course: selectedEducation.course,
+  //         specialization: selectedEducation.specialization,
+  //         course_type: selectedEducation.course_type,
+  //         course_duration: combinedDuration,
+  //         grading_system: selectedEducation.grading_system,
+  //         marks: selectedEducation.marks,
+  //       },
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${bearerKey}`,
+  //           "Content-Type": "application/json",
+  //         },
+  //       }
+  //     );
+
+  //     if (response.data.type === "success") {
+  //       toast.success("Details updated successfully!");
+  //       setEducation((prevData) =>
+  //         prevData.map((edu) =>
+  //           edu.id === selectedEducation.id
+  //             ? { ...selectedEducation, course_duration: combinedDuration }
+  //             : edu
+  //         )
+  //       );
+
+  //       const educationModal = bootstrap.Modal.getInstance(
+  //         document.getElementById("educationModal")
+  //       );
+  //       educationModal.hide();
+
+  //       // Fetch updated education data
+  //       fetchEducation(userId);
+
+  //       console.log("Education Data:", response.data.data);
+  //     } else {
+  //       toast.error(response.data.message || "Failed to update details.");
+  //     }
+  //   } catch (error) {
+  //     console.error("Error updating data:", error);
+  //     toast.error(
+  //       error.response?.data?.message || "An unexpected error occurred."
+  //     );
+  //   } finally {
+  //     ajaxModal.hide();
+  //   }
+  // };
+
 
   const fetchEducation = async (userId) => {
     try {
@@ -858,45 +1037,46 @@ const MyAccount = () => {
     }
   };
 
-  const openEducationModal = (edu) => {
-    setSelectedEducation(edu);
-  };
-
-  const saveEducationData = async () => {
-    if (!selectedEducation) return;
-
+  const AddEducationData = async () => {
+    if (!educationData.education) return; // Ensure the education field is selected
+  
     // Calculate course duration
     const combinedDuration =
-      selectedEducation.course_starting_year &&
-      selectedEducation.course_ending_year
-        ? selectedEducation.course_starting_year +
-          " - " +
-          selectedEducation.course_ending_year
-        : selectedEducation.course_starting_year
-        ? selectedEducation.course_starting_year
-        : selectedEducation.course_ending_year
-        ? selectedEducation.course_ending_year
+      educationData.course_starting_year && educationData.course_ending_year
+        ? educationData.course_starting_year + " - " + educationData.course_ending_year
+        : educationData.course_starting_year
+        ? educationData.course_starting_year
+        : educationData.course_ending_year
+        ? educationData.course_ending_year
         : "";
-
+  
+    // Prepare payload with only filled fields
+    const rawPayload = {
+      education: educationData.education,
+      institute: educationData.institute,
+      course: educationData.course,
+      specialization: educationData.specialization,
+      course_type: educationData.course_type,
+      course_duration: combinedDuration,
+      board: educationData.board,
+      passing_year: educationData.passing_year,
+      school_medium: educationData.school_medium,
+      marks: educationData.marks,
+    };
+  
+    const payload = Object.fromEntries(
+      Object.entries(rawPayload).filter(([_, value]) => value !== "" && value !== null && value !== undefined)
+    );
+  
     // Show ajaxModal with dynamic message
     const ajaxModal = new bootstrap.Modal(document.getElementById("ajaxModal"));
-    document.getElementById("ajaxModalMessage").textContent =
-      "Saving your details...";
+    document.getElementById("ajaxModalMessage").textContent = "Saving your details...";
     ajaxModal.show();
-
+  
     try {
       const response = await axios.put(
         `${API_URL}/education-save.php?user_id=${userId}`,
-        {
-          education: selectedEducation.education,
-          institute: selectedEducation.institute,
-          course: selectedEducation.course,
-          specialization: selectedEducation.specialization,
-          course_type: selectedEducation.course_type,
-          course_duration: combinedDuration,
-          grading_system: selectedEducation.grading_system,
-          marks: selectedEducation.marks,
-        },
+        payload,
         {
           headers: {
             Authorization: `Bearer ${bearerKey}`,
@@ -904,34 +1084,164 @@ const MyAccount = () => {
           },
         }
       );
-
+  
       if (response.data.type === "success") {
-        toast.success("Details updated successfully!");
-        setEducation((prevData) =>
-          prevData.map((edu) =>
-            edu.id === selectedEducation.id
-              ? { ...selectedEducation, course_duration: combinedDuration }
-              : edu
-          )
-        );
-
+        toast.success("Education details added successfully!");
+  
+        setEducationData({
+          id: "",
+          education: "",
+          institute: "",
+          course: "",
+          specialization: "",
+          course_type: "",
+          course_starting_year: "",
+          course_ending_year: "",
+          marks: "",
+          board: "",
+          passing_year: "",
+          school_medium: "",
+        });
+  
         const educationModal = bootstrap.Modal.getInstance(
-          document.getElementById("educationModal")
+          document.getElementById("AddEducationModal")
         );
         educationModal.hide();
-
-        // Fetch updated education data
+  
         fetchEducation(userId);
-
-        console.log("Education Data:", response.data.data);
+        console.log("Added Education Data:", response.data.data);
       } else {
-        toast.error(response.data.message || "Failed to update details.");
+        toast.error(response.data.message || "Failed to add education details.");
       }
     } catch (error) {
-      console.error("Error updating data:", error);
-      toast.error(
-        error.response?.data?.message || "An unexpected error occurred."
+      console.error("Error adding education data:", error);
+      toast.error(error.response?.data?.message || "An unexpected error occurred.");
+    } finally {
+      ajaxModal.hide();
+    }
+  };
+
+  const editEducationData = async (id) => {
+    try {
+      const response = await axios.get(`${API_URL}/education-edit.php?id=${id}`, {
+        headers: {
+          Authorization: `Bearer ${bearerKey}`,
+        },
+      });
+  
+      const data = response.data.data;
+      console.log(data);
+  
+      if (data) {
+        // Handle course_duration splitting if available
+        const [course_starting_year, course_ending_year] = data.course_duration
+          ? data.course_duration.split(" - ")
+          : ["", ""];
+  
+        setEducationData({
+          id: data.id || "",
+          education: data.education || "",
+          institute: data.institute || "",
+          course: data.course || "",
+          specialization: data.specialization || "",
+          course_type: data.course_type || "",
+          course_starting_year: course_starting_year || "",
+          course_ending_year: course_ending_year || "",
+          marks: data.marks || "",
+          board: data.board || "",
+          passing_year: data.passing_year || "",
+          school_medium: data.school_medium || "",
+        });
+      }
+    } catch (error) {
+      console.error("Error fetching education data:", error);
+      toast.error("Failed to load education data.");
+    }
+  };
+  
+  const UpdateEducationData = async () => {
+    if (!educationData.education || !educationData.id) return; // Ensure required fields are present
+  
+    // Calculate course duration
+    const combinedDuration =
+      educationData.course_starting_year && educationData.course_ending_year
+        ? `${educationData.course_starting_year} - ${educationData.course_ending_year}`
+        : educationData.course_starting_year
+        ? educationData.course_starting_year
+        : educationData.course_ending_year
+        ? educationData.course_ending_year
+        : "";
+  
+    // Prepare payload with only filled fields
+    const rawPayload = {
+      id:educationData.id,
+      education: educationData.education,
+      institute: educationData.institute,
+      course: educationData.course,
+      specialization: educationData.specialization,
+      course_type: educationData.course_type,
+      course_duration: combinedDuration,
+      board: educationData.board,
+      passing_year: educationData.passing_year,
+      school_medium: educationData.school_medium,
+      marks: educationData.marks,
+    };
+  
+    const payload = Object.fromEntries(
+      Object.entries(rawPayload).filter(([_, value]) => value !== "" && value !== null && value !== undefined)
+    );
+  
+    // Show loading modal
+    const ajaxModal = new bootstrap.Modal(document.getElementById("ajaxModal"));
+    document.getElementById("ajaxModalMessage").textContent = "Updating your details...";
+    ajaxModal.show();
+  
+    try {
+      const response = await axios.put(
+        `${API_URL}/education-save.php?user_id=${userId}`,
+        payload,
+        {
+          headers: {
+            Authorization: `Bearer ${bearerKey}`,
+            "Content-Type": "application/json",
+          },
+        }
       );
+  
+      if (response.data.type === "success") {
+        toast.success("Education details updated successfully!");
+  
+        // Reset the form
+        setEducationData({
+          id: "",
+          education: "",
+          institute: "",
+          course: "",
+          specialization: "",
+          course_type: "",
+          course_starting_year: "",
+          course_ending_year: "",
+          marks: "",
+          board: "",
+          passing_year: "",
+          school_medium: "",
+        });
+  
+        // Hide modal
+        const educationModal = bootstrap.Modal.getInstance(
+          document.getElementById("EditEducationModal")
+        );
+        educationModal.hide();
+  
+        // Refresh education list
+        fetchEducation(userId);
+        console.log("Updated Education Data:", response.data.data);
+      } else {
+        toast.error(response.data.message || "Failed to update education details.");
+      }
+    } catch (error) {
+      console.error("Error updating education data:", error);
+      toast.error(error.response?.data?.message || "An unexpected error occurred.");
     } finally {
       ajaxModal.hide();
     }
@@ -974,6 +1284,9 @@ const MyAccount = () => {
       ajaxModal.hide();
     }
   };
+  
+ // Education Ends -----------
+
 
   const fetchSocialProfiles = async (userId) => {
     try {
@@ -1447,7 +1760,7 @@ const MyAccount = () => {
   };
 
   return (
-    <>
+    <div id="my_account_page" className="my_account_page">
       <Navbar />
       <div className="top_pad">
         <div className="container pb-5">
@@ -1522,7 +1835,7 @@ const MyAccount = () => {
                           alt="Profile"
                         />
                         {!profileImage ||
-                        profileImage === "/images/blank_user.png" ? (
+                          profileImage === "/images/blank_user.png" ? (
                           <>
                             <input
                               type="file"
@@ -1827,10 +2140,7 @@ const MyAccount = () => {
                                     : ""
                                 }
                                 onChange={(e) =>
-                                  setUserData({
-                                    ...userData,
-                                    current_salary: e.target.value,
-                                  })
+                                  handleNumericInput(e, "current_salary", 10, setUserData, userData)
                                 }
                               />
                             </div>
@@ -2224,52 +2534,57 @@ const MyAccount = () => {
                 <div className="card-body">
                   <div className="d-flex justify-content-between mb-3">
                     <h5>Employment</h5>
-                    {(!employment || Object.keys(employment).length === 0) && (
-                      <Link
-                        className="text-theme"
-                        data-bs-toggle="modal"
-                        data-bs-target="#employModal"
-                      >
-                        Add employment
-                      </Link>
-                    )}
+                    <Link
+                      className="text-theme"
+                      data-bs-toggle="modal"
+                      data-bs-target="#AddemployModal"
+                      onClick={() => setEmploymentForm(defaultEmploymentForm)}
+                    >
+                      Add employment
+                    </Link>
+
                   </div>
 
                   <div className="mt-4 educational_details">
                     <div>
-                      <div className="d-flex align-items-center">
-                        {employment &&
-                          employment.job_profile &&
-                          Object.keys(employment).length > 0 && (
-                            <h6 className="m-0">
-                              {employment.job_profile}
+
+                      {employment && employment.length > 0 ? (
+                        employment.map((employ) => (
+                          <div className="mb-3" key={employ.id}>
+                            <div className="d-flex ">
+                              <h5 className="text-capitalize m-0">{employ.current_job_title}</h5>
                               <Link
                                 data-bs-toggle="modal"
                                 data-bs-target="#employModal"
+                                onClick={() => editEmploymentData(employ.id)} // pass the employment ID
                               >
                                 <i className="fa-solid fa-pencil ms-2"></i>
                               </Link>
-                            </h6>
-                          )}
-                      </div>
-                      {employment && Object.keys(employment).length > 0 ? (
-                        <>
-                          <h6>{employment.current_company_name}</h6>
-                          <p className="m-0">
-                            <small>
-                              {employment.employment_type} |
-                              {employment.joining_date}
-                            </small>
-                          </p>
-                        </>
+
+                            </div>
+                            <h6 className="text-capitalize">{employ.current_company_name}</h6>
+
+                            <p className="m-0">
+                              <small>
+                                <span>
+                                  {employ.employment_type} | {employ.joining_date} to{" "}
+                                  {employ.worked_till || "Present"}
+                                </span>
+                              </small>
+                            </p>
+                          </div>
+                        ))
                       ) : (
-                        <p className="m-0">No employment details added yet</p>
+                        <h6 className="text-muted">No employment details filled yet.</h6>
                       )}
+
+
                     </div>
                   </div>
                 </div>
               </div>
 
+              {/* Employment Modal */}
               <div
                 className="modal fade"
                 id="deleteModal"
@@ -2304,7 +2619,7 @@ const MyAccount = () => {
                       <button
                         type="button"
                         className="btn btn-danger"
-                        onClick={() => confirmDelete(employment.id)}
+                        onClick={() => confirmDelete(employmentForm.id)}
                         data-bs-dismiss="modal"
                       >
                         Delete
@@ -2314,6 +2629,7 @@ const MyAccount = () => {
                 </div>
               </div>
 
+              {/* Employment Edit Modal */}
               <div
                 className="modal fade employModal"
                 id="employModal"
@@ -2334,25 +2650,21 @@ const MyAccount = () => {
                     <div className="modal-body ">
                       <div className="d-flex justify-content-between">
                         <h1 className="modal-title fs-5" id="employModalLabel">
-                          Employment
+                          Edit Employment Details
                         </h1>
-                        {employment &&
-                          employment.id &&
-                          Object.keys(employment).length > 0 && (
-                            <Link
-                              className="text-theme"
-                              data-bs-toggle="modal"
-                              data-bs-target="#deleteModal"
-                            >
-                              Delete
-                            </Link>
-                          )}
+                        <Link
+                          className="text-theme"
+                          data-bs-toggle="modal"
+                          data-bs-target="#deleteModal"
+                        >
+                          Delete
+                        </Link>
                       </div>
-                      <form action="" className="mt-3">
+
+                      <form className="mt-3">
+                        {/* Current Employment */}
                         <div className="mb-4">
-                          <label htmlFor="">
-                            Is this your current employment?
-                          </label>
+                          <label>Is this your current employment?</label>
                           <div className="d-flex mt-3">
                             <div className="form-check me-4">
                               <input
@@ -2361,17 +2673,15 @@ const MyAccount = () => {
                                 name="RadioYesNo"
                                 id="RadioYes"
                                 value="yes"
-                                checked={
-                                  employment.current_employment === "yes"
+                                checked={employmentForm.current_employment === "yes"}
+                                onChange={(e) =>
+                                  setEmploymentForm({
+                                    ...employmentForm,
+                                    current_employment: e.target.value,
+                                  })
                                 }
-                                onChange={handleRadioEmpChange}
                               />
-                              <label
-                                className="form-check-label"
-                                htmlFor="RadioYes"
-                              >
-                                Yes
-                              </label>
+                              <label className="form-check-label">Yes</label>
                             </div>
                             <div className="form-check">
                               <input
@@ -2380,34 +2690,33 @@ const MyAccount = () => {
                                 name="RadioYesNo"
                                 id="RadioNo"
                                 value="no"
-                                checked={employment.current_employment === "no"}
-                                onChange={handleRadioEmpChange}
+                                checked={employmentForm.current_employment === "no"}
+                                onChange={(e) =>
+                                  setEmploymentForm({
+                                    ...employmentForm,
+                                    current_employment: e.target.value,
+                                  })
+                                }
                               />
-                              <label
-                                className="form-check-label"
-                                htmlFor="RadioNo"
-                              >
-                                No
-                              </label>
+                              <label className="form-check-label">No</label>
                             </div>
                           </div>
                         </div>
 
+                        {/* Employment Type */}
                         <div className="mb-4">
-                          <label htmlFor="employment_type">
-                            Employment Type
-                          </label>
+                          <label htmlFor="employment_type">Employment Type</label>
                           <select
-                            value={employment.employment_type || "1"}
+                            className="form-select"
+                            value={employmentForm.employment_type}
                             onChange={(e) =>
-                              setEmployment({
-                                ...employment,
+                              setEmploymentForm({
+                                ...employmentForm,
                                 employment_type: e.target.value,
                               })
                             }
-                            className="form-select"
-                            defaultValue="1"
                           >
+                            <option value="">Select</option>
                             <option value="1">Full Time</option>
                             <option value="2">Part Time</option>
                             <option value="3">Fixed</option>
@@ -2415,97 +2724,98 @@ const MyAccount = () => {
                           </select>
                         </div>
 
-                        <div className="row mt-4">
-                          <label htmlFor="">Total experience</label>
-                          <div className="col-md-6 mb-2 mb-md-0">
-                            <input
-                              type="text"
-                              className="form-control"
-                              placeholder="Enter Years"
-                              name="total_experience_years"
-                              value={employment.total_experience_years || ""}
-                              onChange={(e) =>
-                                setEmployment({
-                                  ...employment,
-                                  total_experience_years: e.target.value,
-                                })
-                              }
-                            />
+                        {/* Total Experience */}
+                        {employmentForm.current_employment === "yes" && (
+                          <div className="row mt-4">
+                            <label>Total Experience</label>
+                            <div className="col-md-6 mb-2">
+                              <input
+                                type="text"
+                                className="form-control"
+                                placeholder="Enter Years"
+                                value={
+                                  employmentForm.total_experience?.split(",")[0]?.replace(" years", "") || ""
+                                }
+                                onChange={(e) =>
+                                  setEmploymentForm((prev) => ({
+                                    ...prev,
+                                    total_experience: `${e.target.value} years, ${prev.total_experience?.split(",")[1]?.trim() || "0 months"}`,
+                                  }))
+                                }
+                              />
+                            </div>
+                            <div className="col-md-6 mb-2">
+                              <input
+                                type="text"
+                                className="form-control"
+                                placeholder="Enter Months"
+                                value={
+                                  employmentForm.total_experience?.split(",")[1]?.replace(" months", "") || ""
+                                }
+                                onChange={(e) =>
+                                  setEmploymentForm((prev) => ({
+                                    ...prev,
+                                    total_experience: `${prev.total_experience?.split(",")[0]?.trim() || "0 years"}, ${e.target.value} months`,
+                                  }))
+                                }
+                              />
+                            </div>
                           </div>
-                          <div className="col-md-6 mb-2 mb-md-0">
-                            <input
-                              type="text"
-                              className="form-control"
-                              placeholder="Enter Months"
-                              name="total_experience_months"
-                              value={employment.total_experience_months || ""}
-                              onChange={(e) =>
-                                setEmployment({
-                                  ...employment,
-                                  total_experience_months: e.target.value,
-                                })
-                              }
-                            />
-                          </div>
-                        </div>
+                        )}
 
-                        {/* Change label dynamically based on isCurrentEmployment state */}
+                        {/* Company Name */}
                         <div className="mt-4">
-                          <label htmlFor="">
-                            {isCurrentEmployment
-                              ? "Current company name"
-                              : "Previous company name"}
+                          <label>
+                            {employmentForm.current_employment === "yes"
+                              ? "Current Company Name"
+                              : "Previous Company Name"}
                           </label>
-                          <div className="col-12">
-                            <input
-                              type="text"
-                              className="form-control"
-                              placeholder="XYZ Company"
-                              value={employment.current_company_name ?? ""}
-                              onChange={(e) =>
-                                setEmployment({
-                                  ...employment,
-                                  current_company_name: e.target.value,
-                                })
-                              }
-                            />
-                          </div>
+                          <input
+                            type="text"
+                            className="form-control"
+                            placeholder="XYZ Company"
+                            value={employmentForm.current_company_name}
+                            onChange={(e) =>
+                              setEmploymentForm({
+                                ...employmentForm,
+                                current_company_name: e.target.value,
+                              })
+                            }
+                          />
                         </div>
 
-                        {/* Change label dynamically based on isCurrentEmployment state */}
+                        {/* Job Title */}
                         <div className="mt-4">
-                          <label htmlFor="">
-                            {isCurrentEmployment
-                              ? "Current job title"
-                              : "Previous job title"}
+                          <label>
+                            {employmentForm.current_employment === "yes"
+                              ? "Current Job Title"
+                              : "Previous Job Title"}
                           </label>
-                          <div className="col-12">
-                            <input
-                              type="text"
-                              className="form-control"
-                              placeholder="ABC Job Title"
-                              value={employment.current_job_title ?? ""}
-                              onChange={(e) =>
-                                setEmployment({
-                                  ...employment,
-                                  current_job_title: e.target.value,
-                                })
-                              }
-                            />
-                          </div>
+                          <input
+                            type="text"
+                            className="form-control"
+                            placeholder="ABC Job Title"
+                            value={employmentForm.current_job_title}
+                            onChange={(e) =>
+                              setEmploymentForm({
+                                ...employmentForm,
+                                current_job_title: e.target.value,
+                              })
+                            }
+                          />
                         </div>
 
+                        {/* Joining Date */}
                         <div className="row mt-4">
-                          <label htmlFor="">Joining Date</label>
-                          <div className="col-md-12 mb-2 mb-md-0">
+                          <label>Joining Date</label>
+                          <div className="col-md-12 mb-2">
                             <input
                               type="date"
                               className="form-control"
-                              name="joining_date"
-                              value={employment.joining_date ?? ""}
+                              value={employmentForm.joining_date}
                               onChange={(e) =>
-                                setEmployment({
-                                  ...employment,
+                                setEmploymentForm({
+                                  ...employmentForm,
                                   joining_date: e.target.value,
                                 })
                               }
@@ -2513,19 +2823,18 @@ const MyAccount = () => {
                           </div>
                         </div>
 
-                        {/* Conditionally render the worked_till section if "No" is selected */}
-                        {!isCurrentEmployment && (
-                          <div className="row mt-4 worked_till">
-                            <label htmlFor="">Worked Till</label>
-                            <div className="col-md-12 mb-2 mb-md-0">
+                        {/* Worked Till */}
+                        {employmentForm.current_employment === "no" && (
+                          <div className="row mt-4">
+                            <label>Worked Till</label>
+                            <div className="col-md-12 mb-2">
                               <input
                                 type="date"
                                 className="form-control"
-                                name="worked_till"
-                                value={employment.worked_till ?? ""}
+                                value={employmentForm.worked_till}
                                 onChange={(e) =>
-                                  setEmployment({
-                                    ...employment,
+                                  setEmploymentForm({
+                                    ...employmentForm,
                                     worked_till: e.target.value,
                                   })
                                 }
@@ -2534,16 +2843,25 @@ const MyAccount = () => {
                           </div>
                         )}
 
-                        <div className="mt-4">
-                          <label htmlFor="">Current Salary</label>
+                        {/* Current Salary */}
+                        {employmentForm.current_employment === "yes" && 
+                         <div className="mt-4">
+                          <label>Current Salary</label>
                           <div className="row">
                             <div className="col-4 col-md-3 col-lg-2">
                               <select
                                 className="form-select"
-                                defaultValue="dollar"
+                                value={employmentForm.current_salary?.split(" ")[0] || ""}
+                                onChange={(e) =>
+                                  setEmploymentForm((prev) => ({
+                                    ...prev,
+                                    current_salary: `${e.target.value} ${prev.current_salary?.split(" ")[1] || ""}`,
+                                  }))
+                                }
+                               
                               >
-                                <option value="rupees">kr</option>
-                                <option value="dollar">$</option>
+                                <option value="kr">kr</option>
+                                <option value="$">$</option>
                               </select>
                             </div>
                             <div className="col-8 col-md-9 col-lg-10">
@@ -2551,70 +2869,64 @@ const MyAccount = () => {
                                 type="text"
                                 className="form-control"
                                 placeholder="Eg. 4,50,000"
-                                value={
-                                  employment.current_salary
-                                    ? employment.current_salary.split(" ")[0]
-                                    : ""
-                                }
+                                value={employmentForm.current_salary?.split(" ")[1] || ""}
                                 onChange={(e) =>
-                                  setEmployment({
-                                    ...employment,
-                                    current_salary: e.target.value,
-                                  })
+                                  setEmploymentForm((prev) => ({
+                                    ...prev,
+                                    current_salary: `${prev.current_salary?.split(" ")[0] || "kr"} ${e.target.value}`,
+                                  }))
                                 }
+                                maxLength={10}
                               />
                             </div>
                           </div>
+                         </div>
+                        }
+
+                        {/* Job Profile */}
+                        <div className="mt-4">
+                          <label>Job Profile</label>
+                          <input
+                            type="text"
+                            className="form-control"
+                            placeholder="Enter job profile"
+                            value={employmentForm.job_profile}
+                            onChange={(e) =>
+                              setEmploymentForm({
+                                ...employmentForm,
+                                job_profile: e.target.value,
+                              })
+                            }
+                          />
                         </div>
 
-                        <div className="mt-4">
-                          <label htmlFor="">Job Profile</label>
-                          <div className="col-12">
-                            <input
-                              className="form-control"
-                              type="text"
-                              placeholder="Enter job profile"
-                              value={employment.job_profile ?? ""}
-                              onChange={(e) =>
-                                setEmployment({
-                                  ...employment,
-                                  job_profile: e.target.value,
-                                })
-                              }
-                            />
-                          </div>
-                        </div>
-
-                        <div className="mt-4">
-                          <label htmlFor="">Notice Period</label>
+                        {/* Notice Period */}
+                        {employmentForm.current_employment === "yes" &&
+                          <div className="mt-4">
+                          <label>Notice Period</label>
                           <select
                             className="form-select"
-                            value={
-                              employment.notice_period || "15 days or less"
-                            }
+                            value={employmentForm.notice_period?.trim() || ""}
                             onChange={(e) =>
-                              setEmployment({
-                                ...employment,
+                              setEmploymentForm({
+                                ...employmentForm,
                                 notice_period: e.target.value,
                               })
                             }
                           >
-                            <option value="15 Days or less">
-                              15 Days or less
-                            </option>
-                            <option value="1 Month">1 Month</option>
-                            <option value="2 Months">2 Months</option>
-                            <option value="3 Months">3 Months</option>
-                            <option value="More than 3 months">
-                              More than 3 months
-                            </option>
-                            <option value="Serving notice period">
-                              Serving notice period
-                            </option>
+                            <option value="">Select</option>
+                            <option value="15 days or less">15 Days or Less</option>
+                            <option value="1 month">1 Month</option>
+                            <option value="2 months">2 Months</option>
+                            <option value="3 months">3 Months</option>
+                            <option value="more than 3 months">More than 3 months</option>
+                            <option value="serving notice period">Serving notice period</option>
                           </select>
-                        </div>
+                          </div>
+                        }
                       </form>
                     </div>
+
                     <div className="modal-footer border-0">
                       <button
                         type="button"
@@ -2627,7 +2939,7 @@ const MyAccount = () => {
                         type="button"
                         className="btn btn-primary rounded-pill"
                         data-bs-dismiss="modal"
-                        onClick={saveEmploymentData}
+                        onClick={updateEmploymentData}
                       >
                         Save
                       </button>
@@ -2636,86 +2948,846 @@ const MyAccount = () => {
                 </div>
               </div>
 
-              {/* Education Section */}
-              {education.length > 0 ? (
-                education.map((edu, index) => (
-                  <div
-                    key={index}
-                    className="card mt-4 shadow border-0 rounded-3"
-                  >
-                    <div className="card-body">
-                      <div className="d-flex justify-content-between mb-3">
-                        <h5>Education</h5>
-                        {!edu || Object.keys(edu).length === 0 ? (
-                          <Link
-                            className="text-theme"
-                            data-bs-toggle="modal"
-                            data-bs-target="#educationModal"
-                            onClick={() => openEducationModal({})}
-                          >
-                            Add education
-                          </Link>
-                        ) : null}
+              {/* Add Employment Modal */}
+              <div
+                className="modal fade employModal"
+                id="AddemployModal"
+                tabIndex="-1"
+                aria-labelledby="AddemployModalLabel"
+                aria-hidden="true"
+              >
+                <div className="modal-dialog modal-dialog-centered modal-lg">
+                  <div className="modal-content p-3 p-sm-4">
+                    <div className="modal-header border-0 p-0">
+                      <button
+                        type="button"
+                        className="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Close"
+                      ></button>
+                    </div>
+                    <div className="modal-body">
+                      <div className="d-flex justify-content-between">
+                        <h1 className="modal-title fs-5" id="AddemployModalLabel">
+                          Add Employment
+                        </h1>
                       </div>
+                      <form className="mt-3">
 
-                      <div className="mt-4 employment_details">
-                        <div className="mb-3">
-                          {edu && Object.keys(edu).length > 0 ? (
-                            <>
-                              <div className="d-flex align-items-center">
-                                <h6 className="m-0">
-                                  {edu.specialization
-                                    ? `${edu.course} - ${edu.specialization}`
-                                    : edu.course}
-                                  <Link
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#educationModal"
-                                    onClick={() => openEducationModal(edu)}
-                                  >
-                                    <i className="fa-solid fa-pencil ms-2"></i>
-                                  </Link>
-                                </h6>
-                              </div>
-                              <h6 className="m-0">{edu.institute}</h6>
-                              <p className="m-0">
-                                <small>
-                                  {edu.course_type} | {edu.course_duration}
-                                </small>
-                              </p>
-                            </>
-                          ) : (
-                            <p className="m-0">
-                              No education details available.
-                            </p>
-                          )}
+                        {/* Current Employment */}
+                        <div className="mb-4">
+                          <label>Is this your current employment?</label>
+                          <div className="d-flex mt-3">
+                            <div className="form-check me-4">
+                              <input
+                                className="form-check-input"
+                                type="radio"
+                                name="RadioYesNo"
+                                id="RadioYes"
+                                value="yes"
+                                checked={employmentForm.current_employment === "yes"}
+                                onChange={(e) =>
+                                  setEmploymentForm({
+                                    ...employmentForm,
+                                    current_employment: e.target.value,
+                                  })
+                                }
+                              />
+                              <label className="form-check-label" >
+                                Yes
+                              </label>
+                            </div>
+                            <div className="form-check">
+                              <input
+                                className="form-check-input"
+                                type="radio"
+                                name="RadioYesNo"
+                                id="RadioNo"
+                                value="no"
+                                checked={employmentForm.current_employment === "no"}
+                                onChange={(e) =>
+                                  setEmploymentForm({
+                                    ...employmentForm,
+                                    current_employment: e.target.value,
+                                  })
+                                }
+                              />
+                              <label className="form-check-label" >
+                                No
+                              </label>
+                            </div>
+                          </div>
                         </div>
-                      </div>
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <div className="card mt-4 shadow border-0 rounded-3">
-                  <div className="card-body">
-                    <div className="d-flex justify-content-between mb-3">
-                      <h5>Education</h5>
-                      <Link
-                        className="text-theme"
-                        data-bs-toggle="modal"
-                        data-bs-target="#educationModal"
-                        onClick={() => openEducationModal({})}
-                      >
-                        Add education
-                      </Link>
+
+                        {/* Employment Type */}
+                        <div className="mb-4">
+                          <label htmlFor="employment_type">Employment Type</label>
+                          <select
+                            className="form-select"
+                            value={employmentForm.employment_type}
+                            onChange={(e) =>
+                              setEmploymentForm({
+                                ...employmentForm,
+                                employment_type: e.target.value,
+                              })
+                            }
+                          >
+                            <option value="">Select</option>
+                            <option value="1">Full Time</option>
+                            <option value="2">Part Time</option>
+                            <option value="3">Fixed</option>
+                            <option value="4">Hourly</option>
+                          </select>
+                        </div>
+
+                        {/* Total Experience */}
+                        {employmentForm.current_employment === "yes" &&
+                          <div className="row mt-4">
+                            <label>Total Experience</label>
+                            <div className="col-md-6 mb-2">
+                              <input
+                                type="text"
+                                className="form-control"
+                                placeholder="Enter Years"
+                                onChange={(e) =>
+                                  setEmploymentForm((prev) => ({
+                                    ...prev,
+                                    total_experience: `${e.target.value} years, ${prev.total_experience.split(",")[1] || "0 months"}`,
+                                  }))
+                                }
+                                maxLength={2}
+                              />
+                            </div>
+                            <div className="col-md-6 mb-2">
+                              <input
+                                type="text"
+                                className="form-control"
+                                placeholder="Enter Months"
+                                onChange={(e) =>
+                                  setEmploymentForm((prev) => ({
+                                    ...prev,
+                                    total_experience: `${prev.total_experience.split(",")[0] || "0 years"}, ${e.target.value} months`,
+                                  }))
+                                }
+                                maxLength={2}
+                              />
+                            </div>
+                          </div>
+                        }
+
+
+                        {/* Company Name */}
+                        <div className="mt-4">
+                          <label>
+                            {employmentForm.current_employment === "yes" ? " Current Company Name" : " Previous Company Name"}
+                          </label>
+                          <input
+                            type="text"
+                            className="form-control"
+                            placeholder="XYZ Company"
+                            value={employmentForm.current_company_name}
+                            onChange={(e) =>
+                              setEmploymentForm({
+                                ...employmentForm,
+                                current_company_name: e.target.value,
+                              })
+                            }
+                          />
+                        </div>
+
+                        {/* Job Title */}
+                        <div className="mt-4">
+                          <label>
+                            {employmentForm.current_employment === "yes" ? " Current Job Title" : "Previous Job Title"}
+                          </label>
+                          <input
+                            type="text"
+                            className="form-control"
+                            placeholder="ABC Job Title"
+                            value={employmentForm.current_job_title}
+                            onChange={(e) =>
+                              setEmploymentForm({
+                                ...employmentForm,
+                                current_job_title: e.target.value,
+                              })
+                            }
+                          />
+                        </div>
+
+                        {/* Joining Date */}
+                        <div className="row mt-4">
+                          <label>Joining Date</label>
+                          <div className="col-md-12 mb-2">
+                            <input
+                              type="date"
+                              className="form-control"
+                              value={employmentForm.joining_date}
+                              onChange={(e) =>
+                                setEmploymentForm({
+                                  ...employmentForm,
+                                  joining_date: e.target.value,
+                                })
+                              }
+                            />
+                          </div>
+                        </div>
+
+                        {/* Worked Till */}
+
+                        {employmentForm.current_employment === "no" &&
+                          <div className="row mt-4">
+                            <label>Worked Till</label>
+                            <div className="col-md-12 mb-2">
+                              <input
+                                type="date"
+                                className="form-control"
+                                value={employmentForm.worked_till}
+                                onChange={(e) =>
+                                  setEmploymentForm({
+                                    ...employmentForm,
+                                    worked_till: e.target.value,
+                                  })
+                                }
+                              />
+                            </div>
+                          </div>
+                        }
+
+                        {/* Current Salary */}
+                        {employmentForm.current_employment === "yes" && 
+                         <div className="mt-4">
+                          <label>Current Salary</label>
+                          <div className="row">
+                            <div className="col-4 col-md-3 col-lg-2">
+                              <select
+                                className="form-select"
+                                onChange={(e) =>
+                                  setEmploymentForm((prev) => ({
+                                    ...prev,
+                                    current_salary: `${e.target.value} ${prev.current_salary.split(" ")[1] || ""}`,
+                                  }))
+                                }
+                              >
+                                <option value="kr">kr</option>
+                                <option value="$">$</option>
+                              </select>
+                            </div>
+                            <div className="col-8 col-md-9 col-lg-10">
+                              <input
+                                type="text"
+                                className="form-control"
+                                placeholder="Eg. 4,50,000"
+                                onChange={(e) =>
+                                  setEmploymentForm((prev) => ({
+                                    ...prev,
+                                    current_salary: `${prev.current_salary.split(" ")[0] || "kr"} ${e.target.value}`,
+                                  }))
+                                }
+                                maxLength={10}
+                              />
+                            </div>
+                          </div>
+                         </div> 
+                        }
+
+                        {/* Job Profile */}
+                        <div className="mt-4">
+                          <label htmlFor="">Job Profile</label>
+                          <input
+                            type="text"
+                            className="form-control"
+                            placeholder="Type Here..."
+                            value={employmentForm.job_profile}
+                            onChange={(e) =>
+                              setEmploymentForm({
+                                ...employmentForm,
+                                job_profile: e.target.value,
+                              })
+                            }
+                          />
+                        </div>
+
+                        {/* Notice Period */}
+                        {employmentForm.current_employment === "yes" && 
+                        <div className="mt-4">
+                          <label>Notice Period</label>
+                          <select
+                            className="form-select"
+                            value={employmentForm.notice_period}
+                            onChange={(e) =>
+                              setEmploymentForm({
+                                ...employmentForm,
+                                notice_period: e.target.value,
+                              })
+                            }
+                          >
+                            <option value="">Select</option>
+                            <option value="15 days or less">15 Days or less</option>
+                            <option value="1 month">1 Month</option>
+                            <option value="2 months">2 Months</option>
+                            <option value="3 months">3 Months</option>
+                            <option value="more than 3 months">More than 3 months</option>
+                            <option value="serving notice period">Serving notice period</option>
+                          </select>
+                        </div>
+                        }
+                      </form>
                     </div>
 
-                    <div className="mt-4 employment_details">
-                      <p className="m-0">No education details available.</p>
+                    <div className="modal-footer border-0">
+                      <button
+                        type="button"
+                        className="btn btn-secondary rounded-pill"
+                        data-bs-dismiss="modal"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="button"
+                        className="btn btn-primary rounded-pill"
+                        data-bs-dismiss="modal"
+                        onClick={saveNewEmploymentData}
+                      >
+                        Save
+                      </button>
                     </div>
                   </div>
                 </div>
-              )}
+              </div>
 
+
+              {/* Education Section Starts --- */}
+
+              <div className="card mt-4 shadow border-0 rounded-3"
+              >
+                <div className="card-body">
+                  <div className="d-flex justify-content-between mb-3">
+                    <h5>Education</h5>
+                    <Link
+                      className="text-theme"
+                      data-bs-toggle="modal"
+                      data-bs-target="#AddEducationModal"
+                      onClick={() => setEducationData(defaultEducationForm)}
+                    >
+                      Add education
+                    </Link>
+                  </div>
+                  {education.length > 0 ? (
+                  education.map((edu, index) => {
+                    const educationLabel =
+                      edu.education === "4"
+                        ? "12th"
+                        : edu.education === "5"
+                        ? "10th"
+                        : edu.education;
+
+                    return (
+                      <div key={index} className="mt-4 employment_details">
+                        <div className="mb-3">
+                          <div className="d-flex align-items-center education_section">
+                            <h6 className="m-0 text-capitalize">
+                              {edu.specialization
+                                ? `${edu.course} - ${edu.specialization}`
+                                : (`${edu.course || educationLabel} | ${edu.school_medium}`)}
+                            </h6>
+                            <Link
+                                data-bs-toggle="modal"
+                                data-bs-target="#EditEducationModal"
+                                onClick={() => editEducationData(edu.id)}
+                              >
+                                <i className="fa-solid fa-pencil ms-2"></i>
+                              </Link>
+                          </div>
+                          <h6 className="m-0 text-capitalize">
+                            {edu.course && edu.course_type
+                              ? ` ${edu.course_type}`
+                              : edu.specialization
+                              ? `${edu.specialization} ${edu.passing_year}`
+                              : ""}
+                          </h6>
+
+                          <p className="m-0">
+                            <small className="text-capitalize">
+                              {edu.education === "4" || edu.education === "5"
+                                ? `${edu.board} - ${edu.passing_year}`
+                                : `${edu.course_starting_year} - ${edu.course_ending_year} | Marks: ${edu.marks}`}
+                            </small>
+                          </p>
+                        </div>
+                      </div>
+                    );
+                  })
+                ) : (
+                  <p>No educational details filled yet!</p>
+                )}
+
+
+
+                </div>
+              </div>
+                               
+              {/* Add Education Modal  */}
               <div
+                className="modal fade"
+                id="AddEducationModal"
+                tabIndex="-1"
+                aria-labelledby="AddEducationModalLabel"
+                aria-hidden="true"
+              >
+                <div className="modal-dialog modal-dialog-centered modal-lg">
+                  <div className="modal-content p-3 p-sm-4">
+                    <div className="modal-header border-0 pb-0">
+                      <button
+                        type="button"
+                        className="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Close"
+                      ></button>
+                    </div>
+                    <div className="modal-body">
+                      <div className="d-flex justify-content-between">
+                        <h1 className="modal-title fs-5 m-0" id="AddEducationModalLabel">
+                          Add Education
+                        </h1>
+                       
+                      </div>
+                      <h6 className="text-muted">
+                        Details of your course and university help recruiters
+                        understand your background.
+                      </h6>
+
+                      <form>
+                        <div className="mt-4 mb-4">
+                          <label>Education</label>
+                          <select
+                            className="form-select"
+                            value={educationData.education}
+                            onChange={(e) => setEducationData({ ...educationData, education: e.target.value })}
+                          >
+                            <option value="">Select education</option>
+                            <option value="1">Doctorate/PHD</option>
+                            <option value="2">Masters/Post Graduation</option>
+                            <option value="3">Graduation/Diploma</option>
+                            <option value="4">12th</option>
+                            <option value="5">10th</option>
+                          </select>
+                        </div>
+
+                        {isSchoolLevel && (
+                          <>
+                            <div className="mb-4">
+                              <label>Board</label>
+                              <input
+                                type="text"
+                                className="form-control"
+                                placeholder="Enter board name"
+                                value={educationData.board}
+                                onChange={(e) => setEducationData({ ...educationData, board: e.target.value })}
+                              />
+                            </div>
+
+                            <div className="mb-4">
+                              <label>Passing out year</label>
+                              <input
+                                type="text"
+                                className="form-control"
+                                placeholder="Enter year"
+                                value={educationData.passing_year}
+                                onChange={(e) => setEducationData({ ...educationData, passing_year: e.target.value })}
+                                maxLength={4}
+                              />
+                            </div>
+
+                            <div className="mb-4">
+                              <label>School Medium</label>
+                              <input
+                                type="text"
+                                className="form-control"
+                                placeholder="Enter medium"
+                                value={educationData.school_medium}
+                                onChange={(e) => setEducationData({ ...educationData, school_medium: e.target.value })}
+                              />
+                            </div>
+                          </>
+                        )}
+
+                        {!isSchoolLevel && (
+                          <>
+                            <div className="mb-4">
+                              <label>University/Institute</label>
+                              <input
+                                type="text"
+                                className="form-control"
+                                placeholder="Enter institute name"
+                                value={educationData.institute}
+                                onChange={(e) => setEducationData({ ...educationData, institute: e.target.value })}
+                              />
+                            </div>
+
+                            <div className="mb-4">
+                              <label>Course</label>
+                              <input
+                                type="text"
+                                className="form-control"
+                                placeholder="Enter course name"
+                                value={educationData.course}
+                                onChange={(e) => setEducationData({ ...educationData, course: e.target.value })}
+                              />
+                            </div>
+
+                            <div className="mb-4">
+                              <label>Specialization</label>
+                              <input
+                                type="text"
+                                className="form-control"
+                                placeholder="Enter your specialization"
+                                value={educationData.specialization}
+                                onChange={(e) => setEducationData({ ...educationData, specialization: e.target.value })}
+                              />
+                            </div>
+
+                            <div className="mb-4">
+                              <label>Course Type</label>
+                              <div className="form-check">
+                                <input
+                                  className="form-check-input"
+                                  type="radio"
+                                  name="courseType"
+                                  checked={educationData.course_type === "Full Time"}
+                                  onChange={() => setEducationData({ ...educationData, course_type: "Full Time" })}
+                                />
+                                <label className="form-check-label">Full Time</label>
+                              </div>
+                              <div className="form-check">
+                                <input
+                                  className="form-check-input"
+                                  type="radio"
+                                  name="courseType"
+                                  checked={educationData.course_type === "Part Time"}
+                                  onChange={() => setEducationData({ ...educationData, course_type: "Part Time" })}
+                                />
+                                <label className="form-check-label">Part Time</label>
+                              </div>
+                              <div className="form-check">
+                                <input
+                                  className="form-check-input"
+                                  type="radio"
+                                  name="courseType"
+                                  checked={educationData.course_type === "Correspondence"}
+                                  onChange={() => setEducationData({ ...educationData, course_type: "Correspondence" })}
+                                />
+                                <label className="form-check-label">Correspondence</label>
+                              </div>
+                            </div>
+
+                            <div className="mb-4">
+                              <label>Course Duration</label>
+                              <div className="row flex-column flex-md-row align-items-center">
+                                <div className="col">
+                                  <input
+                                    type="text"
+                                    className="form-control"
+                                    placeholder="Starting Year"
+                                    value={educationData.course_starting_year}
+                                    onChange={(e) =>
+                                      setEducationData({ ...educationData, course_starting_year: e.target.value })
+                                    }
+                                    maxLength={4}
+                                  />
+                                </div>
+                                <div className="col-1 text-center">
+                                  <span>To</span>
+                                </div>
+                                <div className="col">
+                                  <input
+                                    type="text"
+                                    className="form-control"
+                                    placeholder="Ending Year"
+                                    value={educationData.course_ending_year}
+                                    onChange={(e) =>
+                                      setEducationData({ ...educationData, course_ending_year: e.target.value })
+                                    }
+                                    maxLength={4}
+                                  />
+                                </div>
+                              </div>
+                            </div>
+                          </>
+                        )}
+
+
+
+
+                        <div className="mb-4">
+                          <label>Marks</label>
+                          <input
+                            type="text"
+                            className="form-control"
+                            placeholder="Enter marks"
+                            value={educationData.marks}
+                            onChange={(e) => setEducationData({ ...educationData, marks: e.target.value })}
+                            maxLength={5}
+                          />
+                        </div>
+                      </form>
+                    </div>
+
+                    <div className="modal-footer border-0">
+                      <button
+                        type="button"
+                        className="btn btn-secondary rounded-pill"
+                        data-bs-dismiss="modal"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="button"
+                        className="btn btn-primary rounded-pill"
+                        data-bs-dismiss="modal"
+                        onClick={AddEducationData}
+                      >
+                        Save
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Edit Education Modal */}
+              <div
+                className="modal fade"
+                id="EditEducationModal"
+                tabIndex="-1"
+                aria-labelledby="EditEducationModalLabel"
+                aria-hidden="true"
+              >
+                <div className="modal-dialog modal-dialog-centered modal-lg">
+                  <div className="modal-content p-3 p-sm-4">
+                    <div className="modal-header border-0 pb-0">
+                      <button
+                        type="button"
+                        className="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Close"
+                      ></button>
+                    </div>
+                    <div className="modal-body">
+                      <div className="d-flex justify-content-between">
+                        <h1 className="modal-title fs-5 m-0" id="EditEducationModalLabel">
+                          Edit Education
+                        </h1>
+                        <Link
+                          className="text-theme"
+                          data-bs-toggle="modal"
+                          data-bs-target="#educationDeleteModal"
+                        >
+                          Delete
+                        </Link>
+                      </div>
+                      <h6 className="text-muted">
+                        Details of your course and university help recruiters
+                        understand your background.
+                      </h6>
+
+                      <form>
+                        <div className="mt-4 mb-4">
+                          <label>Education</label>
+                          <select
+                            className="form-select"
+                            value={educationData.education}
+                            onChange={(e) => setEducationData({ ...educationData, education: e.target.value })}
+                          >
+                            <option value="">Select education</option>
+                            <option value="1">Doctorate/PHD</option>
+                            <option value="2">Masters/Post Graduation</option>
+                            <option value="3">Graduation/Diploma</option>
+                            <option value="4">12th</option>
+                            <option value="5">10th</option>
+                          </select>
+                        </div>
+
+                        {isSchoolLevel && (
+                          <>
+                            <div className="mb-4">
+                              <label>Board</label>
+                              <input
+                                type="text"
+                                className="form-control"
+                                placeholder="Enter board name"
+                                value={educationData.board}
+                                onChange={(e) => setEducationData({ ...educationData, board: e.target.value })}
+                              />
+                            </div>
+
+                            <div className="mb-4">
+                              <label>Passing out year</label>
+                              <input
+                                type="text"
+                                className="form-control"
+                                placeholder="Enter year"
+                                value={educationData.passing_year}
+                                onChange={(e) => setEducationData({ ...educationData, passing_year: e.target.value })}
+                                maxLength={4}
+                              />
+                            </div>
+
+                            <div className="mb-4">
+                              <label>School Medium</label>
+                              <input
+                                type="text"
+                                className="form-control"
+                                placeholder="Enter medium"
+                                value={educationData.school_medium}
+                                onChange={(e) => setEducationData({ ...educationData, school_medium: e.target.value })}
+                              />
+                            </div>
+                          </>
+                        )}
+
+                        {!isSchoolLevel && (
+                          <>
+                            <div className="mb-4">
+                              <label>University/Institute</label>
+                              <input
+                                type="text"
+                                className="form-control"
+                                placeholder="Enter institute name"
+                                value={educationData.institute}
+                                onChange={(e) => setEducationData({ ...educationData, institute: e.target.value })}
+                              />
+                            </div>
+
+                            <div className="mb-4">
+                              <label>Course</label>
+                              <input
+                                type="text"
+                                className="form-control"
+                                placeholder="Enter course name"
+                                value={educationData.course}
+                                onChange={(e) => setEducationData({ ...educationData, course: e.target.value })}
+                              />
+                            </div>
+
+                            <div className="mb-4">
+                              <label>Specialization</label>
+                              <input
+                                type="text"
+                                className="form-control"
+                                placeholder="Enter your specialization"
+                                value={educationData.specialization}
+                                onChange={(e) => setEducationData({ ...educationData, specialization: e.target.value })}
+                              />
+                            </div>
+
+                            <div className="mb-4">
+                              <label>Course Type</label>
+                              <div className="form-check">
+                                <input
+                                  className="form-check-input"
+                                  type="radio"
+                                  name="courseType"
+                                  checked={educationData.course_type === "Full Time"}
+                                  onChange={() => setEducationData({ ...educationData, course_type: "Full Time" })}
+                                />
+                                <label className="form-check-label">Full Time</label>
+                              </div>
+                              <div className="form-check">
+                                <input
+                                  className="form-check-input"
+                                  type="radio"
+                                  name="courseType"
+                                  checked={educationData.course_type === "Part Time"}
+                                  onChange={() => setEducationData({ ...educationData, course_type: "Part Time" })}
+                                />
+                                <label className="form-check-label">Part Time</label>
+                              </div>
+                              <div className="form-check">
+                                <input
+                                  className="form-check-input"
+                                  type="radio"
+                                  name="courseType"
+                                  checked={educationData.course_type === "Correspondence"}
+                                  onChange={() => setEducationData({ ...educationData, course_type: "Correspondence" })}
+                                />
+                                <label className="form-check-label">Correspondence</label>
+                              </div>
+                            </div>
+
+                            <div className="mb-4">
+                              <label>Course Duration</label>
+                              <div className="row flex-column flex-md-row align-items-center">
+                                <div className="col">
+                                  <input
+                                    type="text"
+                                    className="form-control"
+                                    placeholder="Starting Year"
+                                    value={educationData.course_starting_year}
+                                    onChange={(e) =>
+                                      setEducationData({ ...educationData, course_starting_year: e.target.value })
+                                    }
+                                    maxLength={4}
+                                  />
+                                </div>
+                                <div className="col-1 text-center">
+                                  <span>To</span>
+                                </div>
+                                <div className="col">
+                                  <input
+                                    type="text"
+                                    className="form-control"
+                                    placeholder="Ending Year"
+                                    value={educationData.course_ending_year}
+                                    onChange={(e) =>
+                                      setEducationData({ ...educationData, course_ending_year: e.target.value })
+                                    }
+                                    maxLength={4}
+                                  />
+                                </div>
+                              </div>
+                            </div>
+                          </>
+                        )}
+
+
+
+
+                        <div className="mb-4">
+                          <label>Marks</label>
+                          <input
+                            type="text"
+                            className="form-control"
+                            placeholder="Enter marks"
+                            value={educationData.marks}
+                            onChange={(e) => setEducationData({ ...educationData, marks: e.target.value })}
+                            maxLength={5}
+                          />
+                        </div>
+                      </form>
+                    </div>
+
+                    <div className="modal-footer border-0">
+                      <button
+                        type="button"
+                        className="btn btn-secondary rounded-pill"
+                        data-bs-dismiss="modal"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="button"
+                        className="btn btn-primary rounded-pill"
+                        data-bs-dismiss="modal"
+                        onClick={UpdateEducationData}
+                      >
+                        Save
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+               {/* Education delete modal */}
+               <div
                 className="modal fade"
                 id="educationDeleteModal"
                 tabIndex="-1"
@@ -2753,7 +3825,7 @@ const MyAccount = () => {
                         type="button"
                         className="btn btn-danger"
                         onClick={() =>
-                          confirmEducationDelete(selectedEducation.id)
+                          confirmEducationDelete(educationData.id)
                         }
                         data-bs-dismiss="modal"
                       >
@@ -2764,294 +3836,13 @@ const MyAccount = () => {
                 </div>
               </div>
 
-              {/* Education Modal (Outside .map()) */}
-              {selectedEducation && (
-                <div
-                  className="modal fade"
-                  id="educationModal"
-                  tabIndex="-1"
-                  aria-labelledby="educationModalLabel"
-                  aria-hidden="true"
-                >
-                  <div className="modal-dialog modal-dialog-centered modal-lg">
-                    <div className="modal-content p-3 p-sm-4">
-                      <div className="modal-header border-0 pb-0">
-                        <button
-                          type="button"
-                          className="btn-close"
-                          data-bs-dismiss="modal"
-                          aria-label="Close"
-                        ></button>
-                      </div>
-                      <div className="modal-body">
-                        <div className="d-flex justify-content-between">
-                          <h1
-                            className="modal-title fs-5 m-0"
-                            id="educationModalLabel"
-                          >
-                            {selectedEducation.id
-                              ? "Edit Education"
-                              : "Add Education"}
-                          </h1>
-                          {selectedEducation &&
-                            selectedEducation.id &&
-                            Object.keys(selectedEducation).length > 0 && (
-                              <Link
-                                className="text-theme"
-                                data-bs-toggle="modal"
-                                data-bs-target="#educationDeleteModal"
-                              >
-                                Delete
-                              </Link>
-                            )}
-                        </div>
-                        <h6 className="text-muted">
-                          Details of your course and university help recruiters
-                          understand your background.
-                        </h6>
+                {/* Education Section Ends --- */}         
 
-                        <form>
-                          <div className="mt-4 mb-4">
-                            <label>Education</label>
-                            <select
-                              value={selectedEducation.education || ""}
-                              onChange={(e) =>
-                                setSelectedEducation({
-                                  ...selectedEducation,
-                                  education: e.target.value,
-                                })
-                              }
-                              className="form-select"
-                            >
-                              <option value="">Select education</option>
-                              <option value="1">Doctorate/PHD</option>
-                              <option value="2">Masters/Post Graduation</option>
-                              <option value="3">Graduation/Diploma</option>
-                              <option value="4">12th</option>
-                              <option value="5">10th</option>
-                            </select>
-                          </div>
-
-                          <div className="mb-4">
-                            <label>University/Institute</label>
-                            <input
-                              type="text"
-                              className="form-control"
-                              placeholder="Enter institute name"
-                              value={selectedEducation.institute || ""}
-                              onChange={(e) =>
-                                setSelectedEducation({
-                                  ...selectedEducation,
-                                  institute: e.target.value,
-                                })
-                              }
-                            />
-                          </div>
-
-                          <div className="mb-4">
-                            <label>Course</label>
-                            <input
-                              type="text"
-                              className="form-control"
-                              placeholder="Enter course name"
-                              value={selectedEducation.course || ""}
-                              onChange={(e) =>
-                                setSelectedEducation({
-                                  ...selectedEducation,
-                                  course: e.target.value,
-                                })
-                              }
-                            />
-                          </div>
-
-                          <div className="mb-4">
-                            <label>Specialization</label>
-                            <input
-                              type="text"
-                              className="form-control"
-                              placeholder="Enter your specialization"
-                              value={selectedEducation.specialization || ""}
-                              onChange={(e) =>
-                                setSelectedEducation({
-                                  ...selectedEducation,
-                                  specialization: e.target.value,
-                                })
-                              }
-                            />
-                          </div>
-
-                          <div className="mb-4">
-                            <label>Course Type</label>
-                            <div className="form-check">
-                              <input
-                                className="form-check-input"
-                                type="radio"
-                                name="courseType"
-                                checked={
-                                  selectedEducation.course_type === "Full Time"
-                                }
-                                onChange={() =>
-                                  setSelectedEducation({
-                                    ...selectedEducation,
-                                    course_type: "Full Time",
-                                  })
-                                }
-                              />
-                              <label className="form-check-label">
-                                Full Time
-                              </label>
-                            </div>
-                            <div className="form-check">
-                              <input
-                                className="form-check-input"
-                                type="radio"
-                                name="courseType"
-                                checked={
-                                  selectedEducation.course_type === "Part Time"
-                                }
-                                onChange={() =>
-                                  setSelectedEducation({
-                                    ...selectedEducation,
-                                    course_type: "Part Time",
-                                  })
-                                }
-                              />
-                              <label className="form-check-label">
-                                Part Time
-                              </label>
-                            </div>
-                            <div className="form-check">
-                              <input
-                                className="form-check-input"
-                                type="radio"
-                                name="courseType"
-                                checked={
-                                  selectedEducation.course_type ===
-                                  "Correspondence"
-                                }
-                                onChange={() =>
-                                  setSelectedEducation({
-                                    ...selectedEducation,
-                                    course_type: "Correspondence",
-                                  })
-                                }
-                              />
-                              <label className="form-check-label">
-                                Correspondence
-                              </label>
-                            </div>
-                          </div>
-
-                          <div className="mb-4">
-                            <label>Course Duration</label>
-                            <div className="row flex-column flex-md-row align-items-center">
-                              <div className="col">
-                                <input
-                                  type="text"
-                                  className="form-control"
-                                  placeholder="Starting Year"
-                                  value={
-                                    selectedEducation.course_starting_year || ""
-                                  }
-                                  onChange={(e) =>
-                                    setSelectedEducation({
-                                      ...selectedEducation,
-                                      course_starting_year: e.target.value,
-                                    })
-                                  }
-                                />
-                              </div>
-                              <div className="col-1 text-center">
-                                
-                                <span>To</span>
-                              </div>
-                              <div className="col">
-                                <input
-                                  type="text"
-                                  className="form-control"
-                                  placeholder="Ending Year"
-                                  value={
-                                    selectedEducation.course_ending_year || ""
-                                  }
-                                  onChange={(e) =>
-                                    setSelectedEducation({
-                                      ...selectedEducation,
-                                      course_ending_year: e.target.value,
-                                    })
-                                  }
-                                />
-                              </div>
-                            </div>
-                          </div>
-
-                          {selectedEducation.grading_system === "Cgpa" ? (
-                            <div className="mb-4">
-                              {/* <label htmlFor="">{selectedEducation.grading_system.toUpperCase()}</label> */}
-                              <label>Marks</label>
-                              <input
-                                type="text"
-                                className="form-control"
-                                placeholder="Enter marks"
-                                value={
-                                  (selectedEducation.marks
-                                    ? selectedEducation.marks + " "
-                                    : "") +
-                                  selectedEducation.grading_system.toUpperCase()
-                                }
-                                onChange={(e) =>
-                                  setSelectedEducation({
-                                    ...selectedEducation,
-                                    marks: e.target.value,
-                                  })
-                                }
-                              />
-                            </div>
-                          ) : (
-                            <div className="mb-4">
-                              <label>Marks</label>
-                              <input
-                                type="text"
-                                className="form-control"
-                                placeholder="Enter marks"
-                                value={selectedEducation.marks || ""}
-                                onChange={(e) =>
-                                  setSelectedEducation({
-                                    ...selectedEducation,
-                                    marks: e.target.value,
-                                  })
-                                }
-                              />
-                            </div>
-                          )}
-                        </form>
-                      </div>
-
-                      <div className="modal-footer border-0">
-                        <button
-                          type="button"
-                          className="btn btn-secondary rounded-pill"
-                          data-bs-dismiss="modal"
-                        >
-                          Cancel
-                        </button>
-                        <button
-                          type="button"
-                          className="btn btn-primary rounded-pill"
-                          data-bs-dismiss="modal"
-                          onClick={saveEducationData}
-                        >
-                          Save
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
 
               {/* Social Profiles */}
               <div className="card mt-4 shadow border-0 rounded-3">
                 <div className="card-body">
-                  <div className="d-flex justify-content-between mb-3">
+                  <div className="d-flex justify-content-between ">
                     <div>
                       <h5 className="m-0">Online Profile</h5>
                       <p>
@@ -3061,21 +3852,18 @@ const MyAccount = () => {
                         </small>
                       </p>
                     </div>
-                    {/* {(!socialProfiles || Object.keys(socialProfiles).length === 0) && (
-                          <Link className="text-theme" data-bs-toggle="modal" data-bs-target="#addSocialModal">
-                            Add
-                          </Link>
-                        )} */}
+
                     <Link
                       className="text-theme"
                       data-bs-toggle="modal"
                       data-bs-target="#addSocialModal"
+                      onClick={() =>  setSelectedSocialProfile({})}
                     >
-                      Add
+                      Add Profile
                     </Link>
                   </div>
 
-                  <div className="mt-4 online_profile">
+                  <div className=" online_profile">
                     {socialProfiles && socialProfiles.length > 0 ? (
                       socialProfiles.map((social_profiles, index) => (
                         <div key={index} className="mb-3">
@@ -3386,7 +4174,7 @@ const MyAccount = () => {
                         data-bs-toggle="modal"
                         data-bs-target="#PersonalDetailModal"
                       >
-                        
+
                         <i className="fa-solid fa-pencil ms-2"></i>
                       </Link>
                     </h5>
@@ -3400,10 +4188,10 @@ const MyAccount = () => {
                           {userData.gender && userData.maritial_status
                             ? `${userData.gender}, ${userData.maritial_status}`
                             : userData.gender
-                            ? `${userData.gender}`
-                            : userData.maritial_status
-                            ? `${userData.maritial_status}`
-                            : "Please add data"}
+                              ? `${userData.gender}`
+                              : userData.maritial_status
+                                ? `${userData.maritial_status}`
+                                : "Please add data"}
                         </p>
                       </div>
 
@@ -3795,6 +4583,7 @@ const MyAccount = () => {
                                 pincode: e.target.value,
                               })
                             }
+                            maxLength={6}
                           />
                         </div>
 
@@ -3937,6 +4726,7 @@ const MyAccount = () => {
                       className="text-theme"
                       data-bs-toggle="modal"
                       data-bs-target="#certificateModal"
+                      onClick={resetCertificateForm}
                     >
                       Add
                     </Link>
@@ -4004,7 +4794,7 @@ const MyAccount = () => {
                         achieved/completed
                       </h6>
                       <form>
-                        <div className="text-end">
+                        {/* <div className="text-end">
                           <button
                             type="button"
                             className="btn btn-secondary"
@@ -4012,7 +4802,7 @@ const MyAccount = () => {
                           >
                             Reset
                           </button>
-                        </div>
+                        </div> */}
                         <div className="mt-4 mb-4">
                           <label htmlFor="certification_name">
                             Certification Name
@@ -4051,7 +4841,7 @@ const MyAccount = () => {
                                     type="text"
                                     list="certification_validity"
                                     className="form-control"
-                                    placeholder="Enter Certification Validity"
+                                    placeholder="Enter Validity e.g: 5 years"
                                     name="certification_validity"
                                     value={
                                       selectedCertificate.certification_validity
@@ -4074,24 +4864,24 @@ const MyAccount = () => {
                             </div>
                             {selectedCertificate.certification_validity !==
                               "Lifetime" && (
-                              <div className="col">
-                                <div className="row">
-                                  <div className="col-lg-12 mb-2">
-                                    <label htmlFor="expire_on">
-                                      Expired Date
-                                    </label>
-                                    <input
-                                      type="date"
-                                      className="form-control"
-                                      placeholder="Enter Expired Date"
-                                      name="expire_on"
-                                      value={selectedCertificate.expire_on}
-                                      onChange={handleCertificateChange}
-                                    />
+                                <div className="col">
+                                  <div className="row">
+                                    <div className="col-lg-12 mb-2">
+                                      <label htmlFor="expire_on">
+                                        Expired Date
+                                      </label>
+                                      <input
+                                        type="date"
+                                        className="form-control"
+                                        placeholder="Enter Expired Date"
+                                        name="expire_on"
+                                        value={selectedCertificate.expire_on}
+                                        onChange={handleCertificateChange}
+                                      />
+                                    </div>
                                   </div>
                                 </div>
-                              </div>
-                            )}
+                              )}
                           </div>
                         </div>
                         <div className="mb-4">
@@ -4259,7 +5049,7 @@ const MyAccount = () => {
                                       type="text"
                                       list="certification_validity"
                                       className="form-control"
-                                      placeholder="Enter Certification Validity"
+                                      placeholder="Enter Validity e.g: 5 years"
                                       name="certification_validity"
                                       value={
                                         selectedCertificate.certification_validity
@@ -4282,7 +5072,7 @@ const MyAccount = () => {
                               </div>
                               {!selectedCertificate.lifetime_validity &&
                                 selectedCertificate.certification_validity !==
-                                  "Lifetime" && (
+                                "Lifetime" && (
                                   <div className="col">
                                     <div className="row">
                                       <div className="col-lg-12 mb-2">
@@ -4360,7 +5150,7 @@ const MyAccount = () => {
         pauseOnHover
       />
       <Footer />
-    </>
+    </div>
   );
 };
 

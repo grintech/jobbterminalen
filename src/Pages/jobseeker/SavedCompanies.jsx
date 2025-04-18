@@ -144,7 +144,7 @@ const SavedCompanies = () => {
                                                     </Link>
                                                   </div>
                                                 </div>
-                                              <div className="pt-5 pb-3">
+                                              <div className="pt-2 pb-3">
                                                 <Link to={`/companies/${company.company_slug}`}>
                                                   <h5>{company.company_name}</h5>
                                                 </Link>

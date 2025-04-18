@@ -46,7 +46,7 @@ const Navbar = () => {
         <div className="dropdown">
             <button className="btn border dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
          
-            <p className='ml-4 mb-0'>{user.name.split(" ")[0]}</p>
+            <p className='ml-4 mb-0 text-capitalize'>{user.name.split(" ")[0]} <i style={{fontSize:"10px"}} className="fa-solid fa-chevron-down"></i> </p>
 
             </button>
             <ul className="dropdown-menu">
@@ -80,8 +80,11 @@ const Navbar = () => {
             <li className="nav-item">
                 <Link to="/jobs" className="nav-link">{t("Jobs")}</Link>
             </li>
+            <li className="nav-item">
+                <Link to="/companies" className="nav-link">{t("Companies")}</Link>
+            </li>
             
-            <li className="nav-item dropdown">
+            {/* <li className="nav-item dropdown">
                 <Link
                 className="nav-link dropdown-toggle"
                 type="button"
@@ -94,7 +97,7 @@ const Navbar = () => {
                 <li><Link to="/companies" className="dropdown-item">{t("AllCompanies")}</Link></li>
                 <li><Link to="/companies/featured" className="dropdown-item">{t("FeaturedCompanies")}</Link></li>
                 </ul>
-            </li>
+            </li> */}
             <li className="nav-item">
                 <Link to="/contact" className="nav-link">{t("ContactUs")}</Link>
             </li>
@@ -114,7 +117,7 @@ const Navbar = () => {
         <div className="dropdown">
             <button className="btn border dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
           
-            <p className='ml-4 mb-0'>{user.name.split(" ")[0]}</p>
+            <p className='ml-4 mb-0 text-capitalize'>{user.name.split(" ")[0]} <i style={{fontSize:"10px"}} className="fa-solid fa-chevron-down"></i></p>
 
             </button>
             <ul className="dropdown-menu">
@@ -139,7 +142,7 @@ const Navbar = () => {
         <select className='lang_select ms-lg-2 d-none d-lg-block' onChange={(e) => changeLanguage(e.target.value)} defaultValue={i18n.language}>
         <option value="en">EN</option>
         <option value="sv">SV</option>
-      </select>
+       </select>
 
 
         </div>
