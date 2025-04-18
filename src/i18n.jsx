@@ -365,7 +365,7 @@ const resources = {
       "FeedbackSelectOption5": "Report Abuse",
       "FeedbackSelectOption6": "Report Fake Jobs Offer",
 
-      "FeedbackLabel2": "Desription",
+      "FeedbackLabel2": "Description",
       "FeedbackLabel2Placeholder": "Write your feedback here...",
       "FeedbackLabel3": "Name",
       "FeedbackLabel3Placeholder": "Enter your name",
@@ -373,7 +373,7 @@ const resources = {
       "FeedbackLabel4Placeholder": "Enter your email",
       "FeedbackLabel5": "Phone Number",
       "FeedbackLabel5Placeholder": "Enter your phone number",
-      "FeedbackLabel6": "Upload Screenshot (optional)",
+      "FeedbackLabel6": "Upload Document (optional)",
 
       "FeedbackBelowText1": "We appreciate your feedback and will get back to you shortly.",
       "FeedbackBelowText2": "If you have any questions, feel free to reach out to us at <b><Link>support@jobbterminalen.com</Link></b>.",
@@ -820,7 +820,7 @@ const resources = {
       "FeedbackLabel4Placeholder": "Ange din e-postadress",
       "FeedbackLabel5": "Telefonnummer",
       "FeedbackLabel5Placeholder": "Ange ditt telefonnummer",
-      "FeedbackLabel6": "Ladda upp skärmdump (valfritt)",
+      "FeedbackLabel6": "Ladda upp dokument (valfritt)",
 
       "FeedbackBelowText1": "Genom att skicka detta formulär samtycker du till vår",
       "FeedbackBelowText2": "Om du har några frågor är du välkommen att kontakta oss på <b><Link>support@jobbterminalen.com</Link></b>",

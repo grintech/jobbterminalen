@@ -5,6 +5,7 @@ import Footer from '../../components/Footer'
 import { Link } from 'react-router-dom'
 import { useAuthContext } from "../../store/authContext";
 import axios from 'axios';
+import { toast, ToastContainer } from "react-toastify";
 
 const Appliedjobs = () => {
 
@@ -21,6 +22,14 @@ const Appliedjobs = () => {
   const [applicationsCount, setApplicationsCount] = useState(0);
   const [selectedJobIndex, setSelectedJobIndex] = useState(0);
   const [similarJobs, setSimilarJobs] = useState([]);
+
+  const [selectedApplicationId, setSelectedApplicationId] = useState(null);
+
+
+  const stripHtml = (html) => {
+    const doc = new DOMParser().parseFromString(html, "text/html");
+    return doc.body.textContent || "";
+  };
 
     useEffect(() => {
       const fetchData = async () => {
@@ -53,6 +62,33 @@ const Appliedjobs = () => {
   
       fetchData();
     }, [userId]);
+
+    const handleRevokeConfirm = async () => {
+      if (!selectedApplicationId) return;
+    
+      try {
+        const response = await axios.delete(`${API_URL}/revoke-apply-job.php?application_id=${selectedApplicationId}`, {
+          headers: {
+            Authorization: `Bearer ${bearerKey}`,
+            'Content-Type': 'application/json',
+          }
+        });
+    
+        if (response.data.type === "success") {
+          // Refresh the applied jobs list
+          setJobs(prev => prev.filter(job => job.application_id !== selectedApplicationId));
+          setSelectedApplicationId(null);
+          window.bootstrap.Modal.getInstance(document.getElementById("revokeModal")).hide();
+          toast.success(response.data.message || "Application revoked successfully!");
+        } else {
+          toast.error(response.data.message || "Failed to revoke application.");
+        }
+      } catch (err) {
+        toast.error("An error occurred while revoking the application.");
+        console.error(err);
+      }
+    };
+    
 
 
     useEffect(() => {
@@ -141,6 +177,26 @@ const Appliedjobs = () => {
   return (
     <>
       <Navbar />
+      <div className="modal fade" id="revokeModal" tabIndex="-1" aria-labelledby="revokeModalLabel" aria-hidden="true">
+      <div className="modal-dialog">
+        <div className="modal-content">
+          <div className="modal-header">
+            <h5 className="modal-title" id="revokeModalLabel">Confirm Revocation</h5>
+            <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div className="modal-body text-center">
+           <p className="m-0"> Are you sure you want to revoke this job application?</p>
+          </div>
+          <div className="modal-footer justify-content-center align-items-center">
+            <button type="button" className="btn btn-success mx-2" onClick={handleRevokeConfirm}>Confirm</button>
+            <button type="button" className="btn btn-danger mx-2" data-bs-dismiss="modal">Cancel</button>
+          
+          </div>
+        </div>
+      </div>
+    </div>
+
+
       <div className='top_pad'>
         <div className="container pb-5">
           <div className="row mt-4">
@@ -185,7 +241,7 @@ const Appliedjobs = () => {
                                 >
                                   <li className="text-start py-3">
                                     <div className="company_card">
-                                      <h6>{job.job_title}</h6>
+                                      <h6>{stripHtml(job.job_title)}</h6>
                                       <p className="text-secondary fw-semibold">{job.company_name}</p>
                                       <span className="border bg-white rounded-pill d-inline-flex align-items-center py-1 px-2">
                                         <i className="fa-solid fa-check-circle me-1"></i>
@@ -205,8 +261,25 @@ const Appliedjobs = () => {
                               <div className="tab-pane fade show active" id={`v-pills-${selectedJobIndex}`} role="tabpanel" aria-labelledby={`v-pills-${selectedJobIndex}-tab`} tabIndex="0">
                                 <div className="card-body">
                                   <div className="border-bottom pb-3">
-                                    <h5 className="text-dark">{appliedJobs[selectedJobIndex].job_title}</h5>
-                                    <h6 className="text-secondary m-0">{appliedJobs[selectedJobIndex].company_name}</h6>
+                                    <div className="d-flex align-items-start justify-content-between">
+                                      <div>
+                                        <Link to={`/jobs/${appliedJobs[selectedJobIndex].job_slug}`}>
+                                         <h5 className="text-dark">{stripHtml(appliedJobs[selectedJobIndex].job_title)}</h5>
+                                        </Link>
+
+                                         <h6 className="text-secondary m-0">{appliedJobs[selectedJobIndex].company_name}</h6>
+                                       
+                                      </div>
+                                      <button
+                                      className="btn btn-sm btn-danger"
+                                      data-bs-toggle="modal"
+                                      data-bs-target="#revokeModal"
+                                      onClick={() => setSelectedApplicationId(appliedJobs[selectedJobIndex].application_id)}
+                                    >
+                                      Revoke
+                                    </button>
+                                    </div>
+                                    
                                   </div>
                                   <div className="border-bottom py-3">
                                     <h5 className="text-dark">Application Status</h5>
@@ -258,7 +331,7 @@ const Appliedjobs = () => {
                                     </ul>
                                   </div>
 
-                                  <div className="border-bottom py-3">
+                                  <div className="border-bottom py-3 activity_display">
                                     <h5 className='text-dark'>Activity on this job</h5>
                                     <div className="d-inline-flex border rounded-2 card-body">
                                       <div className='d-flex border-end px-3'>
@@ -266,12 +339,12 @@ const Appliedjobs = () => {
                                         <p className='m-0'>Total <br />applications</p>
                                       </div>
                                       {appliedJobs[selectedJobIndex].status === "Applied" ? (
-                                        <div className='d-flex px-3'>
+                                        <div className='d-flex px-3 application_views'>
                                           <h4 className='m-0 me-2'>0</h4>
                                           <p className='m-0'>Applications <br />viewed by recruiter</p>
                                         </div>
                                       ) : (
-                                        <div className='d-flex px-3'>
+                                        <div className='d-flex px-3 application_views'>
                                           <h4 className='m-0 me-2'>1</h4>
                                           <p className='m-0'>Applications <br />viewed by recruiter</p>
                                         </div>
@@ -283,7 +356,7 @@ const Appliedjobs = () => {
                                     <h5 className='text-dark'>Similar Jobs</h5>
                                     <div className="row">
                                       {similarJobs.length > 0 ? (
-                                        similarJobs.map((job) => (
+                                        similarJobs.slice(0,4).map((job) => (
                                           <div className="col-md-6 col-sm-6 mb-4" key={job.id}>
                                             <div className="card company_list_card h-100">
                                               <div className="card-body">
@@ -305,10 +378,10 @@ const Appliedjobs = () => {
 
                                                 <div className="py-2">
                                                   <Link to={`/companies/${job.company_slug}`}>
-                                                    <h5 className="py-2 m-0">{job.company_name}</h5>
+                                                    <h5 className="py-2 m-0">{stripHtml(job.company_name)}</h5>
                                                   </Link>
                                                   <Link to={`/jobs/${job.slug}`}>
-                                                    <h6 className="m-0">{job.title}</h6>
+                                                    <h6 className="m-0">{stripHtml(job.title)}</h6>
                                                   </Link>
                                                 </div>
 
@@ -322,20 +395,25 @@ const Appliedjobs = () => {
                                                       </div>
                                                     </li>
                                                   )}
-                                                  <li>
-                                                    <div className="btn btn-sm btn-green me-2 mb-2 text-capitalize">
-                                                      <span>Salary -</span> {job.salary_range} {job.salary_currency}
-                                                    </div>
-                                                  </li>
-                                                  <li>
-                                                    <div className="btn btn-sm btn-green me-2 mb-2 text-capitalize">
+                                                 {job.salary_range && job.salary_currency && (
+                                                    <li>
+                                                      <div className="btn btn-sm btn-green me-2 mb-2 text-capitalize">
+                                                        <span>Salary - </span> {job.salary_range} {job.salary_currency}
+                                                      </div>
+                                                    </li>
+                                                  )}
+
+                                                  {job.experience_required && (
+                                                   <li>
+                                                     <div className="btn btn-sm btn-green me-2 mb-2 text-capitalize">
                                                       <span>Experience -</span> {job.experience_required}
                                                     </div>
-                                                  </li>
-                                                  {job.job_location && (
+                                                   </li>
+                                                  )}
+                                                  {job.city && (
                                                     <li>
                                                       <div className="btn btn-sm btn-green me-2 mb-2 text-start text-capitalize">
-                                                        <i className="fa-solid fa-location-dot"></i> {job.job_location}
+                                                        <i className="fa-solid fa-location-dot"></i> {job.city}
                                                       </div>
                                                     </li>
                                                   )}
@@ -378,15 +456,30 @@ const Appliedjobs = () => {
               )}
             </div>
             ) : (
-              <p>No application found</p>
-            ) }
-          
+              <div className="card  border-0 shadow">
+              <div className="card-body text-center">
+                <img className='job_search' src="/public/images/job_search.png" alt="job_search" style={{ width: '100px' }}  />
+                <p className="text-center text-theme">No applications found.</p>
+              </div>
+            </div>
+            )}
 
             </div>
           </div>
         </div>
       </div>
       <Footer />
+        <ToastContainer 
+          position="top-right"
+          autoClose={3000}
+          hideProgressBar
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          />
     </>
   )
 }

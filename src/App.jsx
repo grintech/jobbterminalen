@@ -38,6 +38,7 @@ import FraudAlert from './Pages/FraudAlert'
 import Sitemap from './Pages/Sitemap'
 import Feedback from './Pages/Feedback'
 import HelpCenter from './Pages/HelpCenter'
+import ApplyJob from './components/ApplyJob'
 
 
 const App = () => {
@@ -90,6 +91,8 @@ const App = () => {
         <Route path='/job/category/:slug' element={ <CategoryList />} />
         {/* <Route path='/job-detail' element={ <JobDetail />} /> */}
         <Route path='/jobs/:slug' element={ <JobDetail />} />
+        <Route path='/apply-job' element={ <ApplyJob />} />
+
         {/* <Route path='/search-job' element={ <SearchPage />} /> */}
         <Route path='/job-search' element={ <SearchJobs />} />
 

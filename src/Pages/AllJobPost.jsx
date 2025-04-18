@@ -164,14 +164,15 @@ const AllJobPost = () => {
                       <div className="card company_list_card h-100">
                         <div className="card-body ">
                           <div className="d-flex justify-content-between">
-                            {/* <Link to={`/companies/${job.companies_slug}`}> */}
+                            <Link to={`/companies/${job.companies_slug}`}>
                               <div className="logo_div border-0 shadow">
                                 <img
+                                  loading="lazy"
                                   src={`${IMG_URL}/${job.company_profile}`}
                                   alt="company_logo"
                                 />
                               </div>
-                            {/* </Link> */}
+                            </Link>
                             <div className="d-flex align-items-center">
                               <Link className="btn-light shadow me-2">
                                 <i className="fa-regular fa-bookmark"></i>
@@ -192,7 +193,7 @@ const AllJobPost = () => {
                             </Link>
                           </div>
                           <p className="main_desc">Trusted global solutions company.</p>
-                          <ul className="p-0 d-flex flex-wrap">
+                          <ul className="p-0 d-flex flex-wrap m-0">
                             {job.job_type && (
                               <li>
                                 <div className="btn btn-sm btn-green me-2 mb-2 text-capitalize">{job.job_type}</div>
@@ -204,10 +205,10 @@ const AllJobPost = () => {
                                 {job.experience_required}
                               </div>
                             </li>
-                            {job.job_location && (
+                            {job.city && (
                               <li>
                                 <div className="btn btn-sm btn-green me-2 mb-2 text-start text-capitalize">
-                                  <i className="fa-solid fa-location-dot"></i>&nbsp;&nbsp;{job.job_location}
+                                  <i className="fa-solid fa-location-dot"></i>&nbsp;&nbsp;{job.city}
                                 </div>
                               </li>
                             )}

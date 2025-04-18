@@ -50,7 +50,7 @@ const Categories = () => {
 
   return (
     <div className="popular_categories container pb-4">
-      <h4 className="mb-4 text-center">Popular Categories</h4>
+      <h4 className="mb-4 text-center">Popular Job Categories</h4>
        {loading ? (
               <div className="loading-screen d-flex flex-column justify-content-center align-items-center">
                 <div className="spinner-grow text-primary" role="status">
