@@ -22,7 +22,7 @@ import ForgetPassword from './components/ForgotPassword'
 import VerifyOtp from './components/VerifyOtp'
 import ResetPassword from './components/ResetPassword'
 import ProjectBasis from './Pages/ProjectBasis'
-import SearchPage from './components/SearchPage'
+// import SearchPage from './components/SearchPage'
 import MyAccount from './Pages/jobseeker/MyAccount'
 import ProtectedRoute from './routes/ProtectedRoute'
 import SavedJobs from './Pages/jobseeker/SavedJobs'
@@ -32,8 +32,8 @@ import CompanySingle from './Pages/CompanySingle'
 import SavedCompanies from './Pages/jobseeker/SavedCompanies'
 import GeoLocation from './components/GeoLocation'
 import SearchJobs from './Pages/SearchJobs'
-import { ToastContainer } from "react-toastify";
-import HomeBanners from './components/HomeBanners'
+// import { ToastContainer } from "react-toastify";
+// import HomeBanners from './components/HomeBanners'
 import FraudAlert from './Pages/FraudAlert'
 import Sitemap from './Pages/Sitemap'
 import Feedback from './Pages/Feedback'
@@ -59,7 +59,9 @@ const App = () => {
         draggable
         pauseOnHover
       /> */}
+
       {/* <HomeBanners /> */}
+      
       <Routes >
         <Route path='/' element={ <Homepage />} />
         <Route path='/register' element={ <Register />} />
@@ -98,26 +100,26 @@ const App = () => {
 
 
        {/* Jobseeker Pages */}
-       <Route path="/my-account" element={ <ProtectedRoute allowedRoles={["job_seeker"]}>
-              <MyAccount />
-            </ProtectedRoute>  }
+       <Route path="/my-account" 
+        element={ <ProtectedRoute allowedRoles={["job_seeker"]}> <MyAccount /> </ProtectedRoute> }
         />
-       <Route path="/saved-jobs" element={ <ProtectedRoute allowedRoles={["job_seeker"]}>
-              <SavedJobs />
-            </ProtectedRoute>  }
+
+       <Route path="/saved-jobs"
+         element={ <ProtectedRoute allowedRoles={["job_seeker"]}> <SavedJobs /> </ProtectedRoute> }
         />
-       <Route path="/applied-jobs" element={ <ProtectedRoute allowedRoles={["job_seeker"]}>
-              <AppliedJobs />
-            </ProtectedRoute>  }
+
+       <Route path="/applied-jobs" 
+          element={ <ProtectedRoute allowedRoles={["job_seeker"]}> <AppliedJobs /> </ProtectedRoute> }
         />
-       <Route path="/saved-companies" element={ <ProtectedRoute allowedRoles={["job_seeker"]}>
-              <SavedCompanies />
-            </ProtectedRoute>  }
+
+       <Route path="/saved-companies"
+         element={ <ProtectedRoute allowedRoles={["job_seeker"]}> <SavedCompanies /> </ProtectedRoute> }
         />
-       <Route path="/my-profile" element={ <ProtectedRoute allowedRoles={["job_seeker"]}>
-              <JobseekerProfile />
-            </ProtectedRoute>  }
+
+       <Route path="/my-profile" 
+          element={ <ProtectedRoute allowedRoles={["job_seeker"]}> <JobseekerProfile /> </ProtectedRoute>  }
         />
+
       </Routes>
     </BrowserRouter>
      

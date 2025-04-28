@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Navbar from "../components/Navbar";
 import { Link, useParams } from "react-router-dom";
 import Footer from "../components/Footer";
@@ -22,6 +22,21 @@ const CompanySingle = () => {
 
   const { user } = useAuthContext();
   const userId = user ? user.id : null;
+
+  const vacanciesRef = useRef(null);
+
+  const handleScrollToVacancies = () => {
+    if (vacanciesRef.current) {
+      const topOffset = 110; // Height accoding to header 
+      const elementPosition = vacanciesRef.current.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.pageYOffset - topOffset;
+
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: 'smooth',
+      });
+    }
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -90,35 +105,48 @@ const CompanySingle = () => {
   }
 
 
-  const calculateTimeAgo = (date) => {
-    if (!date) return "Updating...";
-
-    const utcZero = date.replace(" ", "T") + "Z";
-    const localDate = new Date(utcZero);
-    if (isNaN(localDate.getTime())) {
-      return "1 second ago";
-    }
+  const calculateTimeAgo = (timestamp) => {
+    if (!timestamp) return "";
+  
     const now = new Date();
-    const diffTime = now - localDate;
-
-    const diffSeconds = Math.floor(diffTime / 1000);
-    if (diffSeconds < 60) {
-      return `${diffSeconds} second${diffSeconds === 1 ? "" : "s"} ago`;
+    const past = new Date(timestamp.replace(" ", "T"));
+    const secondsPast = Math.floor((now - past) / 1000);
+  
+    const years = Math.floor(secondsPast / 31536000); // 60 * 60 * 24 * 365
+    const months = Math.floor((secondsPast % 31536000) / 2592000); // 60 * 60 * 24 * 30
+    const days = Math.floor((secondsPast % 2592000) / 86400); // 60 * 60 * 24
+    const hours = Math.floor((secondsPast % 86400) / 3600); // 60 * 60
+    const minutes = Math.floor((secondsPast % 3600) / 60);
+  
+    // Display logic based on time difference
+    if (secondsPast < 60) {
+      return `${secondsPast} sec${secondsPast !== 1 ? "s" : ""} ago`;
     }
-
-    const diffMinutes = Math.floor(diffTime / (1000 * 60));
-    if (diffMinutes < 60) {
-      return `${diffMinutes} minute${diffMinutes === 1 ? "" : "s"} ago`;
+  
+    if (secondsPast < 3600) {
+      return `${minutes} min${minutes !== 1 ? "s" : ""} ago`;
     }
-
-    const diffHours = Math.floor(diffMinutes / 60);
-    if (diffHours < 24) {
-      return `${diffHours} hour${diffHours === 1 ? "" : "s"} ago`;
+  
+    if (secondsPast < 86400) {
+      return `${hours} hr${hours !== 1 ? "s" : ""} ago`;
     }
-
-    const diffDays = Math.floor(diffHours / 24);
-    return `${diffDays} day${diffDays === 1 ? "" : "s"} ago`;
-  };
+  
+    if (secondsPast < 2592000) {  // 30 days
+      return `${days} day${days !== 1 ? "s" : ""} ago`;
+    }
+  
+    if (years > 0) {
+      return `${years} year${years !== 1 ? "s" : ""} ${months > 0 ? `${months} month${months !== 1 ? "s" : ""}` : ""} ${days > 0 ? `${days} day${days !== 1 ? "s" : ""}` : ""} ago`;
+    }
+  
+    if (months > 0) {
+      return `${months} month${months !== 1 ? "s" : ""} ${days > 0 ? `${days} day${days !== 1 ? "s" : ""}` : ""} ago`;
+    }
+  
+    return `${days} day${days !== 1 ? "s" : ""} ago`;
+  }
+  
+  
 
 
   const handleApplyClick = (jobId) => {
@@ -226,7 +254,9 @@ const CompanySingle = () => {
                   </div>
                   <div className="d-flex py-2">
                     <button className="btn-register mx-2 fs-6">Follow</button>
-                    <button className="btn-login mx-2 fs-6">See Jobs</button>
+                    <button className="btn-login mx-2 fs-6" onClick={handleScrollToVacancies}>
+                      See Jobs
+                    </button>
                   </div>
                 </div>
               </div>
@@ -234,14 +264,14 @@ const CompanySingle = () => {
             <div className="companies_top container pt-5">
               {bannerPlace === "companies_top" && <HomeBanners />}
             </div>
-            <div className="company_details py-5">
+            <div id="company_details" className="company_details py-5">
               <div className="col-md-12 mx-auto">
                 <div className="row">
                   <div className="col-lg-8">
                     <div className="card border-0 shadow">
                       <div className="card-body py-4 px-4">
                         <h4 className="mb-3">About Company :</h4>
-                        <div dangerouslySetInnerHTML={{ __html: companyData.company_about }} />
+                        <div id="about_company" dangerouslySetInnerHTML={{ __html: companyData.company_about }} />
                         {companyData.company_gallery.length == 1 && (
                           <div className="row">
                             <div className="col-12 mt-3">
@@ -299,10 +329,11 @@ const CompanySingle = () => {
                               />
                             </div>
                           </div>
-                        )}
+                        )} 
 
 
-                        <div className="row mt-4">
+                        <div id="vacancies_section" ref={vacanciesRef}
+                         className="row mt-4">
                           {jobs.length > 0 && <h4 className="mb-3">Vacancies :</h4>}
                           {jobs.map((job) => (
                             <div className="col-md-6 mb-4" key={job.id}>
@@ -326,17 +357,17 @@ const CompanySingle = () => {
                                       )}
                                     </div>
 
-                                    {/* <div >
-                                          {userId ? (
-                                              <ApplyPopup jobId={job.id}>
-                                                Apply
-                                              </ApplyPopup>
-                                            ) : (
-                                              <button className="btn btn-sm btn-primary" onClick={() => handleApplyClick(job.id)}>
-                                                Apply
-                                              </button>
-                                            )}
-                                          </div> */}
+                                     {/* <div>
+                                        {userId ? (
+                                          <ApplyPopup jobId={job.id}>
+                                            Apply
+                                          </ApplyPopup>
+                                          ) : (
+                                          <button className="btn btn-sm btn-primary" onClick={() => handleApplyClick(job.id)}>
+                                            Apply
+                                          </button>
+                                          )}
+                                        </div> */}
 
                                   </div>
                                   <Link to={`/jobs/${job.slug}`}>
@@ -347,7 +378,7 @@ const CompanySingle = () => {
                                     Posted {calculateTimeAgo(job.created_at)}
                                   </p>
                                   <div className="d-flex justify-content-between">
-                                    <div className="btn-sm btn-green me-2 mb-2">
+                                    <div className="btn-sm btn-green me-2 mb-2 text-capitalize">
                                       {job.job_type || 'Not specified'}
                                     </div>
                                     <div className="text-muted">
@@ -364,6 +395,7 @@ const CompanySingle = () => {
                       </div>
                     </div>
                   </div>
+                  
                   <div className="col-lg-4 company_info_card">
                     <div className="card_sticky">
                       <div className="card shadow border-0">
@@ -373,15 +405,16 @@ const CompanySingle = () => {
                             src={`https://www.google.com/maps?q=${companyData.latitude},${companyData.longitude}&hl=en&z=14&output=embed`}
                             className="rounded w-100"
                             allowFullScreen=""
-                          ></iframe>
+                          >    
+                          </iframe>
                           <div className="mt-3">
                             <div className="d-flex align-items-baseline justify-content-between mt-2">
                               <span className="text-muted fw-medium">Industry:</span>
-                              <span className='text-end'>{companyData.company_industry}</span>
+                              <span className='text-end text-capitalize'>{companyData.company_industry}</span>
                             </div>
                             <div className="d-flex align-items-baseline justify-content-between mt-2">
                               <span className="text-muted fw-medium">Tagline:</span>
-                              <span className='text-end'>{companyData.company_tagline}</span>
+                              <span className='text-end text-capitalize'>{companyData.company_tagline}</span>
                             </div>
                             <div className="d-flex align-items-baseline justify-content-between mt-2">
                               <span className="text-muted fw-medium">Website:</span>
@@ -391,13 +424,14 @@ const CompanySingle = () => {
                             </div>
                             <div className="d-flex align-items-baseline justify-content-between mt-2">
                               <span className="text-muted fw-medium">Location:</span>
-                              <span className='text-end'>{companyData.company_address}</span>
+                              <span className='text-end text-capitalize'>{companyData.company_address}</span>
                             </div>
                           </div>
                         </div>
                       </div>
                     </div>
                   </div>
+
                 </div>
               </div>
             </div>

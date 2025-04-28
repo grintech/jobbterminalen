@@ -1,5 +1,5 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
+import React, { useState} from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import { useAuthContext } from '../store/authContext';
 import { useTranslation } from 'react-i18next';
 
@@ -12,7 +12,16 @@ const Navbar = () => {
     };
 
     const { user, loading , logout} = useAuthContext();
+     const [showLogoutModal, setShowLogoutModal] = useState(false);
     const empLogin = import.meta.env.VITE_EMP_URL;
+
+    const navigate = useNavigate();
+
+    const handleLogout = () => {
+        logout();
+        setShowLogoutModal(false);
+        navigate('/login');
+      };
 
   return (
    <>
@@ -51,7 +60,7 @@ const Navbar = () => {
             </button>
             <ul className="dropdown-menu">
                 <li><Link to='/my-account' className="dropdown-item"><i className="fa-regular fa-user me-2"></i>{t("MyAccount")}</Link></li>
-                <li><Link className="dropdown-item" onClick={logout}><i className="fa-solid fa-right-from-bracket me-2"></i>{t("Logout")}</Link></li>
+                <li><Link className="dropdown-item" onClick={() => setShowLogoutModal(true)}><i className="fa-solid fa-right-from-bracket me-2"></i>{t("Logout")}</Link></li>
             </ul>
             </div>
         </div>
@@ -122,7 +131,7 @@ const Navbar = () => {
             </button>
             <ul className="dropdown-menu">
                 <li><Link to='/my-account' className="dropdown-item"><i className="fa-regular fa-user me-2"></i>{t("MyAccount")}</Link></li>
-                <li><Link className="dropdown-item" onClick={logout}><i className="fa-solid fa-right-from-bracket me-2"></i>{t("Logout")}</Link></li>
+                <li><Link className="dropdown-item" onClick={() => setShowLogoutModal(true)}><i className="fa-solid fa-right-from-bracket me-2"></i>{t("Logout")}</Link></li>
             </ul>
             </div>
         </div>
@@ -149,6 +158,35 @@ const Navbar = () => {
     </div>
       </nav>
     </header>
+
+
+            {/* Logout Confirmation Modal */}
+      {showLogoutModal && (
+        <div className="modal fade show" style={{ display: 'block' }} tabIndex="-1">
+          <div className="modal-dialog modal-dialog-centered">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title fw-semibold">Confirm Logout</h5>
+                <button type="button" className="btn-close" onClick={() => setShowLogoutModal(false)}></button>
+              </div>
+              <div className="modal-body text-center">
+                <h6 className='fs-5'>Are you sure you want to logout?</h6>
+              </div>
+              <div className="modal-footer d-flex justify-content-center">
+                <button className="btn btn-secondary btn-sm" onClick={() => setShowLogoutModal(false)}>
+                  Cancel
+                </button>
+                <button className="btn btn-danger btn-sm" onClick={handleLogout}>
+                  Yes, Logout
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* Optional backdrop */}
+      {showLogoutModal && <div className="modal-backdrop fade show"></div>}
+
    </>
   )
 }

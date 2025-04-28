@@ -102,7 +102,24 @@ const Feedback = () => {
 
                 <div className='mb-3'>
                   <label>{t("FeedbackLabel5")}</label>
-                  <Field type="tel" name="phone_no" className='form-control' placeholder={t("FeedbackLabel5Placeholder")} />
+                  {/* <Field type="tel" name="phone_no" className='form-control' placeholder={t("FeedbackLabel5Placeholder")} /> */}
+                  <Field name="phone_no">
+                    {({ field, form }) => (
+                      <input
+                        type="tel"
+                        {...field}
+                        className="form-control"
+                        placeholder={t("FeedbackLabel5Placeholder")}
+                        onChange={(e) => {
+                          const input = e.target.value;
+                          if (/^[0-9+]*$/.test(input)) {
+                            form.setFieldValue("phone_no", input);
+                          }
+                        }}
+                      />
+                    )}
+                  </Field>
+
                 </div>
 
                 <div className='mb-3'>

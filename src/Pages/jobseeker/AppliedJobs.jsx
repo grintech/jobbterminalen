@@ -31,38 +31,39 @@ const Appliedjobs = () => {
     return doc.body.textContent || "";
   };
 
-    useEffect(() => {
-      const fetchData = async () => {
-        try {
-          setIsLoading(true);
-          setError(null);
-  
-          const response = await fetch(`${API_URL}/job-applications.php?user_id=${userId}`, {
-            headers: {
-              Authorization: `Bearer ${bearerKey}`,
-              "Content-Type": "multipart/form-data",
-            },
-          });
-  
-          const result = await response.json();
+    
+    const fetchData = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
 
-          // console.log('job count: ' + result.applications_count);
-          if (result.type === "success") {
-            setJobs(result.data);
-            setApplicationsCount(result.applications_count);
-          } else {
-            setError(result.message || "Failed to fetch company data");
-          }
-        } catch (err) {
-          setError("An error occurred while fetching company data.");
-        } finally {
-          setIsLoading(false);
+        const response = await fetch(`${API_URL}/job-applications.php?user_id=${userId}`, {
+          headers: {
+            Authorization: `Bearer ${bearerKey}`,
+            "Content-Type": "multipart/form-data",
+          },
+        });
+
+        const result = await response.json();
+
+        // console.log('job count: ' + result.applications_count);
+        if (result.type === "success") {
+          setJobs(result.data);
+          setApplicationsCount(result.applications_count);
+        } else {
+          setError(result.message || "Failed to fetch company data");
         }
-      };
-  
+      } catch (err) {
+        setError("An error occurred while fetching company data.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    useEffect(() => {
       fetchData();
     }, [userId]);
-
+    
     const handleRevokeConfirm = async () => {
       if (!selectedApplicationId) return;
     
@@ -76,8 +77,10 @@ const Appliedjobs = () => {
     
         if (response.data.type === "success") {
           // Refresh the applied jobs list
-          setJobs(prev => prev.filter(job => job.application_id !== selectedApplicationId));
+           setJobs(prev => prev.filter(job => job.application_id !== selectedApplicationId));
           setSelectedApplicationId(null);
+          fetchData();
+
           window.bootstrap.Modal.getInstance(document.getElementById("revokeModal")).hide();
           toast.success(response.data.message || "Application revoked successfully!");
         } else {
@@ -88,7 +91,10 @@ const Appliedjobs = () => {
         console.error(err);
       }
     };
-    
+
+    useEffect(() => {
+      handleRevokeConfirm();   
+    },[])
 
 
     useEffect(() => {
@@ -131,35 +137,55 @@ const Appliedjobs = () => {
       const diffHours = Math.floor(diffTime / (1000 * 60 * 60));
       
       if (diffHours < 24) {
-        return `Application sent today`;
+        return `Applied today`;
       } else if (diffHours < 48) {
-        return `Application sent yesterday`;
+        return `Applied yesterday`;
       } else {
         const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-        return `Application sent ${diffDays} day${diffDays === 1 ? '' : 's'} ago`;
+        return `Applied ${diffDays} day${diffDays === 1 ? '' : 's'} ago`;
       }
     };
 
-    const calculateTimeAgo = (date) => {
-      // Convert the input date to the correct UTC format (ISO string)
-      const utcZero = date.replace(" ", "T") + "Z"; // Ensure it's in ISO format with a 'Z' for UTC
-      
-      // Create Date object from the UTC date and convert it to the local time zone
-      const localDate = new Date(utcZero);
-  
+    const calculateTimeAgo = (timestamp) => {
+      if (!timestamp) return "";
+    
       const now = new Date();
-  
-      const diffTime = now - localDate;
-  
-      const diffHours = Math.floor(diffTime / (1000 * 60 * 60)); 
-  
-      if (diffHours < 24) {
-        return `${diffHours} hour${diffHours === 1 ? '' : 's'} ago`;
+      const past = new Date(timestamp.replace(" ", "T"));
+      const secondsPast = Math.floor((now - past) / 1000);
+    
+      const years = Math.floor(secondsPast / 31536000); // 60 * 60 * 24 * 365
+      const months = Math.floor((secondsPast % 31536000) / 2592000); // 60 * 60 * 24 * 30
+      const days = Math.floor((secondsPast % 2592000) / 86400); // 60 * 60 * 24
+      const hours = Math.floor((secondsPast % 86400) / 3600); // 60 * 60
+      const minutes = Math.floor((secondsPast % 3600) / 60);
+    
+      // Display logic based on time difference
+      if (secondsPast < 60) {
+        return `${secondsPast} sec${secondsPast !== 1 ? "s" : ""} ago`;
       }
-  
-      const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-      return `${diffDays} day${diffDays === 1 ? '' : 's'} ago`;
-    };
+    
+      if (secondsPast < 3600) {
+        return `${minutes} min${minutes !== 1 ? "s" : ""} ago`;
+      }
+    
+      if (secondsPast < 86400) {
+        return `${hours} hr${hours !== 1 ? "s" : ""} ago`;
+      }
+    
+      if (secondsPast < 2592000) {  // 30 days
+        return `${days} day${days !== 1 ? "s" : ""} ago`;
+      }
+    
+      if (years > 0) {
+        return `${years} year${years !== 1 ? "s" : ""} ${months > 0 ? `${months} month${months !== 1 ? "s" : ""}` : ""} ${days > 0 ? `${days} day${days !== 1 ? "s" : ""}` : ""} ago`;
+      }
+    
+      if (months > 0) {
+        return `${months} month${months !== 1 ? "s" : ""} ${days > 0 ? `${days} day${days !== 1 ? "s" : ""}` : ""} ago`;
+      }
+    
+      return `${days} day${days !== 1 ? "s" : ""} ago`;
+    }
     
 
     // if (isLoading) {
@@ -175,7 +201,7 @@ const Appliedjobs = () => {
 
 
   return (
-    <>
+    <div className='account_page'>
       <Navbar />
       <div className="modal fade" id="revokeModal" tabIndex="-1" aria-labelledby="revokeModalLabel" aria-hidden="true">
       <div className="modal-dialog">
@@ -188,7 +214,7 @@ const Appliedjobs = () => {
            <p className="m-0"> Are you sure you want to revoke this job application?</p>
           </div>
           <div className="modal-footer justify-content-center align-items-center">
-            <button type="button" className="btn btn-success mx-2" onClick={handleRevokeConfirm}>Confirm</button>
+            <button type="button" className="btn btn-success mx-2" onClick={ handleRevokeConfirm}>Confirm</button>
             <button type="button" className="btn btn-danger mx-2" data-bs-dismiss="modal">Cancel</button>
           
           </div>
@@ -214,10 +240,16 @@ const Appliedjobs = () => {
             ) : error ? (
               // <p className="text-center text-theme">{error}</p>
               <div className="card  border-0 shadow">
-              <div className="card-body text-center">
-                <img className='job_search' src="/public/images/job_search.png" alt="job_search" style={{ width: '100px' }}  />
-                {/* <h4>No jobs applied yet!</h4> */}
-                <p className="text-center text-theme">{error}</p>
+              <div className="card-body text-center ">
+                <img className='job_search' src="/images/job_search.png" alt="job_search" style={{ width: '100px' }}  />
+                { error === "No applications found." ? (
+                  <>
+                    <h4>No jobs applied yet!</h4>
+                    <p className="text-center text-theme">Tap on apply button on the job detail page to apply that job.</p>
+                  </>
+                ) : ( <p className="text-center text-theme">{error}</p> )
+               }
+                
                
               </div>
             </div>
@@ -225,13 +257,13 @@ const Appliedjobs = () => {
               <div className="jobs_applied">
               {appliedJobs.length > 0 ? (
                 <>
-                  <h1 className="job_head">Total Applies({applicationsCount})</h1>
+                  <h1 className="job_head">Jobs Applied ({applicationsCount})</h1>
                   <div className="card border-0 shadow">
-                    <div className="card-body">
+                    <div className="card-body pt-0">
                       <div className="row">
                         <div className="col-lg-4 border-end p-0">
                           <div className="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
-                            <ul className="p-0">
+                            <ul className="p-0 applied_comp_tabs">
                               {appliedJobs.map((job, index) => (
                                 <button
                                   key={index}
@@ -243,7 +275,7 @@ const Appliedjobs = () => {
                                     <div className="company_card">
                                       <h6>{stripHtml(job.job_title)}</h6>
                                       <p className="text-secondary fw-semibold">{job.company_name}</p>
-                                      <span className="border bg-white rounded-pill d-inline-flex align-items-center py-1 px-2">
+                                      <span className="border bg-white rounded-pill d-inline-flex align-items-baseline py-1 px-2 applied_time">
                                         <i className="fa-solid fa-check-circle me-1"></i>
                                         <small>{calculatePostedTime(job.application_date)}</small>
                                       </span>
@@ -352,12 +384,12 @@ const Appliedjobs = () => {
                                     </div>
                                   </div>
 
-                                  <div className="py-3">
-                                    <h5 className='text-dark'>Similar Jobs</h5>
-                                    <div className="row">
+                                  <div className="pt-3">
+                                    <h5 className='text-dark mb-0'>Similar Jobs</h5>
+                                    <div className="row mt-3">
                                       {similarJobs.length > 0 ? (
                                         similarJobs.slice(0,4).map((job) => (
-                                          <div className="col-md-6 col-sm-6 mb-4" key={job.id}>
+                                          <div className="col-md-6 col-sm-6 mt-4" key={job.id}>
                                             <div className="card company_list_card h-100">
                                               <div className="card-body">
                                                 <div className="d-flex justify-content-between">
@@ -429,7 +461,10 @@ const Appliedjobs = () => {
                                           </div>
                                         ))
                                       ) : (
-                                        <p>No similar jobs found.</p>
+                                        <div className="text-center">
+                                         <img className='job_search' src="/images/job_search.png" alt="job_search" style={{ width: '70px' }}  />
+                                         <p className="text-theme m-0">No similar jobs found.</p>
+                                        </div>
                                       )}
                                     </div>
                                   </div>
@@ -445,12 +480,9 @@ const Appliedjobs = () => {
               ) : (
                 <div className="card  border-0 shadow">
                   <div className="card-body text-center">
-                    <img className='job_search' src="/public/images/job_search.png" alt="job_search" style={{ width: '200px' }}  />
+                    <img className='job_search' src="/images/job_search.png" alt="job_search" style={{ width: '200px' }}  />
                     <h4>No jobs applied yet!</h4>
-                    <p>Tap on apply button on a job detail page to apply on it.</p>
-                    <Link to='/jobs'>
-                      <div className="btn btn-register">Search jobs</div>
-                    </Link>
+                    <p className="text-center text-theme">Tap on apply button on the job detail page to apply that job.</p>
                   </div>
                 </div>
               )}
@@ -458,8 +490,9 @@ const Appliedjobs = () => {
             ) : (
               <div className="card  border-0 shadow">
               <div className="card-body text-center">
-                <img className='job_search' src="/public/images/job_search.png" alt="job_search" style={{ width: '100px' }}  />
-                <p className="text-center text-theme">No applications found.</p>
+                <img className='job_search' src="/images/job_search.png" alt="job_search" style={{ width: '100px' }}  />
+                <h4>No jobs applied yet!</h4>
+                <p className="text-center text-theme">Tap on apply button on the job detail page to apply that job.</p>
               </div>
             </div>
             )}
@@ -480,7 +513,7 @@ const Appliedjobs = () => {
           draggable
           pauseOnHover
           />
-    </>
+    </div>
   )
 }
 

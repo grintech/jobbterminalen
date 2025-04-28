@@ -250,15 +250,14 @@ const AllEmployers = () => {
                     <div className="card company_list_card border-0 shadow h-100">
                       <div className="card-body">
                          <div className="text-end">
-                         <i
-                              className={`fa-heart ${
-                                likedCards[company.id]
-                                  ? "fa-solid"
-                                  : "fa-regular"
-                              }`}
-                              onClick={() => toggleLike(company.id)}
-                              style={{ cursor: "pointer",fontSize:"20px" }}
-                            ></i>
+                         <i 
+                          className={`fa-heart ${ likedCards[company.id] ? "fa-solid" : "fa-regular" }`}
+                          onClick={() => toggleLike(company.id)}
+                          style={{ cursor: "pointer", fontSize:"20px" }}
+                          title={
+                            likedCards[company.id] ? "Click to unsave" : "Click to save"
+                          }
+                         ></i>
                           </div>
                         <div className="logo_div me-3 mb-3 shadow ">
                           <Link  to={`/companies/${company.slug}`}>

@@ -59,7 +59,8 @@ const Login = () => {
         // Redirect based on user role
         setTimeout(() => {
           if (userData.role === "job_seeker") {
-            navigate("/my-account");
+            // navigate("/my-account");
+            navigate("/");
           }
         }, 2000);
 

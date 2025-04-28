@@ -16,9 +16,9 @@ const JobSidebar = () => {
   return (
     <>
       <div className='jobseeker_menu card_sticky'>
-        <ul className='d-flex flex-row flex-md-column flex-wrap gap-2 gap-sm-3 gap-lg-4 m-0 p-0'>
+        <ul className='d-flex flex-row flex-md-column  gap-2 gap-sm-3 gap-lg-4 m-0 p-0'>
           <NavLink to='/my-account' className={({ isActive }) => (isActive ? 'active' : '')}>
-            <li><i className="fa-solid fa-gauge me-2"></i>Dashboard</li>
+            <li><i className="fa-regular fa-user me-2"></i>Profile</li>
           </NavLink>
           <NavLink to='/saved-jobs' className={({ isActive }) => (isActive ? 'active' : '')}>
             <li><i className="fa-solid fa-bookmark me-2"></i>Saved Jobs</li>
@@ -32,6 +32,7 @@ const JobSidebar = () => {
           <li
             style={{ cursor: 'pointer' }}
             onClick={() => setShowLogoutModal(true)}
+            className='d-flex align-items-baseline'
           >
             <i className="fa-solid fa-right-from-bracket me-2"></i>Logout
           </li>
@@ -44,7 +45,7 @@ const JobSidebar = () => {
           <div className="modal-dialog modal-dialog-centered">
             <div className="modal-content">
               <div className="modal-header">
-                <h5 className="modal-title">Confirm Logout</h5>
+                <h5 className="modal-title fw-semibold">Confirm Logout</h5>
                 <button type="button" className="btn-close" onClick={() => setShowLogoutModal(false)}></button>
               </div>
               <div className="modal-body text-center">
