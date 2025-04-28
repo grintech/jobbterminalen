@@ -75,7 +75,7 @@ const SavedCompanies = () => {
 
 
     return (
-        <>
+        < div className='account_page'>
             <Navbar />
             <div className="top_pad">
                 <div className="container pb-5">
@@ -110,7 +110,7 @@ const SavedCompanies = () => {
                             </div>
                             ) : (
                                 <div className='row'>
-                                    <h3 className="mb-5">Companies saved by you ({savedCompanies.length})</h3>
+                                    <h1 className=" job_head">Saved companies ({savedCompanies.length})</h1>
                                     {savedCompanies.map((company) => (
                                         <div className="col-lg-4 col-md-6 col-sm-6 mb-4" key={company.id}>
                                           <div className="card company_list_card border-0 shadow h-100">
@@ -132,6 +132,9 @@ const SavedCompanies = () => {
                                                       isCompanySaved(company.company_id) ? "btn-primary" : ""
                                                     }`}
                                                     onClick={() => toggleSavedCompanies(company.company_id)}
+                                                    title={
+                                                      isCompanySaved(company.company_id) ? "Click to unsave" : "Click to save"
+                                                    }
                                                   >
                                                     <i
                                                       className={`fa-bookmark ${
@@ -155,7 +158,9 @@ const SavedCompanies = () => {
                                                   <i className="fa-solid fa-location-dot me-1 "></i>
                                                   {company.company_address}
                                                 </div>
+                                                <Link to={`/companies/${company.company_slug}`}>
                                                 <p className="text_blue text-center m-0">{company.job_count} Jobs</p>
+                                                </Link>
                                               </div>
                                             </div>
                                           </div>
@@ -169,18 +174,18 @@ const SavedCompanies = () => {
                 </div>
             </div>
                <ToastContainer 
-                      position="top-right"
-                      autoClose={3000}
-                      hideProgressBar
-                      newestOnTop={false}
-                      closeOnClick
-                      rtl={false}
-                      pauseOnFocusLoss
-                      draggable
-                      pauseOnHover
+                  position="top-right"
+                  autoClose={3000}
+                  hideProgressBar
+                  newestOnTop={false}
+                  closeOnClick
+                  rtl={false}
+                  pauseOnFocusLoss
+                  draggable
+                  pauseOnHover
                 />
             <Footer />
-        </>
+        </div>
     );
 };
 

@@ -25,6 +25,8 @@ const MyAccount = () => {
   // const [selectedEducation, setSelectedEducation] = useState(null);
   const [socialProfiles, setSocialProfiles] = useState([]);
   const [selectedSocialProfile, setSelectedSocialProfile] = useState({});
+  const [urlError, setUrlError] = useState('');
+
 
   const [isDifferentlyAbled, setIsDifferentlyAbled] = useState(
     userData.differently_abled || null
@@ -46,11 +48,39 @@ const MyAccount = () => {
 
   const handleNumericInput = (e, key, maxLength, setData, data) => {
     let value = e.target.value.replace(/\D/g, ""); // Remove non-digits
+  
+    // Prevent values like "0", "00", "000", etc.
+    if (/^0+$/.test(value)) {
+      value = ""; // Clear the input if only zeros
+    }
+  
     if (value.length > maxLength) {
       value = value.slice(0, maxLength);
     }
+  
     setData({ ...data, [key]: value });
   };
+  
+
+  const validateUrl = (value) => {
+    const urlPattern = new RegExp(
+      '^(https?:\\/\\/)' +               // protocol
+      '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain
+      '((\\d{1,3}\\.){3}\\d{1,3}))' +    // OR ip (v4) address
+      '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
+      '(\\?[;&a-z\\d%_.~+=-]*)?' +       // query string
+      '(\\#[-a-z\\d_]*)?$','i'           // fragment locator
+    );
+  
+    if (!value) {
+      setUrlError('URL is required');
+    } else if (!urlPattern.test(value)) {
+      setUrlError('Please enter a valid URL');
+    } else {
+      setUrlError('');
+    }
+  };
+  
   
 
   const defaultEmploymentForm = {
@@ -84,6 +114,8 @@ const MyAccount = () => {
   const [employmentForm, setEmploymentForm] = useState(defaultEmploymentForm);
 
   const [educationData, setEducationData] = useState(defaultEducationForm);
+  const [yearError, setYearError] = useState('');
+  const [marksError, setMarksError] = useState('');
   
   const isSchoolLevel = educationData.education === "4" || educationData.education === "5";
 
@@ -124,6 +156,13 @@ const MyAccount = () => {
 
   const handleCertificateChange = (e) => {
     const { name, value, type, checked } = e.target;
+  
+    // Block non-alphabetic characters in certification_name field
+    if (name === "certification_name" && /[^a-zA-Z\s]/.test(value)) {
+      return; // Don't update state if value contains non-alphabetic characters
+    }
+  
+    // Update state with the correct value
     setSelectedCertificate((prev) => {
       if (name === "lifetime_validity") {
         return {
@@ -140,12 +179,27 @@ const MyAccount = () => {
           expire_on: "",
         };
       }
+  
       return {
         ...prev,
         [name]: type === "checkbox" ? checked : value,
       };
     });
   };
+  
+  // URL validation on blur or when trying to save
+  const validateCerUrl = (value) => {
+    const urlPattern = /^(https?:\/\/)/;
+    if (value && !urlPattern.test(value)) {
+      setUrlError('URL must start with http:// or https://');
+    } else {
+      setUrlError('');
+    }
+  };
+  
+  
+  
+  
 
   const handleResumeUpload = async (e) => {
     const file = e.target.files[0];
@@ -293,95 +347,95 @@ const MyAccount = () => {
   const IMG_URL = import.meta.env.VITE_IMG_URL;
   const SITE_URL = import.meta.env.VITE_SITE_URL;
 
-  useEffect(() => {
-    const fetchUserData = async () => {
-      if (userId) {
-        fetchEmployment(userId);
-        fetchEducation(userId);
-        fetchSocialProfiles(userId);
-        fetchCertificates(userId);
-      } else {
-        return;
-      }
+  const fetchUserData = async () => {
+    if (userId) {
+      fetchEmployment(userId);
+      fetchEducation(userId);
+      fetchSocialProfiles(userId);
+      fetchCertificates(userId);
+    } else {
+      return;
+    }
 
-      try {
-        const response = await axios.get(
-          `${API_URL}/job-seeker-details.php?user_id=${userId}`,
-          {
-            headers: {
-              Authorization: `Bearer ${bearerKey}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
+    try {
+      const response = await axios.get(
+        `${API_URL}/job-seeker-details.php?user_id=${userId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${bearerKey}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
-        if (response.data.type === "success") {
-          const userDetails = response.data.data;
+      if (response.data.type === "success") {
+        const userDetails = response.data.data;
 
-          // Add the provided code snippet here
-          if (
-            userDetails.total_experience &&
-            userDetails.total_experience.includes(" - ")
-          ) {
-            const experienceParts = userDetails.total_experience.split(" - ");
-            const monthsPart = experienceParts[1]
-              ? experienceParts[1].split(" ")[0]
-              : null;
+        // Add the provided code snippet here
+        if (
+          userDetails.total_experience &&
+          userDetails.total_experience.includes(" - ")
+        ) {
+          const experienceParts = userDetails.total_experience.split(" - ");
+          const monthsPart = experienceParts[1]
+            ? experienceParts[1].split(" ")[0]
+            : null;
 
-            userDetails.total_experience_months = monthsPart
-              ? `${monthsPart} Month${parseInt(monthsPart, 10) > 1 ? "s" : ""}`
-              : "";
-          } else {
-            userDetails.total_experience_months = "";
-          }
-
-          if (userDetails.total_experience) {
-            const yearsPart = userDetails.total_experience.split(" ")[0];
-
-            userDetails.total_experience_years = yearsPart
-              ? `${yearsPart} Year${parseInt(yearsPart, 10) > 1 ? "s" : ""}`
-              : "";
-          } else {
-            userDetails.total_experience_years = "";
-          }
-
-          if (userDetails.language && userDetails.language_proficiency) {
-            const languageArray = userDetails.language
-              .split(",")
-              .map((lang, index) => ({
-                language: lang.trim(),
-                proficiency: userDetails.language_proficiency
-                  .split(",")
-                [index].trim(),
-              }));
-            setLanguages(languageArray);
-          }
-
-          setUserData(userDetails);
-
-          if (userDetails.image) {
-            setProfileImage(`${IMG_URL}/${userDetails.image}`);
-          }
-
-          if (userDetails.skills) {
-            setSkills(
-              userDetails.skills.split(",").map((skill) => skill.trim())
-            );
-          }
+          userDetails.total_experience_months = monthsPart
+            ? `${monthsPart} Month${parseInt(monthsPart, 10) > 1 ? "s" : ""}`
+            : "";
         } else {
-          console.error(
-            " user data:",
-            response.data.message || "Unknown error"
+          userDetails.total_experience_months = "";
+        }
+
+        if (userDetails.total_experience) {
+          const yearsPart = userDetails.total_experience.split(" ")[0];
+
+          userDetails.total_experience_years = yearsPart
+            ? `${yearsPart} Year${parseInt(yearsPart, 10) > 1 ? "s" : ""}`
+            : "";
+        } else {
+          userDetails.total_experience_years = "";
+        }
+
+        if (userDetails.language && userDetails.language_proficiency) {
+          const languageArray = userDetails.language
+            .split(",")
+            .map((lang, index) => ({
+              language: lang.trim(),
+              proficiency: userDetails.language_proficiency
+                .split(",")
+              [index].trim(),
+            }));
+          setLanguages(languageArray);
+        }
+
+        setUserData(userDetails);
+
+        if (userDetails.image) {
+          setProfileImage(`${IMG_URL}/${userDetails.image}`);
+        }
+
+        if (userDetails.skills) {
+          setSkills(
+            userDetails.skills.split(",").map((skill) => skill.trim())
           );
         }
-      } catch (error) {
+      } else {
         console.error(
-          "Error fetching user data:",
-          error.response ? error.response.data : error.message
+          " user data:",
+          response.data.message || "Unknown error"
         );
       }
-    };
+    } catch (error) {
+      console.error(
+        "Error fetching user data:",
+        error.response ? error.response.data : error.message
+      );
+    }
+  };
 
+  useEffect(() => {
     fetchUserData();
   }, [userId]);
 
@@ -614,6 +668,8 @@ const MyAccount = () => {
       "Saving your details...";
     ajaxModal.show();
 
+    // setUserData();
+
     try {
       const response = await axios.put(
         `${API_URL}/job-seeker-save-data.php?user_id=${userId}`,
@@ -647,6 +703,9 @@ const MyAccount = () => {
           notice_period: userData.notice_period,
         }));
 
+        fetchUserData(); 
+       
+
         const editProfileModal = bootstrap.Modal.getInstance(
           document.getElementById("editProfileModal")
         );
@@ -662,7 +721,8 @@ const MyAccount = () => {
     } finally {
       ajaxModal.hide();
     }
-  };
+  }
+
 
   // Employment Starts -------
 
@@ -1039,6 +1099,17 @@ const MyAccount = () => {
 
   const AddEducationData = async () => {
     if (!educationData.education) return; // Ensure the education field is selected
+
+  // 🔍 Validate marks before proceeding
+  const marks = educationData.marks;
+
+  if (!/^[1-9]\d{0,4}$/.test(marks)) {
+    setMarksError("Marks must be a positive number (not 0 or all zeros)");
+    toast.error("Marks must be a positive number (not 0 or all zeros)");
+    return; // Block form submission
+  } else {
+    setMarksError(""); // Clear previous error if valid
+  }
   
     // Calculate course duration
     const combinedDuration =
@@ -1161,7 +1232,18 @@ const MyAccount = () => {
   
   const UpdateEducationData = async () => {
     if (!educationData.education || !educationData.id) return; // Ensure required fields are present
-  
+    
+  //  Validate marks
+  const marks = educationData.marks;
+
+  if (!/^[1-9]\d{0,4}$/.test(marks)) {
+    setMarksError("Marks must be a positive number (not 0 or all zeros)");
+    toast.error("Marks must be a positive number (not 0 or all zeros)");
+    return; // Block update
+  } else {
+    setMarksError(""); // Clear error if valid
+  }
+
     // Calculate course duration
     const combinedDuration =
       educationData.course_starting_year && educationData.course_ending_year
@@ -1323,7 +1405,8 @@ const MyAccount = () => {
   };
 
   const saveSocialProfiles = async (Id = null) => {
-    if (!selectedSocialProfile) return;
+    if (!selectedSocialProfile || urlError) return;
+
 
     // Hide the appropriate modal before showing the ajaxModal
     if (Id) {
@@ -1601,6 +1684,13 @@ const MyAccount = () => {
   const saveCertificate = async (Id = null) => {
     if (!selectedCertificate) return;
 
+ // URL validation before saving
+  const urlPattern = /^(https?:\/\/)/;
+  if (!urlPattern.test(selectedCertificate.certification_url)) {
+    toast.error("Please enter a valid URL ");
+    return; 
+  }
+
     // Hide the certificate modals before showing the ajaxModal
     if (Id) {
       const showCertificateModalElement = document.getElementById(
@@ -1729,35 +1819,110 @@ const MyAccount = () => {
     }
   };
 
-  const calculateTimeAgo = (date) => {
-    if (!date) return "Updating...";
+  // const calculateTimeAgo = (date) => {
+  //   if (!date) return "Updating...";
 
-    const utcZero = date.replace(" ", "T") + "Z";
-    const localDate = new Date(utcZero);
-    if (isNaN(localDate.getTime())) {
-      return "1 second ago";
-    }
+  //   const utcZero = date.replace(" ", "T") + "Z";
+  //   const localDate = new Date(utcZero);
+  //   if (isNaN(localDate.getTime())) {
+  //     return "1 second ago";
+  //   }
+  //   const now = new Date();
+  //   const diffTime = now - localDate;
+
+  //   const diffSeconds = Math.floor(diffTime / 1000);
+  //   if (diffSeconds < 60) {
+  //     return `${diffSeconds} second${diffSeconds === 1 ? "" : "s"} ago`;
+  //   }
+
+  //   const diffMinutes = Math.floor(diffTime / (1000 * 60));
+  //   if (diffMinutes < 60) {
+  //     return `${diffMinutes} minute${diffMinutes === 1 ? "" : "s"} ago`;
+  //   }
+
+  //   const diffHours = Math.floor(diffMinutes / 60);
+  //   if (diffHours < 24) {
+  //     return `${diffHours} hour${diffHours === 1 ? "" : "s"} ago`;
+  //   }
+
+  //   const diffDays = Math.floor(diffHours / 24);
+  //   return `${diffDays} day${diffDays === 1 ? "" : "s"} ago`;
+  // };
+
+  function TimeAgo({ timestamp }) {
+    const [time, setTime] = useState("");
+  
+    useEffect(() => {
+      const interval = setInterval(() => {
+        setTime(getTimeAgo(timestamp));
+      }, 1000);
+      return () => clearInterval(interval);
+    }, [timestamp]);
+  
+    return <>{time}</>;
+  }
+
+  // function getTimeAgo(timestamp) {
+  //   if (!timestamp) return "";
+  
+  //   const now = new Date();
+  //   const past = new Date(timestamp.replace(" ", "T"));
+  //   const secondsPast = Math.floor((now - past) / 1000);
+  
+  //   if (secondsPast < 60) return `${secondsPast} sec${secondsPast !== 1 ? "s" : ""} ago`;
+  //   if (secondsPast < 3600) return `${Math.floor(secondsPast / 60)} min${secondsPast / 60 !== 1 ? "s" : ""} ago`;
+  //   if (secondsPast < 86400) return `${Math.floor(secondsPast / 3600)} hr${secondsPast / 3600 !== 1 ? "s" : ""} ago`;
+  //   if (secondsPast < 2592000) return `${Math.floor(secondsPast / 86400)} day${secondsPast / 86400 !== 1 ? "s" : ""} ago`;
+  //   if (secondsPast < 31536000) return `${Math.floor(secondsPast / 2592000)} month${secondsPast / 2592000 !== 1 ? "s" : ""} ago`;
+  
+  //   return `${Math.floor(secondsPast / 31536000)} year${secondsPast / 31536000 !== 1 ? "s" : ""} ago`;
+  // }
+
+
+  function getTimeAgo (timestamp){
+    if (!timestamp) return "";
+  
     const now = new Date();
-    const diffTime = now - localDate;
-
-    const diffSeconds = Math.floor(diffTime / 1000);
-    if (diffSeconds < 60) {
-      return `${diffSeconds} second${diffSeconds === 1 ? "" : "s"} ago`;
+    const past = new Date(timestamp.replace(" ", "T"));
+    const secondsPast = Math.floor((now - past) / 1000);
+  
+    const years = Math.floor(secondsPast / 31536000); // 60 * 60 * 24 * 365
+    const months = Math.floor((secondsPast % 31536000) / 2592000); // 60 * 60 * 24 * 30
+    const days = Math.floor((secondsPast % 2592000) / 86400); // 60 * 60 * 24
+    const hours = Math.floor((secondsPast % 86400) / 3600); // 60 * 60
+    const minutes = Math.floor((secondsPast % 3600) / 60);
+  
+    // Display logic based on time difference
+    if (secondsPast < 60) {
+      return `${secondsPast} sec${secondsPast !== 1 ? "s" : ""} ago`;
     }
-
-    const diffMinutes = Math.floor(diffTime / (1000 * 60));
-    if (diffMinutes < 60) {
-      return `${diffMinutes} minute${diffMinutes === 1 ? "" : "s"} ago`;
+  
+    if (secondsPast < 3600) {
+      return `${minutes} min${minutes !== 1 ? "s" : ""} ago`;
     }
-
-    const diffHours = Math.floor(diffMinutes / 60);
-    if (diffHours < 24) {
-      return `${diffHours} hour${diffHours === 1 ? "" : "s"} ago`;
+  
+    if (secondsPast < 86400) {
+      return `${hours} hr${hours !== 1 ? "s" : ""} ago`;
     }
+  
+    if (secondsPast < 2592000) {  // 30 days
+      return `${days} day${days !== 1 ? "s" : ""} ago`;
+    }
+  
+    if (years > 0) {
+      return `${years} year${years !== 1 ? "s" : ""} ${months > 0 ? `${months} month${months !== 1 ? "s" : ""}` : ""} ${days > 0 ? `${days} day${days !== 1 ? "s" : ""}` : ""} ago`;
+    }
+  
+    if (months > 0) {
+      return `${months} month${months !== 1 ? "s" : ""} ${days > 0 ? `${days} day${days !== 1 ? "s" : ""}` : ""} ago`;
+    }
+  
+    return `${days} day${days !== 1 ? "s" : ""} ago`;
+  }
 
-    const diffDays = Math.floor(diffHours / 24);
-    return `${diffDays} day${diffDays === 1 ? "" : "s"} ago`;
-  };
+  
+  
+  
 
   return (
     <div id="my_account_page" className="my_account_page">
@@ -1827,7 +1992,7 @@ const MyAccount = () => {
               <div className="card mt-4 shadow border-0 rounded-3">
                 <div className="card-body">
                   <div className="row">
-                    <div className="col-md-3 col-lg-2">
+                    <div className="col-md-4 col-lg-3 col-xl-2 mb-3 mb-md-0">
                       <div className="job_profile_icon position-relative">
                         <img
                           src={profileImage}
@@ -1860,33 +2025,37 @@ const MyAccount = () => {
                             onClick={() => setSelectedImageId(userData.id)}
                             data-bs-toggle="modal"
                             data-bs-target="#removeImageModal"
+                            title= "Remove Image"
                           ></i>
                         )}
                       </div>
                     </div>
-                    <div className="col-md-9 col-lg-10">
+                    <div className="col-md-8 col-lg-9 col-xl-10">
                       <div className="border-bottom pb-3">
-                        <div className="d-flex align-items-center mb-2">
-                          <h4 className="m-0 text-capitalize">
+                        <div className="d-flex align-items-baseline mb-2">
+                          <h5 className="m-0 text-capitalize text-theme">
                             {userData.name}
-                          </h4>
-                          <Link>
+                          </h5>
+                          <Link className="text-theme">
                             <i
                               className="fa-solid fa-pencil ms-2"
                               data-bs-toggle="modal"
                               data-bs-target="#editProfileModal"
+                              title="Edit"
                             ></i>
                           </Link>
                         </div>
+                        { userData.updated_at && (
                         <h6 className="text-secondary m-0 fw-light">
-                          Profile last updated -
-                          {calculateTimeAgo(userData.updated_at)}
-                        </h6>
+                          <b> Profile last updated -</b>
+                          <TimeAgo timestamp={userData.updated_at} />
+                        </h6> )
+                        }
                       </div>
 
-                      <div className="row py-3 jobseeker_details">
+                      <div className="row pb-0 pt-3 jobseeker_details">
                         <div className="col-md-6">
-                          <ul className="p-0 ">
+                          <ul className="p-0 m-0">
                             <li>
                               <i className="fa-solid fa-location-dot me-2"></i>
                               {userData.current_location ? (
@@ -1922,7 +2091,7 @@ const MyAccount = () => {
                           </ul>
                         </div>
                         <div className="col-md-6">
-                          <ul className="p-0">
+                          <ul className="p-0 m-0">
                             <li>
                               <i className="fa-solid fa-phone me-2"></i>
                               {userData.phone ? (
@@ -2026,7 +2195,7 @@ const MyAccount = () => {
                             }
                           />
                         </div>
-                        <div className="mb-4">
+                        {/* <div className="mb-4">
                           {userData.current_employment === "yes" ? (
                             <strong>
                               {userData.current_job_title} at
@@ -2035,7 +2204,7 @@ const MyAccount = () => {
                           ) : (
                             <strong>Unemployed</strong>
                           )}
-                        </div>
+                        </div> */}
                         <div className="mb-4">
                           <label htmlFor="">Work Status</label>
                           <div className="d-flex">
@@ -2084,12 +2253,17 @@ const MyAccount = () => {
                                   placeholder="Enter Years"
                                   name="total_experience_years"
                                   value={userData.total_experience_years || ""}
-                                  onChange={(e) =>
-                                    setUserData({
-                                      ...userData,
-                                      total_experience_years: e.target.value,
-                                    })
-                                  }
+                                  onChange={(e) => {
+                                    const input = e.target.value;
+                                    if (/^\d*$/.test(input)) {
+                                      setUserData({
+                                        ...userData,
+                                        total_experience_years: input,
+                                      });
+                                    }
+                                  }}
+                                  
+                                  maxLength={2}
                                 />
                               </div>
                               <div className="col-md-6 mb-2 mb-md-0">
@@ -2099,12 +2273,17 @@ const MyAccount = () => {
                                   placeholder="Enter Months"
                                   name="total_experience_months"
                                   value={userData.total_experience_months || ""}
-                                  onChange={(e) =>
-                                    setUserData({
-                                      ...userData,
-                                      total_experience_months: e.target.value,
-                                    })
-                                  }
+                                  onChange={(e) => {
+                                    const input = e.target.value;
+                                    if (/^\d*$/.test(input)) {
+                                      setUserData({
+                                        ...userData,
+                                        total_experience_months: input,
+                                      });
+                                    }
+                                  }}
+                                  
+                                  maxLength={2}
                                 />
                               </div>
                             </div>
@@ -2196,12 +2375,22 @@ const MyAccount = () => {
                                   className="form-control"
                                   placeholder="Enter current location"
                                   value={userData.current_location || ""}
-                                  onChange={(e) =>
-                                    setUserData((prev) => ({
-                                      ...prev,
-                                      current_location: e.target.value,
-                                    }))
-                                  }
+                                  // onChange={(e) =>
+                                  //   setUserData((prev) => ({
+                                  //     ...prev,
+                                  //     current_location: e.target.value,
+                                  //   }))
+                                  // }
+                                  onChange={(e) => {
+                                    const value = e.target.value;
+                                    if (/^[a-zA-Z\s]*$/.test(value)) {
+                                      setUserData((prev) => ({
+                                        ...prev,
+                                        current_location: value,
+                                      }));
+                                    }
+                                  }}
+                                  
                                 />
                               </div>
                               {userData.current_location !== "Sweden" && (
@@ -2211,12 +2400,22 @@ const MyAccount = () => {
                                     className="form-control"
                                     placeholder="Enter country name"
                                     value={userData.country_name || ""}
-                                    onChange={(e) =>
-                                      setUserData((prev) => ({
-                                        ...prev,
-                                        country_name: e.target.value,
-                                      }))
-                                    }
+                                    // onChange={(e) =>
+                                    //   setUserData((prev) => ({
+                                    //     ...prev,
+                                    //     country_name: e.target.value,
+                                    //   }))
+                                    // }
+                                    onChange={(e) => {
+                                      const value = e.target.value;
+                                      if (/^[a-zA-Z\s]*$/.test(value)) {
+                                        setUserData((prev) => ({
+                                          ...prev,
+                                          country_name: value,
+                                        }));
+                                      }
+                                    }}
+                                    
                                   />
                                 </div>
                               )}
@@ -2284,7 +2483,7 @@ const MyAccount = () => {
               {/* Resume Upload Section */}
               <div className="card mt-4 shadow border-0 rounded-3">
                 <div className="card-body">
-                  <h5>Resume</h5>
+                  <h5 className="text-theme">Resume</h5>
                   <p>
                     75% of recruiters discover candidates through their resume
                   </p>
@@ -2308,11 +2507,15 @@ const MyAccount = () => {
                               </a>
                             )}
                           </h6>
-                          <p>
-                            <small>
-                              Uploaded on {calculateTimeAgo(userData.resume_uploaded_on)}
-                            </small>
-                          </p>
+                          {userData.resume_uploaded_on && (
+                            <p className="text-secondary">
+                              <small>
+                                {/* Uploaded on {timeAgo(userData.resume_uploaded_on)} */}
+                                <b>Uploaded -</b> <TimeAgo timestamp={userData.resume_uploaded_on} />
+                              </small>
+                            </p>
+
+                          )}
                         </div>
                         <div className="d-flex position-relative">
                           <i
@@ -2398,14 +2601,14 @@ const MyAccount = () => {
               <div className="card mt-4 shadow border-0 rounded-3">
                 <div className="card-body">
                   <div className="d-flex justify-content-between">
-                    <h5 className="m-0 me-3">
+                    <h5 className="m-0 me-3 text-theme">
                       Key Skills
                       {userData.skills && userData.skills.length > 0 && (
                         <Link
                           data-bs-toggle="modal"
                           data-bs-target="#skillModal"
                         >
-                          <i className="fa-solid fa-pencil ms-2"></i>
+                          <i className="fa-solid fa-pencil ms-2" title="Edit"></i>
                         </Link>
                       )}
                     </h5>
@@ -2426,14 +2629,14 @@ const MyAccount = () => {
                         {userData.skills.split(",").map((skill, index) => (
                           <li
                             key={index}
-                            className="rounded-pill border px-3 py-1 me-2 mb-2"
+                            className="rounded-pill text-capitalize border px-3 py-1 me-2 mb-2"
                           >
                             {skill.trim()}
                           </li>
                         ))}
                       </ul>
                     ) : (
-                      <p className="m-0">No skills added yet</p>
+                      <p className="m-0 text-muted">No skills added yet</p>
                     )}
                   </div>
                 </div>
@@ -2489,7 +2692,7 @@ const MyAccount = () => {
                             className="add_Skill_input form-control"
                             value={input}
                             onChange={handleInputChange}
-                            onKeyPress={handleKeyPress}
+                            onKeyDown={handleKeyPress}
                           />
                           <div className="skill-suggestions">
                             {loadingSuggestions ? (
@@ -2533,7 +2736,7 @@ const MyAccount = () => {
               <div className="card mt-4 shadow border-0 rounded-3">
                 <div className="card-body">
                   <div className="d-flex justify-content-between mb-3">
-                    <h5>Employment</h5>
+                    <h5 className="text-theme">Employment</h5>
                     <Link
                       className="text-theme"
                       data-bs-toggle="modal"
@@ -2551,18 +2754,18 @@ const MyAccount = () => {
                       {employment && employment.length > 0 ? (
                         employment.map((employ) => (
                           <div className="mb-3" key={employ.id}>
-                            <div className="d-flex ">
-                              <h5 className="text-capitalize m-0">{employ.current_job_title}</h5>
+                            <div className="d-flex align-items-baseline">
+                              <h6 style={{fontWeight:"500"}} className="hh text-capitalize m-0">{employ.current_job_title}</h6>
                               <Link
                                 data-bs-toggle="modal"
                                 data-bs-target="#employModal"
                                 onClick={() => editEmploymentData(employ.id)} // pass the employment ID
                               >
-                                <i className="fa-solid fa-pencil ms-2"></i>
+                                <i className="fa-solid fa-pencil ms-2" title="Edit"></i>
                               </Link>
 
                             </div>
-                            <h6 className="text-capitalize">{employ.current_company_name}</h6>
+                            <h6 style={{fontWeight:"400"}} className="text-capitalize m-0">{employ.current_company_name}</h6>
 
                             <p className="m-0">
                               <small>
@@ -2575,7 +2778,7 @@ const MyAccount = () => {
                           </div>
                         ))
                       ) : (
-                        <h6 className="text-muted">No employment details filled yet.</h6>
+                        <p className="text-muted">No employment details filled yet.</p>
                       )}
 
 
@@ -2584,7 +2787,7 @@ const MyAccount = () => {
                 </div>
               </div>
 
-              {/* Employment Modal */}
+              {/* Employment Delete Modal */}
               <div
                 className="modal fade"
                 id="deleteModal"
@@ -2728,40 +2931,57 @@ const MyAccount = () => {
                         {employmentForm.current_employment === "yes" && (
                           <div className="row mt-4">
                             <label>Total Experience</label>
+
                             <div className="col-md-6 mb-2">
                               <input
                                 type="text"
                                 className="form-control"
-                                placeholder="Enter Years"
+                                placeholder="Enter Years (Ex:05)"
+                                maxLength={2}
                                 value={
-                                  employmentForm.total_experience?.split(",")[0]?.replace(" years", "") || ""
+                                  employmentForm.total_experience?.split(",")[0]?.replace(" years", "").trim() || ""
                                 }
-                                onChange={(e) =>
-                                  setEmploymentForm((prev) => ({
-                                    ...prev,
-                                    total_experience: `${e.target.value} years, ${prev.total_experience?.split(",")[1]?.trim() || "0 months"}`,
-                                  }))
-                                }
+                                onChange={(e) => {
+                                  const input = e.target.value;
+                                  if (input === "" || /^\d*$/.test(input)) {
+                                    setEmploymentForm((prev) => {
+                                      const monthsPart = prev.total_experience.split(",")[1]?.trim() || "0 months";
+                                      return {
+                                        ...prev,
+                                        total_experience: `${input} years, ${monthsPart}`,
+                                      };
+                                    });
+                                  }
+                                }}
                               />
                             </div>
+
                             <div className="col-md-6 mb-2">
                               <input
                                 type="text"
                                 className="form-control"
-                                placeholder="Enter Months"
+                                placeholder="Enter Months (Ex:01)"
+                                maxLength={2}
                                 value={
-                                  employmentForm.total_experience?.split(",")[1]?.replace(" months", "") || ""
+                                  employmentForm.total_experience?.split(",")[1]?.replace(" months", "").trim() || ""
                                 }
-                                onChange={(e) =>
-                                  setEmploymentForm((prev) => ({
-                                    ...prev,
-                                    total_experience: `${prev.total_experience?.split(",")[0]?.trim() || "0 years"}, ${e.target.value} months`,
-                                  }))
-                                }
+                                onChange={(e) => {
+                                  const input = e.target.value;
+                                  if (input === "" || /^\d*$/.test(input)) {
+                                    setEmploymentForm((prev) => {
+                                      const yearsPart = prev.total_experience.split(",")[0]?.trim() || "0 years";
+                                      return {
+                                        ...prev,
+                                        total_experience: `${yearsPart}, ${input} months`,
+                                      };
+                                    });
+                                  }
+                                }}
                               />
                             </div>
                           </div>
                         )}
+
 
                         {/* Company Name */}
                         <div className="mt-4">
@@ -2796,12 +3016,15 @@ const MyAccount = () => {
                             className="form-control"
                             placeholder="ABC Job Title"
                             value={employmentForm.current_job_title}
-                            onChange={(e) =>
-                              setEmploymentForm({
-                                ...employmentForm,
-                                current_job_title: e.target.value,
-                              })
-                            }
+                            onChange={(e) => {
+                              const input = e.target.value;
+                              if (/^[a-zA-Z\s]*$/.test(input)) {
+                                setEmploymentForm({
+                                  ...employmentForm,
+                                  current_job_title: input,
+                                });
+                              }
+                            }}
                           />
                         </div>
 
@@ -2865,19 +3088,26 @@ const MyAccount = () => {
                               </select>
                             </div>
                             <div className="col-8 col-md-9 col-lg-10">
-                              <input
-                                type="text"
-                                className="form-control"
-                                placeholder="Eg. 4,50,000"
-                                value={employmentForm.current_salary?.split(" ")[1] || ""}
-                                onChange={(e) =>
+                            <input
+                              type="text"
+                              className="form-control"
+                              placeholder="Eg. 4,50,000"
+                              value={employmentForm.current_salary?.split(" ")[1] || ""}
+                              onChange={(e) => {
+                                let input = e.target.value.replace(/\D/g, ""); // Only digits
+                                if (/^0+$/.test(input)) {
+                                  input = ""; // Disallow only-zero input like 0, 00, etc.
+                                }
+                                if (input.length <= 10) {
                                   setEmploymentForm((prev) => ({
                                     ...prev,
-                                    current_salary: `${prev.current_salary?.split(" ")[0] || "kr"} ${e.target.value}`,
-                                  }))
+                                    current_salary: `${prev.current_salary.split(" ")[0] || "kr"} ${input}`,
+                                  }));
                                 }
-                                maxLength={10}
-                              />
+                              }}
+                              maxLength={10}
+                            />
+
                             </div>
                           </div>
                          </div>
@@ -2992,6 +3222,7 @@ const MyAccount = () => {
                                     current_employment: e.target.value,
                                   })
                                 }
+                               
                               />
                               <label className="form-check-label" >
                                 Yes
@@ -3041,39 +3272,56 @@ const MyAccount = () => {
                         </div>
 
                         {/* Total Experience */}
-                        {employmentForm.current_employment === "yes" &&
+                        {employmentForm.current_employment === "yes" && (
                           <div className="row mt-4">
                             <label>Total Experience</label>
+
+                            {/* Years */}
                             <div className="col-md-6 mb-2">
                               <input
                                 type="text"
                                 className="form-control"
-                                placeholder="Enter Years"
-                                onChange={(e) =>
-                                  setEmploymentForm((prev) => ({
-                                    ...prev,
-                                    total_experience: `${e.target.value} years, ${prev.total_experience.split(",")[1] || "0 months"}`,
-                                  }))
-                                }
+                                placeholder="Enter Years (Ex:05)"
                                 maxLength={2}
+                                onKeyPress={(e) => {
+                                  if (!/[0-9]/.test(e.key)) e.preventDefault(); // Block non-numeric input
+                                }}
+                                onChange={(e) => {
+                                  const input = e.target.value;
+                                  if (/^\d*$/.test(input)) {
+                                    setEmploymentForm((prev) => ({
+                                      ...prev,
+                                      total_experience: `${input} years, ${prev.total_experience.split(",")[1]?.trim() || "0 months"}`,
+                                    }));
+                                  }
+                                }}
                               />
                             </div>
+
+                            {/* Months */}
                             <div className="col-md-6 mb-2">
                               <input
                                 type="text"
                                 className="form-control"
-                                placeholder="Enter Months"
-                                onChange={(e) =>
-                                  setEmploymentForm((prev) => ({
-                                    ...prev,
-                                    total_experience: `${prev.total_experience.split(",")[0] || "0 years"}, ${e.target.value} months`,
-                                  }))
-                                }
+                                placeholder="Enter Months (Ex:01)"
                                 maxLength={2}
+                                onKeyPress={(e) => {
+                                  if (!/[0-9]/.test(e.key)) e.preventDefault(); // Block non-numeric input
+                                }}
+                                onChange={(e) => {
+                                  const input = e.target.value;
+                                  if (/^\d*$/.test(input)) {
+                                    setEmploymentForm((prev) => ({
+                                      ...prev,
+                                      total_experience: `${prev.total_experience.split(",")[0]?.trim() || "0 years"}, ${input} months`,
+                                    }));
+                                  }
+                                }}
                               />
                             </div>
                           </div>
-                        }
+                        )}
+
 
 
                         {/* Company Name */}
@@ -3105,12 +3353,16 @@ const MyAccount = () => {
                             className="form-control"
                             placeholder="ABC Job Title"
                             value={employmentForm.current_job_title}
-                            onChange={(e) =>
-                              setEmploymentForm({
-                                ...employmentForm,
-                                current_job_title: e.target.value,
-                              })
-                            }
+                            onChange={(e) => {
+                              const input = e.target.value;
+                              if (/^[a-zA-Z\s]*$/.test(input)) {
+                                setEmploymentForm({
+                                  ...employmentForm,
+                                  current_job_title: input,
+                                });
+                              }
+                            }}
+                            
                           />
                         </div>
 
@@ -3173,18 +3425,29 @@ const MyAccount = () => {
                               </select>
                             </div>
                             <div className="col-8 col-md-9 col-lg-10">
-                              <input
-                                type="text"
-                                className="form-control"
-                                placeholder="Eg. 4,50,000"
-                                onChange={(e) =>
+                            <input
+                              type="text"
+                              className="form-control"
+                              placeholder="Eg. 4,50,000"
+                              value={employmentForm.current_salary.split(" ")[1] || ""}
+                              onChange={(e) => {
+                                let input = e.target.value.replace(/\D/g, ""); // Keep only digits
+
+                                // Prevent values like 0, 00, 0000, etc.
+                                if (/^0+$/.test(input)) {
+                                  input = "";
+                                }
+
+                                if (input.length <= 10) {
                                   setEmploymentForm((prev) => ({
                                     ...prev,
-                                    current_salary: `${prev.current_salary.split(" ")[0] || "kr"} ${e.target.value}`,
-                                  }))
+                                    current_salary: `${prev.current_salary.split(" ")[0] || "kr"} ${input}`,
+                                  }));
                                 }
-                                maxLength={10}
-                              />
+                              }}
+                              maxLength={10}
+                            />
+
                             </div>
                           </div>
                          </div> 
@@ -3262,7 +3525,7 @@ const MyAccount = () => {
               >
                 <div className="card-body">
                   <div className="d-flex justify-content-between mb-3">
-                    <h5>Education</h5>
+                    <h5 className="text-theme">Education</h5>
                     <Link
                       className="text-theme"
                       data-bs-toggle="modal"
@@ -3284,8 +3547,8 @@ const MyAccount = () => {
                     return (
                       <div key={index} className="mt-4 employment_details">
                         <div className="mb-3">
-                          <div className="d-flex align-items-center education_section">
-                            <h6 className="m-0 text-capitalize">
+                          <div className="d-flex align-items-baseline education_section">
+                            <h6 style={{fontWeight:"500"}} className="m-0 text-capitalize">
                               {edu.specialization
                                 ? `${edu.course} - ${edu.specialization}`
                                 : (`${edu.course || educationLabel} | ${edu.school_medium}`)}
@@ -3295,7 +3558,7 @@ const MyAccount = () => {
                                 data-bs-target="#EditEducationModal"
                                 onClick={() => editEducationData(edu.id)}
                               >
-                                <i className="fa-solid fa-pencil ms-2"></i>
+                                <i className="fa-solid fa-pencil ms-2" title="Edit"></i>
                               </Link>
                           </div>
                           <h6 className="m-0 text-capitalize">
@@ -3310,7 +3573,7 @@ const MyAccount = () => {
                             <small className="text-capitalize">
                               {edu.education === "4" || edu.education === "5"
                                 ? `${edu.board} - ${edu.passing_year}`
-                                : `${edu.course_starting_year} - ${edu.course_ending_year} | Marks: ${edu.marks}`}
+                                : `${edu.course_starting_year} - ${edu.course_ending_year} `}
                             </small>
                           </p>
                         </div>
@@ -3318,7 +3581,7 @@ const MyAccount = () => {
                     );
                   })
                 ) : (
-                  <p>No educational details filled yet!</p>
+                  <p className="m-0 text-muted">No educational details filled yet.</p>
                 )}
 
 
@@ -3382,7 +3645,14 @@ const MyAccount = () => {
                                 className="form-control"
                                 placeholder="Enter board name"
                                 value={educationData.board}
-                                onChange={(e) => setEducationData({ ...educationData, board: e.target.value })}
+                                // onChange={(e) => setEducationData({ ...educationData, board: e.target.value })}
+
+                                onChange={(e) => {
+                                  const input = e.target.value;
+                                  if (/^[a-zA-Z\s]*$/.test(input)) {
+                                    setEducationData({ ...educationData, board: input });
+                                  }
+                                }}
                               />
                             </div>
 
@@ -3393,7 +3663,14 @@ const MyAccount = () => {
                                 className="form-control"
                                 placeholder="Enter year"
                                 value={educationData.passing_year}
-                                onChange={(e) => setEducationData({ ...educationData, passing_year: e.target.value })}
+                                // onChange={(e) => setEducationData({ ...educationData, passing_year: e.target.value })}
+
+                                onChange={(e) => {
+                                  const input = e.target.value;
+                                  if (/^\d*$/.test(input)) {
+                                    setEducationData({ ...educationData, passing_year: input });
+                                  }
+                                }}
                                 maxLength={4}
                               />
                             </div>
@@ -3405,7 +3682,14 @@ const MyAccount = () => {
                                 className="form-control"
                                 placeholder="Enter medium"
                                 value={educationData.school_medium}
-                                onChange={(e) => setEducationData({ ...educationData, school_medium: e.target.value })}
+                                // onChange={(e) => setEducationData({ ...educationData, school_medium: e.target.value })}
+
+                                onChange={(e) => {
+                                  const input = e.target.value;
+                                  if (/^[a-zA-Z\s]*$/.test(input)) {
+                                    setEducationData({ ...educationData, school_medium: input });
+                                  }
+                                }}
                               />
                             </div>
                           </>
@@ -3420,7 +3704,13 @@ const MyAccount = () => {
                                 className="form-control"
                                 placeholder="Enter institute name"
                                 value={educationData.institute}
-                                onChange={(e) => setEducationData({ ...educationData, institute: e.target.value })}
+                                // onChange={(e) => setEducationData({ ...educationData, institute: e.target.value })}
+                                onChange={(e) => {
+                                  const input = e.target.value;
+                                  if (/^[a-zA-Z]*$/.test(input)) {
+                                    setEducationData({ ...educationData, institute: input });
+                                  }
+                                }}
                               />
                             </div>
 
@@ -3431,7 +3721,13 @@ const MyAccount = () => {
                                 className="form-control"
                                 placeholder="Enter course name"
                                 value={educationData.course}
-                                onChange={(e) => setEducationData({ ...educationData, course: e.target.value })}
+                                // onChange={(e) => setEducationData({ ...educationData, course: e.target.value })}
+                                onChange={(e) => {
+                                  const input = e.target.value;
+                                  if (/^[a-zA-Z]*$/.test(input)) {
+                                    setEducationData({ ...educationData, course: input })
+                                  }
+                                }}
                               />
                             </div>
 
@@ -3442,7 +3738,14 @@ const MyAccount = () => {
                                 className="form-control"
                                 placeholder="Enter your specialization"
                                 value={educationData.specialization}
-                                onChange={(e) => setEducationData({ ...educationData, specialization: e.target.value })}
+                                // onChange={(e) => setEducationData({ ...educationData, specialization: e.target.value })}
+                                
+                                onChange={(e) => {
+                                  const input = e.target.value;
+                                  if (/^[a-zA-Z]*$/.test(input)) {
+                                    setEducationData({ ...educationData, specialization: input })
+                                  }
+                                }}
                               />
                             </div>
 
@@ -3481,44 +3784,61 @@ const MyAccount = () => {
                             </div>
 
                             <div className="mb-4">
-                              <label>Course Duration</label>
-                              <div className="row flex-column flex-md-row align-items-center">
-                                <div className="col">
-                                  <input
-                                    type="text"
-                                    className="form-control"
-                                    placeholder="Starting Year"
-                                    value={educationData.course_starting_year}
-                                    onChange={(e) =>
-                                      setEducationData({ ...educationData, course_starting_year: e.target.value })
-                                    }
-                                    maxLength={4}
-                                  />
-                                </div>
-                                <div className="col-1 text-center">
-                                  <span>To</span>
-                                </div>
-                                <div className="col">
-                                  <input
-                                    type="text"
-                                    className="form-control"
-                                    placeholder="Ending Year"
-                                    value={educationData.course_ending_year}
-                                    onChange={(e) =>
-                                      setEducationData({ ...educationData, course_ending_year: e.target.value })
-                                    }
-                                    maxLength={4}
-                                  />
-                                </div>
+                            <label>Course Duration</label>
+                            <div className="row flex-column flex-md-row align-items-center">
+                              <div className="col">
+                              <input
+                                type="text"
+                                className="form-control"
+                                placeholder="Starting Year"
+                                value={educationData.course_starting_year}
+                                onChange={(e) => {
+                                  setEducationData({ ...educationData, course_starting_year: e.target.value });
+                                  setYearError(''); // Clear error when user changes starting year
+                                }}
+                                maxLength={4}
+                              />
+                              </div>
+                              <div className="col-1 text-center">
+                              <span>To</span>
+                              </div>
+                              <div className="col">
+                              <input
+                                type="text"
+                                className="form-control"
+                                placeholder="Ending Year"
+                                value={educationData.course_ending_year}
+                                onChange={(e) => {
+                                  const endingYear = e.target.value;
+
+                                  if (/^\d{0,4}$/.test(endingYear)) {
+                                    setEducationData({ ...educationData, course_ending_year: endingYear });
+                                    setYearError(''); // Clear error on typing
+                                  }
+                                }}
+                                onBlur={() => {
+                                  const { course_starting_year, course_ending_year } = educationData;
+                                  if (
+                                    course_starting_year &&
+                                    course_ending_year &&
+                                    parseInt(course_ending_year) < parseInt(course_starting_year)
+                                  ) {
+                                    setYearError('Ending year should be the same or greater than starting year');
+                                  }
+                                }}
+                                maxLength={4}
+                              />
+                              {yearError && (
+                                <small className="text-danger">{yearError}</small>
+                              )}
                               </div>
                             </div>
+                            </div>
+
                           </>
                         )}
 
-
-
-
-                        <div className="mb-4">
+                        {/* <div className="mb-4">
                           <label>Marks</label>
                           <input
                             type="text"
@@ -3528,7 +3848,39 @@ const MyAccount = () => {
                             onChange={(e) => setEducationData({ ...educationData, marks: e.target.value })}
                             maxLength={5}
                           />
+                        </div> */}
+
+                        <div className="mb-4">
+                          <label>Marks</label>
+                          <input
+                            type="text"
+                            className={`form-control ${marksError ? 'is-invalid' : ''}`}
+                            placeholder="Enter marks"
+                            value={educationData.marks}
+                            onChange={(e) => {
+                              const input = e.target.value;
+
+                              // Allow only numbers and up to 5 digits
+                              if (/^\d{0,5}$/.test(input)) {
+                                setEducationData({ ...educationData, marks: input });
+                                setMarksError('');
+                              }
+                            }}
+                            onBlur={() => {
+                              const marks = educationData.marks;
+
+                              if (parseInt(marks) < 0 || marks === '0' || marks === '00' || marks === '000' || marks === '0000' || marks === '00000') {
+                                setMarksError('Marks cannot be negative or 0');
+                              }
+                            }}
+                            maxLength={5}
+                            required
+                          />
+                          {marksError && (
+                            <small className="text-danger">{marksError}</small>
+                          )}
                         </div>
+
                       </form>
                     </div>
 
@@ -3615,7 +3967,14 @@ const MyAccount = () => {
                                 className="form-control"
                                 placeholder="Enter board name"
                                 value={educationData.board}
-                                onChange={(e) => setEducationData({ ...educationData, board: e.target.value })}
+                                // onChange={(e) => setEducationData({ ...educationData, board: e.target.value })}
+
+                                onChange={(e) => {
+                                  const input = e.target.value;
+                                  if (/^[a-zA-Z\s]*$/.test(input)) {
+                                  setEducationData({ ...educationData, board: input });
+                                  }
+                                  }}
                               />
                             </div>
 
@@ -3626,7 +3985,14 @@ const MyAccount = () => {
                                 className="form-control"
                                 placeholder="Enter year"
                                 value={educationData.passing_year}
-                                onChange={(e) => setEducationData({ ...educationData, passing_year: e.target.value })}
+                                // onChange={(e) => setEducationData({ ...educationData, passing_year: e.target.value })}
+                                 onChange={(e) => {
+                                  const input = e.target.value;
+                                  if (/^\d*$/.test(input)) {
+                                  setEducationData({ ...educationData, passing_year: input });
+                                  }
+                                  }}
+
                                 maxLength={4}
                               />
                             </div>
@@ -3638,7 +4004,14 @@ const MyAccount = () => {
                                 className="form-control"
                                 placeholder="Enter medium"
                                 value={educationData.school_medium}
-                                onChange={(e) => setEducationData({ ...educationData, school_medium: e.target.value })}
+                                // onChange={(e) => setEducationData({ ...educationData, school_medium: e.target.value })}
+
+                                onChange={(e) => {
+                                  const input = e.target.value;
+                                  if (/^[a-zA-Z\s]*$/.test(input)) {
+                                  setEducationData({ ...educationData, school_medium: input });
+                                  }
+                                  }}
                               />
                             </div>
                           </>
@@ -3653,7 +4026,14 @@ const MyAccount = () => {
                                 className="form-control"
                                 placeholder="Enter institute name"
                                 value={educationData.institute}
-                                onChange={(e) => setEducationData({ ...educationData, institute: e.target.value })}
+                                // onChange={(e) => setEducationData({ ...educationData, institute: e.target.value })}
+
+                                onChange={(e) => {
+                                  const input = e.target.value;
+                                  if (/^[a-zA-Z\s]*$/.test(input)) {
+                                    setEducationData({ ...educationData, institute: input });
+                                  }
+                                  }}
                               />
                             </div>
 
@@ -3664,7 +4044,15 @@ const MyAccount = () => {
                                 className="form-control"
                                 placeholder="Enter course name"
                                 value={educationData.course}
-                                onChange={(e) => setEducationData({ ...educationData, course: e.target.value })}
+                                // onChange={(e) => setEducationData({ ...educationData, course: e.target.value })}
+
+                                onChange={(e) => {
+                                  const input = e.target.value;
+                                  if (/^[a-zA-Z\s]*$/.test(input)) {
+                                    setEducationData({ ...educationData, course: input });
+                                  }
+                                  }}
+
                               />
                             </div>
 
@@ -3675,7 +4063,14 @@ const MyAccount = () => {
                                 className="form-control"
                                 placeholder="Enter your specialization"
                                 value={educationData.specialization}
-                                onChange={(e) => setEducationData({ ...educationData, specialization: e.target.value })}
+                                // onChange={(e) => setEducationData({ ...educationData, specialization: e.target.value })}
+
+                                onChange={(e) => {
+                                  const input = e.target.value;
+                                  if (/^[a-zA-Z\s]*$/.test(input)) {
+                                    setEducationData({ ...educationData, specialization: input });
+                                  }
+                                  }}
                               />
                             </div>
 
@@ -3716,34 +4111,53 @@ const MyAccount = () => {
                             <div className="mb-4">
                               <label>Course Duration</label>
                               <div className="row flex-column flex-md-row align-items-center">
-                                <div className="col">
-                                  <input
-                                    type="text"
-                                    className="form-control"
-                                    placeholder="Starting Year"
-                                    value={educationData.course_starting_year}
-                                    onChange={(e) =>
-                                      setEducationData({ ...educationData, course_starting_year: e.target.value })
-                                    }
-                                    maxLength={4}
-                                  />
-                                </div>
-                                <div className="col-1 text-center">
-                                  <span>To</span>
-                                </div>
-                                <div className="col">
-                                  <input
-                                    type="text"
-                                    className="form-control"
-                                    placeholder="Ending Year"
-                                    value={educationData.course_ending_year}
-                                    onChange={(e) =>
-                                      setEducationData({ ...educationData, course_ending_year: e.target.value })
-                                    }
-                                    maxLength={4}
-                                  />
-                                </div>
+                              <div className="col">
+                              <input
+                                type="text"
+                                className="form-control"
+                                placeholder="Starting Year"
+                                value={educationData.course_starting_year}
+                                onChange={(e) => {
+                                  setEducationData({ ...educationData, course_starting_year: e.target.value });
+                                  setYearError(''); // Clear error when user changes starting year
+                                }}
+                                maxLength={4}
+                              />
                               </div>
+                              <div className="col-1 text-center">
+                              <span>To</span>
+                              </div>
+                              <div className="col">
+                              <input
+                                type="text"
+                                className="form-control"
+                                placeholder="Ending Year"
+                                value={educationData.course_ending_year}
+                                onChange={(e) => {
+                                  const endingYear = e.target.value;
+
+                                  if (/^\d{0,4}$/.test(endingYear)) {
+                                    setEducationData({ ...educationData, course_ending_year: endingYear });
+                                    setYearError(''); // Clear error on typing
+                                  }
+                                }}
+                                onBlur={() => {
+                                  const { course_starting_year, course_ending_year } = educationData;
+                                  if (
+                                    course_starting_year &&
+                                    course_ending_year &&
+                                    parseInt(course_ending_year) < parseInt(course_starting_year)
+                                  ) {
+                                    setYearError('Ending year should be the same or greater than starting year');
+                                  }
+                                }}
+                                maxLength={4}
+                              />
+                              {yearError && (
+                                <small className="text-danger">{yearError}</small>
+                              )}
+                              </div>
+                            </div>
                             </div>
                           </>
                         )}
@@ -3751,7 +4165,7 @@ const MyAccount = () => {
 
 
 
-                        <div className="mb-4">
+                        {/* <div className="mb-4">
                           <label>Marks</label>
                           <input
                             type="text"
@@ -3761,7 +4175,37 @@ const MyAccount = () => {
                             onChange={(e) => setEducationData({ ...educationData, marks: e.target.value })}
                             maxLength={5}
                           />
+                        </div> */}
+                        <div className="mb-4">
+                          <label>Marks</label>
+                          <input
+                            type="text"
+                            className={`form-control ${marksError ? 'is-invalid' : ''}`}
+                            placeholder="Enter marks"
+                            value={educationData.marks}
+                            onChange={(e) => {
+                              const input = e.target.value;
+
+                              // Allow only numbers and up to 5 digits
+                              if (/^\d{0,5}$/.test(input)) {
+                                setEducationData({ ...educationData, marks: input });
+                                setMarksError('');
+                              }
+                            }}
+                            onBlur={() => {
+                              const marks = educationData.marks;
+
+                              if (parseInt(marks) < 0 || marks === '0' || marks === '00' || marks === '000' || marks === '0000' || marks === '00000') {
+                                setMarksError('Marks cannot be negative or 0');
+                              }
+                            }}
+                            maxLength={5}
+                          />
+                          {marksError && (
+                            <small className="text-danger">{marksError}</small>
+                          )}
                         </div>
+
                       </form>
                     </div>
 
@@ -3844,7 +4288,7 @@ const MyAccount = () => {
                 <div className="card-body">
                   <div className="d-flex justify-content-between ">
                     <div>
-                      <h5 className="m-0">Online Profile</h5>
+                      <h5 className="m-0 text-theme">Online Profile</h5>
                       <p>
                         <small>
                           Add link to online professional profiles (e.g.
@@ -3867,7 +4311,7 @@ const MyAccount = () => {
                     {socialProfiles && socialProfiles.length > 0 ? (
                       socialProfiles.map((social_profiles, index) => (
                         <div key={index} className="mb-3">
-                          <div className="d-flex align-items-center">
+                          <div className="d-flex align-items-baseline">
                             <h6 className="m-0">
                               {social_profiles.social_profile_name}
                               <Link
@@ -3875,7 +4319,7 @@ const MyAccount = () => {
                                 data-bs-target={`#socialModal-${social_profiles.id}`}
                                 onClick={() => openSocialModal(social_profiles)}
                               >
-                                <i className="fa-solid fa-pencil ms-2"></i>
+                                <i className="fa-solid fa-pencil ms-2" title="Edit"></i>
                               </Link>
                             </h6>
                           </div>
@@ -3885,7 +4329,7 @@ const MyAccount = () => {
                         </div>
                       ))
                     ) : (
-                      <p>No online profiles added yet</p>
+                      <p className="text-muted m-0">No online profiles added yet</p>
                     )}
                   </div>
                 </div>
@@ -3960,7 +4404,7 @@ const MyAccount = () => {
                                 }
                               />
                             </div>
-                            <div className="mb-4">
+                            {/* <div className="mb-4">
                               <label htmlFor={`url-${profile.id}`}>URL</label>
                               <input
                                 type="url"
@@ -3974,7 +4418,32 @@ const MyAccount = () => {
                                   }))
                                 }
                               />
-                            </div>
+                            </div> */}
+
+                          <div className="mb-4">
+                            <label htmlFor={`url-${profile.id}`}>URL</label>
+                            <input
+                              type="url"
+                              className={`form-control ${urlError ? 'is-invalid' : ''}`}
+                              placeholder="Enter Social Profile URL"
+                              value={selectedSocialProfile.url || ""}
+                              onChange={(e) => {
+                                const value = e.target.value;
+                                setSelectedSocialProfile((prev) => ({
+                                  ...prev,
+                                  url: value,
+                                }));
+                                validateUrl(value); // Validate URL
+                              }}
+                              onBlur={() => {
+                                if (!selectedSocialProfile.url) {
+                                  setUrlError('URL is required');
+                                }
+                              }}
+                            />
+                            {urlError && <small className="text-danger">{urlError}</small>}
+                          </div>
+
                             <div className="mb-4">
                               <label htmlFor={`description-${profile.id}`}>
                                 Description
@@ -4112,19 +4581,27 @@ const MyAccount = () => {
                           />
                         </div>
                         <div className="mb-4">
-                          <label htmlFor="url">URL</label>
+                          <label htmlFor=''>URL</label>
                           <input
                             type="url"
-                            className="form-control"
+                            className={`form-control ${urlError ? 'is-invalid' : ''}`}
                             placeholder="Enter Social Profile URL"
-                            value={selectedSocialProfile?.url || ""}
-                            onChange={(e) =>
+                            value={selectedSocialProfile.url || ""}
+                            onChange={(e) => {
+                              const value = e.target.value;
                               setSelectedSocialProfile((prev) => ({
                                 ...prev,
-                                url: e.target.value,
-                              }))
-                            }
+                                url: value,
+                              }));
+                              validateUrl(value); // Validate URL
+                            }}
+                            onBlur={() => {
+                              if (!selectedSocialProfile.url) {
+                                setUrlError('URL is required');
+                              }
+                            }}
                           />
+                          {urlError && <small className="text-danger">{urlError}</small>}
                         </div>
                         <div className="mb-4">
                           <label htmlFor="description">Description</label>
@@ -4168,21 +4645,21 @@ const MyAccount = () => {
               <div className="card mt-4 shadow border-0 rounded-3">
                 <div className="card-body">
                   <div className="d-flex align-items-center">
-                    <h5 className="m-0 ">
+                    <h5 className="m-0 text-theme">
                       Personal Details
                       <Link
                         data-bs-toggle="modal"
                         data-bs-target="#PersonalDetailModal"
                       >
 
-                        <i className="fa-solid fa-pencil ms-2"></i>
+                        <i className="fa-solid fa-pencil ms-2" title="Edit"></i>
                       </Link>
                     </h5>
                   </div>
 
                   <div className="mt-4 personal_details">
                     <div className="row">
-                      <div className="col-md-6">
+                      <div className="col-md-6 col-6">
                         <label htmlFor="">Personal</label>
                         <p>
                           {userData.gender && userData.maritial_status
@@ -4191,77 +4668,77 @@ const MyAccount = () => {
                               ? `${userData.gender}`
                               : userData.maritial_status
                                 ? `${userData.maritial_status}`
-                                : "Please add data"}
+                                : <span className="text-muted">Please add data</span>}
                         </p>
                       </div>
 
-                      <div className="col-md-6">
+                      <div className="col-md-6 col-6">
                         <label htmlFor="">Date of birth</label>
                         <p>
                           {userData.dob ? (
                             <span>{userData.dob}</span>
                           ) : (
-                            <span>Please add data</span>
+                            <span className="text-muted">Please add data</span>
                           )}
                         </p>
                       </div>
-                      <div className="col-md-6">
+                      <div className="col-md-6 col-6">
                         <label htmlFor="">Category</label>
                         <p>
                           {userData.category ? (
                             <span>{userData.category}</span>
                           ) : (
-                            <span>Please add data</span>
+                            <span className="text-muted">Please add data</span>
                           )}
                         </p>
                       </div>
-                      <div className="col-md-6">
+                      <div className="col-md-6 col-6">
                         <label htmlFor="">Address</label>
                         <p>
                           {userData.permanent_address ? (
                             <span>{userData.permanent_address}</span>
                           ) : (
-                            <span>Please add data</span>
+                            <span className="text-muted">Please add data</span>
                           )}
                         </p>
                       </div>
-                      <div className="col-md-6">
+                      <div className="col-md-6 col-6">
                         <label htmlFor="">Zipcode</label>
                         <p>
                           {userData.pincode ? (
                             <span>{userData.pincode}</span>
                           ) : (
-                            <span>Please add data</span>
+                            <span className="text-muted">Please add data</span>
                           )}
                         </p>
                       </div>
-                      <div className="col-md-6">
+                      <div className="col-md-6 col-6">
                         <label htmlFor="">City</label>
                         <p>
                           {userData.city ? (
                             <span>{userData.city}</span>
                           ) : (
-                            <span>Please add data</span>
+                            <span className="text-muted">Please add data</span>
                           )}
                         </p>
                       </div>
-                      <div className="col-md-6">
+                      <div className="col-md-6 col-6">
                         <label htmlFor="">State</label>
                         <p>
                           {userData.state ? (
                             <span>{userData.state}</span>
                           ) : (
-                            <span>Please add data</span>
+                            <span className="text-muted">Please add data</span>
                           )}
                         </p>
                       </div>
-                      <div className="col-md-6">
+                      <div className="col-md-6 col-6">
                         <label htmlFor="">Country</label>
                         <p>
                           {userData.country_name ? (
                             <span>{userData.country_name}</span>
                           ) : (
-                            <span>Please add data</span>
+                            <span className="text-muted">Please add data</span>
                           )}
                         </p>
                       </div>
@@ -4313,6 +4790,8 @@ const MyAccount = () => {
                   </div>
                 </div>
               </div>
+
+              {/* Personal details Modal */}
 
               <div
                 className="modal PersonalDetailModal"
@@ -4562,12 +5041,18 @@ const MyAccount = () => {
                             className="form-control"
                             placeholder="Enter your hometown"
                             value={userData.hometown}
-                            onChange={(e) =>
-                              setUserData({
-                                ...userData,
-                                hometown: e.target.value,
-                              })
-                            }
+                            // onChange={(e) =>
+                            //   setUserData({
+                            //     ...userData,
+                            //     hometown: e.target.value,
+                            //   })
+                            // }
+                            onChange={(e) => {
+                              const input = e.target.value;
+                              if (/^[a-zA-Z\s]*$/.test(input)) {
+                                setUserData({ ...userData, hometown: input });
+                              }
+                              }}
                           />
                         </div>
                         <div className="mb-4">
@@ -4577,12 +5062,18 @@ const MyAccount = () => {
                             className="form-control"
                             placeholder="Enter your pincode"
                             value={userData.pincode}
-                            onChange={(e) =>
-                              setUserData({
-                                ...userData,
-                                pincode: e.target.value,
-                              })
-                            }
+                            // onChange={(e) =>
+                            //   setUserData({
+                            //     ...userData,
+                            //     pincode: e.target.value,
+                            //   })
+                            // }
+                            onChange={(e) => {
+                              const value = e.target.value;
+                              if (/^\d*$/.test(value)) {
+                                setUserData({ ...userData, pincode: value });
+                              }
+                              }}
                             maxLength={6}
                           />
                         </div>
@@ -4594,9 +5085,15 @@ const MyAccount = () => {
                             className="form-control"
                             placeholder="Enter your city"
                             value={userData.city}
-                            onChange={(e) =>
-                              setUserData({ ...userData, city: e.target.value })
-                            }
+                            // onChange={(e) =>
+                            //   setUserData({ ...userData, city: e.target.value })
+                            // }
+                            onChange={(e) => {
+                              const input = e.target.value;
+                              if (/^[a-zA-Z\s]*$/.test(input)) {
+                                setUserData({ ...userData, city: input });
+                              }
+                              }}
                           />
                         </div>
 
@@ -4607,12 +5104,18 @@ const MyAccount = () => {
                             className="form-control"
                             placeholder="Enter your state"
                             value={userData.state}
-                            onChange={(e) =>
-                              setUserData({
-                                ...userData,
-                                state: e.target.value,
-                              })
-                            }
+                            // onChange={(e) =>
+                            //   setUserData({
+                            //     ...userData,
+                            //     state: e.target.value,
+                            //   })
+                            // }
+                            onChange={(e) => {
+                              const input = e.target.value;
+                              if (/^[a-zA-Z\s]*$/.test(input)) {
+                                setUserData({ ...userData, state: input });
+                              }
+                              }}
                           />
                         </div>
                         <div className="mb-4">
@@ -4622,12 +5125,12 @@ const MyAccount = () => {
                             className="form-control"
                             placeholder="Enter your state"
                             value={userData.country_name}
-                            onChange={(e) =>
-                              setUserData({
-                                ...userData,
-                                country_name: e.target.value,
-                              })
-                            }
+                            onChange={(e) => {
+                              const input = e.target.value;
+                              if (/^[a-zA-Z\s]*$/.test(input)) {
+                                setUserData({ ...userData, country_name: input });
+                              }
+                              }}
                           />
                         </div>
 
@@ -4721,7 +5224,7 @@ const MyAccount = () => {
               <div className="card mt-4 shadow border-0 rounded-3">
                 <div className="card-body">
                   <div className="d-flex justify-content-between mb-3">
-                    <h5>Certification</h5>
+                    <h5 className="text-theme">Certification</h5>
                     <Link
                       className="text-theme"
                       data-bs-toggle="modal"
@@ -4736,7 +5239,7 @@ const MyAccount = () => {
                     {certificates.length > 0 ? (
                       certificates.map((certificate, index) => (
                         <div key={index} className="mb-3">
-                          <div className="d-flex align-items-center">
+                          <div className="d-flex align-items-baseline">
                             <h6 className="m-0">
                               {certificate.certification_name}
                               <Link
@@ -4746,7 +5249,7 @@ const MyAccount = () => {
                                   openCertificateModal(certificate)
                                 }
                               >
-                                <i className="fa-solid fa-pencil ms-2"></i>
+                                <i className="fa-solid fa-pencil ms-2" title="Edit"></i>
                               </Link>
                             </h6>
                           </div>
@@ -4763,13 +5266,13 @@ const MyAccount = () => {
                         </div>
                       ))
                     ) : (
-                      <p>No certifications added yet</p>
+                      <p className="text-muted m-0">No certifications added yet</p>
                     )}
                   </div>
                 </div>
               </div>
 
-              {/* Existing code */}
+              {/* Add Certificate Modal */}
               <div
                 className="modal certificateModal"
                 id="certificateModal"
@@ -4816,18 +5319,18 @@ const MyAccount = () => {
                             onChange={handleCertificateChange}
                           />
                         </div>
-                        <div className="mb-4">
-                          <label htmlFor="certification_url">
-                            Certification URL
-                          </label>
+                        <div className="mt-4 mb-4">
+                          <label htmlFor="certification_url">Certification URL</label>
                           <input
-                            type="url"
-                            className="form-control"
-                            placeholder="Enter your certification url"
+                            type="text"
+                            className={`form-control ${urlError ? 'is-invalid' : ''}`}
+                            placeholder="Enter the certification URL"
                             name="certification_url"
                             value={selectedCertificate.certification_url}
-                            onChange={handleCertificateChange}
+                            onChange={handleCertificateChange}  // Handles the change for any input
+                            onBlur={() => validateCerUrl(selectedCertificate.certification_url)}  // Validates when input is blurred (when user finishes typing)
                           />
+                          {urlError && <small className="text-danger">{urlError}</small>}  {/* Show URL validation error */}
                         </div>
                         <div className="mb-4">
                           <div className="row align-items-center">
@@ -5024,19 +5527,19 @@ const MyAccount = () => {
                               onChange={handleCertificateChange}
                             />
                           </div>
-                          <div className="mb-4">
-                            <label htmlFor="certification_url">
-                              Certification URL
-                            </label>
-                            <input
-                              type="url"
-                              className="form-control"
-                              placeholder="Enter your certification url"
-                              name="certification_url"
-                              value={selectedCertificate.certification_url}
-                              onChange={handleCertificateChange}
-                            />
-                          </div>
+                          <div className="mt-4 mb-4">
+                          <label htmlFor="certification_url">Certification URL</label>
+                          <input
+                            type="text"
+                            className={`form-control ${urlError ? 'is-invalid' : ''}`}
+                            placeholder="Enter the certification URL"
+                            name="certification_url"
+                            value={selectedCertificate.certification_url}
+                            onChange={handleCertificateChange}  // Handles the change for any input
+                            onBlur={() => validateCerUrl(selectedCertificate.certification_url)}  // Validates when input is blurred (when user finishes typing)
+                          />
+                          {urlError && <small className="text-danger">{urlError}</small>}  {/* Show URL validation error */}
+                        </div>
                           <div className="mb-4">
                             <div className="row align-items-center">
                               <div className="col">

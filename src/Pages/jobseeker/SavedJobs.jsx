@@ -20,6 +20,11 @@ const SavedJobs = () => {
   const API_URL = import.meta.env.VITE_API_URL;
   const IMG_URL = import.meta.env.VITE_IMG_URL;
 
+  const stripHtml = (html) => {
+    const doc = new DOMParser().parseFromString(html, "text/html");
+    return doc.body.textContent || "";
+  };
+
   // Fetch saved jobs from the API
   const fetchSavedJobs = async () => {
     try {
@@ -71,32 +76,75 @@ const SavedJobs = () => {
     fetchSavedJobs();
   }, []);
 
-  const calculateTimeAgo = (date) => {
-    const utcZero = date.replace(" ", "T") + "Z";
-    const localDate = new Date(utcZero);
+
+  // const calculateTimeAgo = (date) => {
+  //   const utcZero = date.replace(" ", "T") + "Z";
+  //   const localDate = new Date(utcZero);
+  //   const now = new Date();
+  //   const diffTime = now - localDate;
+  
+  //   const diffMinutes = Math.floor(diffTime / (1000 * 60));
+  //   if (diffMinutes < 60) {
+  //     return `${diffMinutes} minute${diffMinutes === 1 ? "" : "s"} ago`;
+  //   }
+  
+  //   const diffHours = Math.floor(diffMinutes / 60);
+  //   if (diffHours < 24) {
+  //     return `${diffHours} hour${diffHours === 1 ? "" : "s"} ago`;
+  //   }
+  
+  //   const diffDays = Math.floor(diffHours / 24);
+  //   return `${diffDays} day${diffDays === 1 ? "" : "s"} ago`;
+  // };
+
+
+  const calculateTimeAgo = (timestamp) => {
+    if (!timestamp) return "";
+  
     const now = new Date();
-    const diffTime = now - localDate;
+    const past = new Date(timestamp.replace(" ", "T"));
+    const secondsPast = Math.floor((now - past) / 1000);
   
-    const diffMinutes = Math.floor(diffTime / (1000 * 60));
-    if (diffMinutes < 60) {
-      return `${diffMinutes} minute${diffMinutes === 1 ? "" : "s"} ago`;
+    const years = Math.floor(secondsPast / 31536000); // 60 * 60 * 24 * 365
+    const months = Math.floor((secondsPast % 31536000) / 2592000); // 60 * 60 * 24 * 30
+    const days = Math.floor((secondsPast % 2592000) / 86400); // 60 * 60 * 24
+    const hours = Math.floor((secondsPast % 86400) / 3600); // 60 * 60
+    const minutes = Math.floor((secondsPast % 3600) / 60);
+  
+    // Display logic based on time difference
+    if (secondsPast < 60) {
+      return `${secondsPast} sec${secondsPast !== 1 ? "s" : ""} ago`;
     }
   
-    const diffHours = Math.floor(diffMinutes / 60);
-    if (diffHours < 24) {
-      return `${diffHours} hour${diffHours === 1 ? "" : "s"} ago`;
+    if (secondsPast < 3600) {
+      return `${minutes} min${minutes !== 1 ? "s" : ""} ago`;
     }
   
-    const diffDays = Math.floor(diffHours / 24);
-    return `${diffDays} day${diffDays === 1 ? "" : "s"} ago`;
-  };
+    if (secondsPast < 86400) {
+      return `${hours} hr${hours !== 1 ? "s" : ""} ago`;
+    }
+  
+    if (secondsPast < 2592000) {  // 30 days
+      return `${days} day${days !== 1 ? "s" : ""} ago`;
+    }
+  
+    if (years > 0) {
+      return `${years} year${years !== 1 ? "s" : ""} ${months > 0 ? `${months} month${months !== 1 ? "s" : ""}` : ""} ${days > 0 ? `${days} day${days !== 1 ? "s" : ""}` : ""} ago`;
+    }
+  
+    if (months > 0) {
+      return `${months} month${months !== 1 ? "s" : ""} ${days > 0 ? `${days} day${days !== 1 ? "s" : ""}` : ""} ago`;
+    }
+  
+    return `${days} day${days !== 1 ? "s" : ""} ago`;
+  }
 
   const isJobSaved = (jobId) => {
     return Array.isArray(savedJobs) && savedJobs.some((savedJob) => savedJob.id === jobId);
   };
 
   return (
-    <>
+    <div className='account_page'>
       <Navbar />
       <div className="top_pad">
         <div className="container pb-5">
@@ -116,7 +164,7 @@ const SavedJobs = () => {
             <p className="text-danger">{error}</p>
           ) : savedJobs ? (
             <div className='row'>
-                <h1 className="job_head">Jobs saved by you ({savedJobs.length})</h1>
+               
                 {savedJobs.length === 0 ? (
                   <div className="no_saved_jobs mb-4">
                     <div className="card mt-4 border-0 shadow">
@@ -133,94 +181,101 @@ const SavedJobs = () => {
                     </div>
                   </div>
                 ) : (
-                  savedJobs.map((job) => (
-                    <div className="col-lg-4 col-md-6 col-sm-6 mb-4" key={job.id}>
-                      <div className="card company_list_card h-100">
-                        <div className="card-body">
-                          <div className="d-flex justify-content-between">
-                            <Link to={`/companies/${job.company_slug}`}>
-                              <div className="logo_div border-0 shadow">
-                                <img
-                                  src={`${IMG_URL}/${job.company_profile}`}
-                                  alt="company_logo"
-                                />
-                              </div>
-                            </Link>
-                            <div className="d-flex align-items-center">
-                            <button
-                                className={`btn-light border-0 shadow me-2 ${
-                                  isJobSaved(job.id) ? "btn-primary" : ""
-                                }`}
-                                onClick={() => toggleSavedJob(job.id)}
-                              >
-                                <i
-                                  className={`fa-bookmark  ${
-                                    isJobSaved(job.id) ? "fa-solid" : "fa-regular"
+                  <>
+                   <h1 className="job_head">Saved Jobs ({savedJobs.length})</h1>
+                    {savedJobs.map((job) => (
+                      <div className="col-lg-4 col-md-6 col-sm-6 mb-4" key={job.id}>
+                        <div className="card company_list_card h-100">
+                          <div className="card-body">
+                            <div className="d-flex justify-content-between">
+                              <Link to={`/companies/${job.company_slug}`}>
+                                <div className="logo_div border-0 shadow">
+                                  <img
+                                    src={`${IMG_URL}/${job.company_profile}`}
+                                    alt="company_logo"
+                                  />
+                                </div>
+                              </Link>
+                              <div className="d-flex align-items-center">
+                              <button
+                                  className={`btn-light border-0 shadow me-2 ${
+                                    isJobSaved(job.id) ? "btn-primary" : ""
                                   }`}
-                                ></i>
-                                {/* {isJobSaved(job.id) ? "Saved" : "Save"} */}
-                              </button>
-                              <Link className="btn-light shadow me-2">
-                                <i className="fa-solid fa-share"></i>
+                                  onClick={() => toggleSavedJob(job.id)}
+                                  title={
+                                    isJobSaved(job.id) ? "Click to unsave" : "Click to save"
+                                  }
+                                >
+                                  <i
+                                    className={`fa-bookmark  ${
+                                      isJobSaved(job.id) ? "fa-solid" : "fa-regular"
+                                    }`}
+                                   
+                                  ></i>
+                                  {/* {isJobSaved(job.id) ? "Saved" : "Save"} */}
+                                </button>
+                                <Link className="btn-light shadow me-2">
+                                  <i className="fa-solid fa-share"></i>
+                                </Link>
+                              </div>
+                            </div>
+                            <div className="py-2">
+                              <Link to={`/companies/${job.company_slug}`}>
+                                <h5 className="py-2 m-0">{stripHtml(job.company_name)}</h5>
+                              </Link>
+                              <Link to={`/jobs/${job.slug}`}>
+                                <h6 className=" m-0">{stripHtml(job.title)}</h6>
                               </Link>
                             </div>
-                          </div>
-                          <div className="py-2">
-                            <Link to={`/companies/${job.company_slug}`}>
-                              <h5 className="py-2 m-0">{job.company_name}</h5>
-                            </Link>
-                            <Link to={`/jobs/${job.slug}`}>
-                              <h6 className=" m-0">{job.title}</h6>
-                            </Link>
-                          </div>
-                          <p className="main_desc">{job.company_tagline}</p>
-                          <ul className="p-0 d-flex flex-wrap">
-                            {job.job_type && (
+                            <p className="main_desc">{job.company_tagline}</p>
+                            <ul className="p-0 d-flex flex-wrap">
+                              {job.job_type && (
+                                <li>
+                                  <div className="btn btn-sm btn-green me-2 mb-2 text-capitalize">
+                                    {job.job_type}
+                                  </div>
+                                </li>
+                              )}
                               <li>
                                 <div className="btn btn-sm btn-green me-2 mb-2 text-capitalize">
-                                  {job.job_type}
+                                  <span>Salary -</span> {job.salary_range}{" "}
+                                  {job.salary_currency}
                                 </div>
                               </li>
-                            )}
-                            <li>
-                              <div className="btn btn-sm btn-green me-2 mb-2 text-capitalize">
-                                <span>Salary -</span> {job.salary_range}{" "}
-                                {job.salary_currency}
-                              </div>
-                            </li>
-                            <li>
-                              <div className="btn btn-sm btn-green me-2 mb-2 text-capitalize">
-                                <span>Experience -</span>&nbsp;&nbsp; {job.experience_required}
-                                {/* {typeof job.experience_required === "string"
-                                  ? job.experience_required.toLowerCase() ===
-                                    "fresher"
-                                    ? "Fresher"
-                                    : parseInt(job.experience_required) === 1
-                                    ? `${job.experience_required} year`
-                                    : parseInt(job.experience_required) === 0
-                                    ? ""
-                                    : `${job.experience_required} years`
-                                  : job.experience_required} */}
-                              </div>
-                            </li>
-                            {job.city && (
                               <li>
-                                <div className="btn btn-sm btn-green me-2 mb-2 text-start text-capitalize">
-                                  <i className="fa-solid fa-location-dot "></i>
-                                  &nbsp;&nbsp;{job.city}
+                                <div className="btn btn-sm btn-green me-2 mb-2 text-capitalize">
+                                  <span>Experience -</span>&nbsp;&nbsp; {job.experience_required}
+                                  {/* {typeof job.experience_required === "string"
+                                    ? job.experience_required.toLowerCase() ===
+                                      "fresher"
+                                      ? "Fresher"
+                                      : parseInt(job.experience_required) === 1
+                                      ? `${job.experience_required} year`
+                                      : parseInt(job.experience_required) === 0
+                                      ? ""
+                                      : `${job.experience_required} years`
+                                    : job.experience_required} */}
                                 </div>
                               </li>
-                            )}
-                          </ul>
-                          <p className=" text-muted m-0">
-                            <small className="badge text-bg-light">
-                              {calculateTimeAgo(job.created_at)}
-                            </small>
-                          </p>
+                              {job.city && (
+                                <li>
+                                  <div className="btn btn-sm btn-green me-2 mb-2 text-start text-capitalize">
+                                    <i className="fa-solid fa-location-dot "></i>
+                                    &nbsp;&nbsp;{job.city}
+                                  </div>
+                                </li>
+                              )}
+                            </ul>
+                            <p className=" text-muted m-0">
+                              <small className="badge text-bg-light">
+                                {calculateTimeAgo(job.created_at)}
+                              </small>
+                            </p>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))
+                    ))}
+                  </>
                 )}
             </div>
             ) : (
@@ -244,7 +299,7 @@ const SavedJobs = () => {
           pauseOnHover
         />
       <Footer />
-    </>
+    </div>
   );
 };
 

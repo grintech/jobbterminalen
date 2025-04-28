@@ -349,8 +349,8 @@ const handleSubmit = async (e) => {
                                     </div>
                                     <div className="col-12 mb-3">
                                         <label htmlFor="">{t("Phone")}<span>*</span></label>
-                                        <div className="phone-input-container row ">
-                                            <div className="col-sm-4 mb-3 mb-sm-0">
+                                        <div className="phone-input-container d-flex ">
+                                            <div className="col-3 mb-3 mb-sm-0 p-0">
                                                 <ReactFlagsSelect
                                                     selected={selected}
                                                     onSelect={(code) => setSelected(code)}
@@ -360,7 +360,7 @@ const handleSubmit = async (e) => {
                                                     className="w-100"
                                                 />
                                             </div>
-                                            <div className="col-sm-8">
+                                            <div className="col-9 register_phone_input p-0">
                                                 <input
                                                     type="text"
                                                     placeholder={t("Phone_placeholder")}

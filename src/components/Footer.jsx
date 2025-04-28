@@ -66,7 +66,7 @@ const Footer = () => {
               </div>
             </div>
             <div className="d-flex justify-content-center border-top py-3">
-                <p className='m-0 px-2 text-center'>{ t("Copyright")}</p>
+                <p className='m-0 px-2 text-center copyright_text'>{ t("Copyright")}</p>
             </div>
         </footer>
     </>

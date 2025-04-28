@@ -5,7 +5,7 @@
   /* background: unset !important;  */
   /* color: #000; */
 }
-/* .homepage .hero_banner::before{display: none;} */
+
 .hero_banner{
     /* background: url(/images/homebanner_new.png); */
     background: #003479;
@@ -25,7 +25,6 @@
     height: 100%;
     top: 0;
     left: 0;
-    /* background-color: #000; */
     opacity: 0.6;
   }
  
@@ -168,8 +167,9 @@
 
   }
   .top_companies .card img{
-    /* height: 50px; */
-    width: 70px;
+    height: 60px;
+    width: 60px;
+    object-fit: contain;
   }
   .top_companies .swiper-slide:nth-child(odd) .job_desc{
     background-color: #fffaf7;
@@ -243,7 +243,9 @@
 
 
   .sponsor_companies .card{border-radius: 15px;}
-  .sponsor_companies .card img{width: 100px;}
+  .sponsor_companies .card img{
+    width: 80px; height: 80px; object-fit: contain;
+  }
   .sponsor_companies .card .btn-login{
     background-color: #003479 !important;
     color: #fff;
@@ -292,6 +294,7 @@
   /* .company_list_card {box-shadow: 0 0 15px 0 rgba(220, 220, 220, .5); border: 0;} */
   .company_list_card {box-shadow: 0 0 20px 0 rgba(225, 225, 225, 1.5); border: 0;}
   .company_list_card h6{font-size: 16px; color: #474d6a;}
+  .company_list_card h6:hover{font-size: 16px; color: #003479;}
   .company_list_card .job_details{color: #474d6a; font-size: 14px;}
   .company_list_card .job_description{
     color: #474d6a; font-size: 14px;
@@ -410,12 +413,6 @@
 
 .company_details .btn-green{padding: 4px 10px; border-radius: 4px;}
 
-/* .alert.alert-dismissible{
-  position: fixed !important;
-  right: 50px !important;
-  top: 10px !important;
-  z-index: 999 !important;
-} */
 .alert-dismissible button:focus{box-shadow: none !important;}
 .alert-dismissible button:active{box-shadow: none !important;}
 
@@ -431,8 +428,6 @@
 
 
 .popular_jobs{
-  /* background-color: #fff2e5; */
-  /* background-color: #bcf3af; */
   background-color: #003479;
   padding: 20px 50px;
    position: relative;
@@ -447,6 +442,8 @@
   line-clamp: 1;
   -webkit-box-orient: vertical;
   overflow: hidden;}
+  .pop_right .main-card .card :hover h6{color: #003479;}
+  .pop_right .main-card .card :hover .fa-chevron-right{color: #003479 !important;}
 .pop_right .swiper-button-next, .pop_right .swiper-button-prev {
   top: 50% !important;
   border: 1px solid #003479; border-radius: 50%; width: 35px; height: 35px; background-color: #003479;z-index: 99;
@@ -473,8 +470,6 @@
     align-items: center;
     opacity: 0;
     transition: all .3s ease;
-
-
 }
   .recent_slider button{
     background-color: #0000006f;
@@ -500,23 +495,15 @@
   .recent_slider img { object-fit: cover; border-radius: 8px;}
 
 
-
-
-
   @media screen and (min-width:1440px) {
-    /* .hero_banner{
-      padding: 160px 0 !important;
-      background-position: top ;
-    } */
     .hero_banner .banner_search{padding-top: 15px; padding-bottom: 15px;}
-
   }
+
   @media screen and (min-width:1920px) {
     .hero_banner{
       padding: 180px 0 !important;
       background-position: top ;
     }
-  
   }
 
   @media screen and (min-width:1200px) {
@@ -601,6 +588,7 @@
       border-radius: 8px;
     }
    }
+
    @media screen and (max-width:425px) {
     .popular_jobs{padding: 20px 20px;}
     .popular_categories .card h5 {font-size: 13px !important;}
@@ -610,6 +598,7 @@
       border-radius: 8px;
     }
    }
+
    @media screen and (max-width:375px) {
     .popular_categories .col-lg-2.col-md-3.col-sm-4.col-4{
       width: 50% !important;

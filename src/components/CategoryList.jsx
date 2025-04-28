@@ -21,26 +21,82 @@ const CategoryList = () => {
   const bearerKey = import.meta.env.VITE_BEARER_KEY;
   const API_URL = import.meta.env.VITE_API_URL;
 
-  const calculateTimeAgo = (date) => {
-    // Convert the input date to the correct UTC format (ISO string)
-    const utcZero = date.replace(" ", "T") + "Z"; // Ensure it's in ISO format with a 'Z' for UTC
+  // const calculateTimeAgo = (date) => {
+  //   // Convert the input date to the correct UTC format (ISO string)
+  //   const utcZero = date.replace(" ", "T") + "Z"; // Ensure it's in ISO format with a 'Z' for UTC
     
-    // Create Date object from the UTC date and convert it to the local time zone
-    const localDate = new Date(utcZero);
+  //   const localDate = new Date(utcZero);
 
+  //   const now = new Date();
+
+  //   const diffTime = now - localDate;
+
+  //   const diffHours = Math.floor(diffTime / (1000 * 60 * 60)); 
+
+  //   if (diffHours < 24) {
+  //     return `${diffHours} hour${diffHours === 1 ? '' : 's'} ago`;
+  //   }
+
+  //   const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+  //   return `${diffDays} day${diffDays === 1 ? '' : 's'} ago`;
+  // };
+
+  // const calculateTimeAgo = (timestamp) => {
+  //   if (!timestamp) return "";
+  
+  //   const now = new Date();
+  //   const past = new Date(timestamp.replace(" ", "T"));
+  //   const secondsPast = Math.floor((now - past) / 1000);
+  
+  //   if (secondsPast < 60) return `${secondsPast} sec${secondsPast !== 1 ? "s" : ""} ago`;
+  //   if (secondsPast < 3600) return `${Math.floor(secondsPast / 60)} min${secondsPast / 60 !== 1 ? "s" : ""} ago`;
+  //   if (secondsPast < 86400) return `${Math.floor(secondsPast / 3600)} hr${secondsPast / 3600 !== 1 ? "s" : ""} ago`;
+  //   if (secondsPast < 2592000) return `${Math.floor(secondsPast / 86400)} day${secondsPast / 86400 !== 1 ? "s" : ""} ago`;
+  //   if (secondsPast < 31536000) return `${Math.floor(secondsPast / 2592000)} month${secondsPast / 2592000 !== 1 ? "s" : ""} ago`;
+  
+  //   return `${Math.floor(secondsPast / 31536000)} year${secondsPast / 31536000 !== 1 ? "s" : ""} ago`;
+  // }
+
+  const calculateTimeAgo = (timestamp) => {
+    if (!timestamp) return "";
+  
     const now = new Date();
-
-    const diffTime = now - localDate;
-
-    const diffHours = Math.floor(diffTime / (1000 * 60 * 60)); 
-
-    if (diffHours < 24) {
-      return `${diffHours} hour${diffHours === 1 ? '' : 's'} ago`;
+    const past = new Date(timestamp.replace(" ", "T"));
+    const secondsPast = Math.floor((now - past) / 1000);
+  
+    const years = Math.floor(secondsPast / 31536000); // 60 * 60 * 24 * 365
+    const months = Math.floor((secondsPast % 31536000) / 2592000); // 60 * 60 * 24 * 30
+    const days = Math.floor((secondsPast % 2592000) / 86400); // 60 * 60 * 24
+    const hours = Math.floor((secondsPast % 86400) / 3600); // 60 * 60
+    const minutes = Math.floor((secondsPast % 3600) / 60);
+  
+    // Display logic based on time difference
+    if (secondsPast < 60) {
+      return `${secondsPast} sec${secondsPast !== 1 ? "s" : ""} ago`;
     }
-
-    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-    return `${diffDays} day${diffDays === 1 ? '' : 's'} ago`;
-  };
+  
+    if (secondsPast < 3600) {
+      return `${minutes} min${minutes !== 1 ? "s" : ""} ago`;
+    }
+  
+    if (secondsPast < 86400) {
+      return `${hours} hr${hours !== 1 ? "s" : ""} ago`;
+    }
+  
+    if (secondsPast < 2592000) {  // 30 days
+      return `${days} day${days !== 1 ? "s" : ""} ago`;
+    }
+  
+    if (years > 0) {
+      return `${years} year${years !== 1 ? "s" : ""} ${months > 0 ? `${months} month${months !== 1 ? "s" : ""}` : ""} ${days > 0 ? `${days} day${days !== 1 ? "s" : ""}` : ""} ago`;
+    }
+  
+    if (months > 0) {
+      return `${months} month${months !== 1 ? "s" : ""} ${days > 0 ? `${days} day${days !== 1 ? "s" : ""}` : ""} ago`;
+    }
+  
+    return `${days} day${days !== 1 ? "s" : ""} ago`;
+  }
 
   // Fetch category data
   useEffect(() => {
@@ -158,11 +214,11 @@ const CategoryList = () => {
         <div className="category_listing py-5">
           <div className="container top_pad">
               {loginAlert && (
-            <div className="d-flex">
-                <div className="alert alert-danger alert-dismissible fade show w-25" role="alert">
-                Please login to save jobs.
+              <div className="d-flex">
+                  <div className="alert alert-danger alert-dismissible fade show w-25" role="alert">
+                  Please login to save jobs.
+                </div>
               </div>
-            </div>
               )}
             <div className="row">
               <div className="col-lg-3 mb-5 mb-lg-0">
@@ -251,16 +307,34 @@ const CategoryList = () => {
                                   {job.salary_currency}
                                 </div>
                               </li>
-                              <li>
+
+                              {/* <li>
                                 <div className="btn btn-sm btn-green me-2 mb-2 text-capitalize">
                                   <span>Experience -</span>&nbsp;&nbsp; {job.experience_required}
                                 </div>
-                              </li>
-                              {job.job_location && (
+                              </li> */}
+
+                              {job.experience_required && (
+                                <li>
+                                  <div className="btn btn-sm btn-green me-2 mb-2 text-capitalize">
+                                    {job.experience_required === "0" ? (
+                                       job.experience_required === "0" ? "Fresher" : job.experience_required
+                                    ) : (
+                                      <>
+                                       <span>Experience -</span>&nbsp;&nbsp;
+                                       {job.experience_required }
+                                      </>
+                                    ) }
+                                  </div>
+                                </li>
+                              )}
+
+
+                              {job.city && (
                                 <li>
                                   <div className="btn btn-sm btn-green me-2 mb-2 text-start text-capitalize">
                                     <i className="fa-solid fa-location-dot "></i>
-                                    &nbsp;&nbsp;{job.job_location}
+                                    &nbsp;&nbsp;{job.city}
                                   </div>
                                 </li>
                               )}

@@ -50,9 +50,7 @@ const ApplyJob = () => {
   const fileInputRef1 = useRef(null);
 
   const allowedTypes = [
-    "application/pdf",
-    "application/msword",
-    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "application/pdf", // Only allow PDF
   ];
 
   const handleCertificatesChange = (e) => {
@@ -63,7 +61,8 @@ const ApplyJob = () => {
     );
 
     if (validFiles.length !== files.length) {
-      toast.error("Only PDF, DOC, and DOCX files are allowed.");
+      // toast.error("Only PDF, DOC, and DOCX files are allowed.");
+      toast.error("Only PDF files are allowed.");
     }
 
     setCertificates((prev) => {
@@ -173,9 +172,26 @@ const ApplyJob = () => {
     fetchUserData();
   }, [jobId, userId]);
 
+  // const handleFileChange = (event) => {
+  //   if (event.target.files.length > 0) {
+  //     const selectedFile = event.target.files[0];
+  //     setFileName(selectedFile.name);
+  //     setFormData((prevData) => ({
+  //       ...prevData,
+  //       resume: selectedFile,
+  //     }));
+  //   }
+  // };
+
   const handleFileChange = (event) => {
     if (event.target.files.length > 0) {
       const selectedFile = event.target.files[0];
+  
+      if (selectedFile.type !== "application/pdf") {
+        toast.error("Only PDF files are allowed.");
+        return;
+      }
+  
       setFileName(selectedFile.name);
       setFormData((prevData) => ({
         ...prevData,
@@ -184,6 +200,7 @@ const ApplyJob = () => {
     }
   };
 
+  
   const handleRemoveResume = () => {
     setFileName("");
     setFormData((prevData) => ({ ...prevData, resume: null }));
@@ -199,6 +216,12 @@ const ApplyJob = () => {
       return; 
     }
 
+    if(formData.resume === null){
+      console.log("No resume uploaded");
+      toast.error("Please upload your resume");
+      return;
+    }
+
     try {
       setIsSubmitting(true);
       const formDataToSend = new FormData();
@@ -206,7 +229,7 @@ const ApplyJob = () => {
       for (const key in formData) {
         formDataToSend.append(key, formData[key]);
       }
-
+     
       // Append cover letter
 
       // formDataToSend.append("cover_letter", coverLetter);
@@ -249,7 +272,7 @@ const ApplyJob = () => {
           <div className="col-xxl-6 col-lg-7 col-md-9 mx-auto">
           <div className="card">
             <div className="card-body p-4 p-md-5">
-            <h1 className="text-start fs-3 mb-3">
+            <h1 className="text-start fs-4 mb-3">
             {userId ? `Apply for ${stripHtml(jobTitle)}` : "Apply"}
           </h1>
             <p className="text-muted text-start">Please complete the form below to apply for a position with us.</p>
@@ -280,6 +303,7 @@ const ApplyJob = () => {
                     id="gender"
                     value={formData.gender || ''}
                     onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
+                    required
                   >
                     <option value="" disabled>Select gender</option>
                     <option value="Male">Male</option>
@@ -296,6 +320,7 @@ const ApplyJob = () => {
                     id="dob"
                     value={formData.dob || ''}
                     onChange={(e) => setFormData({ ...formData, dob: e.target.value })}
+                    required
                   />
                 </div>
               </div>
@@ -338,8 +363,9 @@ const ApplyJob = () => {
                     ref={fileInputRef}
                     type="file"
                     className="form-control d-none"
-                    accept=".doc,.docx,.rtf,.pdf"
+                    accept=".pdf"
                     onChange={handleFileChange}
+                    
                   />
                 </div>
 
@@ -395,7 +421,7 @@ const ApplyJob = () => {
                   <input
                     type="file"
                     multiple
-                    accept=".pdf,.doc,.docx"
+                    accept=".pdf"
                     className="form-control d-none"
                     onChange={handleCertificatesChange}
                     ref={fileInputRef1}

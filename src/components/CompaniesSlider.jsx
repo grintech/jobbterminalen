@@ -214,7 +214,7 @@ const CompaniesSlider = () => {
                           <img
                             src={`${IMG_URL}/${
                               company.company_profile === "null"
-                                ? "/public/images/frontimg/blank_logo.jpg"
+                                ? "/images/frontimg/blank_logo.jpg"
                                 : company.company_profile
                             }`}
                             alt={company.company_name}
@@ -240,6 +240,9 @@ const CompaniesSlider = () => {
                               }`}
                               onClick={() => toggleLike(company.id)}
                               style={{ cursor: "pointer" }}
+                              title={
+                                likedCards[company.id] ? "Click to unsave" : "Click to save"
+                              }
                             ></i>
                           </div>
                         </div>

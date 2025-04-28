@@ -429,8 +429,8 @@ const Register = () => {
                       <label htmlFor="phone" className="mb-2">
                         {t("Phone")} <span>*</span>
                       </label>
-                      <div className="row">
-                        <div className="col-sm-4 mb-4 mb-sm-0">
+                      <div className="d-flex">
+                        <div className="col-3 register_select_country p-0 mb-sm-0">
                         <ReactFlagsSelect
                         selected={selected}
                         onSelect={(code) => setSelected(code)}
@@ -441,7 +441,7 @@ const Register = () => {
                       />
 
                         </div>
-                        <div className="col-sm-8">
+                        <div className="col-9 p-0 register_phone_input">
                           <input
                             type="text"
                             className="form-control"

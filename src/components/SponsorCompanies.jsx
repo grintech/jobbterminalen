@@ -214,6 +214,9 @@ const SponsorCompanies = () => {
                       >
                         <i
                           className={`fa-heart ${isCompanySaved(company.id) ? 'fa-solid' : 'fa-regular'}`}
+                          title={
+                            isCompanySaved(company.id) ? "Click to unsave" : "Click to save"
+                          }
                         ></i>
                       </div>
                     </div>
