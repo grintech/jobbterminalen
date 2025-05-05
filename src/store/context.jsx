@@ -19,9 +19,12 @@ export const FilterProvider = ({ children }) => {
       return updatedFilters;
     });
   };
+
+  const resetFilters = () => setFilters({});
+
   
 
-  return <FilterContext.Provider value={{ filters, setFilter }}>{children}</FilterContext.Provider>;
+  return <FilterContext.Provider value={{ filters, setFilter, resetFilters  }}>{children}</FilterContext.Provider>;
 };
 
 export const useFilterContext = () => useContext(FilterContext);

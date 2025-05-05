@@ -85,13 +85,13 @@ const resources = {
       "AboutHead2" : "Here's why you'll love our platform",
       "AboutText2" : "Search all the open positions on the web. Get your own personalized salary estimate. Read reviews on over 30000+ companies worldwide.",
       "AboutSmallHead1" : "24/7 Support",
-      "AboutSmltext1" : "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Explicabo, non.",
+      "AboutSmltext1" : "Our team is available 24/7 to assist you whenever you need.",
       "AboutSmallHead2" : "Tech & Startup Jobs",
-      "AboutSmltext2" : "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Explicabo, non.",
+      "AboutSmltext2" : "Launch your career with top roles in tech and emerging startups.",
       "AboutSmallHead3" : "Quick & Easy",
-      "AboutSmltext3" : "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Explicabo, non.",
+      "AboutSmltext3" : "Job hunting made quick, simple, and seamless.",
       "AboutSmallHead4" : "Save Time",
-      "AboutSmltext4" : "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Explicabo, non.",
+      "AboutSmltext4" : "Spend less time scrolling, more time succeeding.",
       "Readmore" : "Read more",
       "CallActionHead": "Have Question ? Get in touch!",
       "CallActionText": "Have questions or need assistance? Our team is here to help you every step of the way—don’t hesitate to reach out!",
@@ -102,16 +102,18 @@ const resources = {
       "ContactSmlHead1": "Phone",
       "ContactSmlHead2": "Email",
       "ContactSmlHead3": "Address",
-      "ContactSmlText1": "Start working with us that can provide everything",
-      "ContactSmlText2": "Start working with us that can provide everything",
-      "ContactSmlText3": "Start working with us that can provide everything",
+      "ContactSmlText1": "Speak with our support team — we’re just a call away.",
+      "ContactSmlText2": "Got questions? Drop us an email and we’ll get back fast.",
+      "ContactSmlText3": "Feel free to visit at our office and connect with us directly.",
       "ContactLink1": "+91 534-468-854",
       "ContactLink2": "info@example.com",
       "ContactLink3": "#123 Street Road (121565)",
 
       /* --- Companies ----*/
       "Companies": "Companies",
+      "SponserCompanies": "Sponsered Companies",
       "FeaturedCompanies": "Featured Companies",
+      "RecentCompanies" : "Recently Added Companies",
       "CompanySmlHead1" : "Here is the list of all the companies!",
       "CompanySmlHead2" : "Here is the list of all featured companies!",
 
@@ -124,6 +126,7 @@ const resources = {
       "Linkedin": "LinkedIn",
       "Youtube": "YouTube",
       "JobCategories": "Job Categories",
+      "PopJobCategories": "Popular Job Categories",
       "WorkFromHome": "Work From Home",
       "InternshipJob": "Internship Job",
       "FreelancerJob": "Freelancer Job",
@@ -154,6 +157,10 @@ const resources = {
       "ForEmployers": "For Employers",
       "MyAccount": "My Account",
       "Logout": "Logout",
+      "ConfLogout": "Confirm Logout",
+      "SureLogout": "Are you sure you want to logout?",
+      "Cancel": "Cancel",
+      "YesLogout": "Yes, Logout",
 
       /* --- Faqs Page ----- */
       "FaqsHead": "Frequently Asked Questions",
@@ -455,7 +462,38 @@ const resources = {
       "LegalLink3": "<Link>Fraud Alert</Link>",
       "LegalLink4": "<Link>Help Center</Link>",
 
+      /*--- /jobs/category page --- */
 
+      "AllCategories" : "All Categories",
+      "CategoryMainHead" : "We Help To Get The Best Job And Find A Talent",
+      "CategoryText" : "At our core, we connect ambitious job seekers with meaningful career opportunities and help companies find exceptional candidates. Whether you're looking to take the next step in your career or searching for the perfect hire, we provide the tools, support, and network to make it happen.",
+      "CategorySmlText1" : "Explore thousands of job listings tailored to your skills and experience.",
+      "CategorySmlText2" : "Build a standout profile and let employers come to you.",
+      "CategorySmlText3" : "Access expert advice, resources, and career development tools.",
+      "CategoryFootText" : "Your future starts here — let us help you reach it.",
+
+
+      /*-------- Jobseeker Dashboard ---- */
+
+      /*--- JobSidebar ---*/
+
+      "Profile" : "Profile",
+      "SavedJobs" : "Saved Jobs",  
+      "AppliedJobs" : "Applied Jobs",
+      "SavedComp" : "Saved Companies",
+      "NoJobsFound" : "No jobs found.",
+
+      /*--- Saved Jobs ---*/
+      "Loading" : "Loading...",
+      "FetchingData" : "Fetching data...",
+      "NoSavedjobs" : "No jobs saved yet!",
+      "NoSaveText" : "No saved jobs! Tap on save icon on a job to save it.",
+      "SearchJobs" : "Search jobs",
+
+      /*--- Applied Jobs ---*/
+      "NoAppliedjobs" : "No jobs applied yet!",
+      "NoAppliedText" : "Visit on the job detail page to apply for the job.",
+      
       
     }
   },
@@ -542,13 +580,13 @@ const resources = {
       "AboutHead2" : "Här är varför du kommer att älska vår plattform",
       "AboutText2" : "Sök alla öppna positioner på webben. Få din egen personliga löneuppskattning. Läs recensioner om över 30000+ företag världen över.",
       "AboutSmallHead1" : "24/7 Support",
-      "AboutSmltext1" : "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Explicabo, non.",
+      "AboutSmltext1" : "Vårt team är tillgängligt dygnet runt för att hjälpa dig när du behöver det.",
       "AboutSmallHead2" : "Teknik- och startupjobb",
-      "AboutSmltext2" : "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Explicabo, non.",
+      "AboutSmltext2" : "Starta din karriär med topproller inom teknik och framväxande startups.",
       "AboutSmallHead3" : "Snabbt och enkelt",
-      "AboutSmltext3" : "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Explicabo, non.",
+      "AboutSmltext3" : "Jobbsökning görs snabbt, enkelt och smidigt.",
       "AboutSmallHead4" : "Spara tid",
-      "AboutSmltext4" : "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Explicabo, non.",
+      "AboutSmltext4" : "Spendera mindre tid på att scrolla, mer tid på att lyckas.",
       "Readmore" : "Läs mer",
       "CallActionHead": "Har du frågor? Kom i kontakt!",
       "CallActionText": "Har du frågor eller behöver hjälp? Vårt team är här för att hjälpa dig varje steg på vägen - tveka inte att höra av dig!",
@@ -559,16 +597,18 @@ const resources = {
       "ContactSmlHead1": "Telefon",
       "ContactSmlHead2": "E-post",
       "ContactSmlHead3": "Adress",
-      "ContactSmlText1": "Börja arbeta med oss som kan ge allt",
-      "ContactSmlText2": "Börja arbeta med oss som kan ge allt",
-      "ContactSmlText3": "Börja arbeta med oss som kan ge allt",
+      "ContactSmlText1": "Prata med vårt supportteam - vi är bara ett samtal bort.",
+      "ContactSmlText2": "Har du några frågor? Skicka oss ett mejl så återkommer vi snabbt.",
+      "ContactSmlText3": "Besök oss gärna på vårt kontor och prata med oss direkt.",
       "ContactLink1": "+91 534-468-854",
       "ContactLink2": "info@example.com",
       "ContactLink3": "#123 Street Road (121565)",
 
       /* --- Companies ----*/
       "Companies": "Företag",
+      "SponserCompanies": "Sponsrade företag",
       "FeaturedCompanies": "Utvalda företag",
+      "RecentCompanies" : "Nyligen tillagda företag",
       "CompanySmlHead1" : "Här är listan över alla företag!",
       "CompanySmlHead2" : "Här är listan över alla utvalda företag!",
 
@@ -581,6 +621,7 @@ const resources = {
       "Linkedin": "Linkedin",
       "Youtube": "Youtube",
       "JobCategories": "Jobbkategorier",
+      "PopJobCategories": "Populära jobbkategorier",
       "WorkFromHome": "Arbete hemifrån",
       "InternshipJob": "Praktikjobb",
       "FreelancerJob": "Frilansjobb",
@@ -611,7 +652,11 @@ const resources = {
       "ForEmployers": "För arbetsgivare",
       "MyAccount": "Mitt konto",
       "Logout": "Logga ut",
-
+      "ConfLogout": "Bekräfta utloggning",
+      "SureLogout": "Är du säker på att du vill logga ut?",
+      "Cancel": "Avbryt",
+      "YesLogout": "Ja, logga ut",
+      
       /* --- Faqs Page ----- */
       "FaqsHead": "Vanliga frågor",
       "FaqsText": "Välkommen till vår FAQ-sektion! Här hittar du svar på vanliga frågor om hur du använder vår jobbportal. Om du inte hittar vad du letar efter, tveka inte att kontakta vårt supportteam.",
@@ -903,6 +948,37 @@ const resources = {
       "LegalLink3": "<Link>Varning för bedrägeri</Link>",
       "LegalLink4": "<Link>Hjälpcenter</Link>",
 
+        /*--- /jobs/category page --- */
+      
+        "AllCategories" : "Alla kategorier",
+        "CategoryMainHead" : "Vi hjälper dig att få det bästa jobbet och hitta en talang",
+        "CategoryText" : "Vår kärna är att sammanföra ambitiösa arbetssökande med meningsfulla karriärmöjligheter och hjälpa företag att hitta exceptionella kandidater. Oavsett om du vill ta nästa steg i din karriär eller letar efter den perfekta anställningen, tillhandahåller vi verktygen, stödet och nätverket för att få det att hända.",
+        "CategorySmlText1" : "Utforska tusentals jobbannonser som är skräddarsydda efter dina kunskaper och erfarenheter.",
+        "CategorySmlText2" : "Skapa en profil som sticker ut och låt arbetsgivarna komma till dig.",
+        "CategorySmlText3" : "Få tillgång till expertråd, resurser och verktyg för karriärutveckling.",
+        "CategoryFootText" : "Din framtid börjar här - låt oss hjälpa dig att nå den.",
+
+
+      /*-------- Jobseeker Dashboard ---- */
+
+      /*--- JobSidebar ---*/
+
+      "Profile" : "Profil",
+      "SavedJobs" : "Sparade jobb",  
+      "AppliedJobs" : "Tillämpade jobb",
+      "SavedComp" : "Sparade företag",
+      "NoJobsFound" : "Inga jobb hittades.",
+
+      /*--- Saved Jobs ---*/
+      "Loading" : "Laddar...",
+      "FetchingData" : "Hämtar data...",
+      "NoSavedjobs" : "Inga jobb räddade ännu!",
+      "NoSaveText" : "Inga sparade jobb! Tryck på spara-ikonen på ett jobb för att spara det.",
+      "SearchJobs" : "Sök jobb",
+
+      /*--- Applied Jobs ---*/
+      "NoAppliedjobs" : "Inga jobb har sökts ännu!",
+      "NoAppliedText" : "Besök detaljsidan för jobbet för att ansöka om jobbet.",
 
     }
   }

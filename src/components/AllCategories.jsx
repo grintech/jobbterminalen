@@ -5,6 +5,7 @@ import Footer from "./Footer";
 import axios from "axios";
 import HomeBanners from "./HomeBanners";
 import { Helmet } from "react-helmet-async";
+import { useTranslation } from "react-i18next";
 
 const bearerKey = import.meta.env.VITE_BEARER_KEY;
 const API_URL = import.meta.env.VITE_API_URL;
@@ -12,49 +13,78 @@ const IMG_URL = import.meta.env.VITE_IMG_URL;
 
 const AllCategories = () => {
   const [bannerPlace, setBannerPlace] = useState("");
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  useEffect(() => {
-    const fetchBannerPlace = async () => {
-      try {
-        const response = await axios.get(`${API_URL}/banner-ads.php`, {
-          headers: {
-            Authorization: `Bearer ${bearerKey}`,
-            "Content-Type": "application/json",
-          },
-        });
+  const [currentPage, setCurrentPage] = useState(0);
+  const itemsPerPage = 12;
+  
+  const totalPages = Math.ceil(categories.length / itemsPerPage);
+  
+  const startIndex = currentPage * itemsPerPage;
+  const visibleCategories = categories.slice(startIndex, startIndex + itemsPerPage);
+  
 
-        console.log("Raw Banner Response:", response.data); // Debugging
 
-        // If response is a string, try parsing it correctly
-        let parsedData;
+   const { t } = useTranslation();
+
+    // fetchBannerPlace Api
+    useEffect(() => {
+        const fetchBannerPlace = async () => {
         try {
-          parsedData = JSON.parse(response.data);
-        } catch (error) {
-          const splitResponse = response.data.split("}{").map((item, index, array) => {
-            if (index === 0) return item + "}";
-            if (index === array.length - 1) return "{" + item;
-            return "{" + item + "}";
-          });
+            const response = await axios.get(`${API_URL}/banner-ads.php`, {
+            headers: {
+                Authorization: `Bearer ${bearerKey}`,
+                "Content-Type": "application/json",
+            },
+            });
 
-          parsedData = splitResponse.map((item) => JSON.parse(item));
+            console.log("Raw Banner Response:", response.data); // Debugging
+
+            setBannerPlace(data.placement);
+
+       } catch (error) {
+            console.error("Error fetching HomeBanners data:", error);
         }
+        };
 
-        // Ensure we have an array of banners
-        const formattedArray = Array.isArray(parsedData) ? parsedData : [parsedData];
+        fetchBannerPlace();
+    }, []);
 
-        if (formattedArray.length > 0 && formattedArray[0].data) {
-          setBannerPlace(formattedArray[0].data.placement);
-          console.log("Banner Placement:", formattedArray[0].data.placement);
-        } else {
-          console.warn("No valid banner data received.");
-        }
-      } catch (error) {
-        console.error("Error fetching HomeBanners data:", error);
+  // fetchCategories Api
+   useEffect(() => {
+      // Load cached data from localStorage first (if available)
+      const storedCategories = localStorage.getItem('categories');
+      
+      if (storedCategories) {
+        setCategories(JSON.parse(storedCategories));
+        setLoading(false); // Show cached data immediately
       }
-    };
-
-    fetchBannerPlace();
-  }, []);
+    
+      const fetchCategories = async () => {
+        try {
+          const response = await axios.get(`${API_URL}/get_main_categories.php`, {
+            headers: { Authorization: `Bearer ${bearerKey}` },
+          });
+    
+          if (response.data.type === 'success' && Array.isArray(response.data.categories)) {
+            setCategories(response.data.categories);
+            
+            // ✅ Save fresh data to localStorage
+            localStorage.setItem('categories', JSON.stringify(response.data.categories));
+          } else {
+            setError('Unexpected API response');
+          }
+        } catch (err) {
+          console.error('Error fetching categories:', err.response || err.message);
+          setError('No categories available!');
+        }
+        setLoading(false);
+      };
+    
+      fetchCategories();
+    }, []);
 
   return (
     <>
@@ -69,13 +99,13 @@ const AllCategories = () => {
        <div className="all_categories_page">
         <Navbar />
         <div className="hero_banner d-flex flex-column align-items-center justify-content-center ">
-        <h1 className="fw-bold position-relative">Job Categories</h1>
+        <h1 className="fw-bold position-relative">{t("JobCategories")}</h1>
         </div>
 
         <div className="container">
             <div className="popular_categories py-5">
-                <h4 className='mb-3 text-center mb-4'>All Categories</h4>
-                <div className='row justify-content-center flex-wrap '>
+                <h4 className='mb-3 text-center mb-4'>{t("AllCategories")}</h4>
+                <div className='row justify-content-center flex-wrap d-none'>
                     <div className="col-lg-2 col-md-3 col-sm-4 col-6 mb-4">
                         <Link to='/job/category/remote' className='cat_card'>
                             <div className="card ">
@@ -210,9 +240,73 @@ const AllCategories = () => {
                     </div>
 
                 </div>
+
+                {loading ? (
+                  <div className="loading-screen d-flex flex-column justify-content-center align-items-center">
+                    <div className="spinner-grow text-primary" role="status">
+                    <span className="visually-hidden">Loading...</span>
+                    </div>
+                    <p className='mt-2'>Fetching data...</p>
+                  </div>
+                ) : error ? (
+                    <div className='text-center text-theme'>
+                     <img src="/images/no-data.webp" className='no_data' alt='No category' /> 
+                     <p>{error}</p>
+                    </div>
+                ) : categories.length > 0 ? (
+
+                    <div className="row justify-content-center flex-wrap">
+                        {visibleCategories.map((category) => (
+                            <div key={category.id} className="col-lg-2 col-md-3 col-sm-4 col-4 mb-4">
+                            <Link  
+                                to={`/job/category/${category.name.trim().toLowerCase().replace(/\s+/g, '-')}`} 
+                                className="cat_card"
+                            >
+                                <div className="card h-100">
+                                <div className="card-body text-center">                      
+                                    <img src={`${IMG_URL}/${category.image}`} alt={category.name} />
+                                    <h5 className="mt-3 mb-0">{category.name}</h5>
+                                </div>
+                                </div>
+                            </Link>
+                            </div>
+                        ))}
+
+                        <div className="d-flex justify-content-center align-items-center mt-3 mb-3">
+                        <button 
+                          className="btn btn-sm btn-register mx-1" 
+                          disabled={currentPage === 0}
+                          onClick={() => setCurrentPage(prev => Math.max(prev - 1, 0))}
+                          title="Previous"
+                        >
+                           <i className="fa-solid fa-chevron-left"></i>
+                        </button>
+
+                        <button 
+                            className="btn btn-sm btn-register mx-1" 
+                            disabled={currentPage >= totalPages - 1}
+                            onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages - 1))}
+                            title="Next"
+                        >
+                             <i className="fa-solid fa-chevron-right"></i>
+                        </button>
+                        </div>
+
+                    </div>
+
+                ) : (
+                    <div className='text-center text-theme'>
+                    <img src="/images/no-data.webp" className='no_data' alt='No category' /> 
+                    <p>No categories available at the moment.</p>
+                    </div>
+                ) } 
+
+
             </div>
+
             <div className="category_side pb-4">
                 {bannerPlace === "category_side" && <HomeBanners />}
+                {/* {bannerPlace === "home_top" && <HomeBanners />} */}
             </div>
 
             <div className="row align-items-center pt-0 py-5">
@@ -220,19 +314,20 @@ const AllCategories = () => {
                     <img src="/images/about2.jpg" className='w-100 rounded-4' alt="about_img" />
                 </div>
                 <div className="col-md-7 mt-4 mt-md-0">
-                    <h1 className='fw-bold'>We Help To Get The Best Job And Find A Talent</h1>
-                    <p className=''>Lorem ipsum dolor sit amet consectetur adipisicing elit. Unde itaque inventore qui earum consequuntur voluptate sunt doloremque, nesciunt necessitatibus! Delectus similique omnis dolore fugiat? Omnis eveniet id est quasi quae minus quas autem dolores a laboriosam neque, numquam cumque quam consequatur voluptates dicta laudantium laborum totam nisi quaerat. Ipsa, labore.</p>
-                    <ul className='p-0 m-0'>
-                        <li className='d-flex align-items-center mb-2'>
-                        <i className="fa-solid fa-check me-2"></i><span>Lorem ipsum dolor sit, amet consectetur adipisicing elit.</span>
+                    <h1 className='fw-bold'>{t("CategoryMainHead")}</h1>
+                    <p className=''>{t("CategoryText")}</p>
+                    <ul className=' m-0'>
+                        <li className='d-flex align-items-baseline mb-2'>
+                        <i className="fa-solid fa-check me-2"></i><span>{t("CategorySmlText1")}</span>
                         </li>
-                        <li className='d-flex align-items-center mb-2'>
-                        <i className="fa-solid fa-check me-2"></i><span>Lorem ipsum dolor sit, amet consectetur adipisicing elit.</span>
+                        <li className='d-flex align-items-baseline mb-2'>
+                        <i className="fa-solid fa-check me-2"></i><span>{t("CategorySmlText2")}</span>
                         </li>
-                        <li className='d-flex align-items-center mb-2'>
-                        <i className="fa-solid fa-check me-2"></i><span>Lorem ipsum dolor sit, amet consectetur adipisicing elit.</span>
+                        <li className='d-flex align-items-baseline mb-2'>
+                        <i className="fa-solid fa-check me-2"></i><span>{t("CategorySmlText3")}</span>
                         </li>
                     </ul>
+                    <p>{t("CategoryFootText")}</p>
                 </div>
             </div>
         </div>

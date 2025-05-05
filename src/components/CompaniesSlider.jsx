@@ -8,6 +8,7 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "react-toastify/dist/ReactToastify.css";
 import { useAuthContext } from "../store/authContext";
+import { useTranslation } from "react-i18next";
 
 const CompaniesSlider = () => {
   const [companyData, setCompanyData] = useState([]);
@@ -20,6 +21,7 @@ const CompaniesSlider = () => {
   const IMG_URL = import.meta.env.VITE_IMG_URL;
   const { user } = useAuthContext();
   const userId = user ? user.id : null;
+  const {t} = useTranslation();
 
   // Fetch companies from API
   useEffect(() => {
@@ -141,7 +143,7 @@ const CompaniesSlider = () => {
   return (
     <div className="top_companies container py-5">
       <h4 className="mb-3 text-center text-md-start">
-        Recently Added Companies
+        {t("RecentCompanies")}
       </h4>
 
       <div className="row align-items-center">

@@ -58,7 +58,7 @@ const About = () => {
                               </div>
                                 <h5>{t("AboutSmallHead1")}</h5>
                                 <p className="text-muted">{t("AboutSmltext1")}</p>
-                                <Link className='text-primary'>{t("Readmore")} <i className="fa-solid fa-arrow-right"></i></Link>
+                                {/* <Link className='text-primary'>{t("Readmore")} <i className="fa-solid fa-arrow-right"></i></Link> */}
                             </div>
                         </div>
                     </div>
@@ -70,7 +70,7 @@ const About = () => {
                               </div>
                               <h5>{t("AboutSmallHead2")}</h5>
                                 <p className="text-muted">{t("AboutSmltext2")}</p>
-                                <Link className='text-primary'>{t("Readmore")} <i className="fa-solid fa-arrow-right"></i></Link>
+                                {/* <Link className='text-primary'>{t("Readmore")} <i className="fa-solid fa-arrow-right"></i></Link> */}
                             </div>
                         </div>
                     </div>
@@ -82,7 +82,7 @@ const About = () => {
                               </div>
                               <h5>{t("AboutSmallHead3")}</h5>
                                 <p className="text-muted">{t("AboutSmltext3")}</p>
-                                <Link className='text-primary'>{t("Readmore")} <i className="fa-solid fa-arrow-right"></i></Link>
+                                {/* <Link className='text-primary'>{t("Readmore")} <i className="fa-solid fa-arrow-right"></i></Link> */}
                             </div>
                         </div>
                     </div>
@@ -94,7 +94,7 @@ const About = () => {
                               </div>
                               <h5>{t("AboutSmallHead4")}</h5>
                                 <p className="text-muted">{t("AboutSmltext4")}</p>
-                                <Link className='text-primary'>{t("Readmore")} <i className="fa-solid fa-arrow-right"></i></Link>
+                                {/* <Link className='text-primary'>{t("Readmore")} <i className="fa-solid fa-arrow-right"></i></Link> */}
                             </div>
                         </div>
                     </div>

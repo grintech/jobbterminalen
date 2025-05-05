@@ -205,16 +205,16 @@ const MyAccount = () => {
     const file = e.target.files[0];
     const allowedTypes = [
       "application/pdf",
-      "application/msword",
-      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-      "application/rtf",
+      // "application/msword",
+      // "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      // "application/rtf",
     ];
     const maxSize = 2 * 1024 * 1024; // 2 MB in bytes
 
     if (file) {
       if (!allowedTypes.includes(file.type)) {
         setResumeError(
-          "Invalid file type. Supported formats are PDF, DOC, DOCX, and RTF."
+          "Invalid file type. Only PDF is allowed."
         );
         return;
       }
@@ -1634,6 +1634,7 @@ const MyAccount = () => {
 
       if (response.data.type === "success") {
         toast.success("Details updated successfully!");
+        ajaxModal.hide();
       } else {
         toast.error(response.data.message || "Failed to update details.");
       }
@@ -1921,9 +1922,6 @@ const MyAccount = () => {
   }
 
   
-  
-  
-
   return (
     <div id="my_account_page" className="my_account_page">
       <Navbar />
@@ -2047,7 +2045,7 @@ const MyAccount = () => {
                         </div>
                         { userData.updated_at && (
                         <h6 className="text-secondary m-0 fw-light">
-                          <b> Profile last updated -</b>
+                          <b> Profile last updated - </b>
                           <TimeAgo timestamp={userData.updated_at} />
                         </h6> )
                         }
@@ -2063,7 +2061,7 @@ const MyAccount = () => {
                                   {userData.current_location}
                                 </span>
                               ) : (
-                                <span>Please fill data</span>
+                                <span>N/A</span>
                               )}
                             </li>
 
@@ -2074,7 +2072,7 @@ const MyAccount = () => {
                                   {userData.work_status}
                                 </span>
                               ) : (
-                                <span>Please fill data</span>
+                                <span>N/A</span>
                               )}
                             </li>
 
@@ -2085,7 +2083,7 @@ const MyAccount = () => {
                                   {userData.dob}
                                 </span>
                               ) : (
-                                <span>Please fill data</span>
+                                <span>N/A</span>
                               )}
                             </li>
                           </ul>
@@ -2097,7 +2095,7 @@ const MyAccount = () => {
                               {userData.phone ? (
                                 <span>{userData.phone}</span>
                               ) : (
-                                <span>Please fill data</span>
+                                <span>N/A</span>
                               )}
                             </li>
                             <li>
@@ -2105,7 +2103,7 @@ const MyAccount = () => {
                               {userData.email ? (
                                 <span>{userData.email}</span>
                               ) : (
-                                <span>Please fill data</span>
+                                <span>N/A</span>
                               )}
                             </li>
                           </ul>
@@ -2193,6 +2191,7 @@ const MyAccount = () => {
                             onChange={(e) =>
                               setUserData({ ...userData, name: e.target.value })
                             }
+                            readOnly
                           />
                         </div>
                         {/* <div className="mb-4">
@@ -2521,7 +2520,8 @@ const MyAccount = () => {
                           <i
                             className="fa-solid fa-download me-3"
                             onClick={handleResumeDownload}
-                          ></i>
+                          >   
+                          </i>
                           <i
                             className="fa-solid fa-trash"
                             onClick={handleRemoveResume}
@@ -2538,15 +2538,15 @@ const MyAccount = () => {
                         <label htmlFor="upload_resume_input">
                           Upload resume
                         </label>
-                        <p className="m-0">
+                        <p className="m-0 text-center">
                           <small>
-                            Supported Formats: doc, docx, rtf, pdf, upto 2 MB
+                            Supported Format: PDF only, upto 2 MB.
                           </small>
                         </p>
                       </div>
                     )}
                     {resumeError && (
-                      <p className="text-danger">{resumeError}</p>
+                      <p className="text-danger text-center m-0">{resumeError}</p>
                     )}
                   </div>
                 </div>
@@ -4287,16 +4287,8 @@ const MyAccount = () => {
               <div className="card mt-4 shadow border-0 rounded-3">
                 <div className="card-body">
                   <div className="d-flex justify-content-between ">
-                    <div>
-                      <h5 className="m-0 text-theme">Online Profile</h5>
-                      <p>
-                        <small>
-                          Add link to online professional profiles (e.g.
-                          LinkedIn, etc.)
-                        </small>
-                      </p>
-                    </div>
-
+                     <h5 className="m-0 text-theme">Online Profile</h5>
+                      
                     <Link
                       className="text-theme"
                       data-bs-toggle="modal"
@@ -4306,6 +4298,10 @@ const MyAccount = () => {
                       Add Profile
                     </Link>
                   </div>
+
+                  <p>
+                    <small> Add link to online professional profiles (e.g.LinkedIn, etc.) </small>
+                  </p>
 
                   <div className=" online_profile">
                     {socialProfiles && socialProfiles.length > 0 ? (
@@ -4668,7 +4664,7 @@ const MyAccount = () => {
                               ? `${userData.gender}`
                               : userData.maritial_status
                                 ? `${userData.maritial_status}`
-                                : <span className="text-muted">Please add data</span>}
+                                : <span className="text-muted">N/A</span>}
                         </p>
                       </div>
 
@@ -4678,7 +4674,7 @@ const MyAccount = () => {
                           {userData.dob ? (
                             <span>{userData.dob}</span>
                           ) : (
-                            <span className="text-muted">Please add data</span>
+                            <span className="text-muted">N/A</span>
                           )}
                         </p>
                       </div>
@@ -4688,7 +4684,7 @@ const MyAccount = () => {
                           {userData.category ? (
                             <span>{userData.category}</span>
                           ) : (
-                            <span className="text-muted">Please add data</span>
+                            <span className="text-muted">N/A</span>
                           )}
                         </p>
                       </div>
@@ -4698,7 +4694,7 @@ const MyAccount = () => {
                           {userData.permanent_address ? (
                             <span>{userData.permanent_address}</span>
                           ) : (
-                            <span className="text-muted">Please add data</span>
+                            <span className="text-muted">N/A</span>
                           )}
                         </p>
                       </div>
@@ -4708,7 +4704,7 @@ const MyAccount = () => {
                           {userData.pincode ? (
                             <span>{userData.pincode}</span>
                           ) : (
-                            <span className="text-muted">Please add data</span>
+                            <span className="text-muted">N/A</span>
                           )}
                         </p>
                       </div>
@@ -4718,7 +4714,7 @@ const MyAccount = () => {
                           {userData.city ? (
                             <span>{userData.city}</span>
                           ) : (
-                            <span className="text-muted">Please add data</span>
+                            <span className="text-muted">N/A</span>
                           )}
                         </p>
                       </div>
@@ -4728,7 +4724,7 @@ const MyAccount = () => {
                           {userData.state ? (
                             <span>{userData.state}</span>
                           ) : (
-                            <span className="text-muted">Please add data</span>
+                            <span className="text-muted">N/A</span>
                           )}
                         </p>
                       </div>
@@ -4738,7 +4734,7 @@ const MyAccount = () => {
                           {userData.country_name ? (
                             <span>{userData.country_name}</span>
                           ) : (
-                            <span className="text-muted">Please add data</span>
+                            <span className="text-muted">N/A</span>
                           )}
                         </p>
                       </div>

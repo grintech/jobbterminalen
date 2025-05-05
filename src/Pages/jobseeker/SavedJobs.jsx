@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { useAuthContext } from '../../store/authContext';
 import { ToastContainer, toast } from 'react-toastify';
+import { useTranslation } from 'react-i18next';
 
 const SavedJobs = () => {
   const [savedJobs, setSavedJobs] = useState([]);
@@ -15,6 +16,8 @@ const SavedJobs = () => {
 
   const { user } = useAuthContext();
   const userId = user ? user.id : null;
+
+  const {t} = useTranslation();
 
   const bearerKey = import.meta.env.VITE_BEARER_KEY;
   const API_URL = import.meta.env.VITE_API_URL;
@@ -37,11 +40,11 @@ const SavedJobs = () => {
         setSavedJobs(response.data.saved_jobs || []);
         setSaved(response.data.data.status === 'active');
       } else {
-        setError('Jobs not found');
+        setError('No jobs found at the moment');
       }
     } catch (error) {
       console.error('Error fetching saved jobs:', error);
-      setError('Error fetching saved jobs:');
+      setError(`No jobs found at the moment`);
     } finally {
       setLoading(false);
     }
@@ -156,33 +159,43 @@ const SavedJobs = () => {
             {loading ? (
              <div className="loading-screen d-flex justify-content-center align-items-center flex-column ">
              <div className="spinner-grow text-primary" role="status">
-               <span className="visually-hidden">Loading...</span>
+               <span className="visually-hidden">{t("Loading")}</span>
              </div>
-             <p className="mt-2">Fetching data...</p>
+             <p className="mt-2">{t("FetchingData")}</p>
            </div>
           ) : error ? (
-            <p className="text-danger">{error}</p>
+               <div className="no_saved_jobs mb-4">
+                <div className="card  border-0 shadow">
+                 <div className="card-body text-center">
+                  <img
+                    className="job_search"
+                    src="/images/job_search.png"
+                    alt="job_search"  
+                  />
+                  <h5 className='text-theme '>{error}</h5>
+                 </div>
+                </div>
+              </div>
           ) : savedJobs ? (
-            <div className='row'>
-               
+            <div className='row'>   
                 {savedJobs.length === 0 ? (
                   <div className="no_saved_jobs mb-4">
-                    <div className="card mt-4 border-0 shadow">
+                    <div className="card  border-0 shadow">
                       <div className="card-body text-center">
                         <img
                           className="job_search"
                           src="/images/job_search.png"
                           alt="job_search"  
                         />
-                        <h4>No saved jobs!</h4>
-                        <p>No saved jobs! Tap on save icon on a job to save it.</p>
-                        <div className="btn btn-register">Search jobs</div>
+                        <h4>{t("NoSavedjobs")}</h4>
+                        <p>{t("NoSaveText")}</p>
+                        <Link to='/jobs' className="btn btn-register">{t("SearchJobs")}</Link>
                       </div>
                     </div>
                   </div>
                 ) : (
                   <>
-                   <h1 className="job_head">Saved Jobs ({savedJobs.length})</h1>
+                   <h1 className="job_head">{t("SavedJobs")} ({savedJobs.length})</h1>
                     {savedJobs.map((job) => (
                       <div className="col-lg-4 col-md-6 col-sm-6 mb-4" key={job.id}>
                         <div className="card company_list_card h-100">
@@ -232,31 +245,35 @@ const SavedJobs = () => {
                               {job.job_type && (
                                 <li>
                                   <div className="btn btn-sm btn-green me-2 mb-2 text-capitalize">
-                                    {job.job_type}
+                                    {job.job_type.replace(/-/g, " ")}
                                   </div>
                                 </li>
                               )}
-                              <li>
-                                <div className="btn btn-sm btn-green me-2 mb-2 text-capitalize">
-                                  <span>Salary -</span> {job.salary_range}{" "}
-                                  {job.salary_currency}
-                                </div>
-                              </li>
-                              <li>
-                                <div className="btn btn-sm btn-green me-2 mb-2 text-capitalize">
-                                  <span>Experience -</span>&nbsp;&nbsp; {job.experience_required}
-                                  {/* {typeof job.experience_required === "string"
-                                    ? job.experience_required.toLowerCase() ===
-                                      "fresher"
-                                      ? "Fresher"
-                                      : parseInt(job.experience_required) === 1
-                                      ? `${job.experience_required} year`
-                                      : parseInt(job.experience_required) === 0
-                                      ? ""
-                                      : `${job.experience_required} years`
-                                    : job.experience_required} */}
-                                </div>
-                              </li>
+
+                               {job.experience_required && (
+                                <li>
+                                  <div className="btn btn-sm btn-green me-2 mb-2 text-capitalize">
+                                    {job.experience_required === "0" ? (
+                                      "Fresher"
+                                    ) : job.experience_required === "1" ? (
+                                      `Exp - 1 Yr`
+                                    ) : (
+                                      `Exp - ${job.experience_required} Yrs`
+                                    )}
+                                  </div>
+                                </li>
+                              )}
+
+                              {job.salary_range && job.salary_currency && (
+                                <li>
+                                  <div className="btn btn-sm btn-green me-2 mb-2 text-capitalize">
+                                    <span>Salary -</span>{job.salary_currency} {job.salary_range}
+                                    
+                                  </div>
+                                </li>
+                              )}
+
+                             
                               {job.city && (
                                 <li>
                                   <div className="btn btn-sm btn-green me-2 mb-2 text-start text-capitalize">
@@ -279,7 +296,18 @@ const SavedJobs = () => {
                 )}
             </div>
             ) : (
-              <p>No jobs found</p>
+               <div className="no_saved_jobs mb-4">
+                <div className="card  border-0 shadow">
+                  <div className="card-body text-center">
+                    <img
+                      className="job_search"
+                      src="/images/job_search.png"
+                      alt="job_search"  
+                    />
+                    <h4>{t("NoJobsFound")}</h4>
+                  </div>
+                </div>
+                </div>
             )}
             </div>
             </div>

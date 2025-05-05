@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import axios from "axios";
 import Filter from "../components/Filter";
 import { Link } from "react-router-dom";
 import { useFilterContext } from "../store/context";
@@ -6,10 +7,16 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import HeroBannerJobs from "../components/HeroBannerJobs";
 import { Helmet } from "react-helmet-async";
+import { useAuthContext } from "../store/authContext";
+import { ToastContainer,toast } from "react-toastify";
 
 const AllJobPost = () => {
   const { filters, setFilter } = useFilterContext();
   const [jobs, setJobs] = useState([]);
+ 
+   const [savedJobs, setSavedJobs] = useState([]);
+   const [saved, setSaved] = useState(false);
+    
   const [pagination, setPagination] = useState({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -17,15 +24,17 @@ const AllJobPost = () => {
   const bearerKey = import.meta.env.VITE_BEARER_KEY;
   const API_URL = import.meta.env.VITE_API_URL;
   const IMG_URL = import.meta.env.VITE_IMG_URL;
+   const { user } = useAuthContext();
+    const userId = user ? user.id : null;
 
   useEffect(() => {
     const fetchJobs = async () => {
       setLoading(true);
       setError("");
       try {
-        console.log("Current Filters State:", filters); // Debug current filters
+        // console.log("Current Filters State:", filters); // Debug current filters
         const query = new URLSearchParams(filters).toString();
-        console.log("Generated Query String:", query); // Debug query string
+        // console.log("Generated Query String:", query); // Debug query string
 
         const response = await fetch(`${API_URL}/job-list.php?${query}`, {
           headers: {
@@ -55,9 +64,64 @@ const AllJobPost = () => {
   }, [filters]);
 
 
-
   const handlePageChange = (page) => {
     setFilter({ page }); // Update the page in filters
+  };
+
+
+  // Fetch saved jobs from the API
+  const fetchSavedJobs = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/bookmarked-jobs-list.php?user_id=${userId}`, {
+        headers: {
+          Authorization: `Bearer ${bearerKey}`,
+        },
+      });
+      if (response.data.type === 'success') {
+        setSavedJobs(response.data.saved_jobs || []);
+        setSaved(response.data.data.status === 'active');
+      } else {
+        setError('No jobs found at the moment');
+      }
+    } catch (error) {
+      console.error('Error fetching saved jobs:', error);
+      setError(`No jobs found at the moment`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Toggle save job functionality
+  const toggleSavedJob = async (jobId) => {
+    try {
+      const formData = new FormData();
+      formData.append('user_id', userId);
+      formData.append('job_id', jobId);
+
+      const response = await axios.post(`${API_URL}/bookmark-jobs.php`, formData, {
+        headers: {
+          Authorization: `Bearer ${bearerKey}`,
+        },
+      });
+
+      if (response.data.type === 'success') {
+         const actionMessage = isJobSaved(jobId) ? "Job Unsaved" : "Job Saved"; 
+        toast.success(actionMessage); 
+        fetchSavedJobs(); // Re-fetch saved jobs to update the list
+        setSaved(!saved);
+      }
+    } catch (error) {
+      console.error('Error toggling save job:', error);
+      toast.error("Error while saving job.", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchSavedJobs();
+  }, []);
+
+  const isJobSaved = (jobId) => {
+    return Array.isArray(savedJobs) && savedJobs.some((savedJob) => savedJob.id === jobId);
   };
 
   return (
@@ -175,7 +239,15 @@ const AllJobPost = () => {
                             </Link>
                             <div className="d-flex align-items-center">
                               <Link className="btn-light shadow me-2">
-                                <i className="fa-regular fa-bookmark"></i>
+                                <i 
+                                className={`fa-bookmark  ${
+                                  isJobSaved(job.id) ? "fa-solid" : "fa-regular"
+                                }`}
+                                onClick={() => toggleSavedJob(job.id)}
+                                  title={
+                                    isJobSaved(job.id) ? "Click to unsave" : "Click to save"}
+
+                                ></i>
                               </Link>
                               <Link className="btn-light shadow me-2">
                                 <i className="fa-solid fa-share"></i>
@@ -183,10 +255,7 @@ const AllJobPost = () => {
                             </div>
                           </div>
                           <div className="py-2 ">
-                            {/* <Link to={`/companies/${job.companies_slug}`}> */}
-                              <h5 >{job.company_name}</h5>
-                            {/* </Link> */}
-
+                            <h5 >{job.company_name}</h5>
                             {/* <Link to="/job-detail"> */}
                             <Link to={`/jobs/${job.slug}`}>
                               <h6 className="m-0" dangerouslySetInnerHTML={{ __html: job.title }}></h6>
@@ -196,15 +265,25 @@ const AllJobPost = () => {
                           <ul className="p-0 d-flex flex-wrap m-0">
                             {job.job_type && (
                               <li>
-                                <div className="btn btn-sm btn-green me-2 mb-2 text-capitalize">{job.job_type}</div>
+                                <div className="btn btn-sm btn-green me-2 mb-2 text-capitalize">
+                                  {job.job_type.replace(/-/g, ' ')}</div>
                               </li>
                             )}
                           
+                          {job.experience_required && (
                             <li>
-                              <div className="btn btn-sm btn-green me-2 mb-2"><span>Experience -</span>&nbsp;&nbsp;
-                                {job.experience_required}
+                              <div className="btn btn-sm btn-green me-2 mb-2 text-capitalize">
+                                {job.experience_required === "0" ? (
+                                  "Fresher"
+                                ) : job.experience_required === "1" ? (
+                                  `Exp - 1 Yr`
+                                ) : (
+                                  `Exp - ${job.experience_required} Yrs`
+                                )}
                               </div>
                             </li>
+                          )}
+
                             {job.city && (
                               <li>
                                 <div className="btn btn-sm btn-green me-2 mb-2 text-start text-capitalize">
@@ -212,11 +291,14 @@ const AllJobPost = () => {
                                 </div>
                               </li>
                             )}
-                            <li>
-                              <div className="btn btn-sm btn-green me-2 mb-2">
-                                <span>Salary -</span> {job.salary_currency} {job.salary_range}
-                              </div>
-                            </li>
+                            {job.salary_currency && job.salary_range && (
+                              <li>
+                                <div className="btn btn-sm btn-green me-2 mb-2">
+                                  <span>Salary -</span> {job.salary_currency} {job.salary_range}
+                                </div>
+                              </li>
+                            )}
+
 
                           </ul>
                         </div>
@@ -238,7 +320,7 @@ const AllJobPost = () => {
               )}
 
               {/* Pagination */}
-              <div className="d-flex justify-content-center">
+              <div className="d-flex justify-content-center mt-4">
                 {pagination.total_pages > 1 && (
                   <nav>
                     <ul className="pagination">
@@ -302,6 +384,17 @@ const AllJobPost = () => {
         </div>
 
         <Footer />
+        <ToastContainer 
+          position="top-right"
+          autoClose={3000}
+          hideProgressBar
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+        />
       </div>
     </>
   );

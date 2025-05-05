@@ -27,7 +27,7 @@ import MyAccount from './Pages/jobseeker/MyAccount'
 import ProtectedRoute from './routes/ProtectedRoute'
 import SavedJobs from './Pages/jobseeker/SavedJobs'
 import AppliedJobs from './Pages/jobseeker/AppliedJobs'
-import JobseekerProfile from './Pages/jobseeker/JobseekerProfile'
+// import JobseekerProfile from './Pages/jobseeker/JobseekerProfile'
 import CompanySingle from './Pages/CompanySingle'
 import SavedCompanies from './Pages/jobseeker/SavedCompanies'
 import GeoLocation from './components/GeoLocation'
@@ -39,6 +39,7 @@ import Sitemap from './Pages/Sitemap'
 import Feedback from './Pages/Feedback'
 import HelpCenter from './Pages/HelpCenter'
 import ApplyJob from './components/ApplyJob'
+import Maintenance from './Pages/Maintenance'
 
 
 const App = () => {
@@ -61,9 +62,10 @@ const App = () => {
       /> */}
 
       {/* <HomeBanners /> */}
-      
+
       <Routes >
-        <Route path='/' element={ <Homepage />} />
+        <Route path='/' element={ <Maintenance />} />
+        <Route path='/home' element={ <Homepage />} />
         <Route path='/register' element={ <Register />} />
         <Route path='/login' element={ <Login />} />
         <Route path='/forgot-password' element={ <ForgetPassword />} />
@@ -116,9 +118,9 @@ const App = () => {
          element={ <ProtectedRoute allowedRoles={["job_seeker"]}> <SavedCompanies /> </ProtectedRoute> }
         />
 
-       <Route path="/my-profile" 
+       {/* <Route path="/my-profile" 
           element={ <ProtectedRoute allowedRoles={["job_seeker"]}> <JobseekerProfile /> </ProtectedRoute>  }
-        />
+        /> */}
 
       </Routes>
     </BrowserRouter>

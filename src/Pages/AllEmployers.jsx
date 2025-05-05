@@ -280,7 +280,9 @@ const AllEmployers = () => {
                             {cities[company.id] ? `${cities[company.id]}` : ""}
                           </div>
                           <Link to={`/companies/${company.slug}`}>
-                              <p className="text_blue text-center m-0">{company.job_count} Jobs</p>
+                              <p className="text_blue text-center m-0">
+                                <span className="pe-1">{company.job_count === 0 ? "No" : company.job_count}</span>
+                                 Jobs</p>
                           </Link>
                         </div>
                       </div>
