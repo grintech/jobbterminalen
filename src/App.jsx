@@ -40,6 +40,7 @@ import Feedback from './Pages/Feedback'
 import HelpCenter from './Pages/HelpCenter'
 import ApplyJob from './components/ApplyJob'
 import Maintenance from './Pages/Maintenance'
+import PublicRoute from './routes/PublicRoute'
 
 
 const App = () => {
@@ -66,11 +67,18 @@ const App = () => {
       <Routes >
         <Route path='/' element={ <Maintenance />} />
         <Route path='/home' element={ <Homepage />} />
-        <Route path='/register' element={ <Register />} />
+        <Route path='/register' element={ <PublicRoute> <Register /> </PublicRoute> } />
+        <Route path='/login' element={<PublicRoute> <Login /> </PublicRoute> } />
+        <Route path='/forgot-password' element={<PublicRoute> <ForgetPassword /> </PublicRoute> } />
+        <Route path='/verify-otp' element={<PublicRoute> <VerifyOtp /> </PublicRoute> } />
+        <Route path='/reset-password' element={<PublicRoute> <ResetPassword /> </PublicRoute> } />
+
+        {/* <Route path='/register' element={ <Register />} />
         <Route path='/login' element={ <Login />} />
         <Route path='/forgot-password' element={ <ForgetPassword />} />
         <Route path='/verify-otp' element={ <VerifyOtp />} />
-        <Route path='/reset-password' element={ <ResetPassword />} />
+        <Route path='/reset-password' element={ <ResetPassword />} /> */}
+
         <Route path='/about' element={ <About />} />
         <Route path='/contact' element={ <Contact />} />
         <Route path='/faqs' element={ <Faq />} />

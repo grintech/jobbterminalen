@@ -493,6 +493,7 @@ const JobDetail = () => {
                         </button>
                       )}
                     </div> */}
+                    
                   </div>
 
                   <div className="job_details mt-2">

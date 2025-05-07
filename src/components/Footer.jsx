@@ -18,11 +18,25 @@ const Footer = () => {
                 <h5 className='mt-3'>{ t("ConnectWithUs")}</h5>
                 <p>{ t("FooterText")}</p>
                 <div className="d-flex social_links flex-wrap mb-3">
-                    <Link> <i className="fa-brands fa-facebook me-2"></i></Link>
-                    <Link> <i className="fa-brands fa-instagram me-2"></i></Link>
-                    <Link> <i className="fa-brands fa-twitter me-2"></i></Link>
-                    <Link> <i className="fa-brands fa-linkedin me-2"></i></Link>
-                    <Link> <i className="fa-brands fa-youtube me-2"></i></Link>
+                    <Link> 
+                     <i className="fa-brands fa-facebook me-2"></i>
+                    </Link>
+
+                    <Link to={`https://www.instagram.com/jobbterminalen/`} target='_blank' >
+                     <i className="fa-brands fa-instagram me-2"></i>
+                    </Link>
+
+                    <Link>
+                     <i className="fa-brands fa-twitter me-2"></i>
+                    </Link>
+
+                    <Link to={`https://www.linkedin.com/company/jobbterminalen/`} target='_blank' > 
+                     <i className="fa-brands fa-linkedin me-2"></i>
+                    </Link>
+
+                    <Link>
+                     <i className="fa-brands fa-youtube me-2"></i>
+                    </Link>
                 </div>
                 </div>
                 <div className="col-lg-2 col-md-4 col-sm-6 col-6 order-2">

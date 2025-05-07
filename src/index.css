@@ -848,6 +848,10 @@ input[type="checkbox"]:focus{box-shadow: none !important; }
  .user_dropdown .dropdown-item{font-size: .75rem !important; }
  .footer a .fa-chevron-right{font-size: 10px;}
  .no_saved_jobs  h4{font-size: 18px;margin-top: 10px;}
+ .company_profile .company_address {font-size: 14px;}
+ .company_profile button {font-size: 14px !important;}
+
+  #vacancies_section .company_list_card .text-muted {font-size: 13px !important;}
 }
 
 @media screen and (max-width:375px) {
@@ -1060,3 +1064,6 @@ small.badge.text-bg-light{font-weight: 600;background-color :rgb(235, 235, 235) 
 #company_details #about_company span, #company_details #about_company span strong,#company_details #about_company span b{font-size: 16px !important;}
 
 .maintainance{background-color: #003479; color: #fff;}
+
+.banner_sideImage a{display: flex; height: 230px;}
+.banner_sideImage img{height: 100%; width: 100%; object-fit: cover;}

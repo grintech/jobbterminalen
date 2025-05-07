@@ -16,13 +16,14 @@ const resources = {
       "Confirm_Password": "Confirm Password",
       "Pass_placeholder": "Enter password",
       "ConfirmPass_placeholder": "Confirm password",
-      "Forget-Password?": "Forget Password?",
+      "Forget-Password?": "Forgot Password?",
+      "ResendLink" : "Resend Verification Link",
       "Copyright": "Copyright ©2025 by JobbTerminalen | All Rights Reserved.",
       "Already-account": "Already have an account?",
       "Terms": "Terms of use",
       "Privacy": "Privacy Policy",
        /*--- Forgot Password ---*/
-      "Forget_Password": "Forget Password",
+      "Forget_Password": "Forgot Password",
       "Forget_head" : "Enter your registered email for verification.",
       "Email": "Email Address",
       "Email_placeholder": "Enter your Email",
@@ -48,6 +49,9 @@ const resources = {
       /* --Otp Page --- */
       "Otp_title" : "OTP Verification",
       "Otp_text": "Please enter the OTP sent to your email.",
+      "ResendOtp": "Resend OTP",
+       "Resending": "Resending...",
+      
 
       /* --Reset Password Page --- */
       "Reset_title": "Reset Password",
@@ -512,6 +516,7 @@ const resources = {
       "Confirm_Password": "Bekräfta lösenord",
       "ConfirmPass_placeholder": "Bekräfta lösenord",
       "Forget-Password?": "Glömt lösenord?",
+      "ResendLink": "Skicka verifieringslänk",
       "Copyright": "Upphovsrätt ©2025 av JobbTerminalen | Alla rättigheter förbehållna.",
       "Already-account": "Har du redan ett konto?",
       "Terms": "Villkor för användning",
@@ -543,6 +548,9 @@ const resources = {
        /* --Otp Page --- */
        "Otp_title" : "OTP-verifiering",
        "Otp_text": "Ange den OTP som skickats till din e-post.",
+       "ResendOtp": "Skicka OTP igen",
+       "Resending": "Återlämnar...",
+       
 
         /* --Reset Password Page --- */
       "Reset_title": "Återställ lösenord",
@@ -592,7 +600,7 @@ const resources = {
       "CallActionText": "Har du frågor eller behöver hjälp? Vårt team är här för att hjälpa dig varje steg på vägen - tveka inte att höra av dig!",
       "CallActionBtn": "Kontakta oss",
 
-       /* --- Contact Page --- */
+     /* --- Contact Page --- */
       "ContactTitle": "Kontakta oss",
       "ContactSmlHead1": "Telefon",
       "ContactSmlHead2": "E-post",

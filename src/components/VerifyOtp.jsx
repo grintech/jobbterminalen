@@ -13,13 +13,20 @@ const VerifyOtp = () => {
   const { t } = useTranslation();
 
   const inputsRef = useRef([]);
-  const location = useLocation();
+  // const location = useLocation();
   const navigate = useNavigate();
 
-  const { email } = location.state || {}; // Access email from location state
+  // const { email } = location.state || {}; // Access email from location state
+  const email  = localStorage.getItem('forgot_email');
+
+  // console.log("Email: ", email);
+
   const [otp, setOtp] = useState(""); 
   const [alert, setAlert] = useState({ type: "", message: "" }); // Alert state
   const [loading, setLoading] = useState(false);
+
+  const [resendLoading, setResendLoading] = useState(false);
+
 
   // Handle OTP input
   const handleInputChange = (e, index) => {
@@ -69,9 +76,20 @@ const VerifyOtp = () => {
 
     if (otp.length !== 6) {
       setAlert({ type: "error", message: "Please enter a valid 6-digit OTP." });
+      resetOtpFields();
       setTimeout(() => setAlert({ type: "", message: "" }), 3000);
       return;
     }
+
+    if (!email){
+      setAlert({ type: "error", message: "Email does not exist." });
+      resetOtpFields();
+      setTimeout(() =>{
+        setAlert({ type: "", message: "" });
+        navigate("/forgot-password");
+      }, 2000);
+      return;
+    } 
 
     try {
       setLoading(true);
@@ -95,10 +113,15 @@ const VerifyOtp = () => {
 
       // Show alert based on response
       setAlert({ type, message });
+      setTimeout(() =>{
+        setAlert({ type: "", message: "" });
+      } , 2000);
       setLoading(false);
 
       if (type === "success") {
         // Navigate to the reset password page on success
+        localStorage.removeItem("forgot_email");
+        resetOtpFields();
         setTimeout(() => {
           navigate("/reset-password", { state: { email, session_token } }); // Pass email to the next page
         }, 2000);
@@ -110,97 +133,149 @@ const VerifyOtp = () => {
         message: "An error occurred while verifying OTP. Please try again.",
       });
       setLoading(false);
+      resetOtpFields();
       setTimeout(() => setAlert({ type: "", message: "" }), 3000);
     }
   };
+
+  // Resend OTP
+  const handleResendOtp = async () => {
+    if (!email){
+      setAlert({ type: "error", message: "Email does not exist." });
+      resetOtpFields();
+      setTimeout(() =>{
+        setAlert({ type: "", message: "" });
+        navigate("/forgot-password");
+      }, 2000);
+      return;
+    } 
+
+    try {
+      setResendLoading(true);
+      const formData = new FormData();
+      formData.append("email", email);
+  
+      const response = await axios.post(`${API_URL}/resend_otp.php`,formData,
+        {
+          headers:{
+            Authorization: `Bearer ${bearerKey}`,
+            "Content-Type": "multipart/form-data",
+          }
+         }
+      );
+  
+      const { type, message } = response.data;
+  
+      setAlert({ type, message });
+      setResendLoading(false);
+  
+      setTimeout(() => setAlert({ type: "", message: "" }), 3000);
+    } catch (error) {
+      console.error("Resend OTP failed:", error);
+      setAlert({ type: "error", message: "Failed to resend OTP. Try again later." });
+      setResendLoading(false);
+      resetOtpFields();
+      setTimeout(() => setAlert({ type: "", message: "" }), 3000);
+    }
+  };
+
+  // Reset OTP fields
+  const resetOtpFields = () => {
+    inputsRef.current.forEach(input => {
+      if (input) input.value = "";
+    });
+    setOtp("");
+  };
+  
 
   return (
     <>
         <Navbar />
         <div className="register_page">
-      <div className="d-flex register_container justify-content-center align-items-center">
-        <div >
-          <div className="container h-100 py-5">
-            <div className="col-md-11 col-11 mx-auto">
-            <form
-              className="register_form d-flex flex-column justify-content-center align-items-center"
-              onSubmit={handleSubmit}
-              onPaste={handlePaste}
-            >
-              <div >
-               
-                <h1>{t("Otp_title")}</h1>
-                <p>{t("Otp_text")}</p>
+        <div className="d-flex register_container justify-content-center align-items-center">
+            <div className="container h-100 py-5">
+              <div className="col-md-7 col-lg-5 col-xxl-4 col-12 mx-auto">
+              <form
+                className="register_form d-flex flex-column justify-content-center align-items-center"
+                onSubmit={handleSubmit}
+                onPaste={handlePaste}
+              >
+                <div >
+                
+                  <h1>{t("Otp_title")}</h1>
+                  <p>{t("Otp_text")}</p>
 
-                {alert.message && (
-                  <div
-                    className={`alert alert-${
-                      alert.type === "success" ? "success" : "danger"
-                    } alert-dismissible fade show`}
-                    role="alert"
-                  >
-                    {alert.message}
-                    <button
-                      type="button"
-                      className="btn-close"
-                      aria-label="Close"
-                      onClick={() => setAlert({ type: "", message: "" })}
-                    ></button>
-                  </div>
-                )}
-
-                <div id="otp-form" className="d-flex flex-column align-items-center mt-4">
-
-                 <div>
-                 {Array.from({ length: 6 }, (_, index) => (
-                    <input
-                      key={index}
-                      type="text"
-                      maxLength="1"
-                      className="otp-input"
-                      autoFocus={index === 0}
-                      onChange={(e) => handleInputChange(e, index)}
-                      onKeyDown={(e) => handleKeyDown(e, index)}
-                      ref={(el) => (inputsRef.current[index] = el)}
-                    />
-                  ))}
-                 </div>
-
-                  <div className="col-12 py-4 px-0">
-                    <button
-                      type="submit"
-                      className="btn btn-register w-100"
-                      disabled={loading}
+                  {alert.message && (
+                    <div
+                      className={`alert alert-${
+                        alert.type === "success" ? "success" : "danger"
+                      } alert-dismissible fade show`}
+                      role="alert"
                     >
-                      {loading ? t("Verifying") : t("Submit")}
-                    </button>
+                      {alert.message}
+                      <button
+                        type="button"
+                        className="btn-close"
+                        aria-label="Close"
+                        onClick={() => setAlert({ type: "", message: "" })}
+                      ></button>
+                    </div>
+                  )}
+
+                  <div id="otp-form" className="d-flex flex-column align-items-center mt-4">
+
+                  <div>
+                  {Array.from({ length: 6 }, (_, index) => (
+                      <input
+                        key={index}
+                        type="text"
+                        maxLength="1"
+                        className="otp-input"
+                        autoFocus={index === 0}
+                        onChange={(e) => handleInputChange(e, index)}
+                        onKeyDown={(e) => handleKeyDown(e, index)}
+                        ref={(el) => (inputsRef.current[index] = el)}
+                      />
+                    ))}
                   </div>
 
-                  <p className="mb-3 text-center">
-                    {t("New_platform")}
-                    <Link to="/register" className="text-theme ms-2">
-                    {t("Create_account")}
-                    </Link>
-                  </p>
+                    <div className="d-flex w-100 justify-content-end text-theme m-0">
+                      <Link 
+                        onClick={handleResendOtp}
+                        disabled={resendLoading}
+                      >
+                        {resendLoading ? t("Resending") : t("ResendOtp")}
 
-                  <p className="text-center m-0">
-                  {t("Copyright")}
-                  </p>
+                      </Link>
+                    </div>
+
+                    <div className="col-12 py-4 px-0">
+                      <button
+                        type="submit"
+                        className="btn btn-register w-100"
+                        disabled={loading}
+                      >
+                        {loading ? t("Verifying") : t("Submit")}
+                      </button>
+                    </div>
+
+                    <p className="mb-3 text-center">
+                      {t("New_platform")}
+                      <Link to="/register" className="text-theme ms-2">
+                      {t("Create_account")}
+                      </Link>
+                    </p>
+
+                    <p className="text-center m-0">
+                    {t("Copyright")}
+                    </p>
+                  </div>
                 </div>
+              </form>
               </div>
-            </form>
             </div>
-          </div>
-        </div>
 
-        {/* <div className="col-lg-6 d-none d-lg-block ">
-          <img
-            className="w-100 h-100"
-            src="https://img.freepik.com/premium-vector/otp-onetime-password-2step-authentication-data-protection-internet-security-concept_100456-10200.jpg?semt=ais_hybrid"
-            alt="Login Illustration"
-          />
-        </div> */}
-      </div>
+        </div>
     </div>
 
     <Footer />
