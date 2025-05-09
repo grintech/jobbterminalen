@@ -126,11 +126,9 @@ const SavedCompanies = () => {
                                                   </Link>
                                                 </div>
 
-                                                  <div className="d-flex align-items-center">
+                                                  <div className="d-flex align-items-baseline">
                                                   <button
-                                                    className={`btn-light border-0 shadow me-2 ${
-                                                      isCompanySaved(company.company_id) ? "btn-primary" : ""
-                                                    }`}
+                                                    className={`btn-light border-0 shadow me-2 `}
                                                     onClick={() => toggleSavedCompanies(company.company_id)}
                                                     title={
                                                       isCompanySaved(company.company_id) ? "Click to unsave" : "Click to save"
@@ -142,9 +140,7 @@ const SavedCompanies = () => {
                                                       }`}
                                                     ></i>
                                                   </button>
-                                                    <Link className="btn-light shadow me-2">
-                                                      <i className="fa-solid fa-share"></i>
-                                                    </Link>
+                                                   
                                                   </div>
                                                 </div>
                                               <div className="pt-2 pb-3">

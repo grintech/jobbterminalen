@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import Navbar from "./Navbar";
@@ -17,12 +17,36 @@ const JobDetail = () => {
   const [error, setError] = useState(null);
   const [saved, setSaved] = useState(false);
 
+  const [visible, setVisible] = useState(false);
+  const buttonRef = useRef(null);
+
+  const containerRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      // If clicked outside both button and container
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(event.target) &&
+        buttonRef.current &&
+        !buttonRef.current.contains(event.target)
+      ) {
+        setVisible(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   const [expanded, setExpanded] = useState(false);
+  const toggleExpanded = () => setExpanded(!expanded);
+
   const text = jobDetails?.description || "";
 
   const navigate = useNavigate();
   // Check if the text is long enough to require the "Read more" button
-  const isLongText = text.length > 120;
+  // const isLongText = text.length > 120;
 
   const { user } = useAuthContext();
   const userId = user ? user.id : null;
@@ -56,6 +80,17 @@ const JobDetail = () => {
     .replace(/<div[^>]*>(&nbsp;|\s)*<\/div>/gi, "");
   };
   
+  const [showToggle, setShowToggle] = useState(false);
+  const contentRef = useRef(null);
+  const plainText = cleanHtml(decodedHtml(text)).replace(/<[^>]+>/g, '');
+
+  useEffect(() => {
+    // Check length of plain text OR use height-based detection
+    if (plainText.length > 250) {
+      setShowToggle(true);
+    }
+  }, [plainText]);
+
 
   const handleApplyClick = (jobId) => {
     if (!userId) {
@@ -165,6 +200,48 @@ const JobDetail = () => {
   //   return `${diffDays} day${diffDays === 1 ? '' : 's'} ago`;
   // };
 
+
+  // const calculateTimeAgo = (timestamp) => {
+  //   if (!timestamp) return "";
+  
+  //   const now = new Date();
+  //   const past = new Date(timestamp.replace(" ", "T"));
+  //   const secondsPast = Math.floor((now - past) / 1000);
+  
+  //   const years = Math.floor(secondsPast / 31536000); // 60 * 60 * 24 * 365
+  //   const months = Math.floor((secondsPast % 31536000) / 2592000); // 60 * 60 * 24 * 30
+  //   const days = Math.floor((secondsPast % 2592000) / 86400); // 60 * 60 * 24
+  //   const hours = Math.floor((secondsPast % 86400) / 3600); // 60 * 60
+  //   const minutes = Math.floor((secondsPast % 3600) / 60);
+  
+  //   // Display logic based on time difference
+  //   if (secondsPast < 60) {
+  //     return `${secondsPast} sec${secondsPast !== 1 ? "s" : ""} ago`;
+  //   }
+  
+  //   if (secondsPast < 3600) {
+  //     return `${minutes} min${minutes !== 1 ? "s" : ""} ago`;
+  //   }
+  
+  //   if (secondsPast < 86400) {
+  //     return `${hours} hr${hours !== 1 ? "s" : ""} ago`;
+  //   }
+  
+  //   if (secondsPast < 2592000) {  // 30 days
+  //     return `${days} day${days !== 1 ? "s" : ""} ago`;
+  //   }
+  
+  //   if (years > 0) {
+  //     return `${years} year${years !== 1 ? "s" : ""} ${months > 0 ? `${months} month${months !== 1 ? "s" : ""}` : ""} ${days > 0 ? `${days} day${days !== 1 ? "s" : ""}` : ""} ago`;
+  //   }
+  
+  //   if (months > 0) {
+  //     return `${months} month${months !== 1 ? "s" : ""} ${days > 0 ? `${days} day${days !== 1 ? "s" : ""}` : ""} ago`;
+  //   }
+  
+  //   return `${days} day${days !== 1 ? "s" : ""} ago`;
+  // }
+
   const calculateTimeAgo = (timestamp) => {
     if (!timestamp) return "";
   
@@ -172,39 +249,79 @@ const JobDetail = () => {
     const past = new Date(timestamp.replace(" ", "T"));
     const secondsPast = Math.floor((now - past) / 1000);
   
-    const years = Math.floor(secondsPast / 31536000); // 60 * 60 * 24 * 365
-    const months = Math.floor((secondsPast % 31536000) / 2592000); // 60 * 60 * 24 * 30
-    const days = Math.floor((secondsPast % 2592000) / 86400); // 60 * 60 * 24
-    const hours = Math.floor((secondsPast % 86400) / 3600); // 60 * 60
-    const minutes = Math.floor((secondsPast % 3600) / 60);
+    const days = Math.floor(secondsPast / 86400); // 60 * 60 * 24
+    const months = Math.floor(days / 30);
+    const years = Math.floor(days / 365);
   
-    // Display logic based on time difference
     if (secondsPast < 60) {
       return `${secondsPast} sec${secondsPast !== 1 ? "s" : ""} ago`;
     }
   
     if (secondsPast < 3600) {
+      const minutes = Math.floor(secondsPast / 60);
       return `${minutes} min${minutes !== 1 ? "s" : ""} ago`;
     }
   
     if (secondsPast < 86400) {
+      const hours = Math.floor(secondsPast / 3600);
       return `${hours} hr${hours !== 1 ? "s" : ""} ago`;
     }
   
-    if (secondsPast < 2592000) {  // 30 days
+    // Custom day/month display logic
+    if (days < 31) {
       return `${days} day${days !== 1 ? "s" : ""} ago`;
     }
   
-    if (years > 0) {
-      return `${years} year${years !== 1 ? "s" : ""} ${months > 0 ? `${months} month${months !== 1 ? "s" : ""}` : ""} ${days > 0 ? `${days} day${days !== 1 ? "s" : ""}` : ""} ago`;
+    // Show "1 month ago" only on the 31st day
+    if (days === 31) {
+      return `1 month ago`;
     }
   
-    if (months > 0) {
-      return `${months} month${months !== 1 ? "s" : ""} ${days > 0 ? `${days} day${days !== 1 ? "s" : ""}` : ""} ago`;
+    // For days between 32 and 60, show "x days ago"
+    if (days > 31 && days < 61) {
+      return `${days} days ago`;
     }
   
-    return `${days} day${days !== 1 ? "s" : ""} ago`;
-  }
+    // Show months only on exact multiples of 30 (after day 60)
+    if (days % 30 === 0) {
+      return `${months} month${months !== 1 ? "s" : ""} ago`;
+    }
+  
+    return `${days} days ago`;
+  };
+  
+
+  const shareOnPlatform = (platform) => {
+    const jobUrl = window.location.href; // gets current job detail page URL
+    let shareUrl = '';
+  
+    switch (platform) {
+      case 'facebook':
+        shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(jobUrl)}`;
+        break;
+      case 'twitter':
+        shareUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(jobUrl)}&text=Check out this job!`;
+        break;
+      case 'linkedin':
+        shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(jobUrl)}`;
+        break;
+      case 'whatsapp':
+        shareUrl = `https://api.whatsapp.com/send?text=Check out this job: ${encodeURIComponent(jobUrl)}`;
+        break;
+      default:
+        break;
+    }
+  
+    if (shareUrl) {
+      window.open(shareUrl, '_blank', 'noopener,noreferrer');
+    }
+  };
+  
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(window.location.href);
+    toast.success('Job link copied to clipboard!');
+  };
+  
 
 
   useEffect(() => {
@@ -280,7 +397,6 @@ const JobDetail = () => {
         console.error("Error fetching HomeBanners data:", error);
       }
     };
-
     fetchBannerPlace();
   }, []);
 
@@ -349,6 +465,7 @@ const JobDetail = () => {
     fetchSavedJobs();
   }, [userId]);
 
+  
   // Check if the job is saved
   const isJobSaved = (jobId) => {
     return (
@@ -362,6 +479,9 @@ const JobDetail = () => {
   const toggleSavedJob = async (jobId) => {
     if (!userId) {
       toast.error("Please login to save jobs.");
+      setTimeout(() => {
+        navigate("/login");
+      }, 2000);
       return;
     }
     try {
@@ -522,6 +642,9 @@ const JobDetail = () => {
                         <span>
                           {jobDetails.salary_range || "Not Specified"}
                         </span>
+                        <small className="ms-1">
+                          /{jobDetails.hourly_rate || "Not Specified"}
+                        </small>
                       </li>
                     </ul>
                   </div>
@@ -531,29 +654,31 @@ const JobDetail = () => {
                       <li className="d-flex align-items-baseline pe-2 me-2 mb-2">
                         {/* <i className="fa-solid fa-location-dot me-1"></i> */}
                         <span className="text-capitalize">
-                          <b className="me-1" >Location :</b> {jobDetails.job_location || "Not Specified"}
+                          <i className="fa-solid fa-location-dot me-1">
+                            </i> {jobDetails.job_location.replace(/-/g, ' ') || "Not Specified"}
                         </span>
+                        {/* <span className="text-capitalize">
+                          <b className="me-1" >Location :</b> {jobDetails.job_location || "Not Specified"}
+                        </span> */}
                       </li>
                     </ul>
                   </div>
 
-                  <hr />
-
+                  <hr className="my-2" />
+                 <div className="position-relative">
                   <div className="d-flex flex-wrap justify-content-between align-items-center">
                    <div className="py-1" >
-                    <span className="days border-end me-2 pe-2 d-inline-flex">
-                      <b className="me-1">Posted :</b>  {calculateTimeAgo(jobDetails.created_at)}
+                    <span className="days border-end me-2 pe-2 d-inline-flex align-items-center">
+                      <b className="me-1">Posted :</b>  <span className="badge text-dark btn-light">{calculateTimeAgo(jobDetails.created_at)}</span>
                       </span>
                       <span className="days ">
-                      <b className="me-1">Openings :</b>  {jobDetails.total_vacancies}
+                      <b className="me-1">Vacancies :</b>  {jobDetails.total_vacancies}
                       </span>
                    </div>
                     <div className="py-1">
                       <button
                         onClick={toggleSaved}
-                        className={`btn btn-light btn-sm me-2 ${
-                          saved ? "btn-primary" : ""
-                        }`}
+                        className={`btn btn-light btn-sm me-2 `}
                         title={saved ? "Click to unsave" : "Click to save"}
                       >
                         <i
@@ -563,86 +688,79 @@ const JobDetail = () => {
                         ></i>
                         {saved ? "Saved" : "Save"}
                       </button>
-                      <button className="btn btn-light btn-sm me-2">
+                      <button ref={buttonRef} 
+                      className="btn btn-light btn-sm " 
+                      onClick={() => setVisible((prev) => !prev)}
+                      >
                         <i className="fa-solid fa-share me-1"></i>Share
                       </button>
                     </div>
                   </div>
+                  {visible && (
+                    <div   ref={containerRef} className="social_icons_container">
+                    <div className="modal-body p-3">
+                      
+                      <div className="d-flex flex-wrap justify-content-between social_links mt-2">
+                        <button className="btn btn-sm btn-primary mx-1 mb-2" onClick={() => shareOnPlatform('facebook')}>
+                          <i className="fa-brands fa-facebook"></i>
+                        </button>
+                        <button className="btn btn-sm btn-primary mx-1 mb-2" onClick={() => shareOnPlatform('twitter')}>
+                          <i className="fa-brands fa-twitter"></i>
+                        </button>
+                        <button className="btn btn-sm btn-primary mx-1 mb-2" onClick={() => shareOnPlatform('linkedin')}>
+                          <i className="fa-brands fa-linkedin"></i>
+                        </button>
+                        <button className="btn btn-sm btn-primary mx-1 mb-2" onClick={() => shareOnPlatform('whatsapp')}>
+                          <i className="fa-brands fa-whatsapp"></i>
+                        </button>
+                        <button className="btn btn-sm btn-primary mx-1 mb-2" onClick={() => copyToClipboard()}>
+                          <i className="fa-solid fa-link"></i> 
+                        </button>
+                      </div>
+                    </div>
+                    </div>
+                  )}
+                  </div>         
                 </div>
               </div>
             </div>
             <div className="container pt-5">
-              <div className="row py-3">
-               {/*Hidden Section */}
-                <div className="col-lg-4 mb-4 mb-lg-0 d-none">
-                  <div className="card_sticky">
-                    <div className="card company_list_card mb-4">
-                      <div className="card-body px-4 py-4">
-                        <div className="logo_div">
-                          <Link to={`/companies/${jobDetails?.company_slug}`}>
-                            <img
-                              loading="lazy"
-                              src={`${IMG_URL}/${jobDetails.company_profile}`}
-                              alt="Company Logo"
-                            />
-                          </Link>
-                        </div>
-                        <div className="d-flex align-items-center justify-content-between py-2">
-                          <Link to={`/companies/${jobDetails.companies_slug}`}>
-                            <h4 className="job_title">
-                              {jobDetails.company_name}
-                            </h4>
-                          </Link>
-                        </div>
-                        <p
-                          className="company_about"
-                          dangerouslySetInnerHTML={{
-                            __html: jobDetails.company_about,
-                          }}
-                        ></p>
-                        <div className="d-flex align-items-center text-muted mt-3">
-                          <i className="fa-solid fa-location-dot me-1"></i>
-                          <span>{jobDetails.company_address}</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="jobs_sidebar">
-                    {bannerPlace === "jobs_sidebar" && <HomeBanners />}
-                  </div>
-                </div>
-
+              <div className="row py-3">                        
                 {/* Job Details Section */}
                 <div className="col-lg-8 mb-4 mb-lg-0">
+                <h4 className="mb-3 text-start" >&nbsp;</h4>
+
                   <div className="card job_list_card mb-4">
                     <div className="card-body">
-                      <div className="container job-description">
-                        <h5 className="job_company">Job Description:</h5>
-                        {/* <div>
-                          <p
-                            className={`job-description-text ${
-                              expanded ? "expanded" : ""
-                            }`}
-                            dangerouslySetInnerHTML={{
-                              __html: getPlainText(stripHtml(text)),
-                            }}
-                          ></p>
+                      <div className="container ">
+                        <div className="job-description">
+                          <h5 className="job_company">Job Description:</h5>
+                        
+                          {/* <div 
+                            className="job-requirements mt-3"
+                            dangerouslySetInnerHTML={{ __html: cleanHtml(decodedHtml(text))}}
+                          /> */}
 
-                          {isLongText && (
-                            <button
-                              onClick={() => setExpanded(!expanded)}
-                              className="read-more-btn"
-                            >
-                              {expanded ? "Read less" : "Read more"}
-                            </button>
-                          )}
-                        </div> */}
+                         <div>
+                            <div
+                              ref={contentRef}
+                              className={`job-requirements mt-3 ${expanded ? '' : 'clamped'}`}
+                              dangerouslySetInnerHTML={{ __html: cleanHtml(decodedHtml(text)) }}
+                            />
+                            {showToggle && (
+                              <Link
+                                style={{textDecoration:"underline"}}
+                                onClick={() => setExpanded(!expanded)}
+                                className="text-theme fw-semibold mt-2 text-underline"
+                              >
+                                {expanded ? 'Read less' : 'Read more'}
+                              </Link>
+                            )}
+                          </div>
 
-                        <div 
-                          className="job-requirements mt-3"
-                          dangerouslySetInnerHTML={{ __html: cleanHtml(decodedHtml(text))}}
-                        />
+                        </div>
                        </div>
+                                        
 
                       <div className="card-body key_skills m-0">
                         {jobDetails.skills ? (
@@ -668,14 +786,14 @@ const JobDetail = () => {
                       
                          <div className=" job-details mt-3">
                           <p className="text-capitalize">
-                            <b className="me-1">Role:</b>{ stripHtml(jobDetails.title)}
+                            <b className="me-1">Role:</b>{stripHtml(jobDetails.title)}
                           </p>
                           <p className="text-capitalize">
-                          <b className="me-1">Industry Type:</b>{stripHtml(jobDetails.company_industry)}
+                          <b className="me-1">Industry Type:</b>{jobDetails.company_industry.replace(/-/g, ' ')}
                           </p>
 
                           <p className="text-capitalize">
-                            <b className="me-1">Employment Type:</b>{stripHtml(jobDetails.job_type)}
+                            <b className="me-1">Employment Type:</b>{jobDetails.job_type.replace(/-/g, ' ')}
                           </p>
 
                           {jobDetails.parent_category_name && (                      
@@ -689,50 +807,11 @@ const JobDetail = () => {
                       </div>
                     </div>
                   </div>
-
-                  {/* <div className="card job_list_card mb-4">
-                    <div className="card-body">
-                      <div className="container job-details">
-                        <strong>Role: </strong>
-                        <p>{jobDetails.title}</p>
-                        <strong>Industry Type: </strong>
-                        <p className="text-capitalize">
-                          {jobDetails.company_industry}
-                        </p>
-                        <strong>Employment Type: </strong>
-                        <p className="text-capitalize">{jobDetails.job_type}</p>
-                        {jobDetails.parent_category_name && (
-                          <div>
-                            <strong>Category: </strong>
-                            <p>{jobDetails.parent_category_name}</p>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </div> */}
-
-                  {/* <div className="card job_list_card mb-4">
-                    <div className="card-body key_skills">
-                      <h4>Key Skills</h4>
-                      {jobDetails.skills ? (
-                        <ul className="d-flex flex-wrap">
-                          {jobDetails.skills.split(',').map((skill, index) => (
-                            <li className="mb-2 text-capitalize" key={index}>
-                              {skill.trim()}
-                            </li>
-                          ))}
-                        </ul>
-                      ) : (
-                        <p>No key skills listed for this job.</p>
-                      )}
-                    </div>
-                  </div> */}
-
+              
                 { jobDetails.show_contact_details === 1 && (
                      <div className="card job_list_card mb-4">
                      <div className="card-body">
                        <div className="container job-details">
-                         {/* <p>Please share your details in the form below.</p> */}
                          <h5 className="fw-semibold">Contact Details:</h5>
  
                          {jobDetails.job_email && (
@@ -766,9 +845,9 @@ const JobDetail = () => {
                            <strong>Thanks & Regards,</strong>
                          </p>
  
-                         {jobDetails.username && (
+                         {jobDetails.contact_name && (
                            <p className="m-0">
-                             <strong>{jobDetails.username}</strong>
+                             <strong>{jobDetails.contact_name}</strong>
                            </p>
                          )}
  
@@ -786,7 +865,7 @@ const JobDetail = () => {
                    <h4 className="mb-3 text-start">Similar jobs</h4>
                    <div className="row">
                     {similarJobs.length > 0 ? (
-                      similarJobs.map((job) => (
+                      similarJobs.slice(0,3).map((job) => (
                         <div
                           className="col-sm-6 col-lg-12 mb-4"
                           key={job.id}
@@ -805,10 +884,10 @@ const JobDetail = () => {
                                 </Link>
                                 <div className="d-flex align-items-center">
                                   <button
-                                    className={`btn-light border-0 shadow me-2 ${
-                                      isJobSaved(job.id) ? "btn-primary" : ""
-                                    }`}
+                                    className={`btn-light border-0 shadow me-2 `}
                                     onClick={() => toggleSavedJob(job.id)}
+
+                                    title={ isJobSaved(job.id) ? "Click to unsave" : "Click to save"}
                                   >
                                     <i
                                       className={`fa-bookmark ${
@@ -818,18 +897,16 @@ const JobDetail = () => {
                                       }`}
                                     ></i>
                                   </button>
-                                  <Link className="btn-light shadow me-2">
-                                    <i className="fa-solid fa-share"></i>
-                                  </Link>
+                                 
                                 </div>
                               </div>
 
                               <div className="py-2">
-                                <Link to={`/companies/${job.company_slug}`}>
+                                {/* <Link to={`/companies/${job.company_slug}`}>
                                   <h5 className="py-2 m-0">
                                     {stripHtml(job.company_name)}
                                   </h5>
-                                </Link>
+                                </Link> */}
                                 <Link to={`/jobs/${job.slug}`}>
                                   <h6 className="m-0">
                                     {stripHtml(job.title)}
@@ -837,7 +914,7 @@ const JobDetail = () => {
                                 </Link>
                               </div>
 
-                              <p className="main_desc">{job.company_tagline}</p>
+                              {/* <p className="main_desc">{job.company_tagline}</p> */}
 
                               <ul className="p-0 d-flex flex-wrap m-0">
                                 {job.job_type && (
@@ -871,7 +948,7 @@ const JobDetail = () => {
                                 {job.salary_currency && job.salary_range && (
                                   <li>
                                     <div className="btn btn-sm btn-green me-2 mb-2">
-                                      <span>Salary -</span> {job.salary_currency} {job.salary_range}
+                                       {job.salary_currency} {job.salary_range}<small className="ms-1">/ {job.hourly_rate}</small>
                                     </div>
                                   </li>
                                 )}
@@ -928,7 +1005,7 @@ const JobDetail = () => {
             </div>
           </div>
         )}
-
+         
         {/* {!loading && <Footer />} */}
         <Footer />
         <ToastContainer

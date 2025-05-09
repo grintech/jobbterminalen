@@ -7,7 +7,8 @@
 
 body{
   overflow-x: hidden;
-   background-color: #f8f8f8; 
+   /* background-color: #f8f8f8;  */
+   background-color: #eaeaea; 
 }
 
 .navbar-brand img{
@@ -87,6 +88,9 @@ li{
   left: unset !important;
   right: 5px !important
 }
+.btn-primary{background-color: #003479 !important; border: 1px solid  #003479 !important;}
+.btn-primary:hover{background-color: #0146a0 !important; border: 1px solid  #0146a0 !important;}
+.btn-primary:focus{background-color: #003479 !important; border: 1px solid  #003479 !important;}
 .btn-login{
   background-color: unset;
   border: 1px solid  #003479;
@@ -279,10 +283,36 @@ li{
   height: 80px;
   width: 80px;
 }
-input[type='checkbox']{
-  height: 16px;
-  width: 16px;
+input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
 }
+
+.register_form [type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 18px;
+  height: 16px;
+  border: 1px solid #003479;
+  border-radius: 2px;
+  cursor: pointer;
+  position: relative;
+  background-color: white;
+}
+
+.register_form [type="checkbox"]:checked {
+  background-color: #003479;
+}
+
+.register_form [type="checkbox"]:checked::after {
+  content: "✔";
+  color: white;
+  position: absolute;
+  top: -2px;
+  left: 3px;
+  font-size: 12px;
+}
+.checkbox_div p{margin-top: -3px;}
 
 .register_page .select_tab button, .login_page .select_tab button{
   color: white;
@@ -316,7 +346,7 @@ input[type='checkbox']{
  .contact_icon {width: 60px; height: 60px; margin: auto;display: flex;align-items: center;justify-content:center ; background-color: #d2e3f9; }
  .contact_icon i{font-size: 20px; color: #003479; }
  .contact_icon .card{transition: all .3s ease;}
-.contact_page .contact_us_details .card:hover{background-color: #e3e3e3;transition: all .3s ease;}
+.contact_page .contact_us_details .card:hover{background-color: #f7f7f7;transition: all .3s ease;}
 .contact_page .register_form label {font-weight: 600;}
 /*---------- About Page ----------*/
 .about_page .hero_banner h1, .contact_page .hero_banner h1{font-size: 30px;}
@@ -430,12 +460,12 @@ input[type="checkbox"]:focus{box-shadow: none !important; }
 
 .register_container{padding-top: 100px; }
 .register_container .register_form{
-  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+  /* box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px; */
   margin: 50px 0 80px 0;
   padding: 40px 30px;
-  /* width: 480px;
-   */
   margin: auto;
+  background-color: #fff;
+  border-radius: 8px;
 }
 
 .register_container img{object-fit: cover;}
@@ -450,7 +480,7 @@ input[type="checkbox"]:focus{box-shadow: none !important; }
 
 .register_form h1{font-size: 25px;}
 .register_form p{ font-size: 14px; color: #6F6F6F;line-height: 1.5; font-weight: 400;letter-spacing: .5px;}
-.register_form .job_role .form-check{ background-color: #fff; padding: 10px 40px; border-radius: 8px;}
+.register_form .job_role .form-check{ background-color: #eaeaea; padding: 10px 40px; border-radius: 8px;}
 
 .register_form .form-check-input:checked {background-color: #003479; border-color: #003479;}
 /*---------- Location ------------*/
@@ -841,7 +871,8 @@ input[type="checkbox"]:focus{box-shadow: none !important; }
   .navbar .navbar-toggler-icon {
     width: 1.05em !important;
     padding: 0px 5px !important;
- }
+  }
+
  .user_dropdown .dropdown-toggle {font-size: 13px;}
  .employer .nav-item .nav-link{font-size: .7rem !important;}
  .navbar .employer .dropdown-item{font-size: .65rem !important;}
@@ -852,6 +883,7 @@ input[type="checkbox"]:focus{box-shadow: none !important; }
  .company_profile button {font-size: 14px !important;}
 
   #vacancies_section .company_list_card .text-muted {font-size: 13px !important;}
+  #company_details #about_company h2, #company_details #about_company h1{font-size: 1.15rem !important;}
 }
 
 @media screen and (max-width:375px) {
@@ -994,7 +1026,7 @@ input[type="checkbox"]:focus{box-shadow: none !important; }
   height: 80vh;
   overflow-y: scroll;
 }
-.select_file h5{word-break: break-all;}
+.select_file h6{word-break: break-all;}
 .select_file .fa-trash{background-color: #e9e9e9; color: rgb(252, 64, 64); padding:5px 6px; border-radius: 4px; font-size: 14px;}
 .select_file .fa-trash:hover{background-color: #dedddd;}
 .popup-container .btn-close{color: #003479 !important;}
@@ -1060,6 +1092,8 @@ h5 .fa-pencil{font-size: 18px !important;}
 .job-requirements h1, .job-requirements h2, .job-requirements h3, .job-requirements h4, .job-requirements h5, .job-requirements h6{font-size: 1rem !important;}
 
 small.badge.text-bg-light{font-weight: 600;background-color :rgb(235, 235, 235) !important;}
+#company_details #about_company a:hover{color: #003479 !important;}
+#company_details #about_company h2, #company_details #about_company h1{font-size: 1.5rem;}
 #company_details #about_company p, #company_details #about_company p strong, #company_details #about_company p b{font-size: 16px !important;}
 #company_details #about_company span, #company_details #about_company span strong,#company_details #about_company span b{font-size: 16px !important;}
 
@@ -1067,3 +1101,53 @@ small.badge.text-bg-light{font-weight: 600;background-color :rgb(235, 235, 235) 
 
 .banner_sideImage a{display: flex; height: 230px;}
 .banner_sideImage img{height: 100%; width: 100%; object-fit: cover;}
+
+#ShareModal .social_links .btn-primary{
+  display: flex ;
+  width: 55px;
+  height: 55px;
+  align-items: center;
+  /* padding: 10px 10px; */
+  justify-content: center;
+}
+#ShareModal .social_links i{font-size: 30px;}
+#ShareModal .post_heading i{font-size: 20px;}
+
+.social_icons_container{
+  width: fit-content;
+  background: #ffffff;
+  position: absolute;
+  right:0;
+  bottom: 40px;
+  z-index: 1;
+  border-radius: 4px;
+  /* box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px; */
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+}
+.react-tel-input .country-list { max-width: 250px !important; }
+
+.react-tel-input .form-control {font-size: 14px;}
+
+.react-tel-input .country-list .search-emoji {
+  display: none !important;
+}
+.all_employers_page .fa-heart:hover{color: #003479;}
+
+.clamped {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.candidate_resume .details .col-md-4 span.text-uppercase {
+    font-size: 14px;
+    font-weight: 600 !important;
+}
+.candidate_resume .details span, .candidate_resume .details p {
+    font-size: 14px;
+    font-weight: 400;
+    text-transform: capitalize;
+}
+.candidate_resume .border-bottom.details{padding: 10px 0;}
+.candidate_resume .border-bottom.details .fw-semibold{text-decoration: underline; color: rgb(59, 58, 58);}

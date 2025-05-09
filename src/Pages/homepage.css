@@ -120,7 +120,7 @@
     box-shadow: 0px 0px 25px 0px rgba(221, 221, 221, 0.5490196078);
     background: #d2e3f9;
   }
-  .all_categories_page .popular_categories .card{background: unset !important;}
+  .all_categories_page .popular_categories .card{background: #fff !important; box-shadow: unset !important;}
   .cat_card:nth-child(even) .card-body i{
     background-color:  #f5e0d6 !important;
   }
@@ -341,6 +341,7 @@
   border-radius: 50px;
   margin: 0px 7px 7px 0;
 }
+.btn-light{background-color: #eaeaea !important;}
 .job_details .company_list_card .btn-light{background-color: #f5f5f5 !important; border: 0;}
 .job_details .company_list_card .btn-light:hover{background-color: #e6e3e3 !important; border: 0;}
 
@@ -357,15 +358,26 @@
 
 
 /*------------AllJobPosts---------*/
-.all_job_posts .company_list_card .btn-light{ background-color: #f7f7f7; padding: 5px 7px; border-radius: 4px;font-size: 14px; color: #003479; outline: 0;}
-.all_job_posts .company_list_card .btn-light:hover{background-color: #d2e3f9; outline: 0;}
-.all_job_posts .company_list_card .btn-light:focus{background-color: #d2e3f9; outline: 0;}
+.all_job_posts .company_list_card .btn-light{ background-color: #eaeaea; padding: 5px 7px; border-radius: 4px;font-size: 14px; color: #003479; outline: 0;}
+/* .all_job_posts .company_list_card .btn-light:hover{background-color: #d2e3f9; outline: 0;} */
+.all_job_posts .company_list_card .btn-light:hover{background-color: #003479; outline: 0;}
+.all_job_posts .company_list_card .btn-light:hover i{color: #fff;}
+/* .all_job_posts .company_list_card .btn-light:focus{background-color: #d2e3f9; outline: 0;} */
+.all_job_posts .company_list_card .btn-light:focus{background-color: #003479; outline: 0;}
+.company_profile .btn-light{background-color: #eaeaea;}
+
+.job_details .company_list_card .btn-light, .company_list_card .btn-light {background-color: #eaeaea !important;}
+.company_list_card .btn-light:hover, .job_details .company_list_card .btn-light:hover{ background-color: #003479 !important;}
+.company_list_card .btn-light:hover i , .job_details .company_list_card .btn-light:hover i{ color: #fff !important;}
+
+
+
  .btn-green{
   background-color: #003479;
   color: white;
   font-size: 12px;
 }
- .company_list_card .btn-light{ background-color: #f7f7f7; padding: 5px 7px; border-radius: 4px;font-size: 14px; color: #003479; outline: 0;}
+ .company_list_card .btn-light{ background-color: #eaeaea; padding: 5px 7px; border-radius: 4px;font-size: 14px; color: #003479; outline: 0;}
  .company_list_card .btn-light:hover{background-color: #d2e3f9;}
  .company_list_card .btn-light:focus{background-color: #d2e3f9; outline: 0;}
  .company_list_card .btn-green:active{background-color: #003479; color: white; outline: 0; }

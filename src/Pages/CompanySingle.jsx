@@ -8,6 +8,12 @@ import { useAuthContext } from "../store/authContext";
 import { toast, ToastContainer } from "react-toastify";
 // import HomeBanners from "../components/HomeBanners";
 
+import Lightbox from "yet-another-react-lightbox";
+import Thumbnails from "yet-another-react-lightbox/plugins/thumbnails";
+
+import "yet-another-react-lightbox/styles.css";
+import "yet-another-react-lightbox/plugins/thumbnails.css";
+
 const CompanySingle = () => {
   const [companyData, setCompanyData] = useState(null);
   const [jobs, setJobs] = useState([]);
@@ -18,6 +24,9 @@ const CompanySingle = () => {
 
   const [bannerPlace, setBannerPlace] = useState("");
 
+
+  const [open, setOpen] = useState(false);
+  const [currentIndex, setCurrentIndex] = useState(0);
 
   const bearerKey = import.meta.env.VITE_BEARER_KEY;
   const API_URL = import.meta.env.VITE_API_URL;
@@ -57,6 +66,7 @@ const CompanySingle = () => {
         const result = await response.json();
         if (result.type === "success") {
           setCompanyData(result.data);
+          console.log(result.data);
           setJobs(result.jobs);
         } else {
           setError(result.message || "Failed to fetch company data");
@@ -147,11 +157,11 @@ const CompanySingle = () => {
     return `${days} day${days !== 1 ? "s" : ""} ago`;
   }
   
-  const handleApplyClick = (jobId) => {
-    if (!userId) {
-      return toast.error("You must be logged in to apply.");
-    }
-  };
+  // const handleApplyClick = (jobId) => {
+  //   if (!userId) {
+  //     return toast.error("You must be logged in to apply.");
+  //   }
+  // };
 
   useEffect(() => {
     const fetchBannerPlace = async () => {
@@ -197,6 +207,23 @@ const CompanySingle = () => {
 
     fetchBannerPlace();
   }, []);
+
+
+ 
+
+  if (!companyData || !companyData.company_gallery) {
+    return <div className="d-none" style={{visibility:"hidden"}}>Loading...</div>;
+  }
+
+  const galleryImages = companyData.company_gallery
+    .split(",")
+    .filter(Boolean)
+    .map((img) => ({ src: `${IMG_URL}/${img}` }));
+
+  const handleImageClick = (index) => {
+    setCurrentIndex(index);
+    setOpen(true);
+  };
 
 
   return (
@@ -266,139 +293,47 @@ const CompanySingle = () => {
             <div id="company_details" className="company_details py-5">
               <div className="col-md-12 mx-auto">
                 <div className="row">
-                  <div className="col-lg-8 mb-5 mb-lg-0">
-                    <div className="card border-0 shadow">
-                      <div className="card-body py-4 px-4">
-                        <h4 className="mb-3">About Company :</h4>
-                        <div id="about_company" dangerouslySetInnerHTML={{ __html: companyData.company_about }} />
-                        {companyData.company_gallery.length == 1 && (
-                          <div className="row">
-                            <div className="col-12 mt-3">
-                              <img loading="lazy"
-                                src={`${IMG_URL}/${companyData.company_gallery.split(',')[0]}`}
-                                className="w-100 rounded shadow h-100"
-                                alt="company-img"
-                              />
-                            </div>
-                          </div>
-                        )}
+                <div className="col-lg-8 mb-5 mb-lg-0">
+                  <div className="card border-0 shadow">
+                    <div className="card-body py-4 px-4">
+                      <h4 className="mb-3">About Company :</h4>
+                      <div
+                        id="about_company"
+                        dangerouslySetInnerHTML={{ __html: companyData.company_about }}
+                      />
 
-                        {companyData.company_gallery.split(',').length == 2 && (
+                      {galleryImages.length > 0 && (
+                        <>
+                          <h6 className="mt-4">View Photos :</h6>
                           <div className="row">
-                            <div className="col-12 mt-3">
-                              <div className="row">
-                                <div className="col-lg-6 mb-4 mb-lg-0">
-                                  <img loading="lazy"
-                                    src={`${IMG_URL}/${companyData.company_gallery.split(',')[0]}`}
-                                    className="w-100 rounded shadow h-100"
-                                    alt="company-img"
-                                  />
-                                </div>
-                                <div className="col-lg-6 mb-4 mb-lg-0">
-                                  <img loading="lazy"
-                                    src={`${IMG_URL}/${companyData.company_gallery.split(',')[1]}`}
-                                    className="w-100 rounded shadow h-100"
-                                    alt="company-img"
+                            {galleryImages.map((image, index) => (
+                              <div className="col-md-4 mb-3 " key={index}>
+                                <div className="card h-100 shadow-sm rounded-3 p-2">
+                                  <img
+                                    src={image.src}
+                                    alt={`company-gallery-${index}`}
+                                    className="w-100 h-100  rounded-3"
+                                    style={{ cursor: "pointer", objectFit:"contain" }}
+                                    onClick={() => handleImageClick(index)}
                                   />
                                 </div>
                               </div>
-                            </div>
+                            ))}
                           </div>
-                        )}
+                        </>
+                      )}
 
-                        {companyData.company_gallery.split(',').length >= 3 && (
-                          <div className="row">
-                            <div className="col-md-7 mb-4 mb-md-0">
-                              <img loading="lazy"
-                                src={`${IMG_URL}/${companyData.company_gallery.split(',')[2]}`}
-                                className="w-100 rounded shadow h-100"
-                                alt="company-img"
-                              />
-                            </div>
-                            <div className="col-md-5">
-                              <img loading="lazy"
-                                src={`${IMG_URL}/${companyData.company_gallery.split(',')[1]}`}
-                                className="w-100 rounded shadow mb-4"
-                                alt="company-img"
-                              />
-                              <img loading="lazy"
-                                src={`${IMG_URL}/${companyData.company_gallery.split(',')[0]}`}
-                                className="w-100 rounded shadow"
-                                alt="company-img"
-                              />
-                            </div>
-                          </div>
-                        )} 
-
-
-                        <div id="vacancies_section" ref={vacanciesRef}
-                         className="row mt-4">
-                          {jobs.length > 0 && <h4 className="mb-3">Vacancies :</h4>}
-                          {jobs.map((job) => (
-                            <div className="col-md-6 mb-4" key={job.id}>
-                              <div className="card company_list_card border-0 shadow">
-                                <div className="card-body">
-                                  <div className="d-flex justify-content-between">
-                                    <div className="logo_div me-3 mb-3">
-                                      <img loading="lazy"
-                                        src={`${IMG_URL}/${companyData.company_profile}`}
-                                        alt={job.title}
-                                        className="rounded"
-                                      />
-                                    </div>
-                                    <div>
-                                      {userId ? (
-                                        <Link to='/apply-job' state={{ jobId: job.id }} className="btn btn-primary btn-sm" > Apply </Link>
-                                      ) : (
-                                        <button className="btn btn-sm btn-primary" onClick={() => handleApplyClick(job.id)}>
-                                          Apply
-                                        </button>
-                                      )}
-                                    </div>
-
-                                     {/* <div>
-                                        {userId ? (
-                                          <ApplyPopup jobId={job.id}>
-                                            Apply
-                                          </ApplyPopup>
-                                          ) : (
-                                          <button className="btn btn-sm btn-primary" onClick={() => handleApplyClick(job.id)}>
-                                            Apply
-                                          </button>
-                                          )}
-                                        </div> */}
-
-                                  </div>
-                                  <Link to={`/jobs/${job.slug}`}>
-                                    <h5 dangerouslySetInnerHTML={{ __html: job.title }}></h5>
-                                  </Link>
-                                  <p className="text-muted d-flex align-items-center">
-                                    <i className="fa-regular fa-clock me-2"></i>
-                                    Posted {calculateTimeAgo(job.created_at)}
-                                  </p>
-                                  <div className="d-flex justify-content-between flex-wrap">
-                                      { job.job_type && (
-                                        <div className="btn-sm btn-green me-2 mb-2 text-capitalize">
-                                        {job.job_type.replace(/-/g,' ') || 'Not specified'}
-                                        </div>
-                                      )}
-
-                                      {job.salary_currency && job.salary_range && (
-                                        <div className="text-muted">
-                                          <span className="text_blue fw-bold me-1">{job.salary_currency || 'N/A'}</span>
-                                          {job.salary_range || 'N/A'}
-                                        </div>
-                                      )}
-                                  </div>
-
-                                </div>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
+                      {open && (
+                        <Lightbox
+                          open={open}
+                          close={() => setOpen(false)}
+                          slides={galleryImages}
+                          index={currentIndex}
+                        />
+                      )}
                     </div>
                   </div>
+                </div>
                   
                   <div className="col-lg-4 company_info_card">
                     <div className="card_sticky">
@@ -414,7 +349,7 @@ const CompanySingle = () => {
                           <div className="mt-3">
                             <div className="d-flex align-items-baseline justify-content-between mt-2">
                               <span className="text-muted fw-medium">Industry:</span>
-                              <span className='text-end text-capitalize'>{companyData.company_industry}</span>
+                              <span className='text-end text-capitalize'>{companyData.company_industry.replace(/-/g, ' ')}</span>
                             </div>
                             <div className="d-flex align-items-baseline justify-content-between mt-2">
                               <span className="text-muted fw-medium">Tagline:</span>
@@ -433,6 +368,30 @@ const CompanySingle = () => {
                           </div>
                         </div>
                       </div>
+
+                       {jobs.length > 0 && (
+                        <div id="vacancies_section" ref={vacanciesRef}
+                          className="row mt-4">
+                            <h5 className="mb-3">Vacancies :</h5>
+                              <div className="col-12 mb-4" >
+                                <div className="card company_list_card border-0 shadow">
+                                  <div className="card-body">
+                            {jobs.slice(0,4).map((job) => (
+                                    <div key={job.id}>
+                                    <Link className="d-flex justify-content-between text-theme" to={`/jobs/${job.slug}`}>
+                                      <h6 className="mb-2 text-theme" dangerouslySetInnerHTML={{ __html: job.title }}></h6>
+                                      <i className="fa-solid fa-chevron-right"></i>
+                                    </Link>
+
+                                    </div>
+                                  
+
+                                ))}
+                                  </div>
+                                </div>
+                              </div>
+                          </div>
+                          ) }
                       
                       {/* {bannerPlace && bannerPlace.placement === "category_side" && (
                           <div className="col-lg-12 col-md-12 mt-4  banner_sideImage">

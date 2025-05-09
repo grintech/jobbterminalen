@@ -108,39 +108,46 @@ const SavedJobs = () => {
     const past = new Date(timestamp.replace(" ", "T"));
     const secondsPast = Math.floor((now - past) / 1000);
   
-    const years = Math.floor(secondsPast / 31536000); // 60 * 60 * 24 * 365
-    const months = Math.floor((secondsPast % 31536000) / 2592000); // 60 * 60 * 24 * 30
-    const days = Math.floor((secondsPast % 2592000) / 86400); // 60 * 60 * 24
-    const hours = Math.floor((secondsPast % 86400) / 3600); // 60 * 60
-    const minutes = Math.floor((secondsPast % 3600) / 60);
+    const days = Math.floor(secondsPast / 86400); // 60 * 60 * 24
+    const months = Math.floor(days / 30);
+    const years = Math.floor(days / 365);
   
-    // Display logic based on time difference
     if (secondsPast < 60) {
       return `${secondsPast} sec${secondsPast !== 1 ? "s" : ""} ago`;
     }
   
     if (secondsPast < 3600) {
+      const minutes = Math.floor(secondsPast / 60);
       return `${minutes} min${minutes !== 1 ? "s" : ""} ago`;
     }
   
     if (secondsPast < 86400) {
+      const hours = Math.floor(secondsPast / 3600);
       return `${hours} hr${hours !== 1 ? "s" : ""} ago`;
     }
   
-    if (secondsPast < 2592000) {  // 30 days
+    // Custom day/month display logic
+    if (days < 31) {
       return `${days} day${days !== 1 ? "s" : ""} ago`;
     }
   
-    if (years > 0) {
-      return `${years} year${years !== 1 ? "s" : ""} ${months > 0 ? `${months} month${months !== 1 ? "s" : ""}` : ""} ${days > 0 ? `${days} day${days !== 1 ? "s" : ""}` : ""} ago`;
+    // Show "1 month ago" only on the 31st day
+    if (days === 31) {
+      return `1 month ago`;
     }
   
-    if (months > 0) {
-      return `${months} month${months !== 1 ? "s" : ""} ${days > 0 ? `${days} day${days !== 1 ? "s" : ""}` : ""} ago`;
+    // For days between 32 and 60, show "x days ago"
+    if (days > 31 && days < 61) {
+      return `${days} days ago`;
     }
   
-    return `${days} day${days !== 1 ? "s" : ""} ago`;
-  }
+    // Show months only on exact multiples of 30 (after day 60)
+    if (days % 30 === 0) {
+      return `${months} month${months !== 1 ? "s" : ""} ago`;
+    }
+  
+    return `${days} days ago`;
+  };
 
   const isJobSaved = (jobId) => {
     return Array.isArray(savedJobs) && savedJobs.some((savedJob) => savedJob.id === jobId);
@@ -211,9 +218,7 @@ const SavedJobs = () => {
                               </Link>
                               <div className="d-flex align-items-center">
                               <button
-                                  className={`btn-light border-0 shadow me-2 ${
-                                    isJobSaved(job.id) ? "btn-primary" : ""
-                                  }`}
+                                  className={`btn-light border-0 shadow me-2 `}
                                   onClick={() => toggleSavedJob(job.id)}
                                   title={
                                     isJobSaved(job.id) ? "Click to unsave" : "Click to save"
@@ -227,9 +232,7 @@ const SavedJobs = () => {
                                   ></i>
                                   {/* {isJobSaved(job.id) ? "Saved" : "Save"} */}
                                 </button>
-                                <Link className="btn-light shadow me-2">
-                                  <i className="fa-solid fa-share"></i>
-                                </Link>
+                               
                               </div>
                             </div>
                             <div className="py-2">
@@ -267,7 +270,7 @@ const SavedJobs = () => {
                               {job.salary_range && job.salary_currency && (
                                 <li>
                                   <div className="btn btn-sm btn-green me-2 mb-2 text-capitalize">
-                                    <span>Salary -</span>{job.salary_currency} {job.salary_range}
+                                    {job.salary_currency} {job.salary_range} / <small>{job.hourly_rate}</small>
                                     
                                   </div>
                                 </li>

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Filter from "../components/Filter";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useFilterContext } from "../store/context";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
@@ -24,8 +24,9 @@ const AllJobPost = () => {
   const bearerKey = import.meta.env.VITE_BEARER_KEY;
   const API_URL = import.meta.env.VITE_API_URL;
   const IMG_URL = import.meta.env.VITE_IMG_URL;
-   const { user } = useAuthContext();
-    const userId = user ? user.id : null;
+  const { user } = useAuthContext();
+  const userId = user ? user.id : null;
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchJobs = async () => {
@@ -93,6 +94,14 @@ const AllJobPost = () => {
 
   // Toggle save job functionality
   const toggleSavedJob = async (jobId) => {
+     if (!userId) {
+      toast.error("Please login to save job.");
+      setTimeout(() => {
+        navigate('/login');
+      }, 2000);      
+      return;
+      }
+
     try {
       const formData = new FormData();
       formData.append('user_id', userId);
@@ -249,9 +258,9 @@ const AllJobPost = () => {
 
                                 ></i>
                               </Link>
-                              <Link className="btn-light shadow me-2">
+                              {/* <Link className="btn-light shadow me-2">
                                 <i className="fa-solid fa-share"></i>
-                              </Link>
+                              </Link> */}
                             </div>
                           </div>
                           <div className="py-2 ">
@@ -294,7 +303,7 @@ const AllJobPost = () => {
                             {job.salary_currency && job.salary_range && (
                               <li>
                                 <div className="btn btn-sm btn-green me-2 mb-2">
-                                  <span>Salary -</span> {job.salary_currency} {job.salary_range}
+                                  {job.salary_currency} {job.salary_range} <small>/ {job.hourly_rate}</small>
                                 </div>
                               </li>
                             )}

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState , useRef } from "react";
 import Navbar from "../../components/Navbar";
 import { useAuthContext } from "../../store/authContext";
 import Footer from "../../components/Footer";
@@ -7,7 +7,11 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 
+import html2pdf from "html2pdf.js"; 
+
 const MyAccount = () => {
+
+  const resumeRef = useRef()
   const { user } = useAuthContext();
   const userId = user ? user.id : null;
   const [userData, setUserData] = useState({});
@@ -723,7 +727,6 @@ const MyAccount = () => {
       ajaxModal.hide();
     }
   }
-
 
   // Employment Starts -------
 
@@ -1923,6 +1926,19 @@ const MyAccount = () => {
   }
 
 
+    const handleDownload = () => {
+    const element = resumeRef.current;
+    const opt = {
+      margin:       0.5,
+      filename:     `${user.name || "resume"}.pdf`,
+      image:        { type: 'jpeg', quality: 0.98 },
+      html2canvas:  { scale: 2 },
+      jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+    };
+    html2pdf().set(opt).from(element).save();
+  };  
+
+
   return (
     <div id="my_account_page" className="my_account_page">
       <Navbar />
@@ -1987,8 +2003,11 @@ const MyAccount = () => {
                   </div>
                 </div>
               </div>
+              <div className="text-end py-3">
+                <button className="btn btn-register" data-bs-toggle="modal" data-bs-target="#resumeModal">Preview Resume</button>
+              </div>
 
-              <div className="card mt-4 shadow border-0 rounded-3">
+              <div className="card  shadow border-0 rounded-3">
                 <div className="card-body">
                   <div className="row">
                     <div className="col-md-4 col-lg-3 col-xl-2 mb-3 mb-md-0">
@@ -4658,7 +4677,7 @@ const MyAccount = () => {
                     <div className="row">
                       <div className="col-md-6 col-6">
                         <label htmlFor="">Personal</label>
-                        <p>
+                        <p className="text-capitalize">
                           {userData.gender && userData.maritial_status
                             ? `${userData.gender}, ${userData.maritial_status}`
                             : userData.gender
@@ -4671,7 +4690,7 @@ const MyAccount = () => {
 
                       <div className="col-md-6 col-6">
                         <label htmlFor="">Date of birth</label>
-                        <p>
+                        <p className="text-capitalize">
                           {userData.dob ? (
                             <span>{userData.dob}</span>
                           ) : (
@@ -4679,9 +4698,10 @@ const MyAccount = () => {
                           )}
                         </p>
                       </div>
+                      
                       <div className="col-md-6 col-6">
                         <label htmlFor="">Category</label>
-                        <p>
+                        <p className="text-capitalize">
                           {userData.category ? (
                             <span>{userData.category}</span>
                           ) : (
@@ -4691,7 +4711,7 @@ const MyAccount = () => {
                       </div>
                       <div className="col-md-6 col-6">
                         <label htmlFor="">Address</label>
-                        <p>
+                        <p className="text-capitalize">
                           {userData.permanent_address ? (
                             <span>{userData.permanent_address}</span>
                           ) : (
@@ -4701,7 +4721,7 @@ const MyAccount = () => {
                       </div>
                       <div className="col-md-6 col-6">
                         <label htmlFor="">Zipcode</label>
-                        <p>
+                        <p className="text-capitalize">
                           {userData.pincode ? (
                             <span>{userData.pincode}</span>
                           ) : (
@@ -4711,7 +4731,7 @@ const MyAccount = () => {
                       </div>
                       <div className="col-md-6 col-6">
                         <label htmlFor="">City</label>
-                        <p>
+                        <p className="text-capitalize">
                           {userData.city ? (
                             <span>{userData.city}</span>
                           ) : (
@@ -5650,6 +5670,282 @@ const MyAccount = () => {
         pauseOnHover
       />
       <Footer />
+
+      {/* Resume Modal  */}
+      <div className="modal fade" id="resumeModal" tabindex="-1" aria-labelledby="resumeModalLabel" aria-hidden="true">
+      <div className="modal-dialog modal-lg">
+          <div className="modal-content">
+            <div className="modal-header ">
+                <h1 className="modal-title fs-4" id="resumeModalLabel">Resume</h1>
+                <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div className="modal-body pt-3 pb-3 p-4 px-md-5" ref={resumeRef}>
+                <div className="card candidate_resume">
+                    <div className="card-body ">
+                        <div className="d-flex align-items-center pb-3 border-bottom">
+                          <div className="resume_profile_image me-3"><img src={profileImage} style={{borderRadius:"50%", height:"75px"}} alt="profile_image" /></div>
+                            <div className="user_details">
+                              <h5 className="mb-1 text-uppercase">{user.name}</h5>
+                              {/* <h6 className="m-0">Front End Developer</h6> */}
+                              <div className="d-flex align-items-baseline contact_details">
+                                  <div className="d-flex align-items-center text-muted border-end me-3 pe-2">
+                                      <i className="fa-solid fa-envelope me-2"></i>
+                                      <span>{user.email}</span>
+                                  </div>
+                                  <div className="d-flex align-items-center text-muted">
+                                      <i className="fa-solid fa-phone me-2"></i>
+                                      <span>{user.phone}</span>
+                                  </div>
+                              </div>
+                            </div>
+                        </div>
+                        
+                        <div className="border-bottom details">
+                            <h6 className="text-uppercase fw-semibold">Objective</h6>        
+                            <p className="m-0">Lorem ipsum dolor, sit amet consectetur adipisicing elit. Incidunt mollitia ex beatae deleniti a deserunt neque quod ad natus possimus iure quasi reiciendis, aspernatur dolorem rem officiis asperiores vel assumenda.</p>
+                        </div> 
+
+                        <div className="border-bottom details">
+                            <h6 className="text-uppercase fw-semibold">Personal Details</h6>        
+                            
+                            <div className="row">
+                                <div className="col-sm-4 col-6"><span className="text-uppercase">Gender </span></div>
+                                <div className="col-sm-8  col-6 text-capitalize"><span className="me-2">:</span>
+                                  {userData.gender ? (
+                                    <span>{userData.gender}</span>
+                                  ) : (
+                                    <span className="text-muted">N/A</span>
+                                  )}
+                                </div>
+                            </div>
+                            <div className="row">
+                                <div className="col-sm-4 col-6"><span className="text-uppercase">Date of birth </span></div>
+                                <div className="col-sm-8  col-6 text-capitalize"><span className="me-2">:</span>
+                                    {userData.dob ? (
+                                      <span>{userData.dob}</span>
+                                    ) : (
+                                      <span className="text-muted">N/A</span>
+                                    )}
+                                </div>
+                            </div>
+                            <div className="row">
+                                <div className="col-sm-4 col-6"><span className="text-uppercase">Maritial status </span></div>
+                                <div className="col-sm-8  col-6 text-capitalize"><span className="me-2">:</span>
+                                  {userData.maritial_status ? (
+                                      <span>{userData.maritial_status}</span>
+                                    ) : (
+                                      <span className="text-muted">N/A</span>
+                                    )}
+                                </div>
+                            </div>
+                            <div className="row">
+                                <div className="col-sm-4 col-6"><span className="text-uppercase">Address </span></div>
+                                <div className="col-sm-8  col-6 text-capitalize"><span className="me-2">:</span>
+                                {userData.permanent_address ? (
+                                    <span>{userData.permanent_address}</span>
+                                  ) : (
+                                    <span className="text-muted">N/A</span>
+                                  )}
+                                </div>
+                            </div>
+
+                            {/* <div className="row">
+                                <div className="col-sm-4 col-6"><span className="text-uppercase">Religion </span></div>
+                                <div className="col-sm-8  col-6"><span>: &nbsp; Christian</span></div>
+                            </div> */}
+
+                            <div className="row">
+                                <div className="col-sm-4 col-6"><span className="text-uppercase">Zipcode </span></div>
+                                <div className="col-sm-8  col-6"><span className="me-2">:</span>{userData.pincode ? (
+                              <span>{userData.pincode}</span>
+                            ) : (
+                              <span className="text-muted">N/A</span>
+                            )}</div>
+                            </div>
+                        </div> 
+
+                        <div className="border-bottom details">
+                            <h6 className="text-uppercase fw-semibold">Educational Details</h6>        
+                            
+                            {education.length > 0 ? (
+                              education.map((edu, index) => {
+                                const educationLabel =
+                                  edu.education === "4"
+                                    ? "12th"
+                                    : edu.education === "5"
+                                      ? "10th"
+                                      : edu.education;
+
+                                return (
+                                  // <div key={index} className="mt-4 employment_details">
+                                  //   <div className="mb-3">
+                                  //     <div className="d-flex align-items-baseline education_section">
+                                  //       <h6 style={{ fontWeight: "500" }} className="m-0 text-capitalize">
+                                  //         {edu.specialization
+                                  //           ? `${edu.course} - ${edu.specialization}`
+                                  //           : (`${edu.course || educationLabel} | ${edu.school_medium}`)}
+                                  //       </h6>
+                                        
+                                  //     </div>
+                                  //     <h6 className="m-0 text-capitalize">
+                                  //       {edu.course && edu.course_type
+                                  //         ? ` ${edu.course_type}`
+                                  //         : edu.specialization
+                                  //           ? `${edu.specialization} ${edu.passing_year}`
+                                  //           : ""}
+                                  //     </h6>
+
+                                  //     <p className="m-0">
+                                  //       <small className="text-capitalize">
+                                  //         {edu.education === "4" || edu.education === "5"
+                                  //           ? `${edu.board} - ${edu.passing_year}`
+                                  //           : `${edu.course_starting_year} - ${edu.course_ending_year} `}
+                                  //       </small>
+                                  //     </p>
+                                  //   </div>
+                                  // </div>
+
+                                    <div key={index} className="row mb-2">
+                                        <div className="col-sm-4 col-6">
+                                          <span className="text-uppercase">
+                                          {edu.specialization
+                                            ? `${edu.course}`
+                                            : (`${edu.course || educationLabel} `)}
+                                            </span>
+                                        </div>
+                                        <div className="col-sm-8  col-6 d-flex align-items-baseline">
+                                          <span className="me-2">:</span>
+                                          <div>
+                                              <h6 className="mb-0"> 
+                                              {edu.school_medium}
+                                              {edu.course && edu.course_type && edu.specialization
+                                              ? `${edu.specialization} | ${edu.course_type}`
+                                              : edu.specialization
+                                                ? `${edu.specialization} ${edu.passing_year}`
+                                                : ""}
+                                            </h6>
+                                            <p className="mb-0 text-capitalize"> 
+                                              {edu.education === "4" || edu.education === "5"
+                                                ? `${edu.board} - ${edu.passing_year}`
+                                                : `${edu.course_starting_year} - ${edu.course_ending_year} `}
+                                            </p>
+                                          </div>
+                                            {/* <p className="mb-0">BCA | 2020</p> */}
+                                        </div>
+                                    </div>
+                                );
+                              })
+                            ) : (
+                              <p className="m-0 text-muted">No educational details filled yet.</p>
+                            )}   
+                        </div> 
+
+                        <div className="border-bottom details">
+                            <h6 className="text-uppercase fw-semibold">Employment Details</h6>        
+                            {employment && employment.length > 0 ? (
+                            employment.map((employ) => (
+                              // <div className="mb-3" key={employ.id}>
+                              //   <div className="d-flex align-items-baseline">
+                              //     <h6 style={{ fontWeight: "500" }} className="hh text-capitalize m-0">{employ.current_job_title}</h6>
+                              //   </div>
+                              //   <h6 style={{ fontWeight: "400" }} className="text-capitalize m-0">{employ.current_company_name}</h6>
+
+                              //   <p className="m-0">
+                              //     <small>
+                              //       <span>
+                              //         {employ.employment_type} | {employ.joining_date} to{" "}
+                              //         {employ.worked_till || "Present"}
+                              //       </span>
+                              //     </small>
+                              //   </p>
+                              // </div>
+
+                              <div className="row mb-2" key={employ.id}>
+                                <div className="col-sm-4 col-6"><span className="text-uppercase">{employ.current_company_name}</span></div>
+                                <div className="col-sm-8  col-6 d-flex align-items-baseline">
+                                  <span className="me-2">:</span>
+                                    <div>
+                                      <h6 className="mb-0">{employ.current_job_title}</h6>
+                                      <p className="mb-0">
+                                        <span>
+                                        {employ.employment_type} | {employ.joining_date} to{" "}
+                                        {employ.worked_till || "Present"}
+                                      </span>
+                                      </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                              ))
+                            ) : (
+                              <p className="text-muted">No employment details filled yet.</p>
+                            )}
+                        </div>
+                         <div className="border-bottom details">
+                            <h6 className="text-uppercase fw-semibold">Skills</h6>
+                             {userData.skills && userData.skills.length > 0 ? (
+                                <div className="row mb-2" >
+                                  <div className="col-sm-4 col-6"><span className="text-uppercase">Key Skills</span>
+                                  </div>
+                                  <div className="col-sm-8  col-6 d-flex align-items-baseline">
+                                    <span className="me-2">:</span>
+                                        <p className="mb-0">
+                                      {userData.skills.split(",").map((skill, index) => (
+                                          <span key={index}>{skill.trim()}, &nbsp;</span>
+                                        ))}
+                                        </p>
+                                  </div>
+                              </div>
+                    ) : (
+                      <p className="m-0 text-muted">No skills added yet</p>
+                    )}
+
+                            
+                        </div>
+
+                        <div className="py-3 details">
+                            <h6 className="text-uppercase fw-semibold">Certificates</h6> 
+                            {certificates.length > 0 ? (
+                              certificates.map((certificate, index) => (
+                                  <div key={index} className="row mb-2">
+                                      <div className="col-sm-4 col-6"><span className="text-uppercase">{certificate.certification_name}</span></div>
+                                      <div className="col-sm-8  col-6 d-flex align-items-baseline">
+                                        <span className="me-2">:</span>
+                                        <div>
+                                          <p className="mb-0 text-theme"> {certificate.certification_url}</p>
+                                          <p className="mb-0 "> {certificate.expire_on ? (
+                                            <small>Expire On - {certificate.expire_on}</small>
+                                            ) : (
+                                              <small>Validity - Lifetime</small>
+                                            )}
+                                          </p>
+                                        </div>
+                                      </div>
+                                  </div>
+                              ))
+                            ) : (
+                              <p className="text-muted m-0">No certifications added yet</p>
+                            )}       
+                        </div>  
+
+                    </div>
+                </div>
+            </div>
+            <div className="modal-footer border-0">
+                {/* <button onClick={handleDownload} className="btn btn-primary">
+                  <i className="fa fa-download me-2"></i> Download Resume
+                </button> */}
+                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+          </div>
+      </div>
+      </div>     
+
+
+
+
+
+
     </div>
   );
 };
