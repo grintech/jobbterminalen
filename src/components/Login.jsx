@@ -215,7 +215,7 @@ const Login = () => {
                       )}
 
                       <p className="mb-3 text-center">
-                        {t("Already-account")}
+                        {t("Dont-account")}
                         <Link to="/register" className="text-theme ms-1">
                           {t("Register")}
                         </Link>

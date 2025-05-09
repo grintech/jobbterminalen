@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Navbar from "../components/Navbar";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Footer from "../components/Footer";
 import axios from "axios";
 import { useTranslation } from "react-i18next";
@@ -11,6 +11,7 @@ import { toast, ToastContainer } from "react-toastify";
 const AllEmployers = () => {
 
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
   const [companies, setCompanies] = useState([]); 
   const [loading, setLoading] = useState(true); 
@@ -153,6 +154,9 @@ const AllEmployers = () => {
     const toggleLike = async (companyId) => {
       if (!userId) {
         toast.error("Please login to like companies.");
+        setTimeout(() => {
+          navigate('/login');
+        }, 2000);
         return;
       }
   
@@ -268,7 +272,7 @@ const AllEmployers = () => {
                             />
                           </Link>
                         </div>
-                        <div className="pt-5 pb-3">
+                        <div className="pt-4 pb-3">
                           <Link to={`/companies/${company.slug}`}>
                             <h5>{company.company_name}</h5>
                           </Link>

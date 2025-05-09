@@ -40,7 +40,7 @@ const Navbar = () => {
    <>
      <header>
       <nav className="navbar navbar-expand-lg shadow-sm">
-    <div className="container">
+      <div className="container">
         <Link to='/' className="navbar-brand" >
             <img src="/images/job-logo1.png" alt="logo" />
         </Link>
@@ -53,7 +53,7 @@ const Navbar = () => {
                        {t("ForEmployers")}
                     </Link>
                     <ul className="dropdown-menu">
-                        <li><Link target='_blank' to={`${empLogin}`} className="dropdown-item" >{t("EmpLogin")}</Link></li>
+                        <li><Link  to={`${empLogin}`} className="dropdown-item" >{t("EmpLogin")}</Link></li>
                     </ul>
                 </li>
         </ul>
@@ -108,11 +108,11 @@ const Navbar = () => {
 
         <ul className="navbar-nav mx-auto d-lg-flex mb-2 mb-lg-0">
             <li className="nav-item">
-                <Link to="/" className="nav-link" aria-current="page">{t("Home")}</Link>
+                <Link to="/home" className="nav-link" aria-current="page">{t("Home")}</Link>
             </li>
-            <li className="nav-item">
+            {/* <li className="nav-item">
                 <Link to="/about" className="nav-link">{t("About")}</Link>
-            </li>
+            </li> */}
             <li className="nav-item">
                 <Link to="/jobs" className="nav-link">{t("Jobs")}</Link>
             </li>
@@ -134,9 +134,9 @@ const Navbar = () => {
                 <li><Link to="/companies/featured" className="dropdown-item">{t("FeaturedCompanies")}</Link></li>
                 </ul>
             </li> */}
-            <li className="nav-item">
+            {/* <li className="nav-item">
                 <Link to="/contact" className="nav-link">{t("ContactUs")}</Link>
-            </li>
+            </li> */}
             </ul>
         { !user ? (
         <>
@@ -172,7 +172,7 @@ const Navbar = () => {
             {t("ForEmployers")}
             </Link>
             <ul className="dropdown-menu">
-                <li><Link target='_blank' to={`${empLogin}`} className="dropdown-item" >{t("EmpLogin")}</Link></li>
+                <li><Link  to={`${empLogin}`} className="dropdown-item" >{t("EmpLogin")}</Link></li>
             </ul>
             </li>
         </ul>

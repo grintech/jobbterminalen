@@ -181,7 +181,7 @@ const SearchJobs = () => {
                               </div>
                               <div className="d-flex align-items-center">
                                 <button
-                                  className={`btn-light border-0 shadow me-2 ${isJobSaved(job.job_id) ? "btn-primary" : ""}`}
+                                  className={`btn-light border-0 shadow me-2 `}
                                   onClick={() => toggleSavedJob(job.job_id)}
                                 >
                                   <i

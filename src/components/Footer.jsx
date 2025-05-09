@@ -62,7 +62,7 @@ const Footer = () => {
                 <div className="col-lg-2 col-md-4 col-sm-6 col-6 order-4">
                 <h5 className='mt-3'>{ t("Employer")}</h5>
                 <ul className='p-0' >
-                    <li><Link target='_blank' to={EMP_URL}><i className="fa-solid fa-chevron-right"></i>{ t("EmpLogin")}</Link></li>
+                    <li><Link  to={EMP_URL}><i className="fa-solid fa-chevron-right"></i>{ t("EmpLogin")}</Link></li>
                     <li><Link><i className="fa-solid fa-chevron-right"></i>{ t("JobPosting")}</Link></li>
                     
                     <li><Link><i className="fa-solid fa-chevron-right"></i>{ t("BannerPosting")}</Link></li>

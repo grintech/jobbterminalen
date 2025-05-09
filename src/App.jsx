@@ -103,7 +103,10 @@ const App = () => {
         <Route path='/job/category/:slug' element={ <CategoryList />} />
         {/* <Route path='/job-detail' element={ <JobDetail />} /> */}
         <Route path='/jobs/:slug' element={ <JobDetail />} />
-        <Route path='/apply-job' element={ <ApplyJob />} />
+
+        <Route path='/apply-job'  element={ <ProtectedRoute allowedRoles={["job_seeker"]}> <ApplyJob /> </ProtectedRoute> } />
+
+        {/* <Route path='/apply-job' element={ <ApplyJob />} /> */}
 
         {/* <Route path='/search-job' element={ <SearchPage />} /> */}
         <Route path='/job-search' element={ <SearchJobs />} />

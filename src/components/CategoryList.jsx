@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Navbar from "./Navbar";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import Footer from "./Footer";
 import axios from "axios";
 import { ToastContainer, toast } from 'react-toastify';
@@ -16,6 +16,8 @@ const CategoryList = () => {
   const [loginAlert, setLoginAlert]= useState('')
   const { user } = useAuthContext();
   const userId = user ? user.id : null;
+
+  const navigate = useNavigate();
 
   const IMG_URL = import.meta.env.VITE_IMG_URL;
   const bearerKey = import.meta.env.VITE_BEARER_KEY;
@@ -69,39 +71,46 @@ const CategoryList = () => {
     const past = new Date(timestamp.replace(" ", "T"));
     const secondsPast = Math.floor((now - past) / 1000);
   
-    const years = Math.floor(secondsPast / 31536000); // 60 * 60 * 24 * 365
-    const months = Math.floor((secondsPast % 31536000) / 2592000); // 60 * 60 * 24 * 30
-    const days = Math.floor((secondsPast % 2592000) / 86400); // 60 * 60 * 24
-    const hours = Math.floor((secondsPast % 86400) / 3600); // 60 * 60
-    const minutes = Math.floor((secondsPast % 3600) / 60);
+    const days = Math.floor(secondsPast / 86400); // 60 * 60 * 24
+    const months = Math.floor(days / 30);
+    const years = Math.floor(days / 365);
   
-    // Display logic based on time difference
     if (secondsPast < 60) {
       return `${secondsPast} sec${secondsPast !== 1 ? "s" : ""} ago`;
     }
   
     if (secondsPast < 3600) {
+      const minutes = Math.floor(secondsPast / 60);
       return `${minutes} min${minutes !== 1 ? "s" : ""} ago`;
     }
   
     if (secondsPast < 86400) {
+      const hours = Math.floor(secondsPast / 3600);
       return `${hours} hr${hours !== 1 ? "s" : ""} ago`;
     }
   
-    if (secondsPast < 2592000) {  // 30 days
+    // Custom day/month display logic
+    if (days < 31) {
       return `${days} day${days !== 1 ? "s" : ""} ago`;
     }
   
-    if (years > 0) {
-      return `${years} year${years !== 1 ? "s" : ""} ${months > 0 ? `${months} month${months !== 1 ? "s" : ""}` : ""} ${days > 0 ? `${days} day${days !== 1 ? "s" : ""}` : ""} ago`;
+    // Show "1 month ago" only on the 31st day
+    if (days === 31) {
+      return `1 month ago`;
     }
   
-    if (months > 0) {
-      return `${months} month${months !== 1 ? "s" : ""} ${days > 0 ? `${days} day${days !== 1 ? "s" : ""}` : ""} ago`;
+    // For days between 32 and 60, show "x days ago"
+    if (days > 31 && days < 61) {
+      return `${days} days ago`;
     }
   
-    return `${days} day${days !== 1 ? "s" : ""} ago`;
-  }
+    // Show months only on exact multiples of 30 (after day 60)
+    if (days % 30 === 0) {
+      return `${months} month${months !== 1 ? "s" : ""} ago`;
+    }
+  
+    return `${days} days ago`;
+  };
 
   
 
@@ -174,6 +183,9 @@ const CategoryList = () => {
   const toggleSavedJob = async (jobId) => {
     if (!userId) {
       toast.error("Please login to save jobs."); 
+      setTimeout(() => {
+        navigate("/login");
+      }, 2000);
       return;
     }
   
@@ -275,9 +287,7 @@ const CategoryList = () => {
                               </Link>
                               <div className="d-flex align-items-center">
                                 <button
-                                  className={`btn-light border-0 shadow me-2 ${
-                                    isJobSaved(job.id) ? "btn-primary" : ""
-                                  }`}
+                                  className={`btn-light border-0 shadow me-2 `}
                                   onClick={() => toggleSavedJob(job.id)}
                                 >
                                   <i
@@ -312,7 +322,7 @@ const CategoryList = () => {
                               {job.salary_currency && job.salary_range && (
                                 <li>
                                   <div className="btn btn-sm btn-green me-2 mb-2 text-capitalize">
-                                    <span>Salary - </span>{job.salary_currency} {job.salary_range}
+                                   {job.salary_currency} {job.salary_range} <small>/ {job.hourly_rate}</small>
                                     
                                   </div>
                                 </li>

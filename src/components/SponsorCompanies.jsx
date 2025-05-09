@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
 import { useAuthContext } from '../store/authContext';
@@ -20,6 +20,7 @@ const SponsorCompanies = () => {
   const userId = user ? user.id : null;
 
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
   // Fetch industries from the API
   useEffect(() => {
@@ -90,6 +91,9 @@ const SponsorCompanies = () => {
   const toggleSaveCompany = async (companyId) => {
     if (!userId) {
       toast.error("Please login to save companies.");
+      setTimeout(() => {
+        navigate('/login')
+      }, 2000);      
       return;
     }
 
@@ -204,7 +208,7 @@ const SponsorCompanies = () => {
                         <h5 className="m-0">{company.company_name}</h5>
                       </Link>
                     </div>
-                    <p className='text-capitalize'>{company.company_industry}</p>
+                    <p className='text-capitalize'>{company.company_industry.replace(/-/g, ' ')}</p>
                     <p className="main_desc">{company.company_tagline}</p>
                     <div className="d-flex justify-content-center align-items-center">
                       <Link to={`/companies/${company.slug}`} className="btn btn-login mx-2">

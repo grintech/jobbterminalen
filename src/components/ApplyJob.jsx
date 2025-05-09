@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { useAuthContext } from "../store/authContext";
 import { ToastContainer, toast } from "react-toastify";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
 
@@ -20,6 +20,8 @@ const ApplyJob = () => {
 
   const bearerKey = import.meta.env.VITE_BEARER_KEY;
   const API_URL = import.meta.env.VITE_API_URL;
+
+  const navigate = useNavigate();
 
   const stripHtml = (html) => {
     const doc = new DOMParser().parseFromString(html, "text/html");
@@ -253,6 +255,10 @@ const ApplyJob = () => {
         setIsSubmitting(false);
         setCoverLetter(""); // Reset fields
         setCertificates([]); // Reset fields
+
+        setTimeout(() => {
+          navigate('/jobs');
+        },2000);
       } else {
         toast.error(response.data.message);
       }
@@ -273,7 +279,7 @@ const ApplyJob = () => {
           <div className="card">
             <div className="card-body p-4 p-md-5">
             <h1 className="text-start fs-4 mb-3">
-            {userId ? `Apply for ${stripHtml(jobTitle)}` : "Apply"}
+            {userId ? `Apply for ${jobTitle.replace(/-/g, ' ')}` : "Apply"}
           </h1>
             <p className="text-muted text-start">Please complete the form below to apply for a position with us.</p>
 
@@ -284,7 +290,7 @@ const ApplyJob = () => {
               <input type="hidden" name="recruiter_id" value={formData.recruiter_id || ''} />
 
               <div className="mb-3">
-                <label className="form-label" htmlFor="name">Username <span className="text-danger">*</span></label>
+                <label className="form-label" htmlFor="name">Name <span className="text-danger">*</span></label>
                 <input
                   className="form-control"
                   type="text"
@@ -349,42 +355,7 @@ const ApplyJob = () => {
               </div>
 
               <div className="mb-4">
-                <label className="form-label" htmlFor="resume">Resume <span className="text-danger">*</span></label>
-                <p className="text-muted text-start">75% of recruiters discover candidates through their resume.</p>
-
-                <div className="file-input mb-2">
-                  <div className="input-box" onClick={() => fileInputRef.current.click()}>
-                    <h5>
-                      <i className="fa-solid fa-upload me-2"></i>
-                      {formData.resume ? 'Upload new resume' : 'Choose File to Upload'} 
-                       </h5>
-                  </div>
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    className="form-control d-none"
-                    accept=".pdf"
-                    onChange={handleFileChange}
-                    
-                  />
-                </div>
-
-                {formData.resume && (
-                  <div className="d-flex justify-content-center flex-wrap mb-2 select_file">
-                    <h5 className="mt-2 text-success me-3 mb-0">
-                      Selected File: {fileName}
-                    </h5>
-                    <div className=" mt-2 ">
-                      <i className="fa-solid fa-trash" onClick={handleRemoveResume}></i>
-                    </div>
-                  </div>
-                )}
-                
-                {!formData.resume && <small className="text-muted text-start">Supported Formats: doc, docx, rtf, pdf, up to 2 MB</small>}
-              </div>
-
-              <div className="mb-4">
-                <label className="form-label">Cover Letter (optional):</label>
+                <label className="form-label">Cover Letter</label>
                 <textarea
                   rows={5}
                   className="form-control"
@@ -397,65 +368,106 @@ const ApplyJob = () => {
                 </div>
               </div>
 
-              <div className="mb-3">
-                <label className="form-label">Upload Certificate (optional):</label>
-                <div className="d-flex align-items-center gap-2">
-                  {/* <input
-                    type="file"
-                    multiple
-                    accept=".pdf,.doc,.docx"
-                    className="form-control"
-                    onChange={handleCertificatesChange}
-                    ref={fileInputRef1}
-                  /> */}
-                
-                </div>
-                <div className="file-input mb-2">
-                  <div className="input-box" onClick={() => fileInputRef1.current.click()}>
-                    <h5>
-                      <i className="fa-solid fa-upload me-2"></i>
-                      Choose File to Upload
-                       </h5>
+
+
+              <div className="row">
+                <div className="col-md-6 mb-4">
+                  <label className="form-label" htmlFor="resume">Resume <span className="text-danger">*</span></label>
+                  {/* <p className="text-muted text-start">75% of recruiters discover candidates through their resume.</p> */}
+
+                  <div className="file-input mb-2">
+                    <div className="input-box" onClick={() => fileInputRef.current.click()}>
+                      <h6 className="m-0">
+                        <i className="fa-solid fa-upload me-2"></i>
+                        {formData.resume ? 'Upload new resume' : 'Choose File to Upload'} 
+                        </h6>
+                    </div>
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      className="form-control d-none"
+                      accept=".pdf"
+                      onChange={handleFileChange}
+                      
+                    />
                   </div>
-                 
-                  <input
-                    type="file"
-                    multiple
-                    accept=".pdf"
-                    className="form-control d-none"
-                    onChange={handleCertificatesChange}
-                    ref={fileInputRef1}
-                  />
+
+                  {formData.resume && (
+                    <div className=" mb-2 d-flex align-items-baseline select_file">
+                      <h6 className="mt-2 text-success me-3 mb-0">
+                        Selected File: {fileName}
+                      </h6>
+                      <div className=" mt-2 ">
+                        <i className="fa-solid fa-trash" onClick={handleRemoveResume}></i>
+                      </div>
+                    </div>
+                  )}
+                  
+                  {!formData.resume && <small className="text-muted text-start">Supported Formats: doc, docx, rtf, pdf, up to 2 MB</small>}
                 </div>
+          
+                <div className=" col-md-6 mb-3">
+                  <label className="form-label">Upload Certificates</label>
+                  <div className="d-flex align-items-center gap-2">
+                    {/* <input
+                      type="file"
+                      multiple
+                      accept=".pdf,.doc,.docx"
+                      className="form-control"
+                      onChange={handleCertificatesChange}
+                      ref={fileInputRef1}
+                    /> */}
+                  
+                  </div>
+                  <div className="file-input mb-2">
+                    <div className="input-box" onClick={() => fileInputRef1.current.click()}>
+                      <h6 className="m-0">
+                        <i className="fa-solid fa-upload me-2"></i>
+                         Upload certificates
+                        </h6>
+                    </div>
+                  
+                    <input
+                      type="file"
+                      multiple
+                      accept=".pdf"
+                      className="form-control d-none"
+                      onChange={handleCertificatesChange}
+                      ref={fileInputRef1}
+                    />
+                  </div>
 
-                {certificates.length > 0 && <span className="badge bg-theme">
-                  {certificates.length} file{certificates.length !== 1 ? "s" : ""} selected
-                 </span>
-                }
+                  {certificates.length > 0 && <span className="badge bg-theme">
+                    {certificates.length} file{certificates.length !== 1 ? "s" : ""} selected
+                  </span>
+                  }
 
-                {certificates.length > 0 && (
-                  <div className="mt-4 preview_certificates">
-                    <h6>Selected Certificates:</h6>
-                    <ul className="list-group">
-                      {certificates.map((file, index) => (
-                        <li
-                          key={index}
-                          className="list-group-item d-flex justify-content-between align-items-center"
-                        >
-                          {file.name}
-                          <button
-                            type="button"
-                            className="btn btn-sm btn-danger"
-                            onClick={() => handleRemoveFile(index)}
+                  {certificates.length > 0 && (
+                    <div className="mt-4 preview_certificates">
+                      <h6>Selected Certificates:</h6>
+                      <ul className="list-group">
+                        {certificates.map((file, index) => (
+                          <li
+                            key={index}
+                            className="list-group-item d-flex justify-content-between align-items-center"
                           >
-                            <i className="fa-solid fa-trash"></i>
-                          </button>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-              </div>
+                            {file.name}
+                            <button
+                              type="button"
+                              className="btn btn-sm btn-danger"
+                              onClick={() => handleRemoveFile(index)}
+                            >
+                              <i className="fa-solid fa-trash"></i>
+                            </button>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+             </div>
+
+             
 
               <button className="btn btn-register rounded-2 py-3 fs-6 w-100 mt-3"
                type="submit"

@@ -18,8 +18,9 @@ const resources = {
       "ConfirmPass_placeholder": "Confirm password",
       "Forget-Password?": "Forgot Password?",
       "ResendLink" : "Resend Verification Link",
-      "Copyright": "Copyright ©2025 by JobbTerminalen | All Rights Reserved.",
+      "Copyright": "Copyright ©2025 by Jobbterminalen | All Rights Reserved.",
       "Already-account": "Already have an account?",
+      "Dont-account": "Don't have an account?",
       "Terms": "Terms of use",
       "Privacy": "Privacy Policy",
        /*--- Forgot Password ---*/
@@ -517,8 +518,9 @@ const resources = {
       "ConfirmPass_placeholder": "Bekräfta lösenord",
       "Forget-Password?": "Glömt lösenord?",
       "ResendLink": "Skicka verifieringslänk",
-      "Copyright": "Upphovsrätt ©2025 av JobbTerminalen | Alla rättigheter förbehållna.",
+      "Copyright": "Upphovsrätt ©2025 av Jobbterminalen | Alla rättigheter förbehållna.",
       "Already-account": "Har du redan ett konto?",
+      "Dont-account": "Har du inget konto??",
       "Terms": "Villkor för användning",
       "Privacy": "Integritetspolicy",
       /*--- Forgot Password ---*/

@@ -117,7 +117,7 @@ const Appliedjobs = () => {
             setSimilarJobs(response.data.similar_jobs || []);
           }
         } catch (error) {
-          console.error('Error fetching similar jobs:', error);
+          console.error('Error fetching :', error);
         }
       };
       
@@ -148,46 +148,46 @@ const Appliedjobs = () => {
       }
     };
 
-    const calculateTimeAgo = (timestamp) => {
-      if (!timestamp) return "";
+    // const calculateTimeAgo = (timestamp) => {
+    //   if (!timestamp) return "";
     
-      const now = new Date();
-      const past = new Date(timestamp.replace(" ", "T"));
-      const secondsPast = Math.floor((now - past) / 1000);
+    //   const now = new Date();
+    //   const past = new Date(timestamp.replace(" ", "T"));
+    //   const secondsPast = Math.floor((now - past) / 1000);
     
-      const years = Math.floor(secondsPast / 31536000); // 60 * 60 * 24 * 365
-      const months = Math.floor((secondsPast % 31536000) / 2592000); // 60 * 60 * 24 * 30
-      const days = Math.floor((secondsPast % 2592000) / 86400); // 60 * 60 * 24
-      const hours = Math.floor((secondsPast % 86400) / 3600); // 60 * 60
-      const minutes = Math.floor((secondsPast % 3600) / 60);
+    //   const years = Math.floor(secondsPast / 31536000); // 60 * 60 * 24 * 365
+    //   const months = Math.floor((secondsPast % 31536000) / 2592000); // 60 * 60 * 24 * 30
+    //   const days = Math.floor((secondsPast % 2592000) / 86400); // 60 * 60 * 24
+    //   const hours = Math.floor((secondsPast % 86400) / 3600); // 60 * 60
+    //   const minutes = Math.floor((secondsPast % 3600) / 60);
     
-      // Display logic based on time difference
-      if (secondsPast < 60) {
-        return `${secondsPast} sec${secondsPast !== 1 ? "s" : ""} ago`;
-      }
+    //   // Display logic based on time difference
+    //   if (secondsPast < 60) {
+    //     return `${secondsPast} sec${secondsPast !== 1 ? "s" : ""} ago`;
+    //   }
     
-      if (secondsPast < 3600) {
-        return `${minutes} min${minutes !== 1 ? "s" : ""} ago`;
-      }
+    //   if (secondsPast < 3600) {
+    //     return `${minutes} min${minutes !== 1 ? "s" : ""} ago`;
+    //   }
     
-      if (secondsPast < 86400) {
-        return `${hours} hr${hours !== 1 ? "s" : ""} ago`;
-      }
+    //   if (secondsPast < 86400) {
+    //     return `${hours} hr${hours !== 1 ? "s" : ""} ago`;
+    //   }
     
-      if (secondsPast < 2592000) {  // 30 days
-        return `${days} day${days !== 1 ? "s" : ""} ago`;
-      }
+    //   if (secondsPast < 2592000) {  // 30 days
+    //     return `${days} day${days !== 1 ? "s" : ""} ago`;
+    //   }
     
-      if (years > 0) {
-        return `${years} year${years !== 1 ? "s" : ""} ${months > 0 ? `${months} month${months !== 1 ? "s" : ""}` : ""} ${days > 0 ? `${days} day${days !== 1 ? "s" : ""}` : ""} ago`;
-      }
+    //   if (years > 0) {
+    //     return `${years} year${years !== 1 ? "s" : ""} ${months > 0 ? `${months} month${months !== 1 ? "s" : ""}` : ""} ${days > 0 ? `${days} day${days !== 1 ? "s" : ""}` : ""} ago`;
+    //   }
     
-      if (months > 0) {
-        return `${months} month${months !== 1 ? "s" : ""} ${days > 0 ? `${days} day${days !== 1 ? "s" : ""}` : ""} ago`;
-      }
+    //   if (months > 0) {
+    //     return `${months} month${months !== 1 ? "s" : ""} ${days > 0 ? `${days} day${days !== 1 ? "s" : ""}` : ""} ago`;
+    //   }
     
-      return `${days} day${days !== 1 ? "s" : ""} ago`;
-    }
+    //   return `${days} day${days !== 1 ? "s" : ""} ago`;
+    // }
     
 
     // if (isLoading) {
@@ -200,6 +200,54 @@ const Appliedjobs = () => {
     //     </div>
     //   );
     // }
+
+     const calculateTimeAgo = (timestamp) => {
+    if (!timestamp) return "";
+  
+    const now = new Date();
+    const past = new Date(timestamp.replace(" ", "T"));
+    const secondsPast = Math.floor((now - past) / 1000);
+  
+    const days = Math.floor(secondsPast / 86400); // 60 * 60 * 24
+    const months = Math.floor(days / 30);
+    const years = Math.floor(days / 365);
+  
+    if (secondsPast < 60) {
+      return `${secondsPast} sec${secondsPast !== 1 ? "s" : ""} ago`;
+    }
+  
+    if (secondsPast < 3600) {
+      const minutes = Math.floor(secondsPast / 60);
+      return `${minutes} min${minutes !== 1 ? "s" : ""} ago`;
+    }
+  
+    if (secondsPast < 86400) {
+      const hours = Math.floor(secondsPast / 3600);
+      return `${hours} hr${hours !== 1 ? "s" : ""} ago`;
+    }
+  
+    // Custom day/month display logic
+    if (days < 31) {
+      return `${days} day${days !== 1 ? "s" : ""} ago`;
+    }
+  
+    // Show "1 month ago" only on the 31st day
+    if (days === 31) {
+      return `1 month ago`;
+    }
+  
+    // For days between 32 and 60, show "x days ago"
+    if (days > 31 && days < 61) {
+      return `${days} days ago`;
+    }
+  
+    // Show months only on exact multiples of 30 (after day 60)
+    if (days % 30 === 0) {
+      return `${months} month${months !== 1 ? "s" : ""} ago`;
+    }
+  
+    return `${days} days ago`;
+  };
 
 
   return (
@@ -403,11 +451,7 @@ const Appliedjobs = () => {
                                                       />
                                                     </div>
                                                   </Link>
-                                                  <div className="d-flex align-items-center">
-                                                    <Link className="btn-light shadow me-2">
-                                                      <i className="fa-solid fa-share"></i>
-                                                    </Link>
-                                                  </div>
+                                                  
                                                 </div>
 
                                                 <div className="py-2">
@@ -432,7 +476,7 @@ const Appliedjobs = () => {
                                                  {job.salary_range && job.salary_currency && (
                                                     <li>
                                                       <div className="btn btn-sm btn-green me-2 mb-2 text-capitalize">
-                                                        <span>Salary - </span> {job.salary_range} {job.salary_currency}
+                                                       {job.salary_currency} {job.salary_range}  / <small style={{fontSize:"10px"}} className="text-white">{job.hourly_rate}</small>
                                                       </div>
                                                     </li>
                                                   )}
@@ -454,7 +498,7 @@ const Appliedjobs = () => {
                                                 </ul>
 
                                                 <p className="text-muted m-0">
-                                                  <small className="badge text-bg-light">
+                                                  <small style={{fontSize:"10px"}} className="badge text-bg-light">
                                                     {calculateTimeAgo(job.created_at)}
                                                   </small>
                                                 </p>

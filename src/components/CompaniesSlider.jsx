@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Navigation, A11y, Autoplay, Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import "swiper/css";
 import "swiper/css/navigation";
@@ -22,6 +22,8 @@ const CompaniesSlider = () => {
   const { user } = useAuthContext();
   const userId = user ? user.id : null;
   const {t} = useTranslation();
+  const navigate = useNavigate();
+
 
   // Fetch companies from API
   useEffect(() => {
@@ -101,6 +103,9 @@ const CompaniesSlider = () => {
   const toggleLike = async (companyId) => {
     if (!userId) {
       toast.error("Please login to like companies.");
+      setTimeout(() => {
+        navigate('/login');
+      }, 2000);      
       return;
     }
 
