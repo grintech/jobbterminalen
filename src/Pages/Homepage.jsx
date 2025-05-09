@@ -82,10 +82,10 @@ const Homepage = () => {
         {homeBannerPlace === "home_top" && <HomeBanners />}
       </div>
 
-      <div className="home_job_types py-5">
+      {/* <div className="home_job_types py-5">
         <div className="container">
           <div className="row justify-content-center">
-            {/* <div className="inside_card mb-4">
+            <div className="inside_card mb-4">
               <Link to='/work-type'>
                 <div className="card">
                   <div className="card-body text-center d-flex flex-column align-items-center justify-content-center">
@@ -94,7 +94,7 @@ const Homepage = () => {
                   </div>
                 </div>
               </Link>
-            </div> */}
+            </div>
             <div className="inside_card mb-4">
               <Link>
                 <div className="card">
@@ -165,7 +165,7 @@ const Homepage = () => {
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
 
       <Categories />
 

@@ -12,13 +12,12 @@ const API_URL = import.meta.env.VITE_API_URL;
 const ForgetPassword = () => {
    const { t } = useTranslation();
 
-  const [email, setEmail] = useState(""); // State for input email
-  const [alert, setAlert] = useState({ type: "", message: "" }); // State for alert
-  const navigate = useNavigate(); // For navigation
+   const [email, setEmail] = useState(""); // State for input email
+   const [alert, setAlert] = useState({ type: "", message: "" }); // State for alert
+   const navigate = useNavigate(); // For navigation
 
    const [loading, setLoading] = useState(false);
   
-
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -55,11 +54,15 @@ const ForgetPassword = () => {
      
         setEmail("");
 
-        // After 3 seconds, navigate to the verify OTP page
+       // Store email in localStorage
+       localStorage.setItem("forgot_email", responseEmail);
+
+        // After 2 seconds, navigate to the verify OTP page
         setTimeout(() => {
           setAlert({ type: "", message: "" });
-          navigate("/verify-otp", { state: { email: responseEmail } });
-        }, 3000);
+          // navigate("/verify-otp", { state: { email: responseEmail } });
+          navigate("/verify-otp");
+        }, 2000);
       }
     } catch (error) {
       console.error("Error sending forgot password request:", error);
@@ -68,7 +71,7 @@ const ForgetPassword = () => {
         message: "An error occurred. Please try again later.",
       });
       setLoading(false);
-      setTimeout(() => setAlert({ type: "", message: "" }), 3000);
+      setTimeout(() => setAlert({ type: "", message: "" }), 2000);
     }
   };
 

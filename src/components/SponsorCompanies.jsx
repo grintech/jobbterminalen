@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
 import { useAuthContext } from '../store/authContext';
+import { useTranslation } from 'react-i18next';
 
 const SponsorCompanies = () => {
   const [activeTab, setActiveTab] = useState('All');
@@ -15,8 +16,10 @@ const SponsorCompanies = () => {
   const bearerKey = import.meta.env.VITE_BEARER_KEY;
   const API_URL = import.meta.env.VITE_API_URL;
   const IMG_URL = import.meta.env.VITE_IMG_URL;
- const { user } = useAuthContext();
-   const userId = user ? user.id : null;
+  const { user } = useAuthContext();
+  const userId = user ? user.id : null;
+
+  const { t } = useTranslation();
 
   // Fetch industries from the API
   useEffect(() => {
@@ -73,7 +76,7 @@ const SponsorCompanies = () => {
       })
       .then((response) => {
         if (response.data.type === 'success') {
-          console.log("Fetched Saved Companies: ", response.data.data); // Log response to debug
+          // console.log("Fetched Saved Companies: ", response.data.data); 
           setSavedCompanies(response.data.data || []); // Ensure it's an array
         }
       })
@@ -143,7 +146,7 @@ const SponsorCompanies = () => {
   return (
     <>
     <div className="sponsor_companies container py-5">
-      <h4 className="text-center">Sponsored Companies</h4>
+      <h4 className="text-center">{t("SponserCompanies")}</h4>
      
 
       {/* Loading and Error States */}

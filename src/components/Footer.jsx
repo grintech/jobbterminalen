@@ -13,19 +13,33 @@ const Footer = () => {
         <footer className="footer ">
             <div className="container pt-4">
               <div className="row">
-                <div className="col-lg-4 col-md-4  col-sm-6 order-5 order-sm-1">
+                <div className="col-lg-4 col-md-4  col-sm-6  order-1">
                 <Link className="navbar-brand" > <img loading='lazy' src="/images/foot_logo.png" alt="logo" /></Link>
                 <h5 className='mt-3'>{ t("ConnectWithUs")}</h5>
                 <p>{ t("FooterText")}</p>
                 <div className="d-flex social_links flex-wrap mb-3">
-                    <Link> <i className="fa-brands fa-facebook me-2"></i></Link>
-                    <Link> <i className="fa-brands fa-instagram me-2"></i></Link>
-                    <Link> <i className="fa-brands fa-twitter me-2"></i></Link>
-                    <Link> <i className="fa-brands fa-linkedin me-2"></i></Link>
-                    <Link> <i className="fa-brands fa-youtube me-2"></i></Link>
+                    <Link> 
+                     <i className="fa-brands fa-facebook me-2"></i>
+                    </Link>
+
+                    <Link to={`https://www.instagram.com/jobbterminalen/`} target='_blank' >
+                     <i className="fa-brands fa-instagram me-2"></i>
+                    </Link>
+
+                    <Link>
+                     <i className="fa-brands fa-twitter me-2"></i>
+                    </Link>
+
+                    <Link to={`https://www.linkedin.com/company/jobbterminalen/`} target='_blank' > 
+                     <i className="fa-brands fa-linkedin me-2"></i>
+                    </Link>
+
+                    <Link>
+                     <i className="fa-brands fa-youtube me-2"></i>
+                    </Link>
                 </div>
                 </div>
-                <div className="col-lg-2 col-md-4 col-sm-6 col-6 order-1">
+                <div className="col-lg-2 col-md-4 col-sm-6 col-6 order-2">
                 <h5 className='mt-3'>{ t("JobCategories")}</h5>
                 <ul className='p-0' >
                     <li><Link><i className="fa-solid fa-chevron-right"></i> { t("WorkFromHome")}</Link></li>
@@ -35,7 +49,7 @@ const Footer = () => {
                     <li><Link><i className="fa-solid fa-chevron-right"></i> { t("FullTimeJob")}</Link></li>
                 </ul>
                 </div>
-                <div className="col-lg-2 col-md-4 col-sm-6 col-6 order-2">
+                <div className="col-lg-2 col-md-4 col-sm-6 col-6 order-3">
                 <h5 className='mt-3'>{ t("QuickLinks")}</h5>
                 <ul className='p-0' >
                     <li><Link to='/about'><i className="fa-solid fa-chevron-right"></i> { t("AboutUs")}</Link></li>
@@ -45,16 +59,16 @@ const Footer = () => {
                     <li><Link to='/sitemap'><i className="fa-solid fa-chevron-right"></i> { t("Sitemap")}</Link></li>
                 </ul>
                 </div>
-                <div className="col-lg-2 col-md-4 col-sm-6 col-6 order-3">
+                <div className="col-lg-2 col-md-4 col-sm-6 col-6 order-4">
                 <h5 className='mt-3'>{ t("Employer")}</h5>
                 <ul className='p-0' >
-                    <li><Link to={EMP_URL}><i className="fa-solid fa-chevron-right"></i>{ t("EmpLogin")}</Link></li>
+                    <li><Link target='_blank' to={EMP_URL}><i className="fa-solid fa-chevron-right"></i>{ t("EmpLogin")}</Link></li>
                     <li><Link><i className="fa-solid fa-chevron-right"></i>{ t("JobPosting")}</Link></li>
                     
                     <li><Link><i className="fa-solid fa-chevron-right"></i>{ t("BannerPosting")}</Link></li>
                 </ul>
                 </div>
-                <div className="col-lg-2 col-md-4 col-sm-6 col-6 order-4">
+                <div className="col-lg-2 col-md-4 col-sm-6 col-6 order-5">
                 <h5 className='mt-3'>{ t("OtherLinks")}</h5>
                 <ul className='p-0' >
                     <li><Link to='/privacy-policy'> <i className="fa-solid fa-chevron-right"></i>{ t("PrivacyPolicy")}</Link></li>

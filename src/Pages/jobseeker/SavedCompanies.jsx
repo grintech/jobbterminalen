@@ -95,14 +95,14 @@ const SavedCompanies = () => {
                                 <p className="text-danger">{error}</p>
                             ) : savedCompanies.length === 0 ? (
                               <div className="no_saved_jobs mb-4">
-                              <div className="card mt-4 border-0 shadow">
+                              <div className="card  border-0 shadow">
                                 <div className="card-body text-center">
                                   <img
-                                    className="job_search"
+                                    className="job_search mb-3"
                                     src="/images/company_search.png"
                                     alt="job_search"  
                                   />
-                                  <h4>No saved companies!</h4>
+                                  <h4>No companies saved yet!</h4>
                                   <p>Tap on save icon on a job to save it.</p>
                                   <div className="btn btn-register">Search companies</div>
                                 </div>
@@ -153,13 +153,15 @@ const SavedCompanies = () => {
                                                 </Link>
                                                 <p className=" m-0">{company.company_tagline}</p>
                                               </div>
-                                              <div className="d-flex justify-content-between align-items-center border-top pt-3">
+                                              <div className="d-flex justify-content-between align-items-baseline border-top pt-3">
                                                 <div className="text-muted me-2">
                                                   <i className="fa-solid fa-location-dot me-1 "></i>
                                                   {company.company_address}
                                                 </div>
                                                 <Link to={`/companies/${company.company_slug}`}>
-                                                <p className="text_blue text-center m-0">{company.job_count} Jobs</p>
+                                                <p className="text_blue text-center m-0">
+                                                  <span className="pe-1">{company.job_count === 0 ? "No" : company.job_count}</span>
+                                                  Jobs</p>
                                                 </Link>
                                               </div>
                                             </div>

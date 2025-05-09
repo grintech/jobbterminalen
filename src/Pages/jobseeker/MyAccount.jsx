@@ -48,19 +48,20 @@ const MyAccount = () => {
 
   const handleNumericInput = (e, key, maxLength, setData, data) => {
     let value = e.target.value.replace(/\D/g, ""); // Remove non-digits
-  
+
     // Prevent values like "0", "00", "000", etc.
     if (/^0+$/.test(value)) {
       value = ""; // Clear the input if only zeros
     }
-  
+
     if (value.length > maxLength) {
       value = value.slice(0, maxLength);
     }
-  
+
     setData({ ...data, [key]: value });
+    
   };
-  
+
 
   const validateUrl = (value) => {
     const urlPattern = new RegExp(
@@ -69,9 +70,9 @@ const MyAccount = () => {
       '((\\d{1,3}\\.){3}\\d{1,3}))' +    // OR ip (v4) address
       '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
       '(\\?[;&a-z\\d%_.~+=-]*)?' +       // query string
-      '(\\#[-a-z\\d_]*)?$','i'           // fragment locator
+      '(\\#[-a-z\\d_]*)?$', 'i'           // fragment locator
     );
-  
+
     if (!value) {
       setUrlError('URL is required');
     } else if (!urlPattern.test(value)) {
@@ -80,8 +81,8 @@ const MyAccount = () => {
       setUrlError('');
     }
   };
-  
-  
+
+
 
   const defaultEmploymentForm = {
     id: "",
@@ -116,7 +117,7 @@ const MyAccount = () => {
   const [educationData, setEducationData] = useState(defaultEducationForm);
   const [yearError, setYearError] = useState('');
   const [marksError, setMarksError] = useState('');
-  
+
   const isSchoolLevel = educationData.education === "4" || educationData.education === "5";
 
 
@@ -156,12 +157,12 @@ const MyAccount = () => {
 
   const handleCertificateChange = (e) => {
     const { name, value, type, checked } = e.target;
-  
+
     // Block non-alphabetic characters in certification_name field
     if (name === "certification_name" && /[^a-zA-Z\s]/.test(value)) {
       return; // Don't update state if value contains non-alphabetic characters
     }
-  
+
     // Update state with the correct value
     setSelectedCertificate((prev) => {
       if (name === "lifetime_validity") {
@@ -179,14 +180,14 @@ const MyAccount = () => {
           expire_on: "",
         };
       }
-  
+
       return {
         ...prev,
         [name]: type === "checkbox" ? checked : value,
       };
     });
   };
-  
+
   // URL validation on blur or when trying to save
   const validateCerUrl = (value) => {
     const urlPattern = /^(https?:\/\/)/;
@@ -196,25 +197,25 @@ const MyAccount = () => {
       setUrlError('');
     }
   };
-  
-  
-  
-  
+
+
+
+
 
   const handleResumeUpload = async (e) => {
     const file = e.target.files[0];
     const allowedTypes = [
       "application/pdf",
-      "application/msword",
-      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-      "application/rtf",
+      // "application/msword",
+      // "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      // "application/rtf",
     ];
     const maxSize = 2 * 1024 * 1024; // 2 MB in bytes
 
     if (file) {
       if (!allowedTypes.includes(file.type)) {
         setResumeError(
-          "Invalid file type. Supported formats are PDF, DOC, DOCX, and RTF."
+          "Invalid file type. Only PDF is allowed."
         );
         return;
       }
@@ -703,8 +704,8 @@ const MyAccount = () => {
           notice_period: userData.notice_period,
         }));
 
-        fetchUserData(); 
-       
+        fetchUserData();
+
 
         const editProfileModal = bootstrap.Modal.getInstance(
           document.getElementById("editProfileModal")
@@ -812,7 +813,7 @@ const MyAccount = () => {
     const ajaxModal = new bootstrap.Modal(document.getElementById("ajaxModal"));
     document.getElementById("ajaxModalMessage").textContent = "Saving your details...";
     ajaxModal.show();
-  
+
     try {
       // Prepare payload: remove empty fields
       const payload = Object.fromEntries(
@@ -820,7 +821,7 @@ const MyAccount = () => {
           ([key, value]) => value !== "" && value !== null && value !== undefined
         )
       );
-  
+
       const response = await axios.put(
         `${API_URL}/employment-details-save.php?user_id=${userId}`,
         payload,
@@ -830,15 +831,15 @@ const MyAccount = () => {
           },
         }
       );
-  
+
       if (response.data.type === "success") {
         toast.success("Employment data saved successfully!");
-  
+
         const employModal = bootstrap.Modal.getInstance(document.getElementById("AddemployModal"));
         employModal.hide();
-  
+
         setEmploymentForm(defaultEmploymentForm); // reset form
-  
+
         fetchEmployment(userId);
       } else {
         toast.error(response.data.message || "Failed to update details.");
@@ -850,7 +851,7 @@ const MyAccount = () => {
       ajaxModal.hide();
     }
   };
-  
+
 
   const editEmploymentData = async (id) => {
     try {
@@ -890,7 +891,7 @@ const MyAccount = () => {
     const ajaxModal = new bootstrap.Modal(document.getElementById("ajaxModal"));
     document.getElementById("ajaxModalMessage").textContent = "Updating your details...";
     ajaxModal.show();
-  
+
     try {
       // Filter out empty or null/undefined fields
       const payload = Object.fromEntries(
@@ -898,7 +899,7 @@ const MyAccount = () => {
           ([_, value]) => value !== "" && value !== null && value !== undefined
         )
       );
-  
+
       const response = await axios.put(
         `${API_URL}/employment-details-save.php?user_id=${userId}`,
         payload,
@@ -908,14 +909,14 @@ const MyAccount = () => {
           },
         }
       );
-  
+
       if (response.data.type === "success") {
         toast.success("Employment details updated successfully!");
-  
+
         // Close the modal
         const employModal = bootstrap.Modal.getInstance(document.getElementById("employModal"));
         employModal.hide();
-  
+
         fetchEmployment(userId);
       } else {
         toast.error(response.data.message || "Failed to update.");
@@ -927,7 +928,7 @@ const MyAccount = () => {
       ajaxModal.hide();
     }
   };
-  
+
 
 
   const confirmDelete = async (Id) => {
@@ -1100,27 +1101,27 @@ const MyAccount = () => {
   const AddEducationData = async () => {
     if (!educationData.education) return; // Ensure the education field is selected
 
-  // 🔍 Validate marks before proceeding
-  const marks = educationData.marks;
+    // 🔍 Validate marks before proceeding
+    const marks = educationData.marks;
 
-  if (!/^[1-9]\d{0,4}$/.test(marks)) {
-    setMarksError("Marks must be a positive number (not 0 or all zeros)");
-    toast.error("Marks must be a positive number (not 0 or all zeros)");
-    return; // Block form submission
-  } else {
-    setMarksError(""); // Clear previous error if valid
-  }
-  
+    if (!/^[1-9]\d{0,4}$/.test(marks)) {
+      setMarksError("Marks must be a positive number (not 0 or all zeros)");
+      toast.error("Marks must be a positive number (not 0 or all zeros)");
+      return; // Block form submission
+    } else {
+      setMarksError(""); // Clear previous error if valid
+    }
+
     // Calculate course duration
     const combinedDuration =
       educationData.course_starting_year && educationData.course_ending_year
         ? educationData.course_starting_year + " - " + educationData.course_ending_year
         : educationData.course_starting_year
-        ? educationData.course_starting_year
-        : educationData.course_ending_year
-        ? educationData.course_ending_year
-        : "";
-  
+          ? educationData.course_starting_year
+          : educationData.course_ending_year
+            ? educationData.course_ending_year
+            : "";
+
     // Prepare payload with only filled fields
     const rawPayload = {
       education: educationData.education,
@@ -1134,16 +1135,16 @@ const MyAccount = () => {
       school_medium: educationData.school_medium,
       marks: educationData.marks,
     };
-  
+
     const payload = Object.fromEntries(
       Object.entries(rawPayload).filter(([_, value]) => value !== "" && value !== null && value !== undefined)
     );
-  
+
     // Show ajaxModal with dynamic message
     const ajaxModal = new bootstrap.Modal(document.getElementById("ajaxModal"));
     document.getElementById("ajaxModalMessage").textContent = "Saving your details...";
     ajaxModal.show();
-  
+
     try {
       const response = await axios.put(
         `${API_URL}/education-save.php?user_id=${userId}`,
@@ -1155,10 +1156,10 @@ const MyAccount = () => {
           },
         }
       );
-  
+
       if (response.data.type === "success") {
         toast.success("Education details added successfully!");
-  
+
         setEducationData({
           id: "",
           education: "",
@@ -1173,12 +1174,12 @@ const MyAccount = () => {
           passing_year: "",
           school_medium: "",
         });
-  
+
         const educationModal = bootstrap.Modal.getInstance(
           document.getElementById("AddEducationModal")
         );
         educationModal.hide();
-  
+
         fetchEducation(userId);
         console.log("Added Education Data:", response.data.data);
       } else {
@@ -1199,16 +1200,16 @@ const MyAccount = () => {
           Authorization: `Bearer ${bearerKey}`,
         },
       });
-  
+
       const data = response.data.data;
       console.log(data);
-  
+
       if (data) {
         // Handle course_duration splitting if available
         const [course_starting_year, course_ending_year] = data.course_duration
           ? data.course_duration.split(" - ")
           : ["", ""];
-  
+
         setEducationData({
           id: data.id || "",
           education: data.education || "",
@@ -1229,34 +1230,34 @@ const MyAccount = () => {
       toast.error("Failed to load education data.");
     }
   };
-  
+
   const UpdateEducationData = async () => {
     if (!educationData.education || !educationData.id) return; // Ensure required fields are present
-    
-  //  Validate marks
-  const marks = educationData.marks;
 
-  if (!/^[1-9]\d{0,4}$/.test(marks)) {
-    setMarksError("Marks must be a positive number (not 0 or all zeros)");
-    toast.error("Marks must be a positive number (not 0 or all zeros)");
-    return; // Block update
-  } else {
-    setMarksError(""); // Clear error if valid
-  }
+    //  Validate marks
+    const marks = educationData.marks;
+
+    if (!/^[1-9]\d{0,4}$/.test(marks)) {
+      setMarksError("Marks must be a positive number (not 0 or all zeros)");
+      toast.error("Marks must be a positive number (not 0 or all zeros)");
+      return; // Block update
+    } else {
+      setMarksError(""); // Clear error if valid
+    }
 
     // Calculate course duration
     const combinedDuration =
       educationData.course_starting_year && educationData.course_ending_year
         ? `${educationData.course_starting_year} - ${educationData.course_ending_year}`
         : educationData.course_starting_year
-        ? educationData.course_starting_year
-        : educationData.course_ending_year
-        ? educationData.course_ending_year
-        : "";
-  
+          ? educationData.course_starting_year
+          : educationData.course_ending_year
+            ? educationData.course_ending_year
+            : "";
+
     // Prepare payload with only filled fields
     const rawPayload = {
-      id:educationData.id,
+      id: educationData.id,
       education: educationData.education,
       institute: educationData.institute,
       course: educationData.course,
@@ -1268,16 +1269,16 @@ const MyAccount = () => {
       school_medium: educationData.school_medium,
       marks: educationData.marks,
     };
-  
+
     const payload = Object.fromEntries(
       Object.entries(rawPayload).filter(([_, value]) => value !== "" && value !== null && value !== undefined)
     );
-  
+
     // Show loading modal
     const ajaxModal = new bootstrap.Modal(document.getElementById("ajaxModal"));
     document.getElementById("ajaxModalMessage").textContent = "Updating your details...";
     ajaxModal.show();
-  
+
     try {
       const response = await axios.put(
         `${API_URL}/education-save.php?user_id=${userId}`,
@@ -1289,10 +1290,10 @@ const MyAccount = () => {
           },
         }
       );
-  
+
       if (response.data.type === "success") {
         toast.success("Education details updated successfully!");
-  
+
         // Reset the form
         setEducationData({
           id: "",
@@ -1308,13 +1309,13 @@ const MyAccount = () => {
           passing_year: "",
           school_medium: "",
         });
-  
+
         // Hide modal
         const educationModal = bootstrap.Modal.getInstance(
           document.getElementById("EditEducationModal")
         );
         educationModal.hide();
-  
+
         // Refresh education list
         fetchEducation(userId);
         console.log("Updated Education Data:", response.data.data);
@@ -1366,8 +1367,8 @@ const MyAccount = () => {
       ajaxModal.hide();
     }
   };
-  
- // Education Ends -----------
+
+  // Education Ends -----------
 
 
   const fetchSocialProfiles = async (userId) => {
@@ -1634,6 +1635,7 @@ const MyAccount = () => {
 
       if (response.data.type === "success") {
         toast.success("Details updated successfully!");
+        ajaxModal.hide();
       } else {
         toast.error(response.data.message || "Failed to update details.");
       }
@@ -1684,12 +1686,12 @@ const MyAccount = () => {
   const saveCertificate = async (Id = null) => {
     if (!selectedCertificate) return;
 
- // URL validation before saving
-  const urlPattern = /^(https?:\/\/)/;
-  if (!urlPattern.test(selectedCertificate.certification_url)) {
-    toast.error("Please enter a valid URL ");
-    return; 
-  }
+    // URL validation before saving
+    const urlPattern = /^(https?:\/\/)/;
+    if (!urlPattern.test(selectedCertificate.certification_url)) {
+      toast.error("Please enter a valid URL ");
+      return;
+    }
 
     // Hide the certificate modals before showing the ajaxModal
     if (Id) {
@@ -1851,78 +1853,75 @@ const MyAccount = () => {
 
   function TimeAgo({ timestamp }) {
     const [time, setTime] = useState("");
-  
+
     useEffect(() => {
       const interval = setInterval(() => {
         setTime(getTimeAgo(timestamp));
       }, 1000);
       return () => clearInterval(interval);
     }, [timestamp]);
-  
+
     return <>{time}</>;
   }
 
   // function getTimeAgo(timestamp) {
   //   if (!timestamp) return "";
-  
+
   //   const now = new Date();
   //   const past = new Date(timestamp.replace(" ", "T"));
   //   const secondsPast = Math.floor((now - past) / 1000);
-  
+
   //   if (secondsPast < 60) return `${secondsPast} sec${secondsPast !== 1 ? "s" : ""} ago`;
   //   if (secondsPast < 3600) return `${Math.floor(secondsPast / 60)} min${secondsPast / 60 !== 1 ? "s" : ""} ago`;
   //   if (secondsPast < 86400) return `${Math.floor(secondsPast / 3600)} hr${secondsPast / 3600 !== 1 ? "s" : ""} ago`;
   //   if (secondsPast < 2592000) return `${Math.floor(secondsPast / 86400)} day${secondsPast / 86400 !== 1 ? "s" : ""} ago`;
   //   if (secondsPast < 31536000) return `${Math.floor(secondsPast / 2592000)} month${secondsPast / 2592000 !== 1 ? "s" : ""} ago`;
-  
+
   //   return `${Math.floor(secondsPast / 31536000)} year${secondsPast / 31536000 !== 1 ? "s" : ""} ago`;
   // }
 
 
-  function getTimeAgo (timestamp){
+  function getTimeAgo(timestamp) {
     if (!timestamp) return "";
-  
+
     const now = new Date();
     const past = new Date(timestamp.replace(" ", "T"));
     const secondsPast = Math.floor((now - past) / 1000);
-  
+
     const years = Math.floor(secondsPast / 31536000); // 60 * 60 * 24 * 365
     const months = Math.floor((secondsPast % 31536000) / 2592000); // 60 * 60 * 24 * 30
     const days = Math.floor((secondsPast % 2592000) / 86400); // 60 * 60 * 24
     const hours = Math.floor((secondsPast % 86400) / 3600); // 60 * 60
     const minutes = Math.floor((secondsPast % 3600) / 60);
-  
+
     // Display logic based on time difference
     if (secondsPast < 60) {
       return `${secondsPast} sec${secondsPast !== 1 ? "s" : ""} ago`;
     }
-  
+
     if (secondsPast < 3600) {
       return `${minutes} min${minutes !== 1 ? "s" : ""} ago`;
     }
-  
+
     if (secondsPast < 86400) {
       return `${hours} hr${hours !== 1 ? "s" : ""} ago`;
     }
-  
+
     if (secondsPast < 2592000) {  // 30 days
       return `${days} day${days !== 1 ? "s" : ""} ago`;
     }
-  
+
     if (years > 0) {
       return `${years} year${years !== 1 ? "s" : ""} ${months > 0 ? `${months} month${months !== 1 ? "s" : ""}` : ""} ${days > 0 ? `${days} day${days !== 1 ? "s" : ""}` : ""} ago`;
     }
-  
+
     if (months > 0) {
       return `${months} month${months !== 1 ? "s" : ""} ${days > 0 ? `${days} day${days !== 1 ? "s" : ""}` : ""} ago`;
     }
-  
+
     return `${days} day${days !== 1 ? "s" : ""} ago`;
   }
 
-  
-  
-  
 
   return (
     <div id="my_account_page" className="my_account_page">
@@ -2025,7 +2024,7 @@ const MyAccount = () => {
                             onClick={() => setSelectedImageId(userData.id)}
                             data-bs-toggle="modal"
                             data-bs-target="#removeImageModal"
-                            title= "Remove Image"
+                            title="Remove Image"
                           ></i>
                         )}
                       </div>
@@ -2045,11 +2044,11 @@ const MyAccount = () => {
                             ></i>
                           </Link>
                         </div>
-                        { userData.updated_at && (
-                        <h6 className="text-secondary m-0 fw-light">
-                          <b> Profile last updated -</b>
-                          <TimeAgo timestamp={userData.updated_at} />
-                        </h6> )
+                        {userData.updated_at && (
+                          <h6 className="text-secondary m-0 fw-light">
+                            <b> Profile last updated - </b>
+                            <TimeAgo timestamp={userData.updated_at} />
+                          </h6>)
                         }
                       </div>
 
@@ -2063,7 +2062,7 @@ const MyAccount = () => {
                                   {userData.current_location}
                                 </span>
                               ) : (
-                                <span>Please fill data</span>
+                                <span>N/A</span>
                               )}
                             </li>
 
@@ -2074,7 +2073,7 @@ const MyAccount = () => {
                                   {userData.work_status}
                                 </span>
                               ) : (
-                                <span>Please fill data</span>
+                                <span>N/A</span>
                               )}
                             </li>
 
@@ -2085,7 +2084,7 @@ const MyAccount = () => {
                                   {userData.dob}
                                 </span>
                               ) : (
-                                <span>Please fill data</span>
+                                <span>N/A</span>
                               )}
                             </li>
                           </ul>
@@ -2097,7 +2096,7 @@ const MyAccount = () => {
                               {userData.phone ? (
                                 <span>{userData.phone}</span>
                               ) : (
-                                <span>Please fill data</span>
+                                <span>N/A</span>
                               )}
                             </li>
                             <li>
@@ -2105,7 +2104,7 @@ const MyAccount = () => {
                               {userData.email ? (
                                 <span>{userData.email}</span>
                               ) : (
-                                <span>Please fill data</span>
+                                <span>N/A</span>
                               )}
                             </li>
                           </ul>
@@ -2193,6 +2192,7 @@ const MyAccount = () => {
                             onChange={(e) =>
                               setUserData({ ...userData, name: e.target.value })
                             }
+                            readOnly
                           />
                         </div>
                         {/* <div className="mb-4">
@@ -2262,7 +2262,7 @@ const MyAccount = () => {
                                       });
                                     }
                                   }}
-                                  
+
                                   maxLength={2}
                                 />
                               </div>
@@ -2282,7 +2282,7 @@ const MyAccount = () => {
                                       });
                                     }
                                   }}
-                                  
+
                                   maxLength={2}
                                 />
                               </div>
@@ -2390,7 +2390,7 @@ const MyAccount = () => {
                                       }));
                                     }
                                   }}
-                                  
+
                                 />
                               </div>
                               {userData.current_location !== "Sweden" && (
@@ -2415,7 +2415,7 @@ const MyAccount = () => {
                                         }));
                                       }
                                     }}
-                                    
+
                                   />
                                 </div>
                               )}
@@ -2521,7 +2521,8 @@ const MyAccount = () => {
                           <i
                             className="fa-solid fa-download me-3"
                             onClick={handleResumeDownload}
-                          ></i>
+                          >
+                          </i>
                           <i
                             className="fa-solid fa-trash"
                             onClick={handleRemoveResume}
@@ -2538,15 +2539,15 @@ const MyAccount = () => {
                         <label htmlFor="upload_resume_input">
                           Upload resume
                         </label>
-                        <p className="m-0">
+                        <p className="m-0 text-center">
                           <small>
-                            Supported Formats: doc, docx, rtf, pdf, upto 2 MB
+                            Supported Format: PDF only, upto 2 MB.
                           </small>
                         </p>
                       </div>
                     )}
                     {resumeError && (
-                      <p className="text-danger">{resumeError}</p>
+                      <p className="text-danger text-center m-0">{resumeError}</p>
                     )}
                   </div>
                 </div>
@@ -2755,7 +2756,7 @@ const MyAccount = () => {
                         employment.map((employ) => (
                           <div className="mb-3" key={employ.id}>
                             <div className="d-flex align-items-baseline">
-                              <h6 style={{fontWeight:"500"}} className="hh text-capitalize m-0">{employ.current_job_title}</h6>
+                              <h6 style={{ fontWeight: "500" }} className="hh text-capitalize m-0">{employ.current_job_title}</h6>
                               <Link
                                 data-bs-toggle="modal"
                                 data-bs-target="#employModal"
@@ -2765,7 +2766,7 @@ const MyAccount = () => {
                               </Link>
 
                             </div>
-                            <h6 style={{fontWeight:"400"}} className="text-capitalize m-0">{employ.current_company_name}</h6>
+                            <h6 style={{ fontWeight: "400" }} className="text-capitalize m-0">{employ.current_company_name}</h6>
 
                             <p className="m-0">
                               <small>
@@ -3067,50 +3068,50 @@ const MyAccount = () => {
                         )}
 
                         {/* Current Salary */}
-                        {employmentForm.current_employment === "yes" && 
-                         <div className="mt-4">
-                          <label>Current Salary</label>
-                          <div className="row">
-                            <div className="col-4 col-md-3 col-lg-2">
-                              <select
-                                className="form-select"
-                                value={employmentForm.current_salary?.split(" ")[0] || ""}
-                                onChange={(e) =>
-                                  setEmploymentForm((prev) => ({
-                                    ...prev,
-                                    current_salary: `${e.target.value} ${prev.current_salary?.split(" ")[1] || ""}`,
-                                  }))
-                                }
-                               
-                              >
-                                <option value="kr">kr</option>
-                                <option value="$">$</option>
-                              </select>
-                            </div>
-                            <div className="col-8 col-md-9 col-lg-10">
-                            <input
-                              type="text"
-                              className="form-control"
-                              placeholder="Eg. 4,50,000"
-                              value={employmentForm.current_salary?.split(" ")[1] || ""}
-                              onChange={(e) => {
-                                let input = e.target.value.replace(/\D/g, ""); // Only digits
-                                if (/^0+$/.test(input)) {
-                                  input = ""; // Disallow only-zero input like 0, 00, etc.
-                                }
-                                if (input.length <= 10) {
-                                  setEmploymentForm((prev) => ({
-                                    ...prev,
-                                    current_salary: `${prev.current_salary.split(" ")[0] || "kr"} ${input}`,
-                                  }));
-                                }
-                              }}
-                              maxLength={10}
-                            />
+                        {employmentForm.current_employment === "yes" &&
+                          <div className="mt-4">
+                            <label>Current Salary</label>
+                            <div className="row">
+                              <div className="col-4 col-md-3 col-lg-2">
+                                <select
+                                  className="form-select"
+                                  value={employmentForm.current_salary?.split(" ")[0] || ""}
+                                  onChange={(e) =>
+                                    setEmploymentForm((prev) => ({
+                                      ...prev,
+                                      current_salary: `${e.target.value} ${prev.current_salary?.split(" ")[1] || ""}`,
+                                    }))
+                                  }
 
+                                >
+                                  <option value="kr">kr</option>
+                                  <option value="$">$</option>
+                                </select>
+                              </div>
+                              <div className="col-8 col-md-9 col-lg-10">
+                                <input
+                                  type="text"
+                                  className="form-control"
+                                  placeholder="Eg. 4,50,000"
+                                  value={employmentForm.current_salary?.split(" ")[1] || ""}
+                                  onChange={(e) => {
+                                    let input = e.target.value.replace(/\D/g, ""); // Only digits
+                                    if (/^0+$/.test(input)) {
+                                      input = ""; // Disallow only-zero input like 0, 00, etc.
+                                    }
+                                    if (input.length <= 10) {
+                                      setEmploymentForm((prev) => ({
+                                        ...prev,
+                                        current_salary: `${prev.current_salary.split(" ")[0] || "kr"} ${input}`,
+                                      }));
+                                    }
+                                  }}
+                                  maxLength={10}
+                                />
+
+                              </div>
                             </div>
                           </div>
-                         </div>
                         }
 
                         {/* Job Profile */}
@@ -3133,25 +3134,25 @@ const MyAccount = () => {
                         {/* Notice Period */}
                         {employmentForm.current_employment === "yes" &&
                           <div className="mt-4">
-                          <label>Notice Period</label>
-                          <select
-                            className="form-select"
-                            value={employmentForm.notice_period?.trim() || ""}
-                            onChange={(e) =>
-                              setEmploymentForm({
-                                ...employmentForm,
-                                notice_period: e.target.value,
-                              })
-                            }
-                          >
-                            <option value="">Select</option>
-                            <option value="15 days or less">15 Days or Less</option>
-                            <option value="1 month">1 Month</option>
-                            <option value="2 months">2 Months</option>
-                            <option value="3 months">3 Months</option>
-                            <option value="more than 3 months">More than 3 months</option>
-                            <option value="serving notice period">Serving notice period</option>
-                          </select>
+                            <label>Notice Period</label>
+                            <select
+                              className="form-select"
+                              value={employmentForm.notice_period?.trim() || ""}
+                              onChange={(e) =>
+                                setEmploymentForm({
+                                  ...employmentForm,
+                                  notice_period: e.target.value,
+                                })
+                              }
+                            >
+                              <option value="">Select</option>
+                              <option value="15 days or less">15 Days or Less</option>
+                              <option value="1 month">1 Month</option>
+                              <option value="2 months">2 Months</option>
+                              <option value="3 months">3 Months</option>
+                              <option value="more than 3 months">More than 3 months</option>
+                              <option value="serving notice period">Serving notice period</option>
+                            </select>
                           </div>
                         }
                       </form>
@@ -3222,7 +3223,7 @@ const MyAccount = () => {
                                     current_employment: e.target.value,
                                   })
                                 }
-                               
+
                               />
                               <label className="form-check-label" >
                                 Yes
@@ -3362,7 +3363,7 @@ const MyAccount = () => {
                                 });
                               }
                             }}
-                            
+
                           />
                         </div>
 
@@ -3406,51 +3407,51 @@ const MyAccount = () => {
                         }
 
                         {/* Current Salary */}
-                        {employmentForm.current_employment === "yes" && 
-                         <div className="mt-4">
-                          <label>Current Salary</label>
-                          <div className="row">
-                            <div className="col-4 col-md-3 col-lg-2">
-                              <select
-                                className="form-select"
-                                onChange={(e) =>
-                                  setEmploymentForm((prev) => ({
-                                    ...prev,
-                                    current_salary: `${e.target.value} ${prev.current_salary.split(" ")[1] || ""}`,
-                                  }))
-                                }
-                              >
-                                <option value="kr">kr</option>
-                                <option value="$">$</option>
-                              </select>
-                            </div>
-                            <div className="col-8 col-md-9 col-lg-10">
-                            <input
-                              type="text"
-                              className="form-control"
-                              placeholder="Eg. 4,50,000"
-                              value={employmentForm.current_salary.split(" ")[1] || ""}
-                              onChange={(e) => {
-                                let input = e.target.value.replace(/\D/g, ""); // Keep only digits
+                        {employmentForm.current_employment === "yes" &&
+                          <div className="mt-4">
+                            <label>Current Salary</label>
+                            <div className="row">
+                              <div className="col-4 col-md-3 col-lg-2">
+                                <select
+                                  className="form-select"
+                                  onChange={(e) =>
+                                    setEmploymentForm((prev) => ({
+                                      ...prev,
+                                      current_salary: `${e.target.value} ${prev.current_salary.split(" ")[1] || ""}`,
+                                    }))
+                                  }
+                                >
+                                  <option value="kr">kr</option>
+                                  <option value="$">$</option>
+                                </select>
+                              </div>
+                              <div className="col-8 col-md-9 col-lg-10">
+                                <input
+                                  type="text"
+                                  className="form-control"
+                                  placeholder="Eg. 4,50,000"
+                                  value={employmentForm.current_salary.split(" ")[1] || ""}
+                                  onChange={(e) => {
+                                    let input = e.target.value.replace(/\D/g, ""); // Keep only digits
 
-                                // Prevent values like 0, 00, 0000, etc.
-                                if (/^0+$/.test(input)) {
-                                  input = "";
-                                }
+                                    // Prevent values like 0, 00, 0000, etc.
+                                    if (/^0+$/.test(input)) {
+                                      input = "";
+                                    }
 
-                                if (input.length <= 10) {
-                                  setEmploymentForm((prev) => ({
-                                    ...prev,
-                                    current_salary: `${prev.current_salary.split(" ")[0] || "kr"} ${input}`,
-                                  }));
-                                }
-                              }}
-                              maxLength={10}
-                            />
+                                    if (input.length <= 10) {
+                                      setEmploymentForm((prev) => ({
+                                        ...prev,
+                                        current_salary: `${prev.current_salary.split(" ")[0] || "kr"} ${input}`,
+                                      }));
+                                    }
+                                  }}
+                                  maxLength={10}
+                                />
 
+                              </div>
                             </div>
                           </div>
-                         </div> 
                         }
 
                         {/* Job Profile */}
@@ -3471,28 +3472,28 @@ const MyAccount = () => {
                         </div>
 
                         {/* Notice Period */}
-                        {employmentForm.current_employment === "yes" && 
-                        <div className="mt-4">
-                          <label>Notice Period</label>
-                          <select
-                            className="form-select"
-                            value={employmentForm.notice_period}
-                            onChange={(e) =>
-                              setEmploymentForm({
-                                ...employmentForm,
-                                notice_period: e.target.value,
-                              })
-                            }
-                          >
-                            <option value="">Select</option>
-                            <option value="15 days or less">15 Days or less</option>
-                            <option value="1 month">1 Month</option>
-                            <option value="2 months">2 Months</option>
-                            <option value="3 months">3 Months</option>
-                            <option value="more than 3 months">More than 3 months</option>
-                            <option value="serving notice period">Serving notice period</option>
-                          </select>
-                        </div>
+                        {employmentForm.current_employment === "yes" &&
+                          <div className="mt-4">
+                            <label>Notice Period</label>
+                            <select
+                              className="form-select"
+                              value={employmentForm.notice_period}
+                              onChange={(e) =>
+                                setEmploymentForm({
+                                  ...employmentForm,
+                                  notice_period: e.target.value,
+                                })
+                              }
+                            >
+                              <option value="">Select</option>
+                              <option value="15 days or less">15 Days or less</option>
+                              <option value="1 month">1 Month</option>
+                              <option value="2 months">2 Months</option>
+                              <option value="3 months">3 Months</option>
+                              <option value="more than 3 months">More than 3 months</option>
+                              <option value="serving notice period">Serving notice period</option>
+                            </select>
+                          </div>
                         }
                       </form>
                     </div>
@@ -3536,59 +3537,59 @@ const MyAccount = () => {
                     </Link>
                   </div>
                   {education.length > 0 ? (
-                  education.map((edu, index) => {
-                    const educationLabel =
-                      edu.education === "4"
-                        ? "12th"
-                        : edu.education === "5"
-                        ? "10th"
-                        : edu.education;
+                    education.map((edu, index) => {
+                      const educationLabel =
+                        edu.education === "4"
+                          ? "12th"
+                          : edu.education === "5"
+                            ? "10th"
+                            : edu.education;
 
-                    return (
-                      <div key={index} className="mt-4 employment_details">
-                        <div className="mb-3">
-                          <div className="d-flex align-items-baseline education_section">
-                            <h6 style={{fontWeight:"500"}} className="m-0 text-capitalize">
-                              {edu.specialization
-                                ? `${edu.course} - ${edu.specialization}`
-                                : (`${edu.course || educationLabel} | ${edu.school_medium}`)}
-                            </h6>
-                            <Link
+                      return (
+                        <div key={index} className="mt-4 employment_details">
+                          <div className="mb-3">
+                            <div className="d-flex align-items-baseline education_section">
+                              <h6 style={{ fontWeight: "500" }} className="m-0 text-capitalize">
+                                {edu.specialization
+                                  ? `${edu.course} - ${edu.specialization}`
+                                  : (`${edu.course || educationLabel} | ${edu.school_medium}`)}
+                              </h6>
+                              <Link
                                 data-bs-toggle="modal"
                                 data-bs-target="#EditEducationModal"
                                 onClick={() => editEducationData(edu.id)}
                               >
                                 <i className="fa-solid fa-pencil ms-2" title="Edit"></i>
                               </Link>
-                          </div>
-                          <h6 className="m-0 text-capitalize">
-                            {edu.course && edu.course_type
-                              ? ` ${edu.course_type}`
-                              : edu.specialization
-                              ? `${edu.specialization} ${edu.passing_year}`
-                              : ""}
-                          </h6>
+                            </div>
+                            <h6 className="m-0 text-capitalize">
+                              {edu.course && edu.course_type
+                                ? ` ${edu.course_type}`
+                                : edu.specialization
+                                  ? `${edu.specialization} ${edu.passing_year}`
+                                  : ""}
+                            </h6>
 
-                          <p className="m-0">
-                            <small className="text-capitalize">
-                              {edu.education === "4" || edu.education === "5"
-                                ? `${edu.board} - ${edu.passing_year}`
-                                : `${edu.course_starting_year} - ${edu.course_ending_year} `}
-                            </small>
-                          </p>
+                            <p className="m-0">
+                              <small className="text-capitalize">
+                                {edu.education === "4" || edu.education === "5"
+                                  ? `${edu.board} - ${edu.passing_year}`
+                                  : `${edu.course_starting_year} - ${edu.course_ending_year} `}
+                              </small>
+                            </p>
+                          </div>
                         </div>
-                      </div>
-                    );
-                  })
-                ) : (
-                  <p className="m-0 text-muted">No educational details filled yet.</p>
-                )}
+                      );
+                    })
+                  ) : (
+                    <p className="m-0 text-muted">No educational details filled yet.</p>
+                  )}
 
 
 
                 </div>
               </div>
-                               
+
               {/* Add Education Modal  */}
               <div
                 className="modal fade"
@@ -3612,7 +3613,7 @@ const MyAccount = () => {
                         <h1 className="modal-title fs-5 m-0" id="AddEducationModalLabel">
                           Add Education
                         </h1>
-                       
+
                       </div>
                       <h6 className="text-muted">
                         Details of your course and university help recruiters
@@ -3739,7 +3740,7 @@ const MyAccount = () => {
                                 placeholder="Enter your specialization"
                                 value={educationData.specialization}
                                 // onChange={(e) => setEducationData({ ...educationData, specialization: e.target.value })}
-                                
+
                                 onChange={(e) => {
                                   const input = e.target.value;
                                   if (/^[a-zA-Z]*$/.test(input)) {
@@ -3784,55 +3785,55 @@ const MyAccount = () => {
                             </div>
 
                             <div className="mb-4">
-                            <label>Course Duration</label>
-                            <div className="row flex-column flex-md-row align-items-center">
-                              <div className="col">
-                              <input
-                                type="text"
-                                className="form-control"
-                                placeholder="Starting Year"
-                                value={educationData.course_starting_year}
-                                onChange={(e) => {
-                                  setEducationData({ ...educationData, course_starting_year: e.target.value });
-                                  setYearError(''); // Clear error when user changes starting year
-                                }}
-                                maxLength={4}
-                              />
-                              </div>
-                              <div className="col-1 text-center">
-                              <span>To</span>
-                              </div>
-                              <div className="col">
-                              <input
-                                type="text"
-                                className="form-control"
-                                placeholder="Ending Year"
-                                value={educationData.course_ending_year}
-                                onChange={(e) => {
-                                  const endingYear = e.target.value;
+                              <label>Course Duration</label>
+                              <div className="row flex-column flex-md-row align-items-center">
+                                <div className="col">
+                                  <input
+                                    type="text"
+                                    className="form-control"
+                                    placeholder="Starting Year"
+                                    value={educationData.course_starting_year}
+                                    onChange={(e) => {
+                                      setEducationData({ ...educationData, course_starting_year: e.target.value });
+                                      setYearError(''); // Clear error when user changes starting year
+                                    }}
+                                    maxLength={4}
+                                  />
+                                </div>
+                                <div className="col-1 text-center">
+                                  <span>To</span>
+                                </div>
+                                <div className="col">
+                                  <input
+                                    type="text"
+                                    className="form-control"
+                                    placeholder="Ending Year"
+                                    value={educationData.course_ending_year}
+                                    onChange={(e) => {
+                                      const endingYear = e.target.value;
 
-                                  if (/^\d{0,4}$/.test(endingYear)) {
-                                    setEducationData({ ...educationData, course_ending_year: endingYear });
-                                    setYearError(''); // Clear error on typing
-                                  }
-                                }}
-                                onBlur={() => {
-                                  const { course_starting_year, course_ending_year } = educationData;
-                                  if (
-                                    course_starting_year &&
-                                    course_ending_year &&
-                                    parseInt(course_ending_year) < parseInt(course_starting_year)
-                                  ) {
-                                    setYearError('Ending year should be the same or greater than starting year');
-                                  }
-                                }}
-                                maxLength={4}
-                              />
-                              {yearError && (
-                                <small className="text-danger">{yearError}</small>
-                              )}
+                                      if (/^\d{0,4}$/.test(endingYear)) {
+                                        setEducationData({ ...educationData, course_ending_year: endingYear });
+                                        setYearError(''); // Clear error on typing
+                                      }
+                                    }}
+                                    onBlur={() => {
+                                      const { course_starting_year, course_ending_year } = educationData;
+                                      if (
+                                        course_starting_year &&
+                                        course_ending_year &&
+                                        parseInt(course_ending_year) < parseInt(course_starting_year)
+                                      ) {
+                                        setYearError('Ending year should be the same or greater than starting year');
+                                      }
+                                    }}
+                                    maxLength={4}
+                                  />
+                                  {yearError && (
+                                    <small className="text-danger">{yearError}</small>
+                                  )}
+                                </div>
                               </div>
-                            </div>
                             </div>
 
                           </>
@@ -3972,9 +3973,9 @@ const MyAccount = () => {
                                 onChange={(e) => {
                                   const input = e.target.value;
                                   if (/^[a-zA-Z\s]*$/.test(input)) {
-                                  setEducationData({ ...educationData, board: input });
+                                    setEducationData({ ...educationData, board: input });
                                   }
-                                  }}
+                                }}
                               />
                             </div>
 
@@ -3986,12 +3987,12 @@ const MyAccount = () => {
                                 placeholder="Enter year"
                                 value={educationData.passing_year}
                                 // onChange={(e) => setEducationData({ ...educationData, passing_year: e.target.value })}
-                                 onChange={(e) => {
+                                onChange={(e) => {
                                   const input = e.target.value;
                                   if (/^\d*$/.test(input)) {
-                                  setEducationData({ ...educationData, passing_year: input });
+                                    setEducationData({ ...educationData, passing_year: input });
                                   }
-                                  }}
+                                }}
 
                                 maxLength={4}
                               />
@@ -4009,9 +4010,9 @@ const MyAccount = () => {
                                 onChange={(e) => {
                                   const input = e.target.value;
                                   if (/^[a-zA-Z\s]*$/.test(input)) {
-                                  setEducationData({ ...educationData, school_medium: input });
+                                    setEducationData({ ...educationData, school_medium: input });
                                   }
-                                  }}
+                                }}
                               />
                             </div>
                           </>
@@ -4033,7 +4034,7 @@ const MyAccount = () => {
                                   if (/^[a-zA-Z\s]*$/.test(input)) {
                                     setEducationData({ ...educationData, institute: input });
                                   }
-                                  }}
+                                }}
                               />
                             </div>
 
@@ -4051,7 +4052,7 @@ const MyAccount = () => {
                                   if (/^[a-zA-Z\s]*$/.test(input)) {
                                     setEducationData({ ...educationData, course: input });
                                   }
-                                  }}
+                                }}
 
                               />
                             </div>
@@ -4070,7 +4071,7 @@ const MyAccount = () => {
                                   if (/^[a-zA-Z\s]*$/.test(input)) {
                                     setEducationData({ ...educationData, specialization: input });
                                   }
-                                  }}
+                                }}
                               />
                             </div>
 
@@ -4111,53 +4112,53 @@ const MyAccount = () => {
                             <div className="mb-4">
                               <label>Course Duration</label>
                               <div className="row flex-column flex-md-row align-items-center">
-                              <div className="col">
-                              <input
-                                type="text"
-                                className="form-control"
-                                placeholder="Starting Year"
-                                value={educationData.course_starting_year}
-                                onChange={(e) => {
-                                  setEducationData({ ...educationData, course_starting_year: e.target.value });
-                                  setYearError(''); // Clear error when user changes starting year
-                                }}
-                                maxLength={4}
-                              />
-                              </div>
-                              <div className="col-1 text-center">
-                              <span>To</span>
-                              </div>
-                              <div className="col">
-                              <input
-                                type="text"
-                                className="form-control"
-                                placeholder="Ending Year"
-                                value={educationData.course_ending_year}
-                                onChange={(e) => {
-                                  const endingYear = e.target.value;
+                                <div className="col">
+                                  <input
+                                    type="text"
+                                    className="form-control"
+                                    placeholder="Starting Year"
+                                    value={educationData.course_starting_year}
+                                    onChange={(e) => {
+                                      setEducationData({ ...educationData, course_starting_year: e.target.value });
+                                      setYearError(''); // Clear error when user changes starting year
+                                    }}
+                                    maxLength={4}
+                                  />
+                                </div>
+                                <div className="col-1 text-center">
+                                  <span>To</span>
+                                </div>
+                                <div className="col">
+                                  <input
+                                    type="text"
+                                    className="form-control"
+                                    placeholder="Ending Year"
+                                    value={educationData.course_ending_year}
+                                    onChange={(e) => {
+                                      const endingYear = e.target.value;
 
-                                  if (/^\d{0,4}$/.test(endingYear)) {
-                                    setEducationData({ ...educationData, course_ending_year: endingYear });
-                                    setYearError(''); // Clear error on typing
-                                  }
-                                }}
-                                onBlur={() => {
-                                  const { course_starting_year, course_ending_year } = educationData;
-                                  if (
-                                    course_starting_year &&
-                                    course_ending_year &&
-                                    parseInt(course_ending_year) < parseInt(course_starting_year)
-                                  ) {
-                                    setYearError('Ending year should be the same or greater than starting year');
-                                  }
-                                }}
-                                maxLength={4}
-                              />
-                              {yearError && (
-                                <small className="text-danger">{yearError}</small>
-                              )}
+                                      if (/^\d{0,4}$/.test(endingYear)) {
+                                        setEducationData({ ...educationData, course_ending_year: endingYear });
+                                        setYearError(''); // Clear error on typing
+                                      }
+                                    }}
+                                    onBlur={() => {
+                                      const { course_starting_year, course_ending_year } = educationData;
+                                      if (
+                                        course_starting_year &&
+                                        course_ending_year &&
+                                        parseInt(course_ending_year) < parseInt(course_starting_year)
+                                      ) {
+                                        setYearError('Ending year should be the same or greater than starting year');
+                                      }
+                                    }}
+                                    maxLength={4}
+                                  />
+                                  {yearError && (
+                                    <small className="text-danger">{yearError}</small>
+                                  )}
+                                </div>
                               </div>
-                            </div>
                             </div>
                           </>
                         )}
@@ -4230,8 +4231,8 @@ const MyAccount = () => {
                 </div>
               </div>
 
-               {/* Education delete modal */}
-               <div
+              {/* Education delete modal */}
+              <div
                 className="modal fade"
                 id="educationDeleteModal"
                 tabIndex="-1"
@@ -4280,32 +4281,28 @@ const MyAccount = () => {
                 </div>
               </div>
 
-                {/* Education Section Ends --- */}         
+              {/* Education Section Ends --- */}
 
 
               {/* Social Profiles */}
               <div className="card mt-4 shadow border-0 rounded-3">
                 <div className="card-body">
                   <div className="d-flex justify-content-between ">
-                    <div>
-                      <h5 className="m-0 text-theme">Online Profile</h5>
-                      <p>
-                        <small>
-                          Add link to online professional profiles (e.g.
-                          LinkedIn, etc.)
-                        </small>
-                      </p>
-                    </div>
+                    <h5 className="m-0 text-theme">Online Profile</h5>
 
                     <Link
                       className="text-theme"
                       data-bs-toggle="modal"
                       data-bs-target="#addSocialModal"
-                      onClick={() =>  setSelectedSocialProfile({})}
+                      onClick={() => setSelectedSocialProfile({})}
                     >
                       Add Profile
                     </Link>
                   </div>
+
+                  <p>
+                    <small> Add link to online professional profiles (e.g.LinkedIn, etc.) </small>
+                  </p>
 
                   <div className=" online_profile">
                     {socialProfiles && socialProfiles.length > 0 ? (
@@ -4420,29 +4417,29 @@ const MyAccount = () => {
                               />
                             </div> */}
 
-                          <div className="mb-4">
-                            <label htmlFor={`url-${profile.id}`}>URL</label>
-                            <input
-                              type="url"
-                              className={`form-control ${urlError ? 'is-invalid' : ''}`}
-                              placeholder="Enter Social Profile URL"
-                              value={selectedSocialProfile.url || ""}
-                              onChange={(e) => {
-                                const value = e.target.value;
-                                setSelectedSocialProfile((prev) => ({
-                                  ...prev,
-                                  url: value,
-                                }));
-                                validateUrl(value); // Validate URL
-                              }}
-                              onBlur={() => {
-                                if (!selectedSocialProfile.url) {
-                                  setUrlError('URL is required');
-                                }
-                              }}
-                            />
-                            {urlError && <small className="text-danger">{urlError}</small>}
-                          </div>
+                            <div className="mb-4">
+                              <label htmlFor={`url-${profile.id}`}>URL</label>
+                              <input
+                                type="url"
+                                className={`form-control ${urlError ? 'is-invalid' : ''}`}
+                                placeholder="Enter Social Profile URL"
+                                value={selectedSocialProfile.url || ""}
+                                onChange={(e) => {
+                                  const value = e.target.value;
+                                  setSelectedSocialProfile((prev) => ({
+                                    ...prev,
+                                    url: value,
+                                  }));
+                                  validateUrl(value); // Validate URL
+                                }}
+                                onBlur={() => {
+                                  if (!selectedSocialProfile.url) {
+                                    setUrlError('URL is required');
+                                  }
+                                }}
+                              />
+                              {urlError && <small className="text-danger">{urlError}</small>}
+                            </div>
 
                             <div className="mb-4">
                               <label htmlFor={`description-${profile.id}`}>
@@ -4668,7 +4665,7 @@ const MyAccount = () => {
                               ? `${userData.gender}`
                               : userData.maritial_status
                                 ? `${userData.maritial_status}`
-                                : <span className="text-muted">Please add data</span>}
+                                : <span className="text-muted">N/A</span>}
                         </p>
                       </div>
 
@@ -4678,7 +4675,7 @@ const MyAccount = () => {
                           {userData.dob ? (
                             <span>{userData.dob}</span>
                           ) : (
-                            <span className="text-muted">Please add data</span>
+                            <span className="text-muted">N/A</span>
                           )}
                         </p>
                       </div>
@@ -4688,7 +4685,7 @@ const MyAccount = () => {
                           {userData.category ? (
                             <span>{userData.category}</span>
                           ) : (
-                            <span className="text-muted">Please add data</span>
+                            <span className="text-muted">N/A</span>
                           )}
                         </p>
                       </div>
@@ -4698,7 +4695,7 @@ const MyAccount = () => {
                           {userData.permanent_address ? (
                             <span>{userData.permanent_address}</span>
                           ) : (
-                            <span className="text-muted">Please add data</span>
+                            <span className="text-muted">N/A</span>
                           )}
                         </p>
                       </div>
@@ -4708,7 +4705,7 @@ const MyAccount = () => {
                           {userData.pincode ? (
                             <span>{userData.pincode}</span>
                           ) : (
-                            <span className="text-muted">Please add data</span>
+                            <span className="text-muted">N/A</span>
                           )}
                         </p>
                       </div>
@@ -4718,7 +4715,7 @@ const MyAccount = () => {
                           {userData.city ? (
                             <span>{userData.city}</span>
                           ) : (
-                            <span className="text-muted">Please add data</span>
+                            <span className="text-muted">N/A</span>
                           )}
                         </p>
                       </div>
@@ -4728,7 +4725,7 @@ const MyAccount = () => {
                           {userData.state ? (
                             <span>{userData.state}</span>
                           ) : (
-                            <span className="text-muted">Please add data</span>
+                            <span className="text-muted">N/A</span>
                           )}
                         </p>
                       </div>
@@ -4738,7 +4735,7 @@ const MyAccount = () => {
                           {userData.country_name ? (
                             <span>{userData.country_name}</span>
                           ) : (
-                            <span className="text-muted">Please add data</span>
+                            <span className="text-muted">N/A</span>
                           )}
                         </p>
                       </div>
@@ -5052,7 +5049,7 @@ const MyAccount = () => {
                               if (/^[a-zA-Z\s]*$/.test(input)) {
                                 setUserData({ ...userData, hometown: input });
                               }
-                              }}
+                            }}
                           />
                         </div>
                         <div className="mb-4">
@@ -5073,7 +5070,7 @@ const MyAccount = () => {
                               if (/^\d*$/.test(value)) {
                                 setUserData({ ...userData, pincode: value });
                               }
-                              }}
+                            }}
                             maxLength={6}
                           />
                         </div>
@@ -5093,7 +5090,7 @@ const MyAccount = () => {
                               if (/^[a-zA-Z\s]*$/.test(input)) {
                                 setUserData({ ...userData, city: input });
                               }
-                              }}
+                            }}
                           />
                         </div>
 
@@ -5115,7 +5112,7 @@ const MyAccount = () => {
                               if (/^[a-zA-Z\s]*$/.test(input)) {
                                 setUserData({ ...userData, state: input });
                               }
-                              }}
+                            }}
                           />
                         </div>
                         <div className="mb-4">
@@ -5130,7 +5127,7 @@ const MyAccount = () => {
                               if (/^[a-zA-Z\s]*$/.test(input)) {
                                 setUserData({ ...userData, country_name: input });
                               }
-                              }}
+                            }}
                           />
                         </div>
 
@@ -5528,18 +5525,18 @@ const MyAccount = () => {
                             />
                           </div>
                           <div className="mt-4 mb-4">
-                          <label htmlFor="certification_url">Certification URL</label>
-                          <input
-                            type="text"
-                            className={`form-control ${urlError ? 'is-invalid' : ''}`}
-                            placeholder="Enter the certification URL"
-                            name="certification_url"
-                            value={selectedCertificate.certification_url}
-                            onChange={handleCertificateChange}  // Handles the change for any input
-                            onBlur={() => validateCerUrl(selectedCertificate.certification_url)}  // Validates when input is blurred (when user finishes typing)
-                          />
-                          {urlError && <small className="text-danger">{urlError}</small>}  {/* Show URL validation error */}
-                        </div>
+                            <label htmlFor="certification_url">Certification URL</label>
+                            <input
+                              type="text"
+                              className={`form-control ${urlError ? 'is-invalid' : ''}`}
+                              placeholder="Enter the certification URL"
+                              name="certification_url"
+                              value={selectedCertificate.certification_url}
+                              onChange={handleCertificateChange}  // Handles the change for any input
+                              onBlur={() => validateCerUrl(selectedCertificate.certification_url)}  // Validates when input is blurred (when user finishes typing)
+                            />
+                            {urlError && <small className="text-danger">{urlError}</small>}  {/* Show URL validation error */}
+                          </div>
                           <div className="mb-4">
                             <div className="row align-items-center">
                               <div className="col">

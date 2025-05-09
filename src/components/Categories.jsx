@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
+import { useTranslation } from 'react-i18next';
 
 const Categories = () => {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  const { t } = useTranslation();
 
   const bearerKey = import.meta.env.VITE_BEARER_KEY; 
   const API_URL = import.meta.env.VITE_API_URL;
@@ -49,8 +52,8 @@ const Categories = () => {
   
 
   return (
-    <div className="popular_categories container pb-4">
-      <h4 className="mb-4 text-center">Popular Job Categories</h4>
+    <div className="popular_categories container mt-5 pb-4">
+      <h4 className="mb-4 text-center">{t("PopJobCategories")}</h4>
        {loading ? (
               <div className="loading-screen d-flex flex-column justify-content-center align-items-center">
                 <div className="spinner-grow text-primary" role="status">
@@ -70,10 +73,10 @@ const Categories = () => {
                   <div key={category.id} className="col-lg-2 col-md-3 col-sm-4 col-4 mb-4">
                     <Link  
                     to={`/job/category/${category.name.trim().toLowerCase().replace(/\s+/g, '-')}`} className="cat_card">
-                      <div className="card">
+                      <div className="card h-100">
                         <div className="card-body text-center">                      
                           <img src={`${IMG_URL}/${category.image}`} alt={category.name} />
-                          <h5 className="mt-3">{category.name}</h5>
+                          <h5 className="mt-3 mb-0">{category.name}</h5>
                         </div>
                       </div>
                     </Link>

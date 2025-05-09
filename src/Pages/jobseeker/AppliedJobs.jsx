@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom'
 import { useAuthContext } from "../../store/authContext";
 import axios from 'axios';
 import { toast, ToastContainer } from "react-toastify";
+import { useTranslation } from "react-i18next";
 
 const Appliedjobs = () => {
 
@@ -15,6 +16,7 @@ const Appliedjobs = () => {
 
   const { user } = useAuthContext();
   const userId = user ? user.id : null;
+  const { t } = useTranslation();
 
   const [appliedJobs, setJobs] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -233,19 +235,19 @@ const Appliedjobs = () => {
             {isLoading ? (
               <div className="loading-screen d-flex flex-column justify-content-center align-items-center">
                 <div className="spinner-grow text-primary" role="status">
-                  <span className="visually-hidden">Loading...</span>
+                  <span className="visually-hidden">{t("Loading")}</span>
                 </div>
-                <p className='mt-2'>Fetching data...</p>
+                <p className='mt-2'>{t("FetchingData")}</p>
               </div>
             ) : error ? (
               // <p className="text-center text-theme">{error}</p>
-              <div className="card  border-0 shadow">
+              <div className="card no_saved_jobs border-0 shadow">
               <div className="card-body text-center ">
                 <img className='job_search' src="/images/job_search.png" alt="job_search" style={{ width: '100px' }}  />
                 { error === "No applications found." ? (
                   <>
-                    <h4>No jobs applied yet!</h4>
-                    <p className="text-center text-theme">Tap on apply button on the job detail page to apply that job.</p>
+                     <h4>{t("NoAppliedjobs")}</h4>
+                     <p className="text-center text-theme">{t("NoAppliedText")}</p>
                   </>
                 ) : ( <p className="text-center text-theme">{error}</p> )
                }
@@ -354,7 +356,7 @@ const Appliedjobs = () => {
                                             )}
                                             {appliedJobs[selectedJobIndex].status === "Cancelled" && (
                                               <span className="text-danger">
-                                                Your job application at <strong>{appliedJobs[selectedJobIndex].company_name}</strong> has been cancelled as per your request. If this was an error, please contact us immediately.
+                                                Your job application at <strong>{appliedJobs[selectedJobIndex].company_name}</strong> has been cancelled, for more details please check your email.
                                               </span>
                                             )}
                                           </>
@@ -478,21 +480,21 @@ const Appliedjobs = () => {
                   </div>
                 </>
               ) : (
-                <div className="card  border-0 shadow">
+                <div className="card no_saved_jobs border-0 shadow">
                   <div className="card-body text-center">
                     <img className='job_search' src="/images/job_search.png" alt="job_search" style={{ width: '200px' }}  />
-                    <h4>No jobs applied yet!</h4>
-                    <p className="text-center text-theme">Tap on apply button on the job detail page to apply that job.</p>
+                    <h4>{t("NoAppliedjobs")}</h4>
+                    <p className="text-center text-theme">{t("NoAppliedText")}</p>
                   </div>
                 </div>
               )}
             </div>
             ) : (
-              <div className="card  border-0 shadow">
+              <div className="card no_saved_jobs border-0 shadow">
               <div className="card-body text-center">
                 <img className='job_search' src="/images/job_search.png" alt="job_search" style={{ width: '100px' }}  />
-                <h4>No jobs applied yet!</h4>
-                <p className="text-center text-theme">Tap on apply button on the job detail page to apply that job.</p>
+                <h4>{t("NoAppliedjobs")}</h4>
+                <p className="text-center text-theme">{t("NoAppliedText")}</p>
               </div>
             </div>
             )}

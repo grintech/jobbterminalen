@@ -21,6 +21,11 @@ const CategoryList = () => {
   const bearerKey = import.meta.env.VITE_BEARER_KEY;
   const API_URL = import.meta.env.VITE_API_URL;
 
+  const stripHtml = (html) => {
+    const doc = new DOMParser().parseFromString(html, "text/html");
+    return doc.body.textContent || "";
+  };
+
   // const calculateTimeAgo = (date) => {
   //   // Convert the input date to the correct UTC format (ISO string)
   //   const utcZero = date.replace(" ", "T") + "Z"; // Ensure it's in ISO format with a 'Z' for UTC
@@ -97,6 +102,8 @@ const CategoryList = () => {
   
     return `${days} day${days !== 1 ? "s" : ""} ago`;
   }
+
+  
 
   // Fetch category data
   useEffect(() => {
@@ -211,7 +218,7 @@ const CategoryList = () => {
       <div>
         <Navbar />
         
-        <div className="category_listing py-5">
+        <div className="category_listing ">
           <div className="container top_pad">
               {loginAlert && (
               <div className="d-flex">
@@ -221,7 +228,7 @@ const CategoryList = () => {
               </div>
               )}
             <div className="row">
-              <div className="col-lg-3 mb-5 mb-lg-0">
+              {/* <div className="col-lg-3 mb-5 mb-lg-0">
                 <div className="card_sticky">
                   <div className="card all_cat_filters">
                     <div className="card-body">
@@ -229,9 +236,10 @@ const CategoryList = () => {
                     </div>
                   </div>
                 </div>
-              </div>
+              </div> */}
 
-              <div className="col-lg-9">
+              <div className="col-lg-10 mx-auto">
+                <h4 className="text-capitalize mb-4">{slug.replace(/-/g, ' ')} Jobs</h4>
                 <div className="row">
                   {loading ? (
                     <div className="loading-screen d-flex flex-column justify-content-center align-items-center">
@@ -246,7 +254,7 @@ const CategoryList = () => {
                     <div className="card border-0 shadow">
                       <div className="card-body text-center p-4">
                       <img className="job_search" src="/images/no-job.png" alt="job_search" />
-                      <h6 className="text-theme">No categories found at the moment. Please try later.</h6>
+                      <h6 className="text-theme">No job found for this category at the moment.</h6>
                     </div>
                     </div>
                     </div>
@@ -289,7 +297,7 @@ const CategoryList = () => {
                                 <h5 className="py-2 m-0">{job.company_name}</h5>
                               </Link>
                               <Link to={`/jobs/${job.slug}`}>
-                                <h6 className=" m-0">{job.title}</h6>
+                                <h6 className=" m-0">{stripHtml(job.title)}</h6>
                               </Link>
                             </div>
                             <p className="main_desc">{job.company_tagline}</p>
@@ -297,16 +305,18 @@ const CategoryList = () => {
                               {job.job_type && (
                                 <li>
                                   <div className="btn btn-sm btn-green me-2 mb-2 text-capitalize">
-                                    {job.job_type}
+                                    {job.job_type.replace(/-/g, " ")}
                                   </div>
                                 </li>
                               )}
-                              <li>
-                                <div className="btn btn-sm btn-green me-2 mb-2 text-capitalize">
-                                  <span>Salary -</span> {job.salary_range}{" "}
-                                  {job.salary_currency}
-                                </div>
-                              </li>
+                              {job.salary_currency && job.salary_range && (
+                                <li>
+                                  <div className="btn btn-sm btn-green me-2 mb-2 text-capitalize">
+                                    <span>Salary - </span>{job.salary_currency} {job.salary_range}
+                                    
+                                  </div>
+                                </li>
+                              ) }
 
                               {/* <li>
                                 <div className="btn btn-sm btn-green me-2 mb-2 text-capitalize">
@@ -318,17 +328,15 @@ const CategoryList = () => {
                                 <li>
                                   <div className="btn btn-sm btn-green me-2 mb-2 text-capitalize">
                                     {job.experience_required === "0" ? (
-                                       job.experience_required === "0" ? "Fresher" : job.experience_required
+                                      "Fresher"
+                                    ) : job.experience_required === "1" ? (
+                                      `Exp - 1 Yr`
                                     ) : (
-                                      <>
-                                       <span>Experience -</span>&nbsp;&nbsp;
-                                       {job.experience_required }
-                                      </>
-                                    ) }
+                                      `Exp - ${job.experience_required} Yrs`
+                                    )}
                                   </div>
                                 </li>
                               )}
-
 
                               {job.city && (
                                 <li>
@@ -338,6 +346,7 @@ const CategoryList = () => {
                                   </div>
                                 </li>
                               )}
+
                             </ul>
                             <p className=" text-muted m-0">
                               <small className="badge text-bg-light">

@@ -21,6 +21,11 @@ const SearchJobs = () => {
   const API_URL = import.meta.env.VITE_API_URL;
   const IMG_URL = import.meta.env.VITE_IMG_URL;
 
+  const stripHtml = (html) => {
+    const doc = new DOMParser().parseFromString(html, "text/html");
+    return doc.body.textContent || "";
+  };
+
   // Fetch saved job status
   useEffect(() => {
     const fetchSavedJobs = async () => {
@@ -138,10 +143,10 @@ const SearchJobs = () => {
         <HeroBanner />
         <div className="container job_search_page py-4">
           <div className="row">
-            <div className="col-lg-3">
+            {/* <div className="col-lg-3">
               <Filter />
-            </div>
-            <div className="col-lg-9">
+            </div> */}
+            <div className="col-lg-11 mx-auto">
             <h1 className="job_head">Job Search Results</h1>
               {loading ? (
               <div className="loading-screen d-flex justify-content-center align-items-center flex-column ">
@@ -155,7 +160,7 @@ const SearchJobs = () => {
                   <div className="card border-0 shadow">
                    <div className="card-body text-center p-4">
                    <img className="job_search" src="/images/no-job.png" alt="job_search" />
-                   <h6 className="text-theme">{error == "No data found" ? "No data found at the moment.Please try later" :error}</h6>
+                   <h6 className="text-theme">{error == "No data found" ? "No matched result available." :error}</h6>
                  </div>
                  </div>
                  </div>
@@ -191,20 +196,45 @@ const SearchJobs = () => {
                             <div className="py-2">
                               <h5 className="py-2">{job.company_name}</h5>
                               <Link to={`/jobs/${job.job_slug}`}>
-                                <h6>{job.job_title}</h6>
+                                <h6>{stripHtml(job.job_title)}</h6>
                               </Link>
                             </div>
                             <p className="main_desc">{job.company_tagline}</p>
                             <ul className="p-0 d-flex flex-wrap">
-                              <li>
-                                <div className="btn btn-sm btn-green me-2 mb-2 text-capitalize">{job.job_type}</div>
-                              </li>
-                              <li>
-                                <div className="btn btn-sm btn-green me-2 mb-2 text-capitalize">{job.experience_required}</div>
-                              </li>
-                              <li>
-                                <div className="btn btn-sm btn-green me-2 mb-2 text-capitalize">{job.job_location}</div>
-                              </li>
+                             {job.job_type && (
+                                <li>
+                                  <div className="btn btn-sm btn-green me-2 mb-2 text-capitalize">
+                                    {job.job_type.replace(/-/g, " ")}
+                                  </div>
+                                </li>
+                              )}
+
+                              {job.experience_required && (
+                                <li>
+                                  <div className="btn btn-sm btn-green me-2 mb-2 text-capitalize">
+                                    {job.experience_required === "0" ? (
+                                      "Fresher"
+                                    ) : job.experience_required === "1" ? (
+                                      `Exp - 1 Yr`
+                                    ) : (
+                                      `Exp - ${job.experience_required} Yrs`
+                                    )}
+                                  </div>
+                                </li>
+                              )}
+
+                              {job.city && (
+                                <li>
+                                  <div className="btn btn-sm btn-green me-2 mb-2 text-start text-capitalize">
+                                    <i className="fa-solid fa-location-dot "></i>
+                                    &nbsp;&nbsp;{job.city}
+                                  </div>
+                                </li>
+                              )}
+                             
+                              {/* <li>
+                                <div className="btn btn-sm btn-green me-2 mb-2 text-capitalize"><i className="fa-solid fa-location-dot me-1"></i>{job.job_location}</div>
+                              </li> */}
                             </ul>
                           </div>
                         </div>

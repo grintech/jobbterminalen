@@ -1,4 +1,4 @@
-import React, { useState} from 'react'
+import React, { useEffect, useState} from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuthContext } from '../store/authContext';
 import { useTranslation } from 'react-i18next';
@@ -11,17 +11,30 @@ const Navbar = () => {
       i18n.changeLanguage(language);
     };
 
-    const { user, loading , logout} = useAuthContext();
+    const [isMobile, setIsMobile] = useState(window.innerWidth <= 475);
+
+    const { user, logout} = useAuthContext();
      const [showLogoutModal, setShowLogoutModal] = useState(false);
     const empLogin = import.meta.env.VITE_EMP_URL;
 
     const navigate = useNavigate();
-
     const handleLogout = () => {
         logout();
         setShowLogoutModal(false);
         navigate('/login');
       };
+
+      useEffect(() => {
+        const handleResize = () => setIsMobile(window.innerWidth < 500);
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+      }, []);
+
+
+      const firstName = user?.name ? user.name.split(" ")[0] : "";
+      const displayName = isMobile && firstName.length > 5
+      ? firstName.slice(0, 5) + '..'
+      : firstName;
 
   return (
    <>
@@ -40,7 +53,7 @@ const Navbar = () => {
                        {t("ForEmployers")}
                     </Link>
                     <ul className="dropdown-menu">
-                        <li><Link to={`${empLogin}`} className="dropdown-item" >{t("EmpLogin")}</Link></li>
+                        <li><Link target='_blank' to={`${empLogin}`} className="dropdown-item" >{t("EmpLogin")}</Link></li>
                     </ul>
                 </li>
         </ul>
@@ -55,7 +68,21 @@ const Navbar = () => {
         <div className="dropdown">
             <button className="btn border dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
          
-            <p className='ml-4 mb-0 text-capitalize'>{user.name.split(" ")[0]} <i style={{fontSize:"10px"}} className="fa-solid fa-chevron-down"></i> </p>
+            {/* <p className='ml-4 mb-0 text-capitalize'>{user.name.split(" ")[0]} <i style={{fontSize:"10px"}} className="fa-solid fa-chevron-down"></i> </p> */}
+
+            {/* <p className='ml-4 mb-0 text-capitalize'>
+              {user.name.split(" ")[0].length > 6 
+                ? user.name.split(" ")[0].slice(0, 6) + '..' 
+                : user.name.split(" ")[0]
+              } 
+              <i style={{ fontSize: "9px" }} className="fa-solid fa-chevron-down ps-1"></i>
+            </p> */}
+
+            <p className='ml-4 mb-0 text-capitalize'>{displayName}
+              <i style={{fontSize:"10px"}} className="fa-solid fa-chevron-down ps-1"></i>
+             </p>
+
+           
 
             </button>
             <ul className="dropdown-menu">
@@ -126,7 +153,9 @@ const Navbar = () => {
         <div className="dropdown">
             <button className="btn border dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
           
-            <p className='ml-4 mb-0 text-capitalize'>{user.name.split(" ")[0]} <i style={{fontSize:"10px"}} className="fa-solid fa-chevron-down"></i></p>
+            <p className='ml-4 mb-0 text-capitalize'>{displayName}
+              <i style={{fontSize:"10px"}} className="fa-solid fa-chevron-down ps-1"></i>
+             </p>
 
             </button>
             <ul className="dropdown-menu">
@@ -143,7 +172,7 @@ const Navbar = () => {
             {t("ForEmployers")}
             </Link>
             <ul className="dropdown-menu">
-                <li><Link  to={`${empLogin}`} className="dropdown-item" >{t("EmpLogin")}</Link></li>
+                <li><Link target='_blank' to={`${empLogin}`} className="dropdown-item" >{t("EmpLogin")}</Link></li>
             </ul>
             </li>
         </ul>
@@ -160,24 +189,24 @@ const Navbar = () => {
     </header>
 
 
-            {/* Logout Confirmation Modal */}
+      {/* Logout Confirmation Modal */}
       {showLogoutModal && (
         <div className="modal fade show" style={{ display: 'block' }} tabIndex="-1">
           <div className="modal-dialog modal-dialog-centered">
             <div className="modal-content">
               <div className="modal-header">
-                <h5 className="modal-title fw-semibold">Confirm Logout</h5>
+                <h5 className="modal-title fw-semibold">{t("ConfLogout")}</h5>
                 <button type="button" className="btn-close" onClick={() => setShowLogoutModal(false)}></button>
               </div>
               <div className="modal-body text-center">
-                <h6 className='fs-5'>Are you sure you want to logout?</h6>
+                <h6 className='fs-5'>{t("SureLogout")}</h6>
               </div>
               <div className="modal-footer d-flex justify-content-center">
                 <button className="btn btn-secondary btn-sm" onClick={() => setShowLogoutModal(false)}>
-                  Cancel
+                {t("Cancel")}
                 </button>
                 <button className="btn btn-danger btn-sm" onClick={handleLogout}>
-                  Yes, Logout
+                {t("YesLogout")}
                 </button>
               </div>
             </div>

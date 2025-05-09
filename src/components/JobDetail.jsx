@@ -85,10 +85,7 @@ const JobDetail = () => {
           if (response.data.type === "success" && response.data.data) {
             setSaved(response.data.data.status === "active");
           } else {
-            console.error(
-              "Failed to fetch saved status:",
-              response.data.message
-            );
+            // console.error( "Failed to fetch saved status:", response.data.message );
           }
         } catch (err) {
           console.error("Error fetching saved status:", err);
@@ -223,7 +220,7 @@ const JobDetail = () => {
 
         if (response.data.type === "success") {
           setJobDetails(response.data.data);
-          console.log(response.data.data);
+          // console.log(response.data.data);
           // setDecodedHtml = decodeHtml(response.data.data.description);
         } else {
           setError("Job details not found. Please try later");
@@ -304,10 +301,10 @@ const JobDetail = () => {
 
         if (response.data.type === "success") {
           setSimilarJobs(response.data.similar_jobs || []);
-          console.log(
-            "First Similar Job ID:",
-            response.data.similar_jobs[0]?.status
-          );
+          // console.log(
+          //   "First Similar Job ID:",
+          //   response.data.similar_jobs[0]?.status
+          // );
         }
       } catch (error) {
         console.error("Error fetching similar jobs:", error);
@@ -496,6 +493,7 @@ const JobDetail = () => {
                         </button>
                       )}
                     </div> */}
+                    
                   </div>
 
                   <div className="job_details mt-2">
@@ -730,52 +728,55 @@ const JobDetail = () => {
                     </div>
                   </div> */}
 
-                  <div className="card job_list_card mb-4">
-                    <div className="card-body">
-                      <div className="container job-details">
-                        {/* <p>Please share your details in the form below.</p> */}
-                        <h5 className="fw-semibold">Contact Details:</h5>
-
-                        {jobDetails.job_email && (
-                          <p className="mb-2">
-                            <Link
-                              className="text-theme"
-                              to={`mailto:${jobDetails.job_email}`}
-                              rel="noopener noreferrer"
-                            >
-                              <i className="fa-regular fa-envelope me-2"></i>
-                              {jobDetails.job_email}
-                            </Link>
-                          </p>
-                        )}
-
-                        {jobDetails.whatsapp && (
-                          <p className="mb-2">
-                            <Link
-                              className="text-theme"
-                              to={`https://wa.me/${jobDetails.whatsapp}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                            >
-                              <i className="fa-brands fa-whatsapp me-2"></i>
-                              {jobDetails.whatsapp}
-                            </Link>
-                          </p>
-                        )}
-
-                        <p className="mb-2">
-                          <strong>Thanks & Regards,</strong>
-                        </p>
-
-                        {jobDetails.username && (
-                          <p className="m-0">
-                            <strong>{jobDetails.username}</strong>
-                          </p>
-                        )}
-
-                      </div>
-                    </div>
-                  </div>
+                { jobDetails.show_contact_details === 1 && (
+                     <div className="card job_list_card mb-4">
+                     <div className="card-body">
+                       <div className="container job-details">
+                         {/* <p>Please share your details in the form below.</p> */}
+                         <h5 className="fw-semibold">Contact Details:</h5>
+ 
+                         {jobDetails.job_email && (
+                           <p className="mb-2">
+                             <Link
+                               className="text-theme"
+                               to={`mailto:${jobDetails.job_email}`}
+                               rel="noopener noreferrer"
+                             >
+                               <i className="fa-regular fa-envelope me-2"></i>
+                               {jobDetails.job_email}
+                             </Link>
+                           </p>
+                         )}
+ 
+                         {jobDetails.whatsapp && (
+                           <p className="mb-2">
+                             <Link
+                               className="text-theme"
+                               to={`https://wa.me/${jobDetails.whatsapp}`}
+                               target="_blank"
+                               rel="noopener noreferrer"
+                             >
+                               <i className="fa-brands fa-whatsapp me-2"></i>
+                               {jobDetails.whatsapp}
+                             </Link>
+                           </p>
+                         )}
+ 
+                         <p className="mb-2">
+                           <strong>Thanks & Regards,</strong>
+                         </p>
+ 
+                         {jobDetails.username && (
+                           <p className="m-0">
+                             <strong>{jobDetails.username}</strong>
+                           </p>
+                         )}
+ 
+                       </div>
+                     </div>
+                     </div>
+                ) }
+                 
                            
                 </div>
                 
@@ -838,35 +839,43 @@ const JobDetail = () => {
 
                               <p className="main_desc">{job.company_tagline}</p>
 
-                              <ul className="p-0 d-flex flex-wrap">
+                              <ul className="p-0 d-flex flex-wrap m-0">
                                 {job.job_type && (
                                   <li>
                                     <div className="btn btn-sm btn-green me-2 mb-2 text-capitalize">
-                                      {job.job_type}
+                                      {job.job_type.replace(/-/g, ' ')}</div>
+                                  </li>
+                                )}
+                              
+                                {job.experience_required && (
+                                  <li>
+                                    <div className="btn btn-sm btn-green me-2 mb-2 text-capitalize">
+                                      {job.experience_required === "0" ? (
+                                        "Fresher"
+                                      ) : job.experience_required === "1" ? (
+                                        `Exp - 1 Yr`
+                                      ) : (
+                                        `Exp - ${job.experience_required} Yrs`
+                                      )}
                                     </div>
                                   </li>
                                 )}
-                                <li>
-                                  <div className="btn btn-sm btn-green me-2 mb-2 text-capitalize">
-                                    <span>Salary -</span> {job.salary_range}
-                                    {job.salary_currency}
-                                  </div>
-                                </li>
-                                <li>
-                                  <div className="btn btn-sm btn-green me-2 mb-2 text-capitalize">
-                                    <span>Experience -</span>
-                                    {job.experience_required}
-                                  </div>
-                                </li>
+
                                 {job.city && (
                                   <li>
                                     <div className="btn btn-sm btn-green me-2 mb-2 text-start text-capitalize">
-                                      <i className="fa-solid fa-location-dot"></i>
-                                      {job.city}
+                                      <i className="fa-solid fa-location-dot"></i>&nbsp;&nbsp;{job.city}
                                     </div>
                                   </li>
                                 )}
-                              </ul>
+                                {job.salary_currency && job.salary_range && (
+                                  <li>
+                                    <div className="btn btn-sm btn-green me-2 mb-2">
+                                      <span>Salary -</span> {job.salary_currency} {job.salary_range}
+                                    </div>
+                                  </li>
+                                )}
+                             </ul>
 
                               <p className="text-muted m-0">
                                 <small className="badge text-bg-light">

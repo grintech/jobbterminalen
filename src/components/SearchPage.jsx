@@ -21,9 +21,9 @@ const SearchPage = () => {
       setLoading(true);
       setError("");
       try {
-        console.log("Current Filters State:", filters); // Debug current filters
+        // console.log("Current Filters State:", filters); // Debug current filters
         const query = new URLSearchParams(filters).toString();
-        console.log("Generated Query String:", query); // Debug query string
+        // console.log("Generated Query String:", query); // Debug query string
   
         const response = await fetch(`${API_URL}/job_list.php?${query}`, 
           {

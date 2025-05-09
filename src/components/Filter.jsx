@@ -6,7 +6,8 @@ const bearerKey = import.meta.env.VITE_BEARER_KEY;
 const API_URL = import.meta.env.VITE_API_URL;
 
 const Filter = () => {
-  const { setFilter } = useFilterContext();
+  const { setFilter, resetFilters } = useFilterContext();
+
   const [localFilters, setLocalFilters] = useState({
     job_type: [],
     salary_min: "",
@@ -80,6 +81,23 @@ const Filter = () => {
     fetchJobs(cleanedFilters);
   };
 
+
+  const handleResetFilters = () => {
+    const emptyFilters = {
+      job_type: [],
+      salary_min: "",
+      salary_max: "",
+      experience: [],
+      location: [],
+      category: [],
+    };
+  
+    setLocalFilters(emptyFilters); // Reset local state
+    resetFilters();                // Reset global context state
+    fetchJobs({});                 // Fetch all jobs with no filters
+  };
+  
+
   const fetchJobs = async (filters) => {
     try {
       const params = new URLSearchParams();
@@ -105,13 +123,16 @@ const Filter = () => {
     <div className="card_sticky">
       <div className="card all_cat_filters">
         <div className="card-body">
+          <h5 className="">All Filters</h5>
           <div className="d-flex justify-content-between">
-            <h5 className="m-0">All Filters</h5>
-            <button className="btn btn-sm btn-dark px-2 border-0 rounded-1" onClick={handleApplyFilters}>
-              Apply Filter
-            </button>
+            <button
+              className="btn btn-sm btn-secondary me-2 px-2 border-0 rounded-1"
+              onClick={handleResetFilters}
+            > Reset </button>
+            <button className="btn btn-sm btn-dark px-2 border-0 rounded-1" onClick={handleApplyFilters}> Apply Filter </button>
           </div>
           <hr />
+          
           <div className="accordion border-0" id="accordionExample1">
             
             {/* Category Filter */}

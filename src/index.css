@@ -83,8 +83,9 @@ li{
   color: white;
 }
 .navbar .employer .dropdown-menu[data-bs-popper] {
-  top: 135%;
-  left: -40px !important;
+  top: 140%;
+  left: unset !important;
+  right: 5px !important
 }
 .btn-login{
   background-color: unset;
@@ -266,8 +267,6 @@ li{
 .socialLoginTab img{
   width: 22px;
 }
-
-
 
 .personal_detail_card .fa-pen-to-square, .company_full_details .fa-pen-to-square{background: #ddd;
   font-size: 13px;
@@ -520,9 +519,10 @@ input[type="checkbox"]:focus{box-shadow: none !important; }
  display: none !important;
 }
 .user_dropdown .dropdown-menu[data-bs-popper] {
-  top: 103%;
-  /* left: -129px; */
-  left: -100px;
+  top: 105%;
+  /* left: -100px; */
+  left: unset !important;
+  right: 5px !important;
 }
 .user_dropdown .dropdown-toggle{
   background-color: #003479; color: #fff;border: 0 !important; border-radius: 50px;
@@ -710,7 +710,7 @@ input[type="checkbox"]:focus{box-shadow: none !important; }
   .signup_form{margin-right: 0;}
   .navbar .navbar-toggler{ padding: 3px 8px !important;}
   .navbar .employer .dropdown-menu[data-bs-popper] {
-    top: 135%;
+    top: 150%;
     left: 0px !important;
   }
   .home_job_types .inside_card{height:100px; width: 150px; }
@@ -826,6 +826,8 @@ input[type="checkbox"]:focus{box-shadow: none !important; }
       padding: 5px 30px;
       font-size: .65rem !important;
     }
+    .user_dropdown .dropdown-toggle {font-size: 13px;}
+    .lang_select { padding: 3px 0px !important;font-size: 12px;}
 }
 
 @media screen and (max-width:400px) {
@@ -842,9 +844,14 @@ input[type="checkbox"]:focus{box-shadow: none !important; }
  }
  .user_dropdown .dropdown-toggle {font-size: 13px;}
  .employer .nav-item .nav-link{font-size: .7rem !important;}
- .navbar .employer .dropdown-item{
-  font-size: .65rem !important;
-}
+ .navbar .employer .dropdown-item{font-size: .65rem !important;}
+ .user_dropdown .dropdown-item{font-size: .75rem !important; }
+ .footer a .fa-chevron-right{font-size: 10px;}
+ .no_saved_jobs  h4{font-size: 18px;margin-top: 10px;}
+ .company_profile .company_address {font-size: 14px;}
+ .company_profile button {font-size: 14px !important;}
+
+  #vacancies_section .company_list_card .text-muted {font-size: 13px !important;}
 }
 
 @media screen and (max-width:375px) {
@@ -856,16 +863,19 @@ input[type="checkbox"]:focus{box-shadow: none !important; }
   .navbar .btn-register, .navbar .btn-login {font-size: .6rem; padding: 5px 8px; }
   .lang_select { padding: 3px 0px !important;font-size: 12px; }
   .employer .nav-item .nav-link{font-size: .7rem !important;}
+ 
   
 }
 @media screen and (max-width:350px) {
+  .user_dropdown .dropdown-toggle {font-size: 11px;}
   .otp-input {
     width: 30px;height: 30px !important;font-size: 13px;
   }
   .employer .nav-item .nav-link{font-size: .6rem !important;}
   .navbar .employer .dropdown-item{font-size: .6rem !important;}
   .navbar .btn-register, .navbar .btn-login {font-size: .55rem; padding: 5px 8px; }
-  .lang_select { padding: 3px 0px !important;font-size: 11px; }
+  .lang_select { padding: 3px 0px !important;font-size: 10px; }
+  .user_dropdown .dropdown-item{font-size: .65rem !important; }
 }
 
 @media screen and (max-width:330px) {
@@ -1052,3 +1062,8 @@ h5 .fa-pencil{font-size: 18px !important;}
 small.badge.text-bg-light{font-weight: 600;background-color :rgb(235, 235, 235) !important;}
 #company_details #about_company p, #company_details #about_company p strong, #company_details #about_company p b{font-size: 16px !important;}
 #company_details #about_company span, #company_details #about_company span strong,#company_details #about_company span b{font-size: 16px !important;}
+
+.maintainance{background-color: #003479; color: #fff;}
+
+.banner_sideImage a{display: flex; height: 230px;}
+.banner_sideImage img{height: 100%; width: 100%; object-fit: cover;}

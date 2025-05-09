@@ -6,7 +6,7 @@ import axios from "axios";
 // import ApplyPopup from "../components/ApplyPopup";
 import { useAuthContext } from "../store/authContext";
 import { toast, ToastContainer } from "react-toastify";
-import HomeBanners from "../components/HomeBanners";
+// import HomeBanners from "../components/HomeBanners";
 
 const CompanySingle = () => {
   const [companyData, setCompanyData] = useState(null);
@@ -15,6 +15,9 @@ const CompanySingle = () => {
   const [error, setError] = useState(null);
   const [city, setCity] = useState("");
   const { slug } = useParams();
+
+  const [bannerPlace, setBannerPlace] = useState("");
+
 
   const bearerKey = import.meta.env.VITE_BEARER_KEY;
   const API_URL = import.meta.env.VITE_API_URL;
@@ -77,7 +80,6 @@ const CompanySingle = () => {
   }, [companyData]);
 
 
-
   async function getCityName(latitude, longitude) {
     const apiKey = import.meta.env.VITE_GOOGLE_API_KEY;
     const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${apiKey}`;
@@ -103,7 +105,6 @@ const CompanySingle = () => {
       return null;
     }
   }
-
 
   const calculateTimeAgo = (timestamp) => {
     if (!timestamp) return "";
@@ -146,16 +147,11 @@ const CompanySingle = () => {
     return `${days} day${days !== 1 ? "s" : ""} ago`;
   }
   
-  
-
-
   const handleApplyClick = (jobId) => {
     if (!userId) {
       return toast.error("You must be logged in to apply.");
     }
   };
-
-  const [bannerPlace, setBannerPlace] = useState("");
 
   useEffect(() => {
     const fetchBannerPlace = async () => {
@@ -167,31 +163,33 @@ const CompanySingle = () => {
           },
         });
 
-        console.log("Raw Banner Response:", response.data); // Debugging
+        console.log("Raw Banner Response:", response.data.data);
+        setBannerPlace(response.data.data); 
 
         // If response is a string, try parsing it correctly
-        let parsedData;
-        try {
-          parsedData = JSON.parse(response.data);
-        } catch (error) {
-          const splitResponse = response.data.split("}{").map((item, index, array) => {
-            if (index === 0) return item + "}";
-            if (index === array.length - 1) return "{" + item;
-            return "{" + item + "}";
-          });
+        // let parsedData;
+        // try {
+        //   parsedData = JSON.parse(response.data);
+        // } catch (error) {
+        //   const splitResponse = response.data.split("}{").map((item, index, array) => {
+        //     if (index === 0) return item + "}";
+        //     if (index === array.length - 1) return "{" + item;
+        //     return "{" + item + "}";
+        //   });
 
-          parsedData = splitResponse.map((item) => JSON.parse(item));
-        }
+        //   parsedData = splitResponse.map((item) => JSON.parse(item));
+        // }
 
         // Ensure we have an array of banners
-        const formattedArray = Array.isArray(parsedData) ? parsedData : [parsedData];
+        // const formattedArray = Array.isArray(parsedData) ? parsedData : [parsedData];
 
-        if (formattedArray.length > 0 && formattedArray[0].data) {
-          setBannerPlace(formattedArray[0].data.placement);
-          console.log("Banner Placement:", formattedArray[0].data.placement);
-        } else {
-          console.warn("No valid banner data received.");
-        }
+        // if (formattedArray.length > 0 && formattedArray[0].data) {
+        //   setBannerPlace(formattedArray[0].data.placement);
+        //   console.log("Banner Placement:", formattedArray[0].data.placement);
+        // } else {
+        //   console.warn("No valid banner data received.");
+        // }
+
       } catch (error) {
         console.error("Error fetching HomeBanners data:", error);
       }
@@ -199,7 +197,6 @@ const CompanySingle = () => {
 
     fetchBannerPlace();
   }, []);
-
 
 
   return (
@@ -234,7 +231,7 @@ const CompanySingle = () => {
             <div className="card company_profile border-0 shadow">
               <div className="card-body">
                 <div className="d-flex align-items-center justify-content-between flex-wrap">
-                  <div className="d-flex align-items-center py-2">
+                  <div className="d-flex align-items-center  py-2">
                     <div className="logo_div me-3">
                       <img
                         loading="lazy"
@@ -245,10 +242,12 @@ const CompanySingle = () => {
                     </div>
                     <div>
                       <h5>{companyData.company_name}</h5>
-                      <div className="d-flex align-items-center">
+                      <div className="d-flex align-items-baseline">
                         <i className="fa-solid fa-location-dot me-1"></i>
                         {/* {city ? `${city} ` : ""} */}
-                        {companyData.company_address || 'Location not provided'}
+                        <span className="company_address">
+                          {companyData.company_address || 'Location not provided'}
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -261,13 +260,13 @@ const CompanySingle = () => {
                 </div>
               </div>
             </div>
-            <div className="companies_top container pt-5">
+            {/* <div className="companies_top container pt-5">
               {bannerPlace === "companies_top" && <HomeBanners />}
-            </div>
+            </div> */}
             <div id="company_details" className="company_details py-5">
               <div className="col-md-12 mx-auto">
                 <div className="row">
-                  <div className="col-lg-8">
+                  <div className="col-lg-8 mb-5 mb-lg-0">
                     <div className="card border-0 shadow">
                       <div className="card-body py-4 px-4">
                         <h4 className="mb-3">About Company :</h4>
@@ -377,14 +376,19 @@ const CompanySingle = () => {
                                     <i className="fa-regular fa-clock me-2"></i>
                                     Posted {calculateTimeAgo(job.created_at)}
                                   </p>
-                                  <div className="d-flex justify-content-between">
-                                    <div className="btn-sm btn-green me-2 mb-2 text-capitalize">
-                                      {job.job_type || 'Not specified'}
-                                    </div>
-                                    <div className="text-muted">
-                                      <span className="text_blue fw-bold me-1">{job.salary_currency || 'N/A'}</span>
-                                      {job.salary_range || 'N/A'}
-                                    </div>
+                                  <div className="d-flex justify-content-between flex-wrap">
+                                      { job.job_type && (
+                                        <div className="btn-sm btn-green me-2 mb-2 text-capitalize">
+                                        {job.job_type.replace(/-/g,' ') || 'Not specified'}
+                                        </div>
+                                      )}
+
+                                      {job.salary_currency && job.salary_range && (
+                                        <div className="text-muted">
+                                          <span className="text_blue fw-bold me-1">{job.salary_currency || 'N/A'}</span>
+                                          {job.salary_range || 'N/A'}
+                                        </div>
+                                      )}
                                   </div>
 
                                 </div>
@@ -429,6 +433,19 @@ const CompanySingle = () => {
                           </div>
                         </div>
                       </div>
+                      
+                      {/* {bannerPlace && bannerPlace.placement === "category_side" && (
+                          <div className="col-lg-12 col-md-12 mt-4  banner_sideImage">
+                            <Link to={bannerPlace.redirect_url} target="_blank" rel="noopener noreferrer">
+                              <img
+                                src={`${IMG_URL}/${bannerPlace.image_url}`}
+                                className="img-fluid w-100 rounded-4"
+                                alt={bannerPlace.title}
+                              />
+                            </Link>
+                          </div>
+                      )} */}
+
                     </div>
                   </div>
 
