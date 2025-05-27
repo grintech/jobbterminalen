@@ -12,15 +12,15 @@ const About = () => {
   return (
     <>  
       <Helmet>
-        <title>About JobbTerminalen - Your Trusted Job Portal in Sweden</title>
+        {/* <title>About JobbTerminalen - Your Trusted Job Portal in Sweden</title>
         <meta name="description" content="Learn more about JobbTerminalen, Sweden's leading job portal connecting job seekers with top employers. Find your dream job with us!" />
-        <meta name="keywords" content="About JobbTerminalen, job portal Sweden, career opportunities, employment platform, job search, hiring solutions" />
+        <meta name="keywords" content="About JobbTerminalen, job portal Sweden, career opportunities, employment platform, job search, hiring solutions" /> */}
       </Helmet>
 
         <div className="about_page">
             <Navbar />
             <div className="hero_banner d-flex flex-column align-items-center justify-content-center ">
-                <h1 className='fw-bold position-relative'>{t("AboutTitle")}</h1>
+                <h1 className='fw-bold position-relative m-0'>{t("AboutTitle")}</h1>
              </div>
              {/* <div className="position-relative"><div className="shape overflow-hidden text-white"><svg viewBox="0 0 2880 48" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M0 48H1437.5H2880V0H2160C1442.5 52 720 0 720 0H0V48Z" fill="currentColor"></path></svg></div></div> */}
 

@@ -36,7 +36,7 @@ const FeaturedEmployers = () => {
         
         const data = await response.json();
 
-        console.log('API Response:', data);
+        // console.log('API Response:', data);
         if (data.type === 'success') {
           setFeaturedCompanies(data.companies);
         } else {
@@ -65,11 +65,11 @@ const FeaturedEmployers = () => {
   return (
     <>
       <Helmet>
-        <title>Featured Companies Hiring in Sweden - JobbTerminalen</title>
+        {/* <title>Featured Companies Hiring in Sweden - JobbTerminalen</title>
         <meta name="description" content="Explore featured companies hiring in Sweden. Find top employers, company profiles, and job openings to advance your career with JobbTerminalen." />
         <meta name="keywords" content="featured companies, top employers Sweden, hiring companies, job portal Sweden, company profiles, career opportunities, best workplaces, job listings Sweden" />
         <meta property="og:title" content="Featured Companies Hiring in Sweden - JobbTerminalen" />
-        <meta property="og:description" content="Explore featured companies hiring in Sweden. Find top employers, company profiles, and job openings to advance your career with JobbTerminalen." />
+        <meta property="og:description" content="Explore featured companies hiring in Sweden. Find top employers, company profiles, and job openings to advance your career with JobbTerminalen." /> */}
       </Helmet>
 
 

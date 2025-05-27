@@ -67,11 +67,11 @@ const Homepage = () => {
   return (
     <>  
        <Helmet>
-       <title>JobbTerminalen - Find Your Dream Job in Sweden | Job Listings & Careers</title>
+        {/* <title>JobbTerminalen - Find Your Dream Job in Sweden | Job Listings & Careers</title>
         <meta name="description" content="Looking for jobs in Sweden? JobbTerminalen connects job seekers with top employers. Explore thousands of job listings in various industries and apply today!" />
         <meta name="keywords" content="jobs in Sweden, Swedish job portal, job search Sweden, job vacancies, careers in Sweden, job listings, employment opportunities, find jobs, hiring in Sweden, remote jobs Sweden, full-time jobs, part-time jobs, IT jobs Sweden, healthcare jobs Sweden, marketing jobs Sweden" />
         <meta property="og:title" content="JobbTerminalen - Find Your Dream Job in Sweden | Job Listings & Careers" />
-        <meta property="og:description" content="Looking for jobs in Sweden? JobbTerminalen connects job seekers with top employers. Explore thousands of job listings in various industries and apply today!" />
+        <meta property="og:description" content="Looking for jobs in Sweden? JobbTerminalen connects job seekers with top employers. Explore thousands of job listings in various industries and apply today!" /> */}
       </Helmet>
 
 

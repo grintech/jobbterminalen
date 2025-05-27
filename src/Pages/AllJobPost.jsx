@@ -9,6 +9,7 @@ import HeroBannerJobs from "../components/HeroBannerJobs";
 import { Helmet } from "react-helmet-async";
 import { useAuthContext } from "../store/authContext";
 import { ToastContainer,toast } from "react-toastify";
+import Avatar from "react-avatar";
 
 const AllJobPost = () => {
   const { filters, setFilter } = useFilterContext();
@@ -136,9 +137,10 @@ const AllJobPost = () => {
   return (
     <>
         <Helmet>
-        <title>Browse Jobs in Sweden - Find Your Dream Job | JobbTerminalen</title>
+          
+        {/* <title>Browse Jobs in Sweden - Find Your Dream Job | JobbTerminalen</title>
         <meta name="description" content="Explore the latest job openings in Sweden. Find full-time, part-time, and remote job opportunities across various industries on JobbTerminalen." />
-        <meta name="keywords" content="jobs in Sweden, job openings, Sweden careers, job portal, employment opportunities, remote jobs, full-time jobs, part-time jobs" />
+        <meta name="keywords" content="jobs in Sweden, job openings, Sweden careers, job portal, employment opportunities, remote jobs, full-time jobs, part-time jobs" /> */}
   
       </Helmet>
 
@@ -208,10 +210,10 @@ const AllJobPost = () => {
         <div className="container d-flex flex-column py-5 all_job_posts">
           <h4 className="mb-4">All Jobs</h4>
           <div className="row pb-5">
-            <div className="col-md-3 mb-4 mb-md-0">
+            <div className="col-lg-3 col-md-4 mb-4 mb-md-0">
               <Filter />
             </div>
-            <div className="col-md-9 d-flex flex-column position-relative align-items-center-justify-content-center">
+            <div className="col-lg-9 col-md-8 d-flex flex-column position-relative align-items-center-justify-content-center">
               {loading ? (
                 <div className="loading-screen d-flex flex-column justify-content-center align-items-center">
                   <div className="spinner-grow text-primary" role="status">
@@ -221,14 +223,14 @@ const AllJobPost = () => {
                 </div>
               ) : error ? (
               <>
-                  <div className="msg_card">
-                    <div className="card border-0 shadow">
-                      <div className="card-body text-center p-4">
-                      <img className="job_search" src="/images/no-job.png" alt="job_search" />
-                      <h6 className="text-theme">{error === "No data found" ? "No jobs found at the moment.." : "No data found"}</h6>
+                <div className="msg_card">
+                  <div className="card border-0 shadow">
+                    <div className="card-body text-center p-4">
+                    <img className="job_search" src="/images/no-job.png" alt="job_search" />
+                    <h6 className="text-theme">{error === "No data found" ? "No jobs found at the moment.." : "No data found"}</h6>
+                </div>
                   </div>
-                  </div>
-                  </div>
+                </div>
               </>
               ) : jobs.length > 0 ? (
                 <div className="row">
@@ -236,14 +238,24 @@ const AllJobPost = () => {
                     <div className="col-lg-4 col-md-6 col-sm-6 mb-4" key={job.id}>
                       <div className="card company_list_card h-100">
                         <div className="card-body ">
-                          <div className="d-flex justify-content-between">
+                          <div className="d-flex justify-content-between align-items-start">
                             <Link to={`/companies/${job.companies_slug}`}>
                               <div className="logo_div border-0 shadow">
-                                <img
-                                  loading="lazy"
-                                  src={`${IMG_URL}/${job.company_profile}`}
-                                  alt="company_logo"
-                                />
+                                {!job.company_profile ? (
+                                  <Avatar
+                                    name={job.company_name}
+                                    size="60"
+                                    round="8px"
+                                    fgColor="#fff"
+                                    textSizeRatio={2}
+                                  />
+                                ) : (
+                                  <img
+                                    src={`${IMG_URL}/${job.company_profile}`}
+                                    alt={job.company_name}
+                                  
+                                  />
+                                )}
                               </div>
                             </Link>
                             <div className="d-flex align-items-center">
@@ -264,10 +276,10 @@ const AllJobPost = () => {
                             </div>
                           </div>
                           <div className="py-2 ">
-                            <h5 >{job.company_name}</h5>
+                            <h5 className=" text-capitalize" >{job.company_name}</h5>
                             {/* <Link to="/job-detail"> */}
                             <Link to={`/jobs/${job.slug}`}>
-                              <h6 className="m-0" dangerouslySetInnerHTML={{ __html: job.title }}></h6>
+                              <h6 className="m-0 text-capitalize" dangerouslySetInnerHTML={{ __html: job.title }}></h6>
                             </Link>
                           </div>
                           <p className="main_desc">Trusted global solutions company.</p>
@@ -318,12 +330,12 @@ const AllJobPost = () => {
               ) : (
                 <>
                 <div className="msg_card">
-                <div className="card  border-0 shadow">
-                  <div className="card-body text-center p-4">
-                  <img className="job_search" src="/images/no-job.png" alt="job_search" />
-                  <h6 className="text-theme">{error === "No data found" ? "No jobs found at the moment.." : "No jobs found at the moment.."}</h6>
-                </div>
-                </div>
+                  <div className="card  border-0 shadow">
+                    <div className="card-body text-center p-4">
+                    <img className="job_search" src="/images/no-job.png" alt="job_search" />
+                    <h6 className="text-theme">{error === "No data found" ? "No jobs found at the moment.." : "No jobs found at the moment.."}</h6>
+                  </div>
+                  </div>
                 </div>
               </>
               )}

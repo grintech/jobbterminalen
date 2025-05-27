@@ -7,6 +7,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import { useAuthContext } from "../store/authContext"; // Assuming you have authContext for user
 import HeroBanner from "../components/HeroBanner";
 import Filter from "../components/Filter";
+import Avatar from "react-avatar";
 
 const SearchJobs = () => {
   const { search } = useLocation(); // Get the search string from the URL
@@ -63,7 +64,7 @@ const SearchJobs = () => {
   // Toggle saved/unsaved job
   const toggleSavedJob = async (jobId) => {
     if (!userId) {
-      console.log("Please login to save jobs.");
+      // console.log("Please login to save jobs.");
       toast.error("Please login to save jobs.");
       return;
     }
@@ -136,10 +137,60 @@ const SearchJobs = () => {
     if (search) fetchJobs();
   }, [search]);
 
+
+  const calculateTimeAgo = (timestamp) => {
+    if (!timestamp) return "";
+  
+    const now = new Date();
+    const past = new Date(timestamp.replace(" ", "T"));
+    const secondsPast = Math.floor((now - past) / 1000);
+  
+    const days = Math.floor(secondsPast / 86400); // 60 * 60 * 24
+    const months = Math.floor(days / 30);
+    const years = Math.floor(days / 365);
+  
+    if (secondsPast < 60) {
+      return `${secondsPast} sec${secondsPast !== 1 ? "s" : ""} ago`;
+    }
+  
+    if (secondsPast < 3600) {
+      const minutes = Math.floor(secondsPast / 60);
+      return `${minutes} min${minutes !== 1 ? "s" : ""} ago`;
+    }
+  
+    if (secondsPast < 86400) {
+      const hours = Math.floor(secondsPast / 3600);
+      return `${hours} hr${hours !== 1 ? "s" : ""} ago`;
+    }
+  
+    // Custom day/month display logic
+    if (days < 31) {
+      return `${days} day${days !== 1 ? "s" : ""} ago`;
+    }
+  
+    // Show "1 month ago" only on the 31st day
+    if (days === 31) {
+      return `1 month ago`;
+    }
+  
+    // For days between 32 and 60, show "x days ago"
+    if (days > 31 && days < 61) {
+      return `${days} days ago`;
+    }
+  
+    // Show months only on exact multiples of 30 (after day 60)
+    if (days % 30 === 0) {
+      return `${months} month${months !== 1 ? "s" : ""} ago`;
+    }
+  
+    return `${days} days ago`;
+  };
+
   return (
     <div className="search_jobs_page">
       <Navbar />
-      <div className="top_pad2">
+      {/* <div className="top_pad2"> */}
+      <div className="">
         <HeroBanner />
         <div className="container job_search_page py-4">
           <div className="row">
@@ -167,16 +218,30 @@ const SearchJobs = () => {
                 ) : jobs.length > 0 ? (
                   <div className="row">
                     {jobs.map((job) => (
-                      <div className="col-lg-4 col-md-6 col-sm-6 mb-4" key={job.job_id}>
+                      <div className="col-xl-3 col-lg-4 col-md-6 col-sm-6 mb-4" key={job.job_id}>
                         <div className="card company_list_card h-100">
                           <div className="card-body">
-                            <div className="d-flex justify-content-between">
+                            <div className="d-flex justify-content-between align-items-start">
                               <div className="logo_div border-0 shadow">
                                 <Link to={`/companies/${job.company_slug}`}>
-                                  <img
+                                  {/* <img
                                     src={`${IMG_URL}/${job.company_profile}`}
                                     alt={job.company_name}
-                                  />
+                                  /> */}
+                                  {!job.company_profile ? (
+                                      <Avatar
+                                        name={job.company_name}
+                                        size="60"
+                                        round="8px"
+                                        fgColor="#fff"
+                                        textSizeRatio={2}
+                                      />
+                                     ) : (
+                                      <img
+                                        src={`${IMG_URL}/${job.company_profile}`}
+                                        alt={job.company_name}
+                                      />
+                                    )}
                                 </Link>
                               </div>
                               <div className="d-flex align-items-center">
@@ -188,19 +253,19 @@ const SearchJobs = () => {
                                     className={`fa-bookmark ${isJobSaved(job.job_id) ? "fa-solid" : "fa-regular"}`}
                                   ></i>
                                 </button>
-                                <Link className="btn-light shadow me-2">
+                                {/* <Link className="btn-light shadow me-2">
                                   <i className="fa-solid fa-share"></i>
-                                </Link>
+                                </Link> */}
                               </div>
                             </div>
                             <div className="py-2">
-                              <h5 className="py-2">{job.company_name}</h5>
+                              <h5 className="py-2 m-0">{job.company_name}</h5>
                               <Link to={`/jobs/${job.job_slug}`}>
-                                <h6>{stripHtml(job.job_title)}</h6>
+                                <h6 className="text-capitalize m-0">{stripHtml(job.job_title)}</h6>
                               </Link>
                             </div>
-                            <p className="main_desc">{job.company_tagline}</p>
-                            <ul className="p-0 d-flex flex-wrap">
+                            <p className="main_desc text-capitalize">{job.company_tagline}</p>
+                            <ul className="p-0 d-flex flex-wrap m-0">
                              {job.job_type && (
                                 <li>
                                   <div className="btn btn-sm btn-green me-2 mb-2 text-capitalize">
@@ -236,6 +301,11 @@ const SearchJobs = () => {
                                 <div className="btn btn-sm btn-green me-2 mb-2 text-capitalize"><i className="fa-solid fa-location-dot me-1"></i>{job.job_location}</div>
                               </li> */}
                             </ul>
+                            <p className=" text-muted m-0">
+                              <small className="badge text-bg-light">
+                                {calculateTimeAgo(job.created_at)}
+                              </small>
+                            </p>
                           </div>
                         </div>
                       </div>

@@ -7,6 +7,7 @@ import axios from 'axios';
 import { useAuthContext } from '../../store/authContext';
 import { ToastContainer, toast } from 'react-toastify';
 import { useTranslation } from 'react-i18next';
+import Avatar from 'react-avatar';
 
 const SavedJobs = () => {
   const [savedJobs, setSavedJobs] = useState([]);
@@ -210,10 +211,24 @@ const SavedJobs = () => {
                             <div className="d-flex justify-content-between">
                               <Link to={`/companies/${job.company_slug}`}>
                                 <div className="logo_div border-0 shadow">
-                                  <img
+                                  {/* <img
                                     src={`${IMG_URL}/${job.company_profile}`}
                                     alt="company_logo"
-                                  />
+                                  /> */}
+                                  {!job.company_profile ? (
+                                      <Avatar
+                                        name={job.company_name}
+                                        size="60"
+                                        round="8px"
+                                        fgColor="#fff"
+                                        textSizeRatio={2}
+                                      />
+                                     ) : (
+                                      <img
+                                        src={`${IMG_URL}/${job.company_profile}`}
+                                        alt={job.company_name}
+                                      />
+                                    )}
                                 </div>
                               </Link>
                               <div className="d-flex align-items-center">

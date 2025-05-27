@@ -7,6 +7,8 @@ import { useAuthContext } from "../store/authContext";
 import HomeBanners from "./HomeBanners";
 // import ApplyPopup from './ApplyPopup';
 import { ToastContainer, toast } from "react-toastify";
+import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
+import Avatar from "react-avatar";
 
 const JobDetail = () => {
   const { slug } = useParams(); // Capture the slug from the URL
@@ -564,12 +566,27 @@ const JobDetail = () => {
                     <div className="d-flex align-items-center py-2">
                       <div className="logo_div me-3">
                         <Link to={`/companies/${jobDetails?.company_slug}`}>
-                          <img
+                          {/* <img
                             loading="lazy"
                             src={`${IMG_URL}/${jobDetails.company_profile}`}
                             alt={jobDetails.company_name}
                             className="rounded"
-                          />
+                          /> */}
+                          {!jobDetails.company_profile ? (
+                            <Avatar
+                              name={jobDetails.company_name}
+                              size="80"
+                              round="8px"
+                              fgColor="#fff"
+                              textSizeRatio={2}
+                            />
+                            ) : (
+                            <img
+                              src={`${IMG_URL}/${jobDetails.company_profile}`}
+                              alt={jobDetails.company_name}
+                               className="rounded"
+                            />
+                          )}
                         </Link>
                       </div>
                       <div>
@@ -635,17 +652,20 @@ const JobDetail = () => {
                         </li>
                        )}
 
-                      <li className="d-flex align-items-baseline pe-2 me-2 mb-2">
-                        <span className="fw-bold me-1">
-                          {jobDetails.salary_currency || "Not Specified"} :
-                        </span>
-                        <span>
-                          {jobDetails.salary_range || "Not Specified"}
-                        </span>
-                        <small className="ms-1">
-                          /{jobDetails.hourly_rate || "Not Specified"}
-                        </small>
-                      </li>
+                       {jobDetails.salary_currency && jobDetails.salary_range && jobDetails.hourly_rate && (
+                        <li className="d-flex align-items-baseline pe-2 me-2 mb-2">
+                          <span className="fw-bold me-1">
+                            {jobDetails.salary_currency || "Not Specified"} :
+                          </span>
+                          <span>
+                            {jobDetails.salary_range || "Not Specified"}
+                          </span>
+                          <small className="ms-1">
+                            /{jobDetails.hourly_rate || "Not Specified"}
+                          </small>
+                        </li>
+                       )}
+
                     </ul>
                   </div>
 
@@ -672,7 +692,7 @@ const JobDetail = () => {
                       <b className="me-1">Posted :</b>  <span className="badge text-dark btn-light">{calculateTimeAgo(jobDetails.created_at)}</span>
                       </span>
                       <span className="days ">
-                      <b className="me-1">Vacancies :</b>  {jobDetails.total_vacancies}
+                      <b className="me-1">Vacancies :</b>  <Link to={`/companies/${jobDetails?.company_slug}`}>{jobDetails.total_vacancies}</Link>
                       </span>
                    </div>
                     <div className="py-1">
@@ -753,7 +773,16 @@ const JobDetail = () => {
                                 onClick={() => setExpanded(!expanded)}
                                 className="text-theme fw-semibold mt-2 text-underline"
                               >
-                                {expanded ? 'Read less' : 'Read more'}
+                                {/* {expanded ? 'Read less' : 'Read more'} */}
+                                {expanded ? (
+                                   <> 
+                                   Read less <FaChevronUp style={{fontSize:"13px"}} />
+                                   </>) : 
+                                  (
+                                   <>
+                                  Read more <FaChevronDown style={{fontSize:"13px"}} /></>
+                                  )}
+
                               </Link>
                             )}
                           </div>
@@ -840,13 +869,27 @@ const JobDetail = () => {
                              </Link>
                            </p>
                          )}
+
+                         {jobDetails.linkedin_Url && (
+                           <p className="mb-2">
+                             <Link
+                               className="text-theme"
+                               to={jobDetails.linkedin_Url}
+                               target="_blank"
+                               rel="noopener noreferrer"
+                             >
+                               <i className="fa-brands fa-linkedin me-2"></i>
+                               {jobDetails.linkedin_Url}
+                             </Link>
+                           </p>
+                         )}
  
                          <p className="mb-2">
                            <strong>Thanks & Regards,</strong>
                          </p>
  
                          {jobDetails.contact_name && (
-                           <p className="m-0">
+                           <p className="m-0 text-capitalize">
                              <strong>{jobDetails.contact_name}</strong>
                            </p>
                          )}
@@ -872,14 +915,29 @@ const JobDetail = () => {
                         >
                           <div className="card company_list_card h-100">
                             <div className="card-body">
-                              <div className="d-flex justify-content-between">
+                              <div className="d-flex justify-content-between align-items-start">
                                 <Link to={`/companies/${job.company_slug}`}>
                                   <div className="logo_div border-0 shadow">
-                                    <img
+                                    {/* <img
                                       loading="lazy"
                                       src={`${IMG_URL}/${job.company_profile}`}
                                       alt="company_logo"
-                                    />
+                                    /> */}
+
+                                     {!job.company_profile ? (
+                                      <Avatar
+                                        name={job.company_name}
+                                        size="60"
+                                        round="8px"
+                                        fgColor="#fff"
+                                        textSizeRatio={2}
+                                      />
+                                     ) : (
+                                      <img
+                                        src={`${IMG_URL}/${job.company_profile}`}
+                                        alt={job.company_name}
+                                      />
+                                    )}
                                   </div>
                                 </Link>
                                 <div className="d-flex align-items-center">
@@ -908,7 +966,7 @@ const JobDetail = () => {
                                   </h5>
                                 </Link> */}
                                 <Link to={`/jobs/${job.slug}`}>
-                                  <h6 className="m-0">
+                                  <h6 className="py-2 m-0">
                                     {stripHtml(job.title)}
                                   </h6>
                                 </Link>
@@ -965,7 +1023,7 @@ const JobDetail = () => {
                       ))
                     ) : (
                       <div className="msg_card">
-                        <div className="card shadow">
+                        <div className="card ">
                           <div className="card-body text-center p-4">
                             <img
                               className="job_search"

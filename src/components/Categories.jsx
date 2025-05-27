@@ -85,7 +85,7 @@ const Categories = () => {
               </div>
               <div className="d-flex justify-content-center">
                 <Link to="/jobs/category" className="btn btn-login text-theme">
-                  View more
+                  {t("ViewMore")}
                 </Link>
               </div>
               </>

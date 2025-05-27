@@ -134,20 +134,22 @@ const PopularJob = () => {
                   </div>
                 </div>
               </div>
+
               <div className="offset-lg-2 col-lg-4 text-center">
                 <img src="/images/popular1.png" className="pop_img" alt="job" />
-                <p
-                  className="m-0 text-center text-white"
-                  style={{ fontWeight: "500" }}
-                >
+                  <p
+                    className="m-0 text-center text-white"
+                    style={{ fontWeight: "500" }}
+                  >
                   Discover jobs across popular roles
-                </p>
-                <p className="m-0 text-center text-light">
+                 </p>
+                 <p className="m-0 text-center text-light">
                   <small>
                     Select a role and we'll show you all the related jobs!
                   </small>
-                </p>
+                 </p>
               </div>
+
             </div>
           </div>
         </div>

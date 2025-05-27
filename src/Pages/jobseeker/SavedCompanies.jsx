@@ -6,6 +6,7 @@ import Navbar from '../../components/Navbar';
 import { ToastContainer, toast } from 'react-toastify';
 import Footer from '../../components/Footer';
 import { Link } from 'react-router-dom';
+import Avatar from 'react-avatar';
 
 const SavedCompanies = () => {
     const [savedCompanies, setSavedCompanies] = useState([]);
@@ -118,11 +119,24 @@ const SavedCompanies = () => {
                                               <div className="d-flex justify-content-between">
                                                 <div className="logo_div me-3 mb-3 shadow ">
                                                   <Link  to={`/companies/${company.company_slug}`}>
-                                                    <img
-                                                      
+                                                    {/* <img
                                                       src={`${IMG_URL}/${company.company_profile}`}
                                                       alt={company.company_name}
-                                                    />
+                                                    /> */}
+                                                    {!company.company_profile ? (
+                                                      <Avatar
+                                                        name={company.company_name}
+                                                        size="60"
+                                                        round="8px"
+                                                        fgColor="#fff"
+                                                        textSizeRatio={2}
+                                                      />
+                                                    ) : (
+                                                      <img
+                                                        src={`${IMG_URL}/${company.company_profile}`}
+                                                        alt={company.company_name}
+                                                      />
+                                                    )}
                                                   </Link>
                                                 </div>
 

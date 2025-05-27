@@ -9,6 +9,7 @@ import "swiper/css/navigation";
 import "react-toastify/dist/ReactToastify.css";
 import { useAuthContext } from "../store/authContext";
 import { useTranslation } from "react-i18next";
+import Avatar from 'react-avatar';
 
 const CompaniesSlider = () => {
   const [companyData, setCompanyData] = useState([]);
@@ -217,16 +218,35 @@ const CompaniesSlider = () => {
                   <SwiperSlide key={company.id} className="h-auto">
                     <div className="card h-100">
                       <div className="card-body text-center">
-                        <Link to={`/companies/${company.slug}`}>
+                        {/* <Link to={`/companies/${company.slug}`}>
                           <img
-                            src={`${IMG_URL}/${
-                              company.company_profile === "null"
+                            src={`${ company.company_profile == null
                                 ? "/images/frontimg/blank_logo.jpg"
-                                : company.company_profile
+                                : (`${IMG_URL}/${company.company_profile}`)
                             }`}
                             alt={company.company_name}
                           />
+                        </Link> */}
+                        
+                        <Link to={`/companies/${company.slug}`}>
+                          {company.company_profile == null ? (
+                            <Avatar
+                              name={company.company_name}
+                              size="50"
+                              round={true}
+                              // color="#007bff"
+                              fgColor="#fff"
+                              textSizeRatio={2}
+                            />
+                          ) : (
+                            <img
+                              src={`${IMG_URL}/${company.company_profile}`}
+                              alt={company.company_name}
+                             
+                            />
+                          )}
                         </Link>
+
                         <div className="py-3 my-3 job_desc">
                           <h5 className="mb-2">{company.company_name}</h5>
                         </div>
@@ -236,7 +256,7 @@ const CompaniesSlider = () => {
                             to={`/companies/${company.slug}`}
                             className="btn btn-login mx-2"
                           >
-                            View More
+                            {t("ViewMore")}
                           </Link>
                           <div className="save_post mx-2">
                             <i
@@ -261,7 +281,7 @@ const CompaniesSlider = () => {
 
               <div className="d-flex justify-content-center">
                 <Link to="/companies" className="btn btn-outline-login">
-                  View all companies
+                  {t("ViewAllCompanies")}
                 </Link>
               </div>
             </>

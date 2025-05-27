@@ -7,6 +7,7 @@ import { useAuthContext } from "../../store/authContext";
 import axios from 'axios';
 import { toast, ToastContainer } from "react-toastify";
 import { useTranslation } from "react-i18next";
+import Avatar from "react-avatar";
 
 const Appliedjobs = () => {
 
@@ -111,7 +112,7 @@ const Appliedjobs = () => {
               'Content-Type': 'application/json',
             },
           });
-          console.log('selectedJobIndex :' + selectedJobIndex);
+          // console.log('selectedJobIndex :' + selectedJobIndex);
       
           if (response.data.type === 'success') {
             setSimilarJobs(response.data.similar_jobs || []);
@@ -341,7 +342,7 @@ const Appliedjobs = () => {
                           <div className="tab-content" id="v-pills-tabContent">
                             {appliedJobs[selectedJobIndex] && (
                               <div className="tab-pane fade show active" id={`v-pills-${selectedJobIndex}`} role="tabpanel" aria-labelledby={`v-pills-${selectedJobIndex}-tab`} tabIndex="0">
-                                <div className="card-body">
+                                <div className="card-body card-body-main">
                                   <div className="border-bottom pb-3">
                                     <div className="d-flex align-items-start justify-content-between">
                                       <div>
@@ -445,10 +446,24 @@ const Appliedjobs = () => {
                                                 <div className="d-flex justify-content-between">
                                                   <Link to={`/companies/${job.company_slug}`}>
                                                     <div className="logo_div border-0 shadow">
-                                                      <img
+                                                      {/* <img
                                                         src={`${IMG_URL}/${job.company_profile}`}
                                                         alt="company_logo"
-                                                      />
+                                                      /> */}
+                                                      {!job.company_profile ? (
+                                                          <Avatar
+                                                            name={job.company_name}
+                                                            size="60"
+                                                            round="8px"
+                                                            fgColor="#fff"
+                                                            textSizeRatio={2}
+                                                          />
+                                                        ) : (
+                                                          <img
+                                                            src={`${IMG_URL}/${job.company_profile}`}
+                                                            alt={job.company_name}
+                                                          />
+                                                        )}
                                                     </div>
                                                   </Link>
                                                   
@@ -456,16 +471,16 @@ const Appliedjobs = () => {
 
                                                 <div className="py-2">
                                                   <Link to={`/companies/${job.company_slug}`}>
-                                                    <h5 className="py-2 m-0">{stripHtml(job.company_name)}</h5>
+                                                    <h5 className="py-2 m-0 text-capitalize">{stripHtml(job.company_name)}</h5>
                                                   </Link>
                                                   <Link to={`/jobs/${job.slug}`}>
-                                                    <h6 className="m-0">{stripHtml(job.title)}</h6>
+                                                    <h6 className="m-0 text-capitalize">{stripHtml(job.title)}</h6>
                                                   </Link>
                                                 </div>
 
-                                                <p className="main_desc">{job.company_tagline}</p>
+                                                {/* <p className="main_desc">{job.company_tagline}</p> */}
 
-                                                <ul className="p-0 d-flex flex-wrap">
+                                                <ul className="p-0 d-flex flex-wrap m-0">
                                                   {job.job_type && (
                                                     <li>
                                                       <div className="btn btn-sm btn-green me-2 mb-2 text-capitalize">
