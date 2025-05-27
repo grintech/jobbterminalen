@@ -187,17 +187,17 @@ const Contact = () => {
     return (
         <>
             <Helmet>
-                <title>Contact Us - JobbTerminalen</title>
+                {/* <title>Contact Us - JobbTerminalen</title>
                 <meta name="description" content="Get in touch with JobbTerminalen..." />
                 <meta name="keywords" content="Contact JobbTerminalen..." />
                 <meta property='og:title' content="Contact Us - JobbTerminalen" />
-                <meta property='og:description' content="Get in touch with JobbTerminalen..." />
+                <meta property='og:description' content="Get in touch with JobbTerminalen..." /> */}
             </Helmet>
 
             <div className="contact_page">
                 <Navbar />
                 <div className="hero_banner d-flex flex-column align-items-center justify-content-center ">
-                    <h1 className='fw-bold position-relative'>{t("ContactTitle")}</h1>
+                    <h1 className='fw-bold position-relative m-0'>{t("ContactTitle")}</h1>
                 </div>
 
                 <div className="container py-5">
@@ -223,7 +223,7 @@ const Contact = () => {
                                                 <div className="col-12 mb-3">
                                                     <label>{t("Phone")}<span>*</span></label>
                                                     <PhoneInput
-                                                        country={'us'}
+                                                        country={'se'}
                                                         value={phone}
                                                         onChange={(value) => {
                                                             const formattedPhone = `+${value}`;

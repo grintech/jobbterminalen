@@ -12,11 +12,11 @@ const TermsAndConditions = () => {
   return (
     <>  
       <Helmet>
-        <title>Terms & Conditions - JobbTerminalen</title>
+        {/* <title>Terms & Conditions - JobbTerminalen</title>
         <meta name="description" content="Review the Terms & Conditions of JobbTerminalen to understand the rules, policies, and user agreements for using our job portal services." />
         <meta name="keywords" content="Terms & Conditions, user agreement, JobbTerminalen terms, legal policy, job portal rules, service policies, website terms" />
         <meta property="og:title" content="Terms & Conditions - JobbTerminalen" />
-        <meta property="og:description" content="Review the Terms & Conditions of JobbTerminalen to understand the rules, policies, and user agreements for using our job portal services." />
+        <meta property="og:description" content="Review the Terms & Conditions of JobbTerminalen to understand the rules, policies, and user agreements for using our job portal services." /> */}
      </Helmet>
 
 
@@ -141,7 +141,7 @@ const TermsAndConditions = () => {
                   <p className="mb-2">{t("TermsAmendmentsText")}</p>
                 </div>
 
-                <div className='py-4 border-bottom'>
+                {/* <div className='py-4 border-bottom'>
                 <h4 className='mb-3'>{t("TermsContactUs")}</h4>
                 <p className="mb-2">{t("TermsContactUsText")}</p>
                 <ul className=''>
@@ -151,7 +151,7 @@ const TermsAndConditions = () => {
                     </li>
                   <li className='mb-2'>  <Trans i18nKey="ContactPhone" components={{strong: <strong /> }} /></li>
                 </ul>
-                </div>
+                </div> */}
 
               </div>
             </div>

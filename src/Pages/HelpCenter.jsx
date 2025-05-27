@@ -12,11 +12,11 @@ const HelpCenter = () => {
   return (
     <>
       <Helmet>
-        <title>Help Center - JobbTerminalen</title>
+        {/* <title>Help Center - JobbTerminalen</title>
         <meta name="description" content="Need assistance? Visit the JobbTerminalen Help Center for FAQs, job search guidance, account support, and solutions to common issues." />
         <meta name="keywords" content="help center, JobbTerminalen support, job search help, FAQs, customer support, job portal assistance, troubleshooting, account help, job seeker support" />
         <meta property="og:title" content="Help Center - JobbTerminalen" />
-        <meta property="og:description" content="Need assistance? Visit the JobbTerminalen Help Center for FAQs, job search guidance, account support, and solutions to common issues." />
+        <meta property="og:description" content="Need assistance? Visit the JobbTerminalen Help Center for FAQs, job search guidance, account support, and solutions to common issues." /> */}
       </Helmet>
       
       <div className="help-center-page">

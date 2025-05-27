@@ -42,7 +42,7 @@ const HomeBanners = () => {
             };
         });
 
-        console.log(banners);
+        // console.log(banners);
         setBanners(formattedArray[0].data);
       } catch (error) {
         console.error('Error fetching banners:', error);

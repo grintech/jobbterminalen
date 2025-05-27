@@ -53,15 +53,14 @@ const Navbar = () => {
                        {t("ForEmployers")}
                     </Link>
                     <ul className="dropdown-menu">
-                        <li><Link  to={`${empLogin}`} className="dropdown-item" >{t("EmpLogin")}</Link></li>
+                        <li><Link target="_blank"  to={`${empLogin}`} className="dropdown-item" >{t("EmpLogin")}</Link></li>
                     </ul>
                 </li>
         </ul>
 
         {!user ? 
         <form className=" d-flex both_btns " role="search">
-            <Link to='/login' className="btn btn-login mx-2" type="submit"><i className="fa-solid fa-user me-1"></i>{t("Login")}</Link>
-          
+            <Link to='/login' className="btn btn-login mx-2" type="submit"><i className="fa-solid fa-user me-1"></i>{t("Login")}</Link> 
         </form>
         :
         <div className="user_dropdown">
@@ -172,7 +171,7 @@ const Navbar = () => {
             {t("ForEmployers")}
             </Link>
             <ul className="dropdown-menu">
-                <li><Link  to={`${empLogin}`} className="dropdown-item" >{t("EmpLogin")}</Link></li>
+                <li><Link target="_blank" to={`${empLogin}`} className="dropdown-item" >{t("EmpLogin")}</Link></li>
             </ul>
             </li>
         </ul>
@@ -181,7 +180,7 @@ const Navbar = () => {
         <option value="en">EN</option>
         <option value="sv">SV</option>
        </select>
-
+        
 
         </div>
     </div>

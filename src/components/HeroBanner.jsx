@@ -88,8 +88,8 @@ const { t } = useTranslation();
 
   return (
     <div className="hero_banner d-flex flex-column align-items-center justify-content-center">
-      <h1 className="fw-bold position-relative">{t("HeroTitle")}</h1>
-      <h2 className="position-relative herotext">{t("HeroText")}</h2>
+      <h1 className="fw-bold position-relative text-center">{t("HeroTitle")}</h1>
+      <h2 className="position-relative herotext text-center">{t("HeroText")}</h2>
 
       <div className="banner_search container d-flex align-items-center justify-content-center mt-4 shadow">
         <i className="fa-solid fa-magnifying-glass search_icon"></i>

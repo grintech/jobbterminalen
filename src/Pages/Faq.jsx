@@ -12,11 +12,11 @@ const Faq = () => {
   return (
  <>
     <Helmet>
-    <title>JobbTerminalen - Frequently Asked Questions (FAQs) | Job Search Help & Support</title>
+    {/* <title>JobbTerminalen - Frequently Asked Questions (FAQs) | Job Search Help & Support</title>
     <meta name="description" content="Have questions about JobbTerminalen? Find answers to common queries about job searching, applications, employer services, and more." />
     <meta name="keywords" content="JobbTerminalen FAQ, job search help, job application guide, job portal support, employer services, job listings FAQ, job search Sweden, how to apply for jobs, hiring process, career guidance" />
     <meta property="og:title" content="JobbTerminalen - Frequently Asked Questions (FAQs) | Job Search Help & Support" />
-    <meta property="og:description" content="Have questions about JobbTerminalen? Find answers to common queries about job searching, applications, employer services, and more." />
+    <meta property="og:description" content="Have questions about JobbTerminalen? Find answers to common queries about job searching, applications, employer services, and more." /> */}
     </Helmet>
 
     

@@ -11,6 +11,8 @@ import html2pdf from "html2pdf.js";
 
 const MyAccount = () => {
 
+  const [isSaving, setIsSaving] = useState(false);
+
   const resumeRef = useRef()
   const { user } = useAuthContext();
   const userId = user ? user.id : null;
@@ -38,6 +40,36 @@ const MyAccount = () => {
   const [abledType, setAbledType] = useState(
     userData.differently_abled_type || ""
   );
+
+  const [uploadPercentage, setUploadPercentage] = useState('');
+
+  const getStrokeColor = (percentage) => {
+    if (percentage < 25) return "#f44336"; // Red
+    if (percentage < 50) return "#ff9800"; // Orange/Yellow
+    if (percentage < 75) return "#2196f3"; // Blue
+    if (percentage < 90) return "#003479"; // Theme Blue
+    return "#4caf50"; // Green
+  };
+
+  // Simulate dynamic progress (remove this in real app)
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     setUploadPercentage(prev => (prev < 25 ? prev + 1 : prev));
+  //   }, 100); // increase every 100ms
+  //   return () => clearInterval(interval);
+  // }, []);
+
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     uploadPercentage;
+  //   }, 100); // increase every 100ms
+  //   return () => clearInterval(interval);
+  // }, []);
+
+  const radius = 54;
+  const circumference = 2 * Math.PI * radius;
+  const strokeDashoffset = circumference - (uploadPercentage / 100) * circumference;
+  
 
   const [languageToDeleteIndex, setLanguageToDeleteIndex] = useState(null);
 
@@ -238,6 +270,13 @@ const MyAccount = () => {
       formData.append("user_id", userId);
       formData.append("resume", file);
 
+
+      //  const ajaxModal = new bootstrap.Modal(document.getElementById("ajaxModal"));
+      //   document.getElementById("ajaxModalMessage").textContent =
+      //     "Uploading Resume...";
+      //   ajaxModal.show();
+
+      setIsSaving(true);
       try {
         const response = await axios.post(
           `${API_URL}/upload-resume.php`,
@@ -252,6 +291,8 @@ const MyAccount = () => {
 
         if (response.data.type === "success") {
           toast.success("Resume uploaded successfully!");
+          fetchUserData();
+          //  ajaxModal.hide();
           var resumeLink = response.data.resume.split("/").pop();
           setResume(resumeLink);
           setUserData((prevData) => ({
@@ -265,6 +306,10 @@ const MyAccount = () => {
       } catch (error) {
         console.error("Error uploading resume:", error);
         toast.error("Error uploading resume.");
+      } finally {
+        setTimeout(() => {
+          setIsSaving(false);
+        }, 300);
       }
     }
   };
@@ -319,6 +364,7 @@ const MyAccount = () => {
   const confirmRemoveResume = async () => {
     if (!userId) return;
 
+    setIsSaving(true);
     try {
       const response = await axios.delete(
         `${API_URL}/remove-resume.php?user_id=${userId}`,
@@ -332,6 +378,7 @@ const MyAccount = () => {
 
       if (response.data.type === "success") {
         toast.success("Resume removed successfully!");
+        fetchUserData();
         setResume(null);
         setUserData((prevData) => ({
           ...prevData,
@@ -344,6 +391,10 @@ const MyAccount = () => {
     } catch (error) {
       console.error("Error removing resume:", error);
       toast.error("Error removing resume.");
+    } finally{
+        setTimeout(() => {
+          setIsSaving(false);
+        }, 300);
     }
   };
 
@@ -375,6 +426,8 @@ const MyAccount = () => {
 
       if (response.data.type === "success") {
         const userDetails = response.data.data;
+        setUploadPercentage(response.data.percentage);
+        // console.log(response.data.percentage);
 
         // Add the provided code snippet here
         if (
@@ -508,6 +561,11 @@ const MyAccount = () => {
       if (response.data.type === "success") {
         toast.success("Profile image uploaded successfully!");
         setProfileImage(response.data.image || reader.result);
+
+        fetchUserData();
+        // ajaxModal.hide();
+        // console.log("loader hided 1")
+
       } else {
         toast.error(response.data.message);
       }
@@ -520,7 +578,10 @@ const MyAccount = () => {
       const ajaxModal = bootstrap.Modal.getInstance(
         document.getElementById("ajaxModal")
       );
+       setTimeout(() => {
       ajaxModal.hide();
+    }, 300);
+      //  console.log("loader hided 2")
     }
   };
 
@@ -531,7 +592,7 @@ const MyAccount = () => {
     const ajaxModal = new bootstrap.Modal(document.getElementById("ajaxModal"));
     document.getElementById("ajaxModalMessage").textContent =
       "Removing profile image...";
-    ajaxModal.show();
+    //  ajaxModal.show();
 
     try {
       const response = await axios.delete(
@@ -547,6 +608,8 @@ const MyAccount = () => {
       if (response.data.type === "success") {
         toast.success("Profile image removed successfully!");
         setProfileImage("/images/blank_user.png");
+        fetchUserData();
+        // ajaxModal.hide();
       } else {
         toast.error(response.data.message);
       }
@@ -554,7 +617,9 @@ const MyAccount = () => {
       console.error("Error removing profile image:", error);
       toast.error("Error removing profile image.");
     } finally {
+       setTimeout(() => {
       ajaxModal.hide();
+    }, 300);
     }
   };
 
@@ -635,6 +700,7 @@ const MyAccount = () => {
 
       if (response.data.type === "success") {
         toast.success("Skills updated successfully!");
+        fetchUserData();
         setUserData((prevData) => ({
           ...prevData,
           skills: skills.join(", "),
@@ -686,6 +752,7 @@ const MyAccount = () => {
           current_location: userData.current_location,
           country_name: userData.country_name,
           notice_period: userData.notice_period,
+          bio: userData.bio,
         },
         {
           headers: {
@@ -706,15 +773,16 @@ const MyAccount = () => {
           current_location: userData.current_location,
           country_name: userData.country_name,
           notice_period: userData.notice_period,
+          bio: userData.bio,
         }));
-
-        fetchUserData();
-
-
         const editProfileModal = bootstrap.Modal.getInstance(
           document.getElementById("editProfileModal")
         );
         editProfileModal.hide();
+
+        fetchUserData();
+        // ajaxModal.hide();
+
       } else {
         toast.error(response.data.message || "Failed to update details.");
       }
@@ -724,7 +792,9 @@ const MyAccount = () => {
         error.response?.data?.message || "An unexpected error occurred."
       );
     } finally {
+       setTimeout(() => {
       ajaxModal.hide();
+    }, 300);
     }
   }
 
@@ -842,8 +912,12 @@ const MyAccount = () => {
         employModal.hide();
 
         setEmploymentForm(defaultEmploymentForm); // reset form
-
         fetchEmployment(userId);
+        
+        fetchUserData();
+        // ajaxModal.hide();
+
+
       } else {
         toast.error(response.data.message || "Failed to update details.");
       }
@@ -851,10 +925,11 @@ const MyAccount = () => {
       console.error("Save Error:", error);
       toast.error(error.response?.data?.message || "An unexpected error occurred.");
     } finally {
+       setTimeout(() => {
       ajaxModal.hide();
+    }, 300);
     }
   };
-
 
   const editEmploymentData = async (id) => {
     try {
@@ -866,7 +941,8 @@ const MyAccount = () => {
         }
       );
       const data = response.data.data;
-      console.log(data);
+      
+      // console.log(data);
       if (data) {
         setEmploymentForm({
           id: id,
@@ -888,7 +964,6 @@ const MyAccount = () => {
       toast.error("Failed to load employment data.");
     }
   };
-
 
   const updateEmploymentData = async () => {
     const ajaxModal = new bootstrap.Modal(document.getElementById("ajaxModal"));
@@ -921,6 +996,11 @@ const MyAccount = () => {
         employModal.hide();
 
         fetchEmployment(userId);
+        
+        fetchUserData();
+        // ajaxModal.hide();
+        // console.log("loader 1 hided")
+
       } else {
         toast.error(response.data.message || "Failed to update.");
       }
@@ -928,11 +1008,12 @@ const MyAccount = () => {
       console.error("Update Error:", error);
       toast.error("Something went wrong while updating.");
     } finally {
+      setTimeout(() => {
       ajaxModal.hide();
+    }, 300);
+      //  console.log("loader 2 hided")
     }
   };
-
-
 
   const confirmDelete = async (Id) => {
     if (!Id) return;
@@ -956,9 +1037,12 @@ const MyAccount = () => {
 
       if (response.data.type === "success") {
         toast.success(response.data.message);
-
         // Update the employment state
         setEmployment((prevData) => prevData.filter((emp) => emp.id !== Id));
+
+        fetchUserData();
+        // ajaxModal.hide();
+        
       } else {
         toast.error(response.data.message);
       }
@@ -966,7 +1050,9 @@ const MyAccount = () => {
       console.error("Error deleting employment data:", error);
       toast.error("Error deleting employment data.");
     } finally {
+       setTimeout(() => {
       ajaxModal.hide();
+    }, 300);
     }
   };
 
@@ -999,7 +1085,7 @@ const MyAccount = () => {
   //   const ajaxModal = new bootstrap.Modal(document.getElementById("ajaxModal"));
   //   document.getElementById("ajaxModalMessage").textContent =
   //     "Saving your details...";
-  //   ajaxModal.show();
+    // ajaxModal.show();
 
   //   try {
   //     const response = await axios.put(
@@ -1050,7 +1136,7 @@ const MyAccount = () => {
   //       error.response?.data?.message || "An unexpected error occurred."
   //     );
   //   } finally {
-  //     ajaxModal.hide();
+      // ajaxModal.hide();
   //   }
   // };
 
@@ -1086,7 +1172,7 @@ const MyAccount = () => {
         });
 
         setEducation(educationDetails);
-        console.log("Education Details:", education);
+        // console.log("Education Details:", education);
       } else {
         console.error(
           "Failed to fetch seeker education:",
@@ -1184,7 +1270,11 @@ const MyAccount = () => {
         educationModal.hide();
 
         fetchEducation(userId);
-        console.log("Added Education Data:", response.data.data);
+        // console.log("Added Education Data:", response.data.data);
+
+        fetchUserData();
+        // ajaxModal.hide();
+
       } else {
         toast.error(response.data.message || "Failed to add education details.");
       }
@@ -1192,7 +1282,9 @@ const MyAccount = () => {
       console.error("Error adding education data:", error);
       toast.error(error.response?.data?.message || "An unexpected error occurred.");
     } finally {
+      setTimeout(() => {
       ajaxModal.hide();
+    }, 300);
     }
   };
 
@@ -1205,7 +1297,7 @@ const MyAccount = () => {
       });
 
       const data = response.data.data;
-      console.log(data);
+      // console.log(data);
 
       if (data) {
         // Handle course_duration splitting if available
@@ -1247,6 +1339,22 @@ const MyAccount = () => {
     } else {
       setMarksError(""); // Clear error if valid
     }
+
+    // Validate course duration (years)
+    const startYear = parseInt(educationData.course_starting_year, 10);
+    const endYear = parseInt(educationData.course_ending_year, 10);
+
+    if (
+      educationData.course_starting_year &&
+      educationData.course_ending_year &&
+      endYear < startYear
+    ) {
+      setYearError('Ending year should be the same or greater than starting year');
+      toast.error('Ending year should be the same or greater than starting year');
+      return;
+    }
+
+   
 
     // Calculate course duration
     const combinedDuration =
@@ -1321,7 +1429,10 @@ const MyAccount = () => {
 
         // Refresh education list
         fetchEducation(userId);
-        console.log("Updated Education Data:", response.data.data);
+       
+        // console.log("Updated Education Data:", response.data.data);
+        fetchUserData();
+        // ajaxModal.hide();
       } else {
         toast.error(response.data.message || "Failed to update education details.");
       }
@@ -1329,7 +1440,9 @@ const MyAccount = () => {
       console.error("Error updating education data:", error);
       toast.error(error.response?.data?.message || "An unexpected error occurred.");
     } finally {
+       setTimeout(() => {
       ajaxModal.hide();
+    }, 300);
     }
   };
 
@@ -1355,11 +1468,14 @@ const MyAccount = () => {
 
       if (response.data.type === "success") {
         toast.success(response.data.message);
-
         // Update the education state
         setEducation((prevEducation) =>
           prevEducation.filter((edu) => edu.id !== Id)
         );
+
+        fetchUserData();
+        // ajaxModal.hide();
+
       } else {
         toast.error(response.data.message);
       }
@@ -1367,7 +1483,9 @@ const MyAccount = () => {
       console.error("Error deleting education data:", error);
       toast.error("Error deleting education data.");
     } finally {
+       setTimeout(() => {
       ajaxModal.hide();
+    }, 300);
     }
   };
 
@@ -1453,7 +1571,7 @@ const MyAccount = () => {
 
       if (response.data.type === "success") {
         toast.success(response.data.message);
-
+        
         // Update the socialProfiles state
         setSocialProfiles((prevProfiles) => {
           if (Id) {
@@ -1472,6 +1590,10 @@ const MyAccount = () => {
 
         // Clear the selectedSocialProfile state
         setSelectedSocialProfile({});
+
+        fetchUserData();
+        // ajaxModal.hide();
+
       } else {
         toast.error(response.data.message || "Failed to update details.");
       }
@@ -1481,7 +1603,9 @@ const MyAccount = () => {
         error.response?.data?.message || "An unexpected error occurred."
       );
     } finally {
+       setTimeout(() => {
       ajaxModal.hide();
+    }, 300);
     }
   };
 
@@ -1507,11 +1631,14 @@ const MyAccount = () => {
 
       if (response.data.type === "success") {
         toast.success(response.data.message);
-
+    
         // Update the socialProfiles state
         setSocialProfiles((prevProfiles) =>
           prevProfiles.filter((profile) => profile.id !== Id)
         );
+
+        fetchUserData();
+        // ajaxModal.hide();
       } else {
         toast.error(response.data.message);
       }
@@ -1519,7 +1646,9 @@ const MyAccount = () => {
       console.error("Error deleting social profile:", error);
       toast.error("Error deleting social profile.");
     } finally {
+       setTimeout(() => {
       ajaxModal.hide();
+    }, 300);
     }
   };
 
@@ -1612,7 +1741,7 @@ const MyAccount = () => {
           gender: userData.gender,
           maritial_status: userData.maritial_status,
           dob: userData.dob,
-          category: userData.category,
+          religion: userData.religion,
           differently_abled: userData.differently_abled,
           differently_abled_type: userData.differently_abled_type,
           differently_abled_condition: userData.differently_abled_condition,
@@ -1637,8 +1766,10 @@ const MyAccount = () => {
       );
 
       if (response.data.type === "success") {
-        toast.success("Details updated successfully!");
-        ajaxModal.hide();
+        toast.success("Personal details updated successfully!");
+
+        fetchUserData();
+        // ajaxModal.hide();
       } else {
         toast.error(response.data.message || "Failed to update details.");
       }
@@ -1648,7 +1779,9 @@ const MyAccount = () => {
         error.response?.data?.message || "An unexpected error occurred."
       );
     } finally {
+       setTimeout(() => {
       ajaxModal.hide();
+    }, 300);
     }
   };
 
@@ -1667,7 +1800,7 @@ const MyAccount = () => {
         let certificates = response.data.data;
 
         setCertificates(certificates);
-        console.log("Certificates  :", certificates);
+        // console.log("Certificates  :", certificates);
       } else {
         console.error(
           "Failed to fetch seeker social profiles:",
@@ -1745,7 +1878,7 @@ const MyAccount = () => {
 
       if (response.data.type === "success") {
         toast.success(response.data.message);
-
+        
         // Update the certificates state
         setCertificates((prevCertificates) => {
           if (Id) {
@@ -1761,6 +1894,12 @@ const MyAccount = () => {
             ];
           }
         });
+
+        fetchUserData();
+        // ajaxModal.hide();
+        // console.log("Certi load 1 hided");
+
+
       } else {
         toast.error(response.data.message || "Failed to update details.");
       }
@@ -1770,7 +1909,11 @@ const MyAccount = () => {
         error.response?.data?.message || "An unexpected error occurred."
       );
     } finally {
+       setTimeout(() => {
       ajaxModal.hide();
+    }, 300);
+      // console.log("Certi load 2 hided");
+
     }
   };
 
@@ -1813,6 +1956,11 @@ const MyAccount = () => {
         setCertificates((prevCertificates) =>
           prevCertificates.filter((certificate) => certificate.id !== Id)
         );
+
+        fetchUserData();
+        // ajaxModal.hide();
+        // console.log("Certi load 1 hided");
+
       } else {
         toast.error(response.data.message);
       }
@@ -1820,7 +1968,11 @@ const MyAccount = () => {
       console.error("Error deleting certificate:", error);
       toast.error("Error deleting certificate.");
     } finally {
+       setTimeout(() => {
       ajaxModal.hide();
+    }, 300);
+      // console.log("Certi load 2 hided");
+
     }
   };
 
@@ -1940,6 +2092,7 @@ const MyAccount = () => {
 
 
   return (
+    <>
     <div id="my_account_page" className="my_account_page">
       <Navbar />
       <div className="top_pad">
@@ -2009,9 +2162,9 @@ const MyAccount = () => {
 
               <div className="card  shadow border-0 rounded-3">
                 <div className="card-body">
-                  <div className="row">
-                    <div className="col-md-4 col-lg-3 col-xl-2 mb-3 mb-md-0">
-                      <div className="job_profile_icon position-relative">
+                  <div className="d-flex flex-wrap">
+                    <div className="col-md-4 col-lg-3 col-xl-2 mb-5 mb-md-0 pe-4">
+                      {/* <div className="job_profile_icon position-relative">
                         <img
                           src={profileImage}
                           className="profile_image"
@@ -2046,10 +2199,107 @@ const MyAccount = () => {
                             title="Remove Image"
                           ></i>
                         )}
+                      </div> */}
+
+                      {/* <div className="job_profile_icon position-relative">
+                        <div className="progress-circle-wrapper">
+                          <svg className="progress-ring" width="120" height="120">
+                            <circle
+                              className="progress-ring__background"
+                              cx="60"
+                              cy="60"
+                              r={radius}
+                            />
+                            <circle
+                              className="progress-ring__circle"
+                              cx="60"
+                              cy="60"
+                              r={radius}
+                              style={{
+                                strokeDashoffset: strokeDashoffset,
+                                strokeDasharray: circumference,
+                              }}
+                            />
+                          </svg>
+
+                          <div className="profile-image-wrapper">
+                            <img
+                              src="/images/blank_user.png"
+                              className="profile_image"
+                              alt="Profile"
+                            />
+                            <div className="progress-text">{uploadPercentage}%</div>
+                          </div>
+                        </div>
+                      </div> */}
+
+                      <div className="job_profile_icon position-relative">
+                        <div className="progress-circle-wrapper">
+                          <svg className="progress-ring" width="120" height="120">
+                            <circle
+                              className="progress-ring__background"
+                              cx="60"
+                              cy="60"
+                              r={radius}
+                            />
+                           <circle
+                            className="progress-ring__circle"
+                            cx="60"
+                            cy="60"
+                            r={radius}
+                            style={{
+                              strokeDashoffset: strokeDashoffset,
+                              strokeDasharray: circumference,
+                              stroke: getStrokeColor(uploadPercentage), // ← add this line
+                              transition: "stroke 0.3s ease",           // ← optional smooth transition
+                            }}
+                          />
+
+                          </svg>
+
+                          <div className="profile-image-wrapper">
+                            <img
+                              src={profileImage}
+                              className="profile_image"
+                              alt="Profile"
+                            />
+
+                            {/* Progress Text */}
+                           {uploadPercentage && <div style={{color:getStrokeColor(uploadPercentage)}} className="progress-text">{uploadPercentage}%</div>}
+
+                            {/* Upload or Remove Logic */}
+                            {!profileImage || profileImage === "/images/blank_user.png" ? (
+                              <>
+                                <input
+                                  type="file"
+                                  name="profile_img"
+                                  id="profile_img"
+                                  onChange={handleImageUpload}
+                                  disabled={uploading}
+                                />
+                                <label className="profile_img_label" htmlFor="profile_img">
+                                  <span>
+                                    Upload <i className="fa-solid fa-plus"></i>
+                                  </span>
+                                </label>
+                              </>
+                            ) : (
+                              <i
+                                className="fa-solid fa-xmark remove-icon"
+                                onClick={() => setSelectedImageId(userData.id)}
+                                data-bs-toggle="modal"
+                                data-bs-target="#removeImageModal"
+                                title="Remove Image"
+                              ></i>
+                            )}
+                          </div>
+                        </div>
                       </div>
+
                     </div>
                     <div className="col-md-8 col-lg-9 col-xl-10">
                       <div className="border-bottom pb-3">
+                        {userData.name &&
                         <div className="d-flex align-items-baseline mb-2">
                           <h5 className="m-0 text-capitalize text-theme">
                             {userData.name}
@@ -2063,6 +2313,7 @@ const MyAccount = () => {
                             ></i>
                           </Link>
                         </div>
+                        }
                         {userData.updated_at && (
                           <h6 className="text-secondary m-0 fw-light">
                             <b> Profile last updated - </b>
@@ -2076,13 +2327,13 @@ const MyAccount = () => {
                           <ul className="p-0 m-0">
                             <li>
                               <i className="fa-solid fa-location-dot me-2"></i>
-                              {userData.current_location ? (
-                                <span className="text-capitalize">
-                                  {userData.current_location}
-                                </span>
-                              ) : (
-                                <span>N/A</span>
-                              )}
+                                {userData.current_location ? (
+                                  <span className="text-capitalize">
+                                    {userData.current_location}
+                                  </span>
+                                ) : (
+                                  <span>N/A</span>
+                                )}
                             </li>
 
                             <li>
@@ -2308,6 +2559,7 @@ const MyAccount = () => {
                             </div>
                           )}
                         </div>
+                        {userData.work_status === "experienced" && (
                         <div className="mb-4">
                           <label htmlFor="">Current Salary</label>
                           <p>
@@ -2344,6 +2596,7 @@ const MyAccount = () => {
                             </div>
                           </div>
                         </div>
+                        )}
                         <div className="mb-4">
                           <div className="row mt-4">
                             <label htmlFor="">Current Location</label>
@@ -2475,6 +2728,17 @@ const MyAccount = () => {
                               </option>
                             </select>
                           </div>
+                        </div>
+                        <div className="mb-4">
+                          <label htmlFor="">Profile Summary</label>
+                          <textarea className="form-control" value={userData.bio}  name="bio" id="" rows={4}
+                           onChange={(e) =>
+                                setUserData({
+                                  ...userData,
+                                  bio: e.target.value,
+                                })
+                              }
+                          ></textarea>
                         </div>
                       </form>
                     </div>
@@ -2790,7 +3054,7 @@ const MyAccount = () => {
                             <p className="m-0">
                               <small>
                                 <span>
-                                  {employ.employment_type} | {employ.joining_date} to{" "}
+                                  {employ.employment_type} | {employ.joining_date} &nbsp;To&nbsp;
                                   {employ.worked_till || "Present"}
                                 </span>
                               </small>
@@ -3812,9 +4076,17 @@ const MyAccount = () => {
                                     className="form-control"
                                     placeholder="Starting Year"
                                     value={educationData.course_starting_year}
-                                    onChange={(e) => {
-                                      setEducationData({ ...educationData, course_starting_year: e.target.value });
-                                      setYearError(''); // Clear error when user changes starting year
+                                    // onChange={(e) => {
+                                    //   setEducationData({ ...educationData, course_starting_year: e.target.value });
+                                    //   setYearError(''); // Clear error when user changes starting year
+                                    // }}
+
+                                     onChange={(e) => {
+                                      const startingYear = e.target.value;
+                                      if (/^\d{0,4}$/.test(startingYear)) {
+                                        setEducationData({ ...educationData, course_starting_year: startingYear });
+                                        setYearError(''); // Clear error on typing
+                                      }
                                     }}
                                     maxLength={4}
                                   />
@@ -4137,11 +4409,19 @@ const MyAccount = () => {
                                     className="form-control"
                                     placeholder="Starting Year"
                                     value={educationData.course_starting_year}
-                                    onChange={(e) => {
-                                      setEducationData({ ...educationData, course_starting_year: e.target.value });
-                                      setYearError(''); // Clear error when user changes starting year
-                                    }}
-                                    maxLength={4}
+                                    // onChange={(e) => {
+                                    //   setEducationData({ ...educationData, course_starting_year: e.target.value });
+                                    //   setYearError(''); // Clear error when user changes starting year
+                                    // }}
+
+                                     onChange={(e) => {
+                                      const startingYear = e.target.value;
+                                      if (/^\d{0,4}$/.test(startingYear)) {
+                                        setEducationData({ ...educationData, course_starting_year: startingYear });
+                                        setYearError(''); // Clear error on typing
+                                      }
+                                     }}
+                                     maxLength={4}
                                   />
                                 </div>
                                 <div className="col-1 text-center">
@@ -4675,97 +4955,94 @@ const MyAccount = () => {
 
                   <div className="mt-4 personal_details">
                     <div className="row">
-                      <div className="col-md-6 col-6">
-                        <label htmlFor="">Personal</label>
-                        <p className="text-capitalize">
-                          {userData.gender && userData.maritial_status
-                            ? `${userData.gender}, ${userData.maritial_status}`
-                            : userData.gender
-                              ? `${userData.gender}`
-                              : userData.maritial_status
-                                ? `${userData.maritial_status}`
-                                : <span className="text-muted">N/A</span>}
-                        </p>
-                      </div>
-
-                      <div className="col-md-6 col-6">
-                        <label htmlFor="">Date of birth</label>
-                        <p className="text-capitalize">
-                          {userData.dob ? (
-                            <span>{userData.dob}</span>
-                          ) : (
-                            <span className="text-muted">N/A</span>
-                          )}
-                        </p>
-                      </div>
-                      
-                      <div className="col-md-6 col-6">
-                        <label htmlFor="">Category</label>
-                        <p className="text-capitalize">
-                          {userData.category ? (
-                            <span>{userData.category}</span>
-                          ) : (
-                            <span className="text-muted">N/A</span>
-                          )}
-                        </p>
-                      </div>
-                      <div className="col-md-6 col-6">
-                        <label htmlFor="">Address</label>
-                        <p className="text-capitalize">
-                          {userData.permanent_address ? (
-                            <span>{userData.permanent_address}</span>
-                          ) : (
-                            <span className="text-muted">N/A</span>
-                          )}
-                        </p>
-                      </div>
-                      <div className="col-md-6 col-6">
-                        <label htmlFor="">Zipcode</label>
-                        <p className="text-capitalize">
-                          {userData.pincode ? (
-                            <span>{userData.pincode}</span>
-                          ) : (
-                            <span className="text-muted">N/A</span>
-                          )}
-                        </p>
-                      </div>
-                      <div className="col-md-6 col-6">
-                        <label htmlFor="">City</label>
-                        <p className="text-capitalize">
-                          {userData.city ? (
-                            <span>{userData.city}</span>
-                          ) : (
-                            <span className="text-muted">N/A</span>
-                          )}
-                        </p>
-                      </div>
-                      <div className="col-md-6 col-6">
-                        <label htmlFor="">State</label>
-                        <p>
-                          {userData.state ? (
-                            <span>{userData.state}</span>
-                          ) : (
-                            <span className="text-muted">N/A</span>
-                          )}
-                        </p>
-                      </div>
-                      <div className="col-md-6 col-6">
-                        <label htmlFor="">Country</label>
-                        <p>
-                          {userData.country_name ? (
-                            <span>{userData.country_name}</span>
-                          ) : (
-                            <span className="text-muted">N/A</span>
-                          )}
-                        </p>
-                      </div>
+                        <div className="col-lg-4 col-md-6 col-6">
+                          <label htmlFor="">Personal</label>
+                          <p className="text-capitalize">
+                            {userData.gender && userData.maritial_status
+                              ? `${userData.gender}, ${userData.maritial_status}`
+                              : userData.gender
+                                ? `${userData.gender}`
+                                : userData.maritial_status
+                                  ? `${userData.maritial_status}`
+                                  : <span className="text-muted">N/A</span>}
+                          </p>
+                        </div>
+                        <div className="col-lg-4 col-md-6 col-6">
+                          <label htmlFor="">Date of birth</label>
+                          <p className="text-capitalize">
+                            {userData.dob ? (
+                              <span>{userData.dob}</span>
+                            ) : (
+                              <span className="text-muted">N/A</span>
+                            )}
+                          </p>
+                        </div>                     
+                        <div className="col-lg-4 col-md-6 col-6">
+                          <label htmlFor="">Religion</label>
+                          <p className="text-capitalize">
+                            {userData.religion ? (
+                              <span>{userData.religion}</span>
+                            ) : (
+                              <span className="text-muted">N/A</span>
+                            )}
+                          </p>
+                        </div>
+                        <div className="col-lg-4 col-md-6 col-6">
+                          <label htmlFor="">Address</label>
+                          <p className="text-capitalize">
+                            {userData.permanent_address ? (
+                              <span>{userData.permanent_address}</span>
+                            ) : (
+                              <span className="text-muted">N/A</span>
+                            )}
+                          </p>
+                        </div>
+                        <div className="col-lg-4 col-md-6 col-6">
+                          <label htmlFor="">Zipcode</label>
+                          <p className="text-capitalize">
+                            {userData.pincode ? (
+                              <span>{userData.pincode}</span>
+                            ) : (
+                              <span className="text-muted">N/A</span>
+                            )}
+                          </p>
+                        </div>
+                        <div className="col-lg-4 col-md-6 col-6">
+                          <label htmlFor="">City</label>
+                          <p className="text-capitalize">
+                            {userData.city ? (
+                              <span>{userData.city}</span>
+                            ) : (
+                              <span className="text-muted">N/A</span>
+                            )}
+                          </p>
+                        </div>
+                        <div className="col-lg-4 col-md-6 col-6">
+                          <label htmlFor="">State</label>
+                          <p>
+                            {userData.state ? (
+                              <span>{userData.state}</span>
+                            ) : (
+                              <span className="text-muted">N/A</span>
+                            )}
+                          </p>
+                        </div>
+                        <div className="col-lg-4 col-md-6 col-6">
+                          <label htmlFor="">Country</label>
+                          <p>
+                            {userData.country_name ? (
+                              <span>{userData.country_name}</span>
+                            ) : (
+                              <span className="text-muted">N/A</span>
+                            )}
+                          </p>
+                        </div>
                     </div>
                   </div>
                 </div>
               </div>
 
-              <div
-                className="modal fade"
+              <div className="modal fade"
                 id="deleteLanguageModal"
                 tabIndex="-1"
                 aria-labelledby="deleteLanguageLabel"
@@ -4899,8 +5176,20 @@ const MyAccount = () => {
                           </div>
                         </div>
                         <div className="mb-4">
-                          <label htmlFor="">Category</label>
-                          <select
+                          <label htmlFor="">Religion</label>
+                          <input
+                            type="text"
+                            className="form-control"
+                            placeholder="Enter your religion"
+                            value={userData.religion}
+                            onChange={(e) => {
+                              const input = e.target.value;
+                              if (/^[a-zA-Z\s]*$/.test(input)) {
+                                setUserData({ ...userData, religion: input });
+                              }
+                            }}
+                            />
+                          {/* <select
                             className="form-select"
                             value={userData.category || ""}
                             onChange={(e) =>
@@ -4916,7 +5205,7 @@ const MyAccount = () => {
                             <option value="ST">ST</option>
                             <option value="OBC">OBC</option>
                             <option value="Other">Other</option>
-                          </select>
+                          </select> */}
                         </div>
 
                         <div className="abled_section">
@@ -5672,7 +5961,7 @@ const MyAccount = () => {
       <Footer />
 
       {/* Resume Modal  */}
-      <div className="modal fade" id="resumeModal" tabindex="-1" aria-labelledby="resumeModalLabel" aria-hidden="true">
+      <div className="modal fade" id="resumeModal" tabIndex="-1" aria-labelledby="resumeModalLabel" aria-hidden="true">
       <div className="modal-dialog modal-lg">
           <div className="modal-content">
             <div className="modal-header ">
@@ -5682,17 +5971,17 @@ const MyAccount = () => {
             <div className="modal-body pt-3 pb-3 p-4 px-md-5" ref={resumeRef}>
                 <div className="card candidate_resume">
                     <div className="card-body ">
-                        <div className="d-flex align-items-center pb-3 border-bottom">
-                          <div className="resume_profile_image me-3"><img src={profileImage} style={{borderRadius:"50%", height:"75px"}} alt="profile_image" /></div>
-                            <div className="user_details">
+                        <div className="d-flex flex-wrap align-items-center border-bottom">
+                          <div className="resume_profile_image me-3"><img src={profileImage} style={{borderRadius:"50%", height:"80px", width:"80px"}} alt="profile_image" /></div>
+                            <div className="user_details py-3">
                               <h5 className="mb-1 text-uppercase">{user.name}</h5>
                               {/* <h6 className="m-0">Front End Developer</h6> */}
-                              <div className="d-flex align-items-baseline contact_details">
-                                  <div className="d-flex align-items-center text-muted border-end me-3 pe-2">
+                              <div className="d-flex flex-wrap align-items-baseline contact_details">
+                                  <div className="d-flex align-items-baseline text-muted border-end me-3 pe-2">
                                       <i className="fa-solid fa-envelope me-2"></i>
-                                      <span>{user.email}</span>
+                                      <span className="email" >{user.email}</span>
                                   </div>
-                                  <div className="d-flex align-items-center text-muted">
+                                  <div className="d-flex align-items-baseline text-muted">
                                       <i className="fa-solid fa-phone me-2"></i>
                                       <span>{user.phone}</span>
                                   </div>
@@ -5701,13 +5990,12 @@ const MyAccount = () => {
                         </div>
                         
                         <div className="border-bottom details">
-                            <h6 className="text-uppercase fw-semibold">Objective</h6>        
-                            <p className="m-0">Lorem ipsum dolor, sit amet consectetur adipisicing elit. Incidunt mollitia ex beatae deleniti a deserunt neque quod ad natus possimus iure quasi reiciendis, aspernatur dolorem rem officiis asperiores vel assumenda.</p>
+                          <h6 className="text-uppercase fw-semibold">Objective</h6>        
+                          <p className="m-0">{userData.bio ? userData.bio : (<span className="text-muted">No details added yet!</span>)}</p>
                         </div> 
 
                         <div className="border-bottom details">
                             <h6 className="text-uppercase fw-semibold">Personal Details</h6>        
-                            
                             <div className="row">
                                 <div className="col-sm-4 col-6"><span className="text-uppercase">Gender </span></div>
                                 <div className="col-sm-8  col-6 text-capitalize"><span className="me-2">:</span>
@@ -5816,7 +6104,7 @@ const MyAccount = () => {
                                         <div className="col-sm-8  col-6 d-flex align-items-baseline">
                                           <span className="me-2">:</span>
                                           <div>
-                                              <h6 className="mb-0"> 
+                                              <h6 className="mb-0 text-capitalize"> 
                                               {edu.school_medium}
                                               {edu.course && edu.course_type && edu.specialization
                                               ? `${edu.specialization} | ${edu.course_type}`
@@ -5865,10 +6153,10 @@ const MyAccount = () => {
                                 <div className="col-sm-8  col-6 d-flex align-items-baseline">
                                   <span className="me-2">:</span>
                                     <div>
-                                      <h6 className="mb-0">{employ.current_job_title}</h6>
-                                      <p className="mb-0">
+                                      <h6 className="mb-0 text-capitalize">{employ.current_job_title}</h6>
+                                      <p className="mb-0 text-capitalize">
                                         <span>
-                                        {employ.employment_type} | {employ.joining_date} to{" "}
+                                        {employ.employment_type} | {employ.joining_date}&nbsp;to&nbsp;
                                         {employ.worked_till || "Present"}
                                       </span>
                                       </p>
@@ -5937,17 +6225,39 @@ const MyAccount = () => {
                 </button> */}
                 <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
             </div>
+
+               
+
           </div>
       </div>
       </div>     
 
-
-
-
-
+      {isSaving && (
+        <div className="modal show fade" tabIndex="-1" style={{ display: 'block', backgroundColor: 'rgba(0,0,0,0.8)' }}>
+          <div className="modal-dialog">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h1 className="modal-title fs-4" id="">Processing...</h1>
+                <button
+                  type="button"
+                  className="btn-close"
+                  onClick={() => setIsSaving(false)} // Close handler
+                  aria-label="Close"
+                ></button>
+              </div>
+              <div className="modal-body text-center p-3">
+                <div className="spinner-border text-primary" role="status" />
+                <p>Saving your details...</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
     </div>
-  );
+   
+    </>
+   );
 };
 
 export default MyAccount;

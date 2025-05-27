@@ -40,7 +40,7 @@ const AllCategories = () => {
             },
             });
 
-            console.log("Raw Banner Response:", response.data); // Debugging
+            // console.log("Raw Banner Response:", response.data); 
 
             setBannerPlace(data.placement);
 
@@ -89,11 +89,11 @@ const AllCategories = () => {
   return (
     <>
        <Helmet>
-          <title>Explore Job Categories in Sweden - JobbTerminalen</title>
+          {/* <title>Explore Job Categories in Sweden - JobbTerminalen</title>
           <meta name="description" content="Browse through various job categories in Sweden on JobbTerminalen. Find the right job that matches your skills and interests." />
           <meta name="keywords" content="job categories, Sweden jobs, career opportunities, employment sectors, JobbTerminalen" />
           <meta property="og:title" content="Explore Job Categories in Sweden - JobbTerminalen" />
-          <meta property="og:description" content="Browse through various job categories in Sweden on JobbTerminalen. Find the right job that matches your skills and interests." />
+          <meta property="og:description" content="Browse through various job categories in Sweden on JobbTerminalen. Find the right job that matches your skills and interests." /> */}
        </Helmet>
 
        <div className="all_categories_page">
@@ -263,8 +263,10 @@ const AllCategories = () => {
                                 className="cat_card"
                             >
                                 <div className="card h-100">
-                                <div className="card-body text-center">                      
-                                    <img src={`${IMG_URL}/${category.image}`} alt={category.name} />
+                                <div className="card-body text-center">    
+                                    {category.image ?                 
+                                    <img src={`${IMG_URL}/${category.image}`} alt={category.name} /> :
+                                    <img src={`/images/cat-icon.png`} alt={category.name} /> }
                                     <h5 className="mt-3 mb-0">{category.name}</h5>
                                 </div>
                                 </div>
@@ -311,7 +313,7 @@ const AllCategories = () => {
 
             <div className="row align-items-center pt-0 py-5">
                 <div className="col-md-5">
-                    <img src="/images/about2.jpg" className='w-100 rounded-4' alt="about_img" />
+                    <img src="/images/category.jpg" className='w-100 rounded-4' alt="about_img" />
                 </div>
                 <div className="col-md-7 mt-4 mt-md-0">
                     <h1 className='fw-bold'>{t("CategoryMainHead")}</h1>

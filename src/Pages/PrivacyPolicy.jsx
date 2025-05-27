@@ -10,11 +10,11 @@ const PrivacyPolicy = () => {
   return (
     <>
       <Helmet>
-      <title>Privacy Policy - JobbTerminalen</title>
+      {/* <title>Privacy Policy - JobbTerminalen</title>
       <meta name="description" content="Read the JobbTerminalen Privacy Policy to understand how we collect, use, and protect your personal information while using our job portal services." />
       <meta name="keywords" content="Privacy Policy, data protection, JobbTerminalen privacy, personal data, GDPR compliance, user information, data security" />
       <meta property="og:title" content="Privacy Policy - JobbTerminalen" />
-      <meta property="og:description" content="Read the JobbTerminalen Privacy Policy to understand how we collect, use, and protect your personal information while using our job portal services." />
+      <meta property="og:description" content="Read the JobbTerminalen Privacy Policy to understand how we collect, use, and protect your personal information while using our job portal services." /> */}
     </Helmet>
 
 
@@ -154,7 +154,7 @@ const PrivacyPolicy = () => {
                 <p className="m-0">{t("ChangesToPolicyText")}</p>
               </div>
 
-              <div className="py-4 border-bottom">
+              {/* <div className="py-4 border-bottom">
                 <h4 className="mb-3">{t("PrivacyContactUs")}</h4>
                 <p className="mb-2">{t("ContactUsText")}</p>
                 <ul className="">
@@ -168,7 +168,7 @@ const PrivacyPolicy = () => {
                     <Trans i18nKey="ContactPhone" components={{b:<b/>}} />
                   </li>
                 </ul>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>

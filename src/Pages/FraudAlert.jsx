@@ -12,11 +12,11 @@ const FraudAlert = () => {
   return (
     <>
       <Helmet>
-        <title>Fraud Alert - JobbTerminalen</title>
+        {/* <title>Fraud Alert - JobbTerminalen</title>
         <meta name="description" content="Stay informed about job fraud and scams. Learn how to identify fraudulent job postings and protect yourself from job-related scams on JobbTerminalen." />
         <meta name="keywords" content="job fraud alert, job scams, fake job postings, fraud prevention, job safety, employment scams, JobbTerminalen security, scam protection" />
         <meta property="og:title" content="Fraud Alert - JobbTerminalen" />
-        <meta property="og:description" content="Stay informed about job fraud and scams. Learn how to identify fraudulent job postings and protect yourself from job-related scams on JobbTerminalen." />
+        <meta property="og:description" content="Stay informed about job fraud and scams. Learn how to identify fraudulent job postings and protect yourself from job-related scams on JobbTerminalen." /> */}
      </Helmet>
 
       <div className="fraud_alert">

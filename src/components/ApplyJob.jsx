@@ -9,7 +9,7 @@ import Footer from "./Footer";
 const ApplyJob = () => {
   const location = useLocation();
   const jobId = location.state?.jobId || null;
-  {console.log("MyId : " , jobId)};
+  // {console.log("MyId : " , jobId)};
   const { user } = useAuthContext();
   const userId = user ? user.id : null;
   const fileInputRef = useRef(null);
@@ -26,6 +26,38 @@ const ApplyJob = () => {
   const stripHtml = (html) => {
     const doc = new DOMParser().parseFromString(html, "text/html");
     return doc.body.textContent || "";
+  };
+  
+  // LinkedIn Profile
+
+  const [linkedInUrl, setLinkedInUrl] = useState("");
+   const [error, setError] = useState("");
+   const LINKEDIN_PREFIX = "https://www.linkedin.com/in/";
+
+  const handleLinkedInChange = (e) => {
+     let value = e.target.value;
+
+    // Remove the prefix if pasted
+    if (value.startsWith(LINKEDIN_PREFIX)) {
+      value = value.slice(LINKEDIN_PREFIX.length);
+    }
+
+    // Allow only alphanumeric, dash, underscore
+    if (/^[a-zA-Z0-9-_]*$/.test(value)) {
+      setLinkedInUrl(value);
+      setError("");
+    } else {
+      setError("Only letters, numbers, hyphens, and underscores are allowed.");
+    }
+  };
+
+    const validateUrl = () => {
+    if (linkedInUrl.trim() === "") {
+      setError("LinkedIn username cannot be empty.");
+      return false;
+    }
+    setError("");
+    return true;
   };
 
   // Coverletter start
@@ -218,11 +250,30 @@ const ApplyJob = () => {
       return; 
     }
 
-    if(formData.resume === null){
-      console.log("No resume uploaded");
-      toast.error("Please upload your resume");
+    if (!formData.gender) {
+      toast.error("Please complete your profile first before applying!");
+      setTimeout(() => {
+        navigate("/my-account");
+      }, 3000);
       return;
     }
+
+    if (!formData.dob) {
+      toast.error("Please complete your profile first before applying!");
+      setTimeout(() => {
+        navigate("/my-account");
+      },3000);
+      return;
+    }
+
+    if(formData.resume === null){
+      toast.error("Please complete your profile first before applying!");
+      setTimeout(() => {
+        navigate("/my-account");
+      }, 3000);
+      return;
+    }
+
 
     try {
       setIsSubmitting(true);
@@ -236,6 +287,7 @@ const ApplyJob = () => {
 
       // formDataToSend.append("cover_letter", coverLetter);
       {coverLetter &&  formDataToSend.append("cover_letter", coverLetter);}
+      {linkedInUrl &&  formDataToSend.append("linkedin_Url", `https://www.linkedin.com/in/${linkedInUrl}`);}
 
       // Append certificates
       certificates.forEach((file, index) => {
@@ -255,6 +307,7 @@ const ApplyJob = () => {
         setIsSubmitting(false);
         setCoverLetter(""); // Reset fields
         setCertificates([]); // Reset fields
+        setLinkedInUrl(""); // Reset fields
 
         setTimeout(() => {
           navigate('/jobs');
@@ -298,6 +351,7 @@ const ApplyJob = () => {
                   value={formData.name || ""}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   required
+                  readOnly
                 />
               </div>
 
@@ -309,7 +363,7 @@ const ApplyJob = () => {
                     id="gender"
                     value={formData.gender || ''}
                     onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
-                    required
+                    
                   >
                     <option value="" disabled>Select gender</option>
                     <option value="Male">Male</option>
@@ -326,13 +380,13 @@ const ApplyJob = () => {
                     id="dob"
                     value={formData.dob || ''}
                     onChange={(e) => setFormData({ ...formData, dob: e.target.value })}
-                    required
+                    readOnly
                   />
                 </div>
               </div>
 
               <div className="row mb-3">
-                <div className="col">
+                <div className="col-sm-6 mb-3 mb-sm-0">
                   <label className="form-label" htmlFor="email">Email Address <span className="text-danger">*</span></label>
                   <input
                     className="form-control"
@@ -342,7 +396,7 @@ const ApplyJob = () => {
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   />
                 </div>
-                <div className="col">
+                <div className="col-sm-6">
                   <label className="form-label" htmlFor="phone">Phone Number <span className="text-danger">*</span></label>
                   <input
                     className="form-control"
@@ -350,9 +404,29 @@ const ApplyJob = () => {
                     id="phone"
                     value={formData.phone || ''}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                    readOnly
                   />
                 </div>
               </div>
+
+              <div className="mb-3">
+              <label className="form-label" htmlFor="linkedin">
+                LinkedIn Profile URL
+              </label>
+              <div className="input-group">
+                {/* <span className="input-group-text">{LINKEDIN_PREFIX}</span> */}
+                <input
+                  className={`form-control ${error ? "is-invalid" : ""}`}
+                  type="text"
+                  id="linkedin"
+                  value={LINKEDIN_PREFIX + linkedInUrl}
+                  onChange={handleLinkedInChange}
+                  placeholder="your-username"
+                  onBlur={validateUrl}
+                />
+                {error && <div className="invalid-feedback d-block">{error}</div>}
+              </div>
+            </div>
 
               <div className="mb-4">
                 <label className="form-label">Cover Letter</label>
@@ -403,7 +477,7 @@ const ApplyJob = () => {
                     </div>
                   )}
                   
-                  {!formData.resume && <small className="text-muted text-start">Supported Formats: doc, docx, rtf, pdf, up to 2 MB</small>}
+                  {!formData.resume && <small className="text-muted text-start">Supported format pdf only, upto 2 MB</small>}
                 </div>
           
                 <div className=" col-md-6 mb-3">
@@ -464,11 +538,12 @@ const ApplyJob = () => {
                       </ul>
                     </div>
                   )}
+
+                   {certificates.length == 0 && <small className="text-muted text-start">Supported format pdf only, upto 2 MB</small>}
                 </div>
              </div>
 
              
-
               <button className="btn btn-register rounded-2 py-3 fs-6 w-100 mt-3"
                type="submit"
                disabled={isSubmitting}
@@ -477,7 +552,7 @@ const ApplyJob = () => {
                       <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
                     ) : null}
                     {isSubmitting ? "Submitting.." : "Submit"}
-                </button>
+              </button>
             </form>
             </div>
           </div>

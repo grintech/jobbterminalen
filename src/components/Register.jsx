@@ -17,6 +17,7 @@ const EmpLogin = import.meta.env.VITE_EMP_URL;
 
 const Register = () => {
   const { t } = useTranslation();
+  const [emailError, setEmailError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showPassword1, setShowPassword1] = useState(false);
 
@@ -28,6 +29,7 @@ const Register = () => {
 
   const [formData, setFormData] = useState({
     name: "",
+    designation: "",
     email: "",
     phone: "",
     password: "",
@@ -60,11 +62,19 @@ const Register = () => {
     if (name === "phone" && value.length > 10) {
         return;
     }
+
+    if (name === "designation") {
+     const alphabetOnly = /^[A-Za-z\s]*$/; 
+      if (!alphabetOnly.test(value)) {
+        return; 
+      }
+    }
+
     setFormData((prevData) => ({
         ...prevData,
         [name]: value,
     }));
-};
+  };
 
 
 
@@ -77,12 +87,25 @@ const Register = () => {
       setTimeout(() => setAlert({ type: "", message: "" }), 3000);
       return;
     }
-    if (!formData.name || !formData.email ) {
+
+    // ✅ Password complexity validation
+    const passwordRegex = /^(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?=.{8,})/;
+    if (!passwordRegex.test(formData.password)) {
+      setAlert({
+        type: "error",
+        message:
+          "Password must be at least 8 characters long, include one uppercase letter, and one special character.",
+      });
+      setTimeout(() => setAlert({ type: "", message: "" }), 4000);
+      return;
+    }
+
+    if (!formData.name || !formData.email || !formData.designation ) {
       setAlert({ type: "error", message: "Please fill the form!" });
       setTimeout(() => setAlert({ type: "", message: "" }), 3000);
       return;
     }
-   
+
     if (!formData.phone) {
       setAlert({ type: "error", message: "Please enter a phone number!" });
       setTimeout(() => setAlert({ type: "", message: "" }), 3000);
@@ -94,7 +117,28 @@ const Register = () => {
       setTimeout(() => setAlert({ type: "", message: "" }), 3000);
       return;
     }
-    
+
+    const emailDomain = formData.email.split('@')[1]?.toLowerCase();
+
+    // if (emailDomain === 'yopmail.com') {
+    //   setAlert({
+    //     type: "error",
+    //     message: "Yopmail addresses are not allowed. Please use a valid email address.",
+    //   });
+    //   setTimeout(() => setAlert({ type: "", message: "" }), 4000);
+    //   return;
+    // }
+
+   // Only recruiters must use business email domains (no Gmail, Yahoo, etc.)
+  if (formData.role === 'recruiter') {
+    const publicDomains = ['gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com', 'aol.com'];
+    if (publicDomains.includes(emailDomain)) {
+      setEmailError("Recruiters must use a domain email.");
+      setTimeout(() => setEmailError(''), 4000);
+      return;
+    }
+  }
+      
 
     // Create FormData object and append data
     const formDataToSend = new FormData();
@@ -103,6 +147,7 @@ const Register = () => {
     formDataToSend.append("phone", formData.phone); 
     formDataToSend.append("password", formData.password);
     formDataToSend.append("role", formData.role);
+    formDataToSend.append("designation", formData.designation);
   
     try {
       setLoading(true); // Start loading
@@ -126,6 +171,7 @@ const Register = () => {
       if (type === "success") {
         setFormData({
           name: "",
+          designation: "",
           email: "",
           phone: "",
           password: "",
@@ -205,7 +251,8 @@ const Register = () => {
                     </div>
                     <div className="col-12 mb-3">
                       <label htmlFor="name" className="mb-2">
-                        {t("Full_Name")} <span>*</span>
+                        {/* {t("Full_Name")} <span>*</span> */}
+                         {formData.role === "recruiter" ? t("PersonName") : t("Full_Name")} <span>*</span>
                       </label>
                       <input
                         type="text"
@@ -216,6 +263,23 @@ const Register = () => {
                         placeholder={t("Name_placeholder")}
                       />
                     </div>
+                    {formData.role === "recruiter" && (
+                      <div className="col-12 mb-3">
+                        <label htmlFor="designation" className="mb-2">
+                          {t("Designation")} <span>*</span>
+                        </label>
+                        <input
+                          type="text"
+                          className="form-control"
+                          name="designation"
+                          value={formData.designation}
+                          onChange={handleInputChange}
+                          placeholder={t("Design_placeholder")}
+                        
+                        />
+                      </div>
+                    )} 
+
                     <div className="col-12 mb-3">
                       <label htmlFor="email" className="mb-2">
                         {t("Email")} <span>*</span>
@@ -228,6 +292,7 @@ const Register = () => {
                         onChange={handleInputChange}
                         placeholder={t("Email_placeholder")}
                       />
+                       {emailError && <label style={{ color: 'red' }}>{emailError}</label>}
                     </div>
                     <div className="col-12 mb-3">
                       <label htmlFor="phone" className="mb-2">
@@ -235,7 +300,7 @@ const Register = () => {
                       </label>
                       
                       <PhoneInput
-                        country={'us'}
+                        country={'se'}
                         value={phone}
                         onChange={(value) => {
                           const formattedPhone = `+${value}`;

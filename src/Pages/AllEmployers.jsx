@@ -7,6 +7,7 @@ import { useTranslation } from "react-i18next";
 import { Helmet } from "react-helmet-async";
 import { useAuthContext } from "../store/authContext";
 import { toast, ToastContainer } from "react-toastify";
+import Avatar from "react-avatar";
 
 const AllEmployers = () => {
 
@@ -200,16 +201,16 @@ const AllEmployers = () => {
   return (
     <>
       <Helmet>
-        <title>Top Companies Hiring in Sweden - JobbTerminalen</title>
+        {/* <title>Top Companies Hiring in Sweden - JobbTerminalen</title>
         <meta name="description" content="Discover top companies hiring in Sweden. Browse company profiles, job openings, and find the best workplace for your career growth on JobbTerminalen." />
-        <meta name="keywords" content="companies in Sweden, top employers, hiring companies, job portal Sweden, company profiles, career opportunities, best workplaces" />
+        <meta name="keywords" content="companies in Sweden, top employers, hiring companies, job portal Sweden, company profiles, career opportunities, best workplaces" /> */}
         
       </Helmet>
 
       <div className="all_employers_page">
         <Navbar />
         <div className="hero_banner d-flex flex-column align-items-center justify-content-center ">
-          <h1 className="fw-bold position-relative">{t("Companies")}</h1>
+          <h1 className="fw-bold position-relative m-0">{t("Companies")}</h1>
         </div>
 
         <div className="container py-5">
@@ -264,13 +265,28 @@ const AllEmployers = () => {
                          ></i>
                           </div>
                         <div className="logo_div me-3 mb-3 shadow ">
-                          <Link  to={`/companies/${company.slug}`}>
+                          {/* <Link  to={`/companies/${company.slug}`}>
                             <img
                               loading='lazy'
                               src={`${IMG_URL}/${company.company_profile}`}
                               alt={company.company_name}
                             />
+                          </Link> */}
+
+                          <Link  to={`/companies/${company.slug}`}>
+                            {!company.company_profile ? (
+                              <Avatar
+                                name={company.company_name}
+                                size="58"
+                                round="8px"
+                                fgColor="#fff"
+                                textSizeRatio={2}
+                              />
+                            ) : ( <img loading='lazy' src={`${IMG_URL}/${company.company_profile}`}
+                                alt={company.company_name} />
+                            )}
                           </Link>
+
                         </div>
                         <div className="pt-4 pb-3">
                           <Link to={`/companies/${company.slug}`}>

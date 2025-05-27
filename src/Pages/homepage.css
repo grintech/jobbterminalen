@@ -515,7 +515,7 @@
 
   @media screen and (min-width:1920px) {
     .hero_banner{
-      padding: 180px 0 !important;
+      /* padding: 180px 0 !important; */
       background-position: top ;
     }
   }
@@ -551,7 +551,9 @@
     .hero_banner .banner_search .fa-magnifying-glass.search_icon {
         display: none;
     }
-    .banner_search .border-end{border-right: 0 !important;}
+    .banner_search .border-end{border-right: 0  !important;border-bottom: 1px solid #dee2e6; }
+    .banner_search .col-lg-2,.banner_search .col-lg-3,.banner_search .col-lg-4{padding: 0; }
+    .banner_search button.btn-register{margin-top: 10px;}
     .popular_categories .cat_type {
         border-radius: 8px;
         margin-right: 15px;
@@ -588,6 +590,7 @@
       width: 70px;
       height: 70px;
     }
+    .company_profile .logo_div .sb-avatar__text{width: 70px !important;height: 70px !important;}
     .terms_section li, .policy_section li { font-size: 15px;}
     .terms_section p, .policy_section p { font-size: 15px;}
     .terms_section h5, .policy_section h5 { font-size: 17px;}

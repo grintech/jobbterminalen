@@ -6,6 +6,7 @@ import axios from "axios";
 import { ToastContainer, toast } from 'react-toastify';
 import { useAuthContext } from "../store/authContext"; // Assuming you have authContext for user
 import { Helmet } from "react-helmet-async";
+import Avatar from "react-avatar";
 
 const CategoryList = () => {
   const { slug } = useParams();
@@ -251,7 +252,7 @@ const CategoryList = () => {
               </div> */}
 
               <div className="col-lg-10 mx-auto">
-                <h4 className="text-capitalize mb-4">{slug.replace(/-/g, ' ')} Jobs</h4>
+                <h4 className="text-capitalize mb-4">{slug.replace(/-/g, ' ')} Jobs ({categoryData.length})</h4>
                 <div className="row">
                   {loading ? (
                     <div className="loading-screen d-flex flex-column justify-content-center align-items-center">
@@ -276,13 +277,27 @@ const CategoryList = () => {
                       <div className="col-lg-4 col-md-6 col-sm-6 mb-4" key={job.id}>
                         <div className="card company_list_card h-100">
                           <div className="card-body">
-                            <div className="d-flex justify-content-between">
+                            <div className="d-flex justify-content-between align-items-start">
                               <Link to={`/companies/${job.company_slug}`}>
                                 <div className="logo_div border-0 shadow">
-                                  <img
+                                  {/* <img
                                     src={`${IMG_URL}/${job.company_profile}`}
                                     alt="company_logo"
-                                  />
+                                  /> */}
+                                  {!job.company_profile ? (
+                                      <Avatar
+                                        name={job.company_name}
+                                        size="60"
+                                        round="8px"
+                                        fgColor="#fff"
+                                        textSizeRatio={2}
+                                      />
+                                     ) : (
+                                      <img
+                                        src={`${IMG_URL}/${job.company_profile}`}
+                                        alt={job.company_name}
+                                      />
+                                    )}
                                 </div>
                               </Link>
                               <div className="d-flex align-items-center">
@@ -297,9 +312,9 @@ const CategoryList = () => {
                                   ></i>
                                   {/* {isJobSaved(job.id) ? "Saved" : "Save"} */}
                                 </button>
-                                <Link className="btn-light shadow me-2">
+                                {/* <Link className="btn-light shadow me-2">
                                   <i className="fa-solid fa-share"></i>
-                                </Link>
+                                </Link> */}
                               </div>
                             </div>
                             <div className="py-2">
@@ -319,7 +334,7 @@ const CategoryList = () => {
                                   </div>
                                 </li>
                               )}
-                              {job.salary_currency && job.salary_range && (
+                              {job.salary_currency && job.salary_range && job.hourly_rate && (
                                 <li>
                                   <div className="btn btn-sm btn-green me-2 mb-2 text-capitalize">
                                    {job.salary_currency} {job.salary_range} <small>/ {job.hourly_rate}</small>

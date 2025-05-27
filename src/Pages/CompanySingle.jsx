@@ -9,10 +9,11 @@ import { toast, ToastContainer } from "react-toastify";
 // import HomeBanners from "../components/HomeBanners";
 
 import Lightbox from "yet-another-react-lightbox";
-import Thumbnails from "yet-another-react-lightbox/plugins/thumbnails";
+// import Thumbnails from "yet-another-react-lightbox/plugins/thumbnails";
 
 import "yet-another-react-lightbox/styles.css";
 import "yet-another-react-lightbox/plugins/thumbnails.css";
+import Avatar from 'react-avatar';
 
 const CompanySingle = () => {
   const [companyData, setCompanyData] = useState(null);
@@ -66,7 +67,7 @@ const CompanySingle = () => {
         const result = await response.json();
         if (result.type === "success") {
           setCompanyData(result.data);
-          console.log(result.data);
+          // console.log(result.data);
           setJobs(result.jobs);
         } else {
           setError(result.message || "Failed to fetch company data");
@@ -173,7 +174,7 @@ const CompanySingle = () => {
           },
         });
 
-        console.log("Raw Banner Response:", response.data.data);
+        // console.log("Raw Banner Response:", response.data.data);
         setBannerPlace(response.data.data); 
 
         // If response is a string, try parsing it correctly
@@ -212,7 +213,13 @@ const CompanySingle = () => {
  
 
   if (!companyData || !companyData.company_gallery) {
-    return <div className="d-none" style={{visibility:"hidden"}}>Loading...</div>;
+     return <div className="loading-screen d-flex flex-column justify-content-center align-items-center vh-100">
+              <div className="spinner-grow text-primary" role="status">
+                <span className="visually-hidden">Loading...</span>
+              </div>
+              <p className='mt-2'>Please wait...</p>
+            </div>
+    // <div >Loading...</div>;
   }
 
   const galleryImages = companyData.company_gallery
@@ -260,12 +267,27 @@ const CompanySingle = () => {
                 <div className="d-flex align-items-center justify-content-between flex-wrap">
                   <div className="d-flex align-items-center  py-2">
                     <div className="logo_div me-3">
-                      <img
+                      {/* <img
                         loading="lazy"
                         src={`${IMG_URL}/${companyData.company_profile}`}
                         alt={companyData.company_name}
                         className="rounded"
-                      />
+                      /> */}
+                      {!companyData.company_profile ? (
+                        <Avatar
+                          name={companyData.company_name}
+                          size="80"
+                          round="8px"
+                          fgColor="#fff"
+                          textSizeRatio={2}
+                        />
+                      ) : (
+                        <img
+                          src={`${IMG_URL}/${companyData.company_profile}`}
+                          alt={companyData.company_name}
+                          
+                        />
+                      )}
                     </div>
                     <div>
                       <h5>{companyData.company_name}</h5>
@@ -305,14 +327,14 @@ const CompanySingle = () => {
                       {galleryImages.length > 0 && (
                         <>
                           <h6 className="mt-4">View Photos :</h6>
-                          <div className="row">
+                          <div className="row company_gallery_images">
                             {galleryImages.map((image, index) => (
-                              <div className="col-md-4 mb-3 " key={index}>
-                                <div className="card h-100 shadow-sm rounded-3 p-2">
+                              <div className="col-6 col-sm-4 mb-3 " key={index}>
+                                <div className="card shadow-sm rounded-3 p-1">
                                   <img
                                     src={image.src}
                                     alt={`company-gallery-${index}`}
-                                    className="w-100 h-100  rounded-3"
+                                    className="w-100  rounded-3 p-2"
                                     style={{ cursor: "pointer", objectFit:"contain" }}
                                     onClick={() => handleImageClick(index)}
                                   />
@@ -340,7 +362,7 @@ const CompanySingle = () => {
                       <div className="card shadow border-0">
                         <div className="card-body">
                           <iframe
-                            height="200px"
+                            height="150px"
                             src={`https://www.google.com/maps?q=${companyData.latitude},${companyData.longitude}&hl=en&z=14&output=embed`}
                             className="rounded w-100"
                             allowFullScreen=""
@@ -378,8 +400,8 @@ const CompanySingle = () => {
                                   <div className="card-body">
                             {jobs.slice(0,4).map((job) => (
                                     <div key={job.id}>
-                                    <Link className="d-flex justify-content-between text-theme" to={`/jobs/${job.slug}`}>
-                                      <h6 className="mb-2 text-theme" dangerouslySetInnerHTML={{ __html: job.title }}></h6>
+                                    <Link className="d-flex justify-content-between " to={`/jobs/${job.slug}`}>
+                                      <h6 className="mb-2 " dangerouslySetInnerHTML={{ __html: job.title }}></h6>
                                       <i className="fa-solid fa-chevron-right"></i>
                                     </Link>
 

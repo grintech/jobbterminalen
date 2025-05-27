@@ -9,6 +9,7 @@ const resources = {
       "Register": "Register",
       "Registering":"Registering...",
       "Find Jobs": "Find Jobs",
+      "JobVacancies": "Job Vacancies",
       "Login-Text" : "Welcome back! Sign in to access JobbTerminalen",
       "Username-Email": "Username / Email",
       "User-placeholder": "Enter username or email",
@@ -38,7 +39,9 @@ const resources = {
       "JobSeeker": "Job Seeker",
       "Recruiter": "Recruiter",
       "Full_Name": "Full Name",
+      "Designation": "Designation",
       "Name_placeholder": "Enter your name",
+      "Design_placeholder": "Enter your designation",
       "Phone": "Phone Number",
       "Phone_placeholder": "Enter phone number",
       "Description": "Description",
@@ -62,6 +65,8 @@ const resources = {
       "NewConfPassPlaceholder" : "Confirm your password",
       "Reset": "Reset",
       "Resetting": "Resetting...",
+      "ViewMore" : "View more",
+      "ViewAllCompanies": "View all companies",
       
       /* -- Home Hero Section ------*/
 
@@ -116,7 +121,7 @@ const resources = {
 
       /* --- Companies ----*/
       "Companies": "Companies",
-      "SponserCompanies": "Sponsered Companies",
+      "SponserCompanies": "Sponsored Companies",
       "FeaturedCompanies": "Featured Companies",
       "RecentCompanies" : "Recently Added Companies",
       "CompanySmlHead1" : "Here is the list of all the companies!",
@@ -273,7 +278,8 @@ const resources = {
       
       "PrivacyContactUs": "11. Contact Us",
       "ContactUsText": "If you have any questions, concerns, or complaints regarding this Privacy Policy or our data practices, please contact us at:",
-      "CompanyName": "[Website Name]",
+      "CompanyName": "Company Name",
+      "PersonName": "Person Name",
       "ContactEmail": "<strong>Email:</strong> [Insert Email Address]",
       "ContactPhone": "<strong>Phone:</strong> [Insert Phone Number]",
 
@@ -509,6 +515,7 @@ const resources = {
       "Register": "Registrera",
       "Registering" :"Registrera dig...",
       "Find Jobs": "Hitta Jobb",
+      "JobVacancies": "Lediga jobb",
       "Login-Text" : "Välkommen tillbaka! Logga in för att få tillgång till JobbTerminalen",
       "Username-Email": "Användarnamn / E-post",
       "User-placeholder": "Ange användarnamn eller e-post",
@@ -538,7 +545,9 @@ const resources = {
       "JobSeeker": "Jobbsökande",
       "Recruiter": "Rekryterare",
       "Full_Name": "Fullständigt namn",
+      "Designation": "Beteckning",
       "Name_placeholder": "Ange ditt namn",
+      "Design_placeholder": "Ange din beteckning",
       "Phone": "Telefonnummer",
       "Phone_placeholder": "Ange telefonnummer",
       "Description": "Beskrivning",
@@ -562,6 +571,8 @@ const resources = {
       "NewConfPassPlaceholder" : "Bekräfta ditt lösenord",
       "Reset": "Återställning",
       "Resetting": "Återställer...",
+      "ViewMore" : "Visa mer",
+      "ViewAllCompanies": "Se alla företag",
 
       /* -- Home Hero Section ------*/
 
@@ -763,7 +774,8 @@ const resources = {
       "ChangesToPolicyText": "Vi kan uppdatera denna integritetspolicy periodiskt för att återspegla ändringar i våra metoder eller av juridiska och reglerande skäl. Vi rekommenderar att du regelbundet granskar denna sida. \"Giltig från\" högst upp anger när denna policy senast reviderades.",
       "PrivacyContactUs": "11. Kontakta oss",
       "ContactUsText": "Om du har några frågor, funderingar eller klagomål angående denna integritetspolicy eller våra datametoder, vänligen kontakta oss på:",
-      "CompanyName": "[Webbplatsnamn]",
+      "CompanyName": "Företagets namn",
+      "PersonName": "Person namn",
       "ContactEmail": "<strong>E-post:</strong> [Infoga e-postadress]",
       "ContactPhone": "<strong>Telefon:</strong> [Infoga telefonnummer]",
 
