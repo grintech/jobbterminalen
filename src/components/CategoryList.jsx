@@ -252,7 +252,10 @@ const CategoryList = () => {
               </div> */}
 
               <div className="col-lg-10 mx-auto">
-                <h4 className="text-capitalize mb-4">{slug.replace(/-/g, ' ')} Jobs ({categoryData.length})</h4>
+                <h4 className="text-capitalize mb-4">
+                  {slug.replace(/-/g, ' ')} Jobs 
+                  {/* ({categoryData.length}) */}
+                  </h4>
                 <div className="row">
                   {loading ? (
                     <div className="loading-screen d-flex flex-column justify-content-center align-items-center">

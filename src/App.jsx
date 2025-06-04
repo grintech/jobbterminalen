@@ -1,4 +1,3 @@
-import React from 'react'
 import Homepage from './Pages/Homepage'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import Register from './components/Register'
@@ -41,6 +40,7 @@ import HelpCenter from './Pages/HelpCenter'
 import ApplyJob from './components/ApplyJob'
 import Maintenance from './Pages/Maintenance'
 import PublicRoute from './routes/PublicRoute'
+// import TranslateWidget from './components/TranslateWidget'
 
 
 const App = () => {
@@ -50,17 +50,13 @@ const App = () => {
     <ScrollToTop />
     <BackToTop />
     <GeoLocation />
-    {/* <ToastContainer 
-        position="top-right"
-        autoClose={3000}
-        hideProgressBar
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-      /> */}
+
+        {/* <div style={{ position: 'fixed', top: 0, right: 0, zIndex: 9999 }}>
+          <TranslateWidget />
+        </div> */}
+
+        {/* <div id="google_translate_element"></div> */}
+
 
       {/* <HomeBanners /> */}
 

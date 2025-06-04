@@ -329,7 +329,7 @@ const CompanySingle = () => {
                           <h6 className="mt-4">View Photos :</h6>
                           <div className="row company_gallery_images">
                             {galleryImages.map((image, index) => (
-                              <div className="col-6 col-sm-4 mb-3 " key={index}>
+                              <div className="col-6 col-sm-4 col-xl-3 mb-3 " key={index}>
                                 <div className="card shadow-sm rounded-3 p-1">
                                   <img
                                     src={image.src}

@@ -669,20 +669,29 @@ const JobDetail = () => {
                     </ul>
                   </div>
 
-                  <div className="job_details mt-2">
-                    <ul className="p-0 d-flex flex-wrap align-items-center m-0">
-                      <li className="d-flex align-items-baseline pe-2 me-2 mb-2">
-                        {/* <i className="fa-solid fa-location-dot me-1"></i> */}
-                        <span className="text-capitalize">
-                          <i className="fa-solid fa-location-dot me-1">
-                            </i> {jobDetails.job_location.replace(/-/g, ' ') || "Not Specified"}
-                        </span>
-                        {/* <span className="text-capitalize">
-                          <b className="me-1" >Location :</b> {jobDetails.job_location || "Not Specified"}
-                        </span> */}
-                      </li>
-                    </ul>
-                  </div>
+             {jobDetails.job_location && jobDetails.job_location !== "---" ? (
+                <div className="job_details mt-2">
+                  <ul className="p-0 d-flex flex-wrap align-items-center m-0">
+                    <li className="d-flex align-items-baseline pe-2 me-2 mb-2">
+                      <span className="text-capitalize">
+                        <i className="fa-solid fa-location-dot me-1"></i> 
+                        {jobDetails.job_location.replace(/-/g, ' ')}
+                      </span>
+                    </li>
+                  </ul>
+                </div>
+              ) : (
+                <div className="job_details mt-2">
+                  <ul className="p-0 d-flex flex-wrap align-items-center m-0">
+                    <li className="d-flex align-items-baseline pe-2 me-2 mb-2">
+                      <span className="text-capitalize">
+                        <i className="fa-solid fa-location-dot me-1"></i> Not Specified
+                      </span>
+                    </li>
+                  </ul>
+                </div>
+              )}
+
 
                   <hr className="my-2" />
                  <div className="position-relative">

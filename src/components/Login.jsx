@@ -6,6 +6,7 @@ import Navbar from "./Navbar";
 import Footer from "./Footer";
 import { useTranslation } from "react-i18next";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { getGoogleTranslateLang } from "../utils/getLang";
 
 const bearerKey = import.meta.env.VITE_BEARER_KEY;
 const API_URL = import.meta.env.VITE_API_URL;
@@ -29,12 +30,18 @@ const Login = () => {
     }));
   };
 
+ 
+
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+     const selectedLang = getGoogleTranslateLang(); 
 
     const data = new FormData();
     data.append("email", formData.email);
     data.append("password", formData.password);
+    data.append("lang", selectedLang);  // always send lang, default 'en'
 
     try {
       const response = await axios.post(`${API_URL}/login_api.php`, data, {

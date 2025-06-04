@@ -5,6 +5,7 @@ import { ToastContainer, toast } from "react-toastify";
 import { useLocation, useNavigate } from "react-router-dom";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
+import { getGoogleTranslateLang } from "../utils/getLang";
 
 const ApplyJob = () => {
   const location = useLocation();
@@ -243,6 +244,8 @@ const ApplyJob = () => {
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
+
+    const selectedLang = getGoogleTranslateLang(); 
   
     // Check if user is logged in
     if (!userId || !bearerKey) {
@@ -288,6 +291,9 @@ const ApplyJob = () => {
       // formDataToSend.append("cover_letter", coverLetter);
       {coverLetter &&  formDataToSend.append("cover_letter", coverLetter);}
       {linkedInUrl &&  formDataToSend.append("linkedin_Url", `https://www.linkedin.com/in/${linkedInUrl}`);}
+
+      formDataToSend.append("lang", selectedLang);
+
 
       // Append certificates
       certificates.forEach((file, index) => {
@@ -359,7 +365,7 @@ const ApplyJob = () => {
                 <div className="col">
                   <label className="form-label" htmlFor="gender">Gender <span className="text-danger">*</span></label>
                   <select
-                    className="form-select"
+                    className="form-select "
                     id="gender"
                     value={formData.gender || ''}
                     onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
@@ -544,7 +550,7 @@ const ApplyJob = () => {
              </div>
 
              
-              <button className="btn btn-register rounded-2 py-3 fs-6 w-100 mt-3"
+              <button className="btn btn-register rounded-2 py-3 fs-6 w-100 mt-3 "
                type="submit"
                disabled={isSubmitting}
                >
@@ -552,6 +558,7 @@ const ApplyJob = () => {
                       <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
                     ) : null}
                     {isSubmitting ? "Submitting.." : "Submit"}
+                    {/* Submit */}
               </button>
             </form>
             </div>

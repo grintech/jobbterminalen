@@ -457,7 +457,7 @@ const resources = {
       "UserLink4": "<Link>Verify OTP</Link>",
       "UserLink5": "<Link>Reset Password</Link>",
 
-      "JobseekerLink1": "<Link>My Account</Link>",
+      "JobseekerLink1": "<Link>My Profile</Link>",
       "JobseekerLink2": "<Link>Search Jobs</Link>",
       "JobseekerLink3": "<Link>Saved Jobs</Link>",
       "JobseekerLink4": "<Link>Saved Companies</Link>",
@@ -955,7 +955,7 @@ const resources = {
       "UserLink4": "<Link>Verifiera OTP</Link>",
       "UserLink5": "<Link>Återställ lösenord</Link>",
 
-      "JobseekerLink1": "<Link>Mitt konto</Link>",
+      "JobseekerLink1": "<Link>Min profil</Link>",
       "JobseekerLink2": "<Link>Sök jobb</Link>",
       "JobseekerLink3": "<Link>Sparade jobb</Link>",
       "JobseekerLink4": "<Link>Sparade företag</Link>",

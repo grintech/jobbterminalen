@@ -10,6 +10,7 @@ import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 import PhoneInput from 'react-phone-input-2'
 import 'react-phone-input-2/lib/style.css'
+import { getGoogleTranslateLang } from "../utils/getLang";
 
 const bearerKey = import.meta.env.VITE_BEARER_KEY;
 const API_URL = import.meta.env.VITE_API_URL;
@@ -100,7 +101,8 @@ const Register = () => {
       return;
     }
 
-    if (!formData.name || !formData.email || !formData.designation ) {
+
+    if (!formData.name || !formData.email || (formData.role === "recruiter" && !formData.designation)) {
       setAlert({ type: "error", message: "Please fill the form!" });
       setTimeout(() => setAlert({ type: "", message: "" }), 3000);
       return;
@@ -139,6 +141,8 @@ const Register = () => {
     }
   }
       
+   const selectedLang = getGoogleTranslateLang(); 
+  
 
     // Create FormData object and append data
     const formDataToSend = new FormData();
@@ -148,6 +152,8 @@ const Register = () => {
     formDataToSend.append("password", formData.password);
     formDataToSend.append("role", formData.role);
     formDataToSend.append("designation", formData.designation);
+
+    formDataToSend.append("lang", selectedLang);
   
     try {
       setLoading(true); // Start loading
@@ -275,7 +281,7 @@ const Register = () => {
                           value={formData.designation}
                           onChange={handleInputChange}
                           placeholder={t("Design_placeholder")}
-                        
+                          
                         />
                       </div>
                     )} 

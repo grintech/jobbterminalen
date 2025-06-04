@@ -1,8 +1,10 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Navigation, A11y, Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { useAuthContext } from "../store/authContext";
+import axios from "axios";
+import { useTranslation } from "react-i18next";
 
 const PopularJob = () => {
   const [jobs, setJobsData] = useState([]);
@@ -11,42 +13,77 @@ const PopularJob = () => {
 
   const bearerKey = import.meta.env.VITE_BEARER_KEY;
   const API_URL = import.meta.env.VITE_API_URL;
+  const { i18n } = useTranslation();
+ 
 
   const { user } = useAuthContext();
   const userId = user?.id || null;
 
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       setIsLoading(true);
+  //       setError(null);
+
+  //       const response = await fetch(`${API_URL}/popular-category.php`, {
+  //         headers: {
+  //           Authorization: `Bearer ${bearerKey}`,
+  //           "Content-Type": "application/json",
+  //         },
+  //       });
+
+  //       if (!response.ok) {
+  //         throw new Error("Failed to fetch jobs data");
+  //       }
+
+  //       const result = await response.json();
+  //       if (result.type === "success") {
+  //         setJobsData(result.data);
+  //       } else {
+  //         throw new Error(result.message || "Failed to fetch jobs data");
+  //       }
+  //     } catch (err) {
+  //       setError(err.message);
+  //     } finally {
+  //       setIsLoading(false);
+  //     }
+  //   };
+
+  //   fetchData();
+  // }, [API_URL, bearerKey]);
+
   useEffect(() => {
-    const fetchData = async () => {
+  const fetchData = async () => {
       try {
         setIsLoading(true);
         setError(null);
 
-        const response = await fetch(`${API_URL}/popular-category.php`, {
+        const response = await axios.get(`${API_URL}/popular-category.php`, {
           headers: {
             Authorization: `Bearer ${bearerKey}`,
             "Content-Type": "application/json",
           },
         });
 
-        if (!response.ok) {
-          throw new Error("Failed to fetch jobs data");
-        }
+        const result = response.data;
 
-        const result = await response.json();
         if (result.type === "success") {
           setJobsData(result.data);
         } else {
           throw new Error(result.message || "Failed to fetch jobs data");
         }
       } catch (err) {
-        setError(err.message);
+        setError(err.message || "Failed to fetch jobs data");
       } finally {
         setIsLoading(false);
       }
     };
 
     fetchData();
-  }, [API_URL, bearerKey]);
+  }, [API_URL, bearerKey, i18n.language]);
+
+
+
 
   // Define how many jobs per slide
   const jobsPerSlide = 6;
@@ -103,7 +140,7 @@ const PopularJob = () => {
                                 >
                                   <div className="card">
                                     <Link
-                                      to={`/job/category/${job.category_name.trim().toLowerCase().replace(/\s+/g, '-')}`}
+                                      to={`/job/category/${job.category_slug.trim().toLowerCase().replace(/\s+/g, '-')}`}
                                       className="card-body d-flex justify-content-between align-items-baseline"
                                     >
                                       <div>
