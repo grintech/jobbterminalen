@@ -233,14 +233,14 @@ const SavedJobs = () => {
                               </Link>
                               <div className="d-flex align-items-center">
                               <button
-                                  className={`btn-light border-0 shadow me-2 `}
+                                  className={`save_post me-2 `}
                                   onClick={() => toggleSavedJob(job.id)}
                                   title={
                                     isJobSaved(job.id) ? "Click to unsave" : "Click to save"
                                   }
                                 >
                                   <i
-                                    className={`fa-bookmark  ${
+                                    className={`fa-heart  ${
                                       isJobSaved(job.id) ? "fa-solid" : "fa-regular"
                                     }`}
                                    

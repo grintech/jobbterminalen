@@ -314,45 +314,53 @@ const MyAccount = () => {
     }
   };
 
-  const handleResumeDownload = async () => {
-    if (!userId) {
-      toast.error("User ID not available.");
-      return;
-    }
-    try {
-      const response = await axios.get(
-        `${API_URL}/view-resume.php?user_id=${userId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${bearerKey}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      if (
-        response.data &&
-        response.data.data &&
-        response.data.data.length > 0
-      ) {
-        const resumeData = response.data.data[0];
-
-        // console.log("Resume File:", resumeData.resume);
-        const url = `${IMG_URL}/${resumeData.resume}`;
-        const fileName = resumeData.resume.split("/").pop();
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = fileName;
-        link.target = "_blank";
-        link.click();
-      } else {
-        console.log("No resume found for the user.");
+ const handleResumeDownload = async () => {
+  if (!userId) {
+    toast.error("User ID not available.");
+    return;
+  }
+  try {
+    const response = await axios.get(
+      `${API_URL}/view-resume.php?user_id=${userId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${bearerKey}`,
+          "Content-Type": "application/json",
+        },
       }
-    } catch (error) {
-      console.error("Error while fetching resume:", error);
-      toast.error("Failed to get response. Please try again.");
+    );
+
+    if (
+      response.data &&
+      response.data.data &&
+      response.data.data.length > 0
+    ) {
+      const resumeData = response.data.data[0];
+      let resumeUrl = resumeData.resume;
+
+      // If resume is not a full URL, prepend IMG_URL
+      if (!resumeUrl.startsWith("http")) {
+        resumeUrl = `${IMG_URL}/${resumeUrl}`;
+      }
+
+      const fileName = resumeUrl.split("/").pop();
+      const link = document.createElement("a");
+      link.href = resumeUrl;
+      link.download = fileName;
+      link.target = "_blank";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } else {
+      console.log("No resume found for the user.");
+      toast.info("No resume found for this user.");
     }
-  };
+  } catch (error) {
+    console.error("Error while fetching resume:", error);
+    toast.error("Failed to get response. Please try again.");
+  }
+};
+
 
   const handleRemoveResume = () => {
     const removeResumeModal = new bootstrap.Modal(
@@ -2265,7 +2273,7 @@ const MyAccount = () => {
                             />
 
                             {/* Progress Text */}
-                           {uploadPercentage && <div style={{color:getStrokeColor(uploadPercentage)}} className="progress-text">{uploadPercentage}%</div>}
+                           {uploadPercentage > 0 && <div style={{color:getStrokeColor(uploadPercentage)}} className="progress-text">{uploadPercentage}%</div>}
 
                             {/* Upload or Remove Logic */}
                             {!profileImage || profileImage === "/images/blank_user.png" ? (
@@ -5122,11 +5130,14 @@ const MyAccount = () => {
                           <select
                             className="form-select"
                             value={userData.gender || ""}
-                            onChange={(e) =>
+                            onChange={(e) => {
+                               const selectedGender = e.target.value;
+                               console.log("Selected Gender:", selectedGender);
                               setUserData({
                                 ...userData,
                                 gender: e.target.value,
                               })
+                            }
                             }
                           >
                             <option value="">Select gender</option>

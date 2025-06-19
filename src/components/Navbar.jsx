@@ -1,10 +1,13 @@
 import React, { useEffect, useState} from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useAuthContext } from '../store/authContext';
 import { useTranslation } from 'react-i18next';
 
 
 const Navbar = () => {
+
+  const location = useLocation();
+
     const { t, i18n } = useTranslation();
 
     const changeLanguage = (language) => {
@@ -35,6 +38,82 @@ const Navbar = () => {
       const displayName = isMobile && firstName.length > 5
       ? firstName.slice(0, 5) + '..'
       : firstName;
+
+
+      // // Translation Script 
+      // useEffect(() => {
+      //   const elementExists = document.getElementById("google-translate-script");
+
+      //   // Avoid adding the script multiple times
+      //   if (!elementExists) {
+      //     const script = document.createElement("script");
+      //     script.id = "google-translate-script"; // Unique ID to prevent duplicates
+      //     script.src = "//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
+      //     script.async = true;
+      //     document.body.appendChild(script);
+
+      //     // Define callback only once
+      //     window.googleTranslateElementInit = () => {
+      //       if (!document.getElementById('google_translate_element')?.hasChildNodes()) {
+      //         new window.google.translate.TranslateElement(
+      //           {
+      //             pageLanguage: "en",
+      //             includedLanguages: 'sv,en',
+      //             layout: window.google.translate.TranslateElement.InlineLayout.SIMPLE,
+      //           },
+      //           "google_translate_element"
+      //         );
+      //       }
+      //     };
+      //   }
+      // }, []);
+
+
+
+    useEffect(() => {
+        const injectTranslateScript = () => {
+          // Remove old widget
+          const oldElem = document.getElementById('google_translate_element');
+          if (oldElem) {
+            oldElem.innerHTML = ''; // clear widget
+          }
+
+          // Remove existing script tag
+          const oldScript = document.getElementById('google-translate-script');
+          if (oldScript) {
+            oldScript.remove();
+          }
+
+          // Create new script
+          const script = document.createElement('script');
+          script.src = "//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
+          script.id = 'google-translate-script';
+          document.body.appendChild(script);
+
+          // Declare callback globally
+          window.googleTranslateElementInit = () => {
+            new window.google.translate.TranslateElement({
+              pageLanguage: 'en',
+              includedLanguages: 'en,sv',
+              layout: window.google.translate.TranslateElement.InlineLayout.SIMPLE,
+            }, 'google_translate_element');
+          };
+        };
+
+        injectTranslateScript();
+      }, [location.pathname]);
+
+    
+  // Hiding lanuguage select on my-account page
+  useEffect(() => {
+    if (location.pathname.includes('/my-account')) {
+      const widget = document.getElementById('google_translate_element');
+      if (widget) widget.remove();
+    }
+  }, [location.pathname]);
+
+
+
 
   return (
    <>
@@ -91,10 +170,10 @@ const Navbar = () => {
             </div>
         </div>
         }
-         <select className='lang_select ms-2' onChange={(e) => changeLanguage(e.target.value)} defaultValue={i18n.language}>
+         {/* <select className='lang_select ms-2' onChange={(e) => changeLanguage(e.target.value)} defaultValue={i18n.language}>
          <option value="en">EN</option>
          <option value="sv">SV</option>
-         </select>
+         </select> */}
 
         </div>
 
@@ -107,7 +186,7 @@ const Navbar = () => {
 
         <ul className="navbar-nav mx-auto d-lg-flex mb-2 mb-lg-0">
             <li className="nav-item">
-                <Link to="/home" className="nav-link" aria-current="page">{t("Home")}</Link>
+                <Link to="/" className="nav-link" aria-current="page">{t("Home")}</Link>
             </li>
             {/* <li className="nav-item">
                 <Link to="/about" className="nav-link">{t("About")}</Link>
@@ -165,7 +244,7 @@ const Navbar = () => {
         </div>
         }
 
-        <ul className="d-none d-lg-block employer p-0 ms-lg-2 m-0">
+        <ul className="d-none d-lg-block employer p-0 ms-lg-2 m-0 me-3">
             <li className="nav-item dropdown">
             <Link className="nav-link dropdown-toggle"  role="button" data-bs-toggle="dropdown" aria-expanded="false">
             {t("ForEmployers")}
@@ -176,10 +255,15 @@ const Navbar = () => {
             </li>
         </ul>
 
-        <select className='lang_select ms-lg-2 d-none d-lg-block' onChange={(e) => changeLanguage(e.target.value)} defaultValue={i18n.language}>
+        {/* <select className='lang_select ms-lg-2 d-none d-lg-block' onChange={(e) => changeLanguage(e.target.value)} defaultValue={i18n.language}>
         <option value="en">EN</option>
         <option value="sv">SV</option>
-       </select>
+       </select> */}
+
+
+       <div className='position-relative google_translater'>
+        <div id="google_translate_element"></div>
+       </div>
         
 
         </div>

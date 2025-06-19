@@ -2,13 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
+// import { getApiUrl } from '../utils/getApiUrl';
 
 const Categories = () => {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const { t } = useTranslation();
+  const { t , i18n} = useTranslation();
 
   const bearerKey = import.meta.env.VITE_BEARER_KEY; 
   const API_URL = import.meta.env.VITE_API_URL;
@@ -26,7 +27,11 @@ const Categories = () => {
   
     const fetchCategories = async () => {
       try {
-        const response = await axios.get(`${API_URL}/get_main_categories.php`, {
+        // const response = await axios.get(getApiUrl(`${API_URL}/get_main_categories.php`), {
+        //   headers: { Authorization: `Bearer ${bearerKey}` },
+        // });
+        // const response = await axios.get(`${API_URL}/get_main_categories.php`, {
+        const response = await axios.get(`${API_URL}/top-category.php`, {
           headers: { Authorization: `Bearer ${bearerKey}` },
         });
   
@@ -46,7 +51,7 @@ const Categories = () => {
     };
   
     fetchCategories();
-  }, []);
+  }, [i18n.language]);
   
 
   
@@ -76,7 +81,7 @@ const Categories = () => {
                       <div className="card h-100">
                         <div className="card-body text-center">                      
                           <img src={`${IMG_URL}/${category.image}`} alt={category.name} />
-                          <h5 className="mt-3 mb-0">{category.name}</h5>
+                          <h5 className="mt-3 mb-0 text-capitalize">{category.name}</h5>
                         </div>
                       </div>
                     </Link>

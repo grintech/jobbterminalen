@@ -152,9 +152,9 @@ const CompaniesSlider = () => {
         {t("RecentCompanies")}
       </h4>
 
-      <div className="row align-items-center">
+      <div className="row ">
         <div className="col-md-3 d-none d-md-block">
-          <Swiper
+          {/* <Swiper
             className="p-0 pb-5"
             modules={[Navigation, A11y, Autoplay, Pagination]}
             spaceBetween={40}
@@ -175,13 +175,17 @@ const CompaniesSlider = () => {
                 <div className="inside_div">
                   <h5 className="text-center">Latest jobs</h5>
                   <button>
-                    <Link>View job</Link>
+                    <Link to='/jobs'>View job</Link>
                   </button>
                 </div>
               </div>
             </SwiperSlide>
-            {/* Other SwiperSlides go here */}
-          </Swiper>
+           
+          </Swiper> */}
+
+          <Link className="gif_image" target="_blank" to='https://aykoagency.com' >
+           <img src="/images/new-final.gif" className="w-100 " alt="" />
+          </Link>
         </div>
 
         <div className="col-md-9">
@@ -202,7 +206,7 @@ const CompaniesSlider = () => {
           ) : (
             <>
               <Swiper
-                className="pb-4 mt-4"
+                className="pb-4 "
                 modules={[Navigation, A11y]}
                 spaceBetween={40}
                 slidesPerView={1}

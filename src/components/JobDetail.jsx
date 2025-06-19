@@ -9,9 +9,11 @@ import HomeBanners from "./HomeBanners";
 import { ToastContainer, toast } from "react-toastify";
 import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
 import Avatar from "react-avatar";
+import { useTranslation } from "react-i18next";
 
 const JobDetail = () => {
   const { slug } = useParams(); // Capture the slug from the URL
+  const {t} = useTranslation();
   const [jobDetails, setJobDetails] = useState(null);
   const [similarJobs, setSimilarJobs] = useState([]);
   const [savedJobs, setSavedJobs] = useState([]);
@@ -607,14 +609,14 @@ const JobDetail = () => {
                           className="btn btn-primary"
                         >
                           
-                          Apply
+                          {t("Apply")}
                         </Link>
                       ) : (
                         <button
                           className="btn btn-primary"
                           onClick={() => handleApplyClick(jobDetails.job_id)}
                         >
-                          Apply
+                          {t("Apply")}
                         </button>
                       )}
                     </div>
@@ -642,12 +644,12 @@ const JobDetail = () => {
 
                       { jobDetails.experience_required === "0" ? (
                          <li className="d-flex align-items-center pe-2 me-2 border-end mb-2">
-                         <span className="fw-bold me-1">Experience : </span>
+                         <span className="fw-bold me-1">{t("Experience")}</span>
                          <span>Fresher</span>
                         </li>
                       ) : (
                         <li className="d-flex align-items-center pe-2 me-2 border-end mb-2">
-                        <span className="fw-bold me-1">Experience : </span>
+                        <span className="fw-bold me-1">{t("Experience")}</span>
                         <span>{jobDetails.experience_required} Yrs</span>
                         </li>
                        )}
@@ -669,55 +671,65 @@ const JobDetail = () => {
                     </ul>
                   </div>
 
-                  <div className="job_details mt-2">
-                    <ul className="p-0 d-flex flex-wrap align-items-center m-0">
-                      <li className="d-flex align-items-baseline pe-2 me-2 mb-2">
-                        {/* <i className="fa-solid fa-location-dot me-1"></i> */}
-                        <span className="text-capitalize">
-                          <i className="fa-solid fa-location-dot me-1">
-                            </i> {jobDetails.job_location.replace(/-/g, ' ') || "Not Specified"}
-                        </span>
-                        {/* <span className="text-capitalize">
-                          <b className="me-1" >Location :</b> {jobDetails.job_location || "Not Specified"}
-                        </span> */}
-                      </li>
-                    </ul>
-                  </div>
+             {jobDetails.job_location && jobDetails.job_location !== "---" ? (
+                <div className="job_details mt-2">
+                  <ul className="p-0 d-flex flex-wrap align-items-center m-0">
+                    <li className="d-flex align-items-baseline pe-2 me-2 mb-2">
+                      <span className="text-capitalize">
+                        <i className="fa-solid fa-location-dot me-1"></i> 
+                        {jobDetails.job_location.replace(/-/g, ' ')}
+                      </span>
+                    </li>
+                  </ul>
+                </div>
+              ) : (
+                <div className="job_details mt-2">
+                  <ul className="p-0 d-flex flex-wrap align-items-center m-0">
+                    <li className="d-flex align-items-baseline pe-2 me-2 mb-2">
+                      <span className="text-capitalize">
+                        <i className="fa-solid fa-location-dot me-1"></i> Not Specified
+                      </span>
+                    </li>
+                  </ul>
+                </div>
+              )}
+
 
                   <hr className="my-2" />
                  <div className="position-relative">
                   <div className="d-flex flex-wrap justify-content-between align-items-center">
                    <div className="py-1" >
                     <span className="days border-end me-2 pe-2 d-inline-flex align-items-center">
-                      <b className="me-1">Posted :</b>  <span className="badge text-dark btn-light">{calculateTimeAgo(jobDetails.created_at)}</span>
+                      <b className="me-1">{t("Posted")}</b>  <span className="badge text-dark btn-light">{calculateTimeAgo(jobDetails.created_at)}</span>
                       </span>
                       <span className="days ">
-                      <b className="me-1">Vacancies :</b>  <Link to={`/companies/${jobDetails?.company_slug}`}>{jobDetails.total_vacancies}</Link>
+                      <b className="me-1">{t("Vacancies")}</b>  <Link to={`/companies/${jobDetails?.company_slug}`}>{jobDetails.total_vacancies}</Link>
                       </span>
                    </div>
                     <div className="py-1">
                       <button
                         onClick={toggleSaved}
+                        // className={`btn btn-light btn-sm me-2 `}
                         className={`btn btn-light btn-sm me-2 `}
                         title={saved ? "Click to unsave" : "Click to save"}
                       >
                         <i
-                          className={`fa-bookmark me-1 ${
+                          className={`fa-heart me-1 ${
                             saved ? "fa-solid" : "fa-regular"
                           }`}
                         ></i>
-                        {saved ? "Saved" : "Save"}
+                        {saved ? t("Saved") : t("Save")}
                       </button>
                       <button ref={buttonRef} 
                       className="btn btn-light btn-sm " 
                       onClick={() => setVisible((prev) => !prev)}
                       >
-                        <i className="fa-solid fa-share me-1"></i>Share
+                        <i className="fa-solid fa-share me-1"></i>{t("Share")}
                       </button>
                     </div>
                   </div>
                   {visible && (
-                    <div   ref={containerRef} className="social_icons_container">
+                    <div ref={containerRef} className="social_icons_container">
                     <div className="modal-body p-3">
                       
                       <div className="d-flex flex-wrap justify-content-between social_links mt-2">
@@ -744,7 +756,7 @@ const JobDetail = () => {
                 </div>
               </div>
             </div>
-            <div className="container pt-5">
+            <div className="container pt-0 pt-lg-2">
               <div className="row py-3">                        
                 {/* Job Details Section */}
                 <div className="col-lg-8 mb-4 mb-lg-0">
@@ -754,7 +766,29 @@ const JobDetail = () => {
                     <div className="card-body">
                       <div className="container ">
                         <div className="job-description">
-                          <h5 className="job_company">Job Description:</h5>
+                          <div className="d-flex justify-content-between align-items-center">
+                           <h5 className="job_company m-0">{t("JobDescription")}</h5>
+                           <div className="d-flex py-2">
+                            {userId ? (
+                              <Link
+                                to="/apply-job"
+                                state={{ jobId: jobDetails.id }}
+                                className="btn btn-sm btn-primary"
+                              >
+                                
+                                {t("Apply")}
+                              </Link>
+                            ) : (
+                              <button
+                                className="btn btn-sm btn-primary"
+                                onClick={() => handleApplyClick(jobDetails.job_id)}
+                              >
+                                Apply
+                              </button>
+                            )}
+                          </div>
+
+                          </div>
                         
                           {/* <div 
                             className="job-requirements mt-3"
@@ -776,11 +810,11 @@ const JobDetail = () => {
                                 {/* {expanded ? 'Read less' : 'Read more'} */}
                                 {expanded ? (
                                    <> 
-                                   Read less <FaChevronUp style={{fontSize:"13px"}} />
+                                   {t("ReadLess")} <FaChevronUp style={{fontSize:"13px"}} />
                                    </>) : 
                                   (
                                    <>
-                                  Read more <FaChevronDown style={{fontSize:"13px"}} /></>
+                                  {t("ReadMore")} <FaChevronDown style={{fontSize:"13px"}} /></>
                                   )}
 
                               </Link>
@@ -794,7 +828,7 @@ const JobDetail = () => {
                       <div className="card-body key_skills m-0">
                         {jobDetails.skills ? (
                           <>
-                           <h5> Skills</h5>
+                           <h5>{t("Skills")}</h5>
                            <ul className="d-flex flex-wrap p-0 m-0">
                             {jobDetails.skills
                               .split(",")
@@ -815,14 +849,14 @@ const JobDetail = () => {
                       
                          <div className=" job-details mt-3">
                           <p className="text-capitalize">
-                            <b className="me-1">Role:</b>{stripHtml(jobDetails.title)}
+                            <b className="me-1">{t("Role")}</b>{stripHtml(jobDetails.title)}
                           </p>
                           <p className="text-capitalize">
-                          <b className="me-1">Industry Type:</b>{jobDetails.company_industry.replace(/-/g, ' ')}
+                          <b className="me-1">{t("IndustryType")}</b>{jobDetails.company_industry.replace(/-/g, ' ')}
                           </p>
 
                           <p className="text-capitalize">
-                            <b className="me-1">Employment Type:</b>{jobDetails.job_type.replace(/-/g, ' ')}
+                            <b className="me-1">{t("EmploymentType")}</b>{jobDetails.job_type.replace(/-/g, ' ')}
                           </p>
 
                           {jobDetails.parent_category_name && (                      
@@ -841,7 +875,7 @@ const JobDetail = () => {
                      <div className="card job_list_card mb-4">
                      <div className="card-body">
                        <div className="container job-details">
-                         <h5 className="fw-semibold">Contact Details:</h5>
+                         <h5 className="fw-semibold">{t("ContactDetails")}</h5>
  
                          {jobDetails.job_email && (
                            <p className="mb-2">
@@ -885,7 +919,7 @@ const JobDetail = () => {
                          )}
  
                          <p className="mb-2">
-                           <strong>Thanks & Regards,</strong>
+                           <strong>{t("ThanksRegards")}</strong>
                          </p>
  
                          {jobDetails.contact_name && (
@@ -905,7 +939,7 @@ const JobDetail = () => {
                  {/* Sidebar Section */}
                 <div className="col-lg-4 mb-4">
                   <div className="card_sticky">
-                   <h4 className="mb-3 text-start">Similar jobs</h4>
+                   <h4 className="mb-3 text-start">{t("SimilarJobs")}</h4>
                    <div className="row">
                     {similarJobs.length > 0 ? (
                       similarJobs.slice(0,3).map((job) => (
@@ -942,13 +976,14 @@ const JobDetail = () => {
                                 </Link>
                                 <div className="d-flex align-items-center">
                                   <button
-                                    className={`btn-light border-0 shadow me-2 `}
+                                    // className={`btn-light border-0 shadow me-2 `}
+                                    className={`save_post me-2 `}
                                     onClick={() => toggleSavedJob(job.id)}
 
                                     title={ isJobSaved(job.id) ? "Click to unsave" : "Click to save"}
                                   >
                                     <i
-                                      className={`fa-bookmark ${
+                                      className={`fa-heart ${
                                         isJobSaved(job.id)
                                           ? "fa-solid"
                                           : "fa-regular"

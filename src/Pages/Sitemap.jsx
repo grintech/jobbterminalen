@@ -51,9 +51,9 @@ const Sitemap = () => {
                     <li>
                     <Trans i18nKey="CompanyLink1" components={{ Link: <Link to="/companies" />}} />
                     </li>
-                    <li>
-                    <Trans i18nKey="CompanyLink2" components={{ Link: <Link to="/companies/featured" />}} />
-                    </li>
+                    {/* <li>
+                        <Trans i18nKey="CompanyLink2" components={{ Link: <Link to="/companies/featured" />}} />
+                    </li> */}
                      
                 </ul>
             </div>

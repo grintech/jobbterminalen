@@ -163,3 +163,19 @@ const FeaturedEmployers = () => {
 }
 
 export default FeaturedEmployers;
+
+// .fea_tag {
+//     position: absolute;
+//     right: 5px;
+//     top: -11px;
+//     background: linear-gradient(135deg, #1458b3, #041934);
+//     color: #fff;
+//     font-size: 9px;
+//     font-weight: bold;
+//     padding: 4px 19px;
+//     text-transform: uppercase;
+//     letter-spacing: 1px;
+//     z-index: 10;
+//     overflow: hidden;
+//     clip-path: polygon(100% 0, 92% 50%, 100% 100%, 15% 100%, 0% 50%, 15% 0%);
+// }

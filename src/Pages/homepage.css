@@ -195,12 +195,18 @@
     border: 1px solid #003479 !important;
     padding: 17px;
     border-radius: 100%;
-    background-color: white;
+    background-color: #003479;
     z-index: 111;
     opacity: 1;
   }
-  .top_companies .swiper-button-prev::after,.top_companies .swiper-button-next::after{color: #003479;}
-   .swiper .swiper-pagination-bullet-active{background-color: #003479 !important;}
+  .top_companies .swiper-button-prev.swiper-button-disabled, .top_companies .swiper-button-next.swiper-button-disabled { opacity: 0.7 !important; background-color: #eaeaea; }
+
+  .top_companies .swiper-button-prev::after,.top_companies .swiper-button-next::after{color: #fff;}
+
+
+  .top_companies .swiper-button-prev.swiper-button-disabled::after, .top_companies .swiper-button-next.swiper-button-disabled::after{ color: #003479 !important; }
+
+  .swiper .swiper-pagination-bullet-active{background-color: #003479 !important;}
   .sml_text{font-size: 13px;}
   .main_desc{font-size: 15px; color:  #474D6A;}
 
@@ -261,10 +267,13 @@
    color: black;
   }
 
-  .save_post{border: 1px solid #003479; padding: 5px 10px; border-radius: 50%;}
+  .save_post{border: 1px solid #003479; padding: 5px 10px; border-radius: 50%; background-color: #fff;}
   .save_post .fa-heart{
     color: #003479;
   }
+  .save_post:hover{background-color: #003479;}
+  .save_post:hover .fa-heart{color:#fff}
+
   .cat_type .fa-chevron-right{
     color: #ccc;
     font-size: 11px;
@@ -448,7 +457,12 @@
     border-radius: 20px;
 }
 
-.pop_img {width: 250px;}
+.pop_img {
+   width: 250px; 
+   height: 200px;
+   object-fit: cover;
+   border-radius: 8px;
+  }
 .pop_right .main-card{border-radius: 20px; background: #d2e3f9; box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(0, 0, 0, 0.06) 0px 0px 0px 1px; }
 .pop_right .main-card .card{border-radius: 20px; border: 1px solid #e3e3e3;}
 .pop_right .main-card .card h6{display: -webkit-box;
@@ -543,7 +557,10 @@
   }
 
   @media screen and (max-width:992px) {
-    
+    .pop_img {
+   width: 200px;
+   height: 150px; object-fit: cover;
+  }
     .pop_right{margin-top:30px}
     .hero_banner .banner_search {border-radius: 20px; padding-bottom: 20px;}
     .hero_banner .banner_search .btn-register {height: 45px; font-size: 17px;}

@@ -252,7 +252,11 @@ const CategoryList = () => {
               </div> */}
 
               <div className="col-lg-10 mx-auto">
-                <h4 className="text-capitalize mb-4">{slug.replace(/-/g, ' ')} Jobs ({categoryData.length})</h4>
+                <h4 className="text-capitalize mb-4">
+                  {slug.replace(/-/g, ' ')} 
+                  {/* {slug.replace(/-/g, ' ')} Jobs  */}
+                  {/* ({categoryData.length}) */}
+                  </h4>
                 <div className="row">
                   {loading ? (
                     <div className="loading-screen d-flex flex-column justify-content-center align-items-center">
@@ -302,11 +306,11 @@ const CategoryList = () => {
                               </Link>
                               <div className="d-flex align-items-center">
                                 <button
-                                  className={`btn-light border-0 shadow me-2 `}
+                                  className={`save_post me-2 `}
                                   onClick={() => toggleSavedJob(job.id)}
                                 >
                                   <i
-                                    className={`fa-bookmark  ${
+                                    className={`fa-heart  ${
                                       isJobSaved(job.id) ? "fa-solid" : "fa-regular"
                                     }`}
                                   ></i>
