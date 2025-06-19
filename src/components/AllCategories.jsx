@@ -6,6 +6,7 @@ import axios from "axios";
 import HomeBanners from "./HomeBanners";
 import { Helmet } from "react-helmet-async";
 import { useTranslation } from "react-i18next";
+import HomepageJobs from "./HomepageJobs";
 
 const bearerKey = import.meta.env.VITE_BEARER_KEY;
 const API_URL = import.meta.env.VITE_API_URL;
@@ -103,7 +104,7 @@ const AllCategories = () => {
         </div>
 
         <div className="container">
-            <div className="popular_categories py-5">
+            <div className="popular_categories pt-5">
                 <h4 className='mb-3 text-center mb-4'>{t("AllCategories")}</h4>
                 <div className='row justify-content-center flex-wrap d-none'>
                     <div className="col-lg-2 col-md-3 col-sm-4 col-6 mb-4">
@@ -274,7 +275,7 @@ const AllCategories = () => {
                             </div>
                         ))}
 
-                        <div className="d-flex justify-content-center align-items-center mt-3 mb-3">
+                        <div className="d-flex justify-content-center align-items-center mt-3 ">
                         <button 
                           className="btn btn-sm btn-register mx-1" 
                           disabled={currentPage === 0}
@@ -306,10 +307,12 @@ const AllCategories = () => {
 
             </div>
 
-            <div className="category_side pb-4">
+            {/* <div className="category_side pb-4">
                 {bannerPlace === "category_side" && <HomeBanners />}
-                {/* {bannerPlace === "home_top" && <HomeBanners />} */}
-            </div>
+                {bannerPlace === "home_top" && <HomeBanners />}
+            </div> */}
+
+            <HomepageJobs />
 
             <div className="row align-items-center pt-0 py-5">
                 <div className="col-md-5">

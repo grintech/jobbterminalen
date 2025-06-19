@@ -93,7 +93,7 @@ const SearchPage = () => {
                           {/* </Link> */}
                           <div className="d-flex align-items-center">
                             <Link className="btn-light shadow me-2">
-                              <i className="fa-regular fa-bookmark"></i>
+                              <i className="fa-regular fa-heart"></i>
                             </Link>
                             <Link className="btn-light shadow me-2">
                               <i className="fa-solid fa-share"></i>

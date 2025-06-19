@@ -9,6 +9,10 @@ import { useAuthContext } from "../store/authContext";
 import { toast, ToastContainer } from "react-toastify";
 import Avatar from "react-avatar";
 
+import { Swiper, SwiperSlide } from "swiper/react";
+import {Autoplay } from "swiper/modules";
+
+
 const AllEmployers = () => {
 
   const { t } = useTranslation();
@@ -30,6 +34,7 @@ const AllEmployers = () => {
   const bearerKey = import.meta.env.VITE_BEARER_KEY; 
   const API_URL = import.meta.env.VITE_API_URL;
   const IMG_URL = import.meta.env.VITE_IMG_URL;
+  const EMP_URL = import.meta.env.VITE_EMP_URL;
   const { user } = useAuthContext();
     const userId = user ? user.id : null;
 
@@ -54,7 +59,7 @@ const AllEmployers = () => {
           if (company.latitude && company.longitude) {
             return getCityName(company.latitude, company.longitude);
           }
-          return "City not found";
+          return "N/A";
         });
 
         const cityNames = await Promise.all(cityPromises);
@@ -114,13 +119,13 @@ const AllEmployers = () => {
             }
           }
         }
-        return "City not found";
+        return "N/A";
       } else {
         throw new Error("Geocoding API error: " + data.status);
       }
     } catch (error) {
       console.error("Error fetching city name:", error);
-      return "City not found";
+      return "N/A";
     }
   }
 
@@ -214,159 +219,196 @@ const AllEmployers = () => {
         </div>
 
         <div className="container py-5">
-          <h3 className="mb-5">{t("CompanySmlHead1")}</h3>
-
-          {/* Loading and Error States */}
-          {loading ? (
-              <>
-              <div className="loading-screen d-flex flex-column justify-content-center align-items-center">
-                <div className="spinner-grow text-primary" role="status">
-                  <span className="visually-hidden">Loading...</span>
-                </div>
-               <p className='mt-2'>Fetching data...</p>
-              </div>
-            </>
-          ) : error ? (
-            <div className="text-center text-theme " >
-              <div className='text-center text-theme'>
-                <img loading='lazy' src="/images/no-data1.png" className='no_company' alt='' /> 
-                <h6>{ error === "Failed to fetch" ? (
-                <p className="text-center text-theme">Failed to fetch companies.Please try later!</p>
-                  ) : (
-                    <p className="text-center text-theme" >
-                      {error}
-                    </p>
-                  )}
-              </h6>
-                </div>
-              </div>
-          ) : (
-            <div className="row">
-              {companies.length === 0 ? (
-                <div className="text-center text-theme " >
-                <div className='text-center text-theme'>
-                  <img loading='lazy' src="/images/no-data1.png" className='no_company' alt='' /> 
-                  <h6>No companies found at the moment.Please try later.</h6>
-                  </div>
-                </div>
-              ) : (
-                companies.map((company) => (
-                  <div className="col-lg-3 col-md-4 col-sm-6 mb-5" key={company.id}>
-                    <div className="card company_list_card border-0 shadow h-100">
-                      <div className="card-body">
-                         <div className="text-end">
-                         <i 
-                          className={`fa-heart ${ likedCards[company.id] ? "fa-solid" : "fa-regular" }`}
-                          onClick={() => toggleLike(company.id)}
-                          style={{ cursor: "pointer", fontSize:"20px" }}
-                          title={
-                            likedCards[company.id] ? "Click to unsave" : "Click to save"
-                          }
-                         ></i>
-                          </div>
-                        <div className="logo_div me-3 mb-3 shadow ">
-                          {/* <Link  to={`/companies/${company.slug}`}>
-                            <img
-                              loading='lazy'
-                              src={`${IMG_URL}/${company.company_profile}`}
-                              alt={company.company_name}
-                            />
-                          </Link> */}
-
-                          <Link  to={`/companies/${company.slug}`}>
-                            {!company.company_profile ? (
-                              <Avatar
-                                name={company.company_name}
-                                size="58"
-                                round="8px"
-                                fgColor="#fff"
-                                textSizeRatio={2}
-                              />
-                            ) : ( <img loading='lazy' src={`${IMG_URL}/${company.company_profile}`}
-                                alt={company.company_name} />
-                            )}
-                          </Link>
-
-                        </div>
-                        <div className="pt-4 pb-3">
-                          <Link to={`/companies/${company.slug}`}>
-                            <h5>{company.company_name}</h5>
-                          </Link>
-                          <p className=" m-0">{company.company_tagline}</p>
-                        </div>
-                        <div className="d-flex justify-content-between align-items-center border-top pt-3">
-                          <div className="text-muted me-2">
-                            <i className="fa-solid fa-location-dot me-1 "></i>
-                            {cities[company.id] ? `${cities[company.id]}` : ""}
-                          </div>
-                          <Link to={`/companies/${company.slug}`}>
-                              <p className="text_blue text-center m-0">
-                                <span className="pe-1">{company.job_count === 0 ? "No" : company.job_count}</span>
-                                 Jobs</p>
-                          </Link>
-                        </div>
+          {/* <h3 className="mb-5">{t("CompanySmlHead1")}</h3> */}
+          <div className="row mt-4">
+            <div className="col-lg-9">
+                {/* Loading and Error States */}
+                {loading ? (
+                    <>
+                    <div className="loading-screen d-flex flex-column justify-content-center align-items-center">
+                      <div className="spinner-grow text-primary" role="status">
+                        <span className="visually-hidden">Loading...</span>
+                      </div>
+                    <p className='mt-2'>Fetching data...</p>
+                    </div>
+                  </>
+                ) : error ? (
+                  <div className="text-center text-theme " >
+                    <div className='text-center text-theme'>
+                      <img loading='lazy' src="/images/no-data1.png" className='no_company' alt='' /> 
+                      <h6>{ error === "Failed to fetch" ? (
+                      <p className="text-center text-theme">Failed to fetch companies.Please try later!</p>
+                        ) : (
+                          <p className="text-center text-theme" >
+                            {error}
+                          </p>
+                        )}
+                    </h6>
                       </div>
                     </div>
+                ) : (
+                  <div className="row">
+                    {companies.length === 0 ? (
+                      <div className="text-center text-theme " >
+                      <div className='text-center text-theme'>
+                        <img loading='lazy' src="/images/no-data1.png" className='no_company' alt='' /> 
+                        <h6>No companies found at the moment.Please try later.</h6>
+                      </div>
+                      </div>
+                    ) : (
+                      companies.map((company) => (
+                        <div className="col-lg-4 col-md-4 col-sm-6 mb-5" key={company.id}>
+                          <div className="card company_list_card border-0 shadow h-100">
+                           {company.is_featured == 1 && <div className="fea_tag">Featured</div>}
+                            <div className="card-body">
+                              <div className="text-end mt-3">
+                              <i 
+                                className={`fa-heart ${ likedCards[company.id] ? "fa-solid" : "fa-regular" }`}
+                                onClick={() => toggleLike(company.id)}
+                                style={{ cursor: "pointer", fontSize:"20px" }}
+                                title={
+                                  likedCards[company.id] ? "Click to unsave" : "Click to save"
+                                }
+                              ></i>
+                                </div>
+                              <div className="logo_div me-3 mb-3 shadow ">
+                                {/* <Link  to={`/companies/${company.slug}`}>
+                                  <img
+                                    loading='lazy'
+                                    src={`${IMG_URL}/${company.company_profile}`}
+                                    alt={company.company_name}
+                                  />
+                                </Link> */}
+
+                                <Link  to={`/companies/${company.slug}`}>
+                                  {!company.company_profile ? (
+                                    <Avatar
+                                      name={company.company_name}
+                                      size="58"
+                                      round="8px"
+                                      fgColor="#fff"
+                                      textSizeRatio={2}
+                                    />
+                                  ) : ( <img loading='lazy' src={`${IMG_URL}/${company.company_profile}`}
+                                      alt={company.company_name} />
+                                  )}
+                                </Link>
+
+                              </div>
+                              <div className=" pb-3">
+                                <Link to={`/companies/${company.slug}`}>
+                                  <h5>{company.company_name}</h5>
+                                </Link>
+                                <p className=" m-0 text-secondary">{company.company_tagline}</p>
+                              </div>
+                              
+                              <div className="d-flex justify-content-between align-items-baseline border-top pt-3">
+                                <div className="text-muted me-2">
+                                  <i className="fa-solid fa-location-dot me-1 "></i>
+                                  {cities[company.id] ? `${cities[company.id]}` : ""}
+                                </div>
+                                <Link to={`/companies/${company.slug}`}>
+                                    <p className="text_blue text-center m-0">
+                                      <span className="pe-1">{company.job_count === 0 ? "No" : company.job_count}</span>
+                                      Jobs</p>
+                                </Link>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ))
+                    )}
                   </div>
-                ))
-              )}
+                )}
+
+                {/* Pagination */}
+
+                {
+                  pagination.total_pages > 1 && (
+                  <div className="d-flex justify-content-center">
+                    <nav aria-label="Page navigation example" className="mt-3">
+                      <ul className="pagination">
+                        <li
+                          className={`page-item ${pagination.current_page === 1 ? "disabled" : ""}`}
+                        >
+                          <Link
+                            className="page-link"
+                            aria-label="Previous"
+                            onClick={() => paginate(pagination.current_page - 1)}
+                          >
+                            <span aria-hidden="true"><i className="fa-solid fa-arrow-left"></i></span>
+                          </Link>
+                        </li>
+                        {[...Array(pagination.total_pages)].map((_, index) => (
+                          <li
+                            key={index}
+                            className={`page-item ${
+                              pagination.current_page === index + 1 ? "active" : ""
+                            }`}
+                          >
+                            <Link
+                              className="page-link"
+                              onClick={() => paginate(index + 1)}
+                            >
+                              {index + 1}
+                            </Link>
+                          </li>
+                        ))}
+                        <li
+                          className={`page-item ${
+                            pagination.current_page === pagination.total_pages ? "disabled" : ""
+                          }`}
+                        >
+                          <Link
+                            className="page-link"
+                            aria-label="Next"
+                            onClick={() => paginate(pagination.current_page + 1)}
+                          >
+                            <span aria-hidden="true"><i className="fa-solid fa-arrow-right"></i></span>
+                          </Link>
+                        </li>
+                      </ul>
+                    </nav>
+                  </div>
+                  )
+                }
             </div>
-          )}
-
-          {/* Pagination */}
-
-          {
-            pagination.total_pages > 1 && (
-            <div className="d-flex justify-content-center">
-              <nav aria-label="Page navigation example" className="mt-3">
-                <ul className="pagination">
-                  <li
-                    className={`page-item ${pagination.current_page === 1 ? "disabled" : ""}`}
+            <div className="col-lg-3">
+              <div  className=" text-center ">
+                <div className="sponser_image d-flex flex-column align-items-center justify-content-center">
+                  <Swiper
+                    className="w-100"
+                    modules={[Autoplay]}
+                    autoplay={{ delay: 3000, disableOnInteraction: false }}
+                    loop={true}
+                    slidesPerView={1}
                   >
-                    <Link
-                      className="page-link"
-                      aria-label="Previous"
-                      onClick={() => paginate(pagination.current_page - 1)}
-                    >
-                      <span aria-hidden="true"><i className="fa-solid fa-arrow-left"></i></span>
-                    </Link>
-                  </li>
-                  {[...Array(pagination.total_pages)].map((_, index) => (
-                    <li
-                      key={index}
-                      className={`page-item ${
-                        pagination.current_page === index + 1 ? "active" : ""
-                      }`}
-                    >
-                      <Link
-                        className="page-link"
-                        onClick={() => paginate(index + 1)}
-                      >
-                        {index + 1}
-                      </Link>
-                    </li>
-                  ))}
-                  <li
-                    className={`page-item ${
-                      pagination.current_page === pagination.total_pages ? "disabled" : ""
-                    }`}
-                  >
-                    <Link
-                      className="page-link"
-                      aria-label="Next"
-                      onClick={() => paginate(pagination.current_page + 1)}
-                    >
-                      <span aria-hidden="true"><i className="fa-solid fa-arrow-right"></i></span>
-                    </Link>
-                  </li>
-                </ul>
-              </nav>
+                    <SwiperSlide>
+                      <div className="inside-content">
+                        <h6>{t("SlideText1")}</h6>
+                        <Link target="_blank" to={EMP_URL} className="btn btn-register mt-3">{t("SlideBtn1")}</Link>
+                      </div>
+                    </SwiperSlide>
+
+                    <SwiperSlide>
+                      <div className="inside-content">
+                        <h6>{t("SlideText2")}!</h6>
+                        <Link target="_blank" to={EMP_URL} className="btn btn-register mt-3">{t("SlideBtn2")}</Link>
+                      </div>
+                    </SwiperSlide>
+
+                    <SwiperSlide>
+                      <div className="inside-content">
+                        <h6>{t("SlideText3")}</h6>
+                        <Link target="_blank" to={EMP_URL} className="btn btn-register mt-3">{t("SlideBtn3")}</Link>
+                      </div>
+                    </SwiperSlide>
+
+                  </Swiper>
+                </div>
+              </div>
             </div>
-            )
-
-          }
-
-
+          </div>        
         </div>
 
         <Footer />

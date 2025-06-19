@@ -115,6 +115,7 @@ const SavedCompanies = () => {
                                     {savedCompanies.map((company) => (
                                         <div className="col-lg-4 col-md-6 col-sm-6 mb-4" key={company.id}>
                                           <div className="card company_list_card border-0 shadow h-100">
+                                            {company.is_featured == 1 && <div className="fea_tag">Featured</div>}
                                             <div className="card-body">
                                               <div className="d-flex justify-content-between">
                                                 <div className="logo_div me-3 mb-3 shadow ">
@@ -142,14 +143,14 @@ const SavedCompanies = () => {
 
                                                   <div className="d-flex align-items-baseline">
                                                   <button
-                                                    className={`btn-light border-0 shadow me-2 `}
+                                                    className={`save_post me-2 `}
                                                     onClick={() => toggleSavedCompanies(company.company_id)}
                                                     title={
                                                       isCompanySaved(company.company_id) ? "Click to unsave" : "Click to save"
                                                     }
                                                   >
                                                     <i
-                                                      className={`fa-bookmark ${
+                                                      className={`fa-heart ${
                                                         isCompanySaved(company.company_id) ? "fa-solid" : "fa-regular"
                                                       }`}
                                                     ></i>

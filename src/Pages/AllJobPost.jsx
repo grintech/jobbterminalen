@@ -208,7 +208,7 @@ const AllJobPost = () => {
         <HeroBannerJobs />
 
         <div className="container d-flex flex-column py-5 all_job_posts">
-          <h4 className="mb-4">All Jobs</h4>
+          {/* <h4 className="mb-4">All Jobs</h4> */}
           <div className="row pb-5">
             <div className="col-lg-3 col-md-4 mb-4 mb-md-0">
               <Filter />
@@ -259,9 +259,9 @@ const AllJobPost = () => {
                               </div>
                             </Link>
                             <div className="d-flex align-items-center">
-                              <Link className="btn-light shadow me-2">
+                              <Link className="save_post me-2">
                                 <i 
-                                className={`fa-bookmark  ${
+                                className={`fa-heart  ${
                                   isJobSaved(job.id) ? "fa-solid" : "fa-regular"
                                 }`}
                                 onClick={() => toggleSavedJob(job.id)}

@@ -169,7 +169,8 @@ const Contact = () => {
                 fileInputRef.current.value = "";
             }
             
-            setTimeout(() => setAlert({ show: false, message: "", type: "" }), 3000);
+            // setTimeout(() => setAlert({ show: false, message: "", type: "" }), 3000);
+            navigate("/thank-you", { state: { from: "contact" } });
 
         } catch (error) {
             const errorMessage = error.response?.data?.message || "There was an error sending your message.";
@@ -221,7 +222,7 @@ const Contact = () => {
                                                     <input type="email" className='form-control' placeholder={t("Email_placeholder")} name="email" value={formData.email} onChange={handleChange} required />
                                                 </div>
                                                 <div className="col-12 mb-3">
-                                                    <label>{t("Phone")}<span>*</span></label>
+                                                    <label>{t("Phone")} <span>*</span></label>
                                                     <PhoneInput
                                                         country={'se'}
                                                         value={phone}
@@ -238,7 +239,7 @@ const Contact = () => {
                                                     />
                                                 </div>
                                                 <div className="col-12 mb-3">
-                                                    <label>{t("Description")}<span>*</span></label>
+                                                    <label>{t("Description")} <span>*</span></label>
                                                     <textarea className='form-control' placeholder={t("Desc_placeholder")} name="description" value={formData.description} onChange={handleChange} rows={4} required></textarea>
                                                 </div>
                                                 <div className="col-12 mb-3 d-flex flex-wrap">
@@ -286,7 +287,7 @@ const Contact = () => {
                                                 </div>
                                                 <div className="col-12 text-end mt-3">
                                                     <button type='submit' style={{ height: "50px" }} className="btn btn-register rounded-2 fs-6 w-100" disabled={loading}>
-                                                        {loading ? t("Submitting") : t("Submit")}
+                                                     {loading ? t("Submitting") : t("Submit")}
                                                     </button>
                                                 </div>
                                             </div>

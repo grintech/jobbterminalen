@@ -253,7 +253,8 @@ const CategoryList = () => {
 
               <div className="col-lg-10 mx-auto">
                 <h4 className="text-capitalize mb-4">
-                  {slug.replace(/-/g, ' ')} Jobs 
+                  {slug.replace(/-/g, ' ')} 
+                  {/* {slug.replace(/-/g, ' ')} Jobs  */}
                   {/* ({categoryData.length}) */}
                   </h4>
                 <div className="row">
@@ -305,11 +306,11 @@ const CategoryList = () => {
                               </Link>
                               <div className="d-flex align-items-center">
                                 <button
-                                  className={`btn-light border-0 shadow me-2 `}
+                                  className={`save_post me-2 `}
                                   onClick={() => toggleSavedJob(job.id)}
                                 >
                                   <i
-                                    className={`fa-bookmark  ${
+                                    className={`fa-heart  ${
                                       isJobSaved(job.id) ? "fa-solid" : "fa-regular"
                                     }`}
                                   ></i>

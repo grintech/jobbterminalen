@@ -14,8 +14,11 @@ import Lightbox from "yet-another-react-lightbox";
 import "yet-another-react-lightbox/styles.css";
 import "yet-another-react-lightbox/plugins/thumbnails.css";
 import Avatar from 'react-avatar';
+import { useTranslation } from "react-i18next";
 
 const CompanySingle = () => {
+
+  const {t} = useTranslation();
   const [companyData, setCompanyData] = useState(null);
   const [jobs, setJobs] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -212,14 +215,16 @@ const CompanySingle = () => {
 
  
 
-  if (!companyData || !companyData.company_gallery) {
-     return <div className="loading-screen d-flex flex-column justify-content-center align-items-center vh-100">
-              <div className="spinner-grow text-primary" role="status">
-                <span className="visually-hidden">Loading...</span>
-              </div>
-              <p className='mt-2'>Please wait...</p>
-            </div>
-    // <div >Loading...</div>;
+  // if (!companyData || !companyData.company_gallery) {
+  if (!companyData ) {
+     return (
+     <div className="loading-screen d-flex flex-column justify-content-center align-items-center vh-100">
+        <div className="spinner-grow text-primary" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </div>
+        <p className='mt-2'>Please wait...</p>
+      </div>
+     ) 
   }
 
   const galleryImages = companyData.company_gallery
@@ -294,31 +299,41 @@ const CompanySingle = () => {
                       <div className="d-flex align-items-baseline">
                         <i className="fa-solid fa-location-dot me-1"></i>
                         {/* {city ? `${city} ` : ""} */}
-                        <span className="company_address">
+                        <span className="company_address text-capitalize">
                           {companyData.company_address || 'Location not provided'}
                         </span>
                       </div>
                     </div>
                   </div>
                   <div className="d-flex py-2">
-                    <button className="btn-register mx-2 fs-6">Follow</button>
+                    {/* <button className="btn-register mx-2 fs-6">Follow</button> */}
                     <button className="btn-login mx-2 fs-6" onClick={handleScrollToVacancies}>
-                      See Jobs
+                      {t("SeeJobs")}
                     </button>
                   </div>
                 </div>
               </div>
             </div>
-            {/* <div className="companies_top container pt-5">
-              {bannerPlace === "companies_top" && <HomeBanners />}
-            </div> */}
+
+             {/* {bannerPlace && bannerPlace.placement === "home_top" && (
+                <div className="col-lg-12 col-md-12 mt-4  banner_sideImage">
+                  <Link to={bannerPlace.redirect_url} target="_blank" rel="noopener noreferrer">
+                    <img
+                      src={`${IMG_URL}/${bannerPlace.image_url}`}
+                      className="img-fluid w-100 rounded-4"
+                      alt={bannerPlace.title}
+                    />
+                  </Link>
+                </div>
+              )} */}
+
             <div id="company_details" className="company_details py-5">
               <div className="col-md-12 mx-auto">
                 <div className="row">
                 <div className="col-lg-8 mb-5 mb-lg-0">
                   <div className="card border-0 shadow">
                     <div className="card-body py-4 px-4">
-                      <h4 className="mb-3">About Company :</h4>
+                      <h4 className="mb-3">{t("AboutCompany")}</h4>
                       <div
                         id="about_company"
                         dangerouslySetInnerHTML={{ __html: companyData.company_about }}
@@ -326,7 +341,7 @@ const CompanySingle = () => {
 
                       {galleryImages.length > 0 && (
                         <>
-                          <h6 className="mt-4">View Photos :</h6>
+                          <h6 className="mt-4">{t("ViewPhotos")}</h6>
                           <div className="row company_gallery_images">
                             {galleryImages.map((image, index) => (
                               <div className="col-6 col-sm-4 col-xl-3 mb-3 " key={index}>
@@ -370,21 +385,21 @@ const CompanySingle = () => {
                           </iframe>
                           <div className="mt-3">
                             <div className="d-flex align-items-baseline justify-content-between mt-2">
-                              <span className="text-muted fw-medium">Industry:</span>
+                              <span className="text-muted fw-medium">{t("Industry")}</span>
                               <span className='text-end text-capitalize'>{companyData.company_industry.replace(/-/g, ' ')}</span>
                             </div>
                             <div className="d-flex align-items-baseline justify-content-between mt-2">
-                              <span className="text-muted fw-medium">Tagline:</span>
+                              <span className="text-muted fw-medium">{t("Tagline")}</span>
                               <span className='text-end text-capitalize'>{companyData.company_tagline}</span>
                             </div>
                             <div className="d-flex align-items-baseline justify-content-between mt-2">
-                              <span className="text-muted fw-medium">Website:</span>
+                              <span className="text-muted fw-medium">{t("Website")}</span>
                               <Link className='text-end' style={{ wordBreak: "break-all" }} to={companyData.company_website} target="_blank">
                                 {companyData.company_website}
                               </Link>
                             </div>
                             <div className="d-flex align-items-baseline justify-content-between mt-2">
-                              <span className="text-muted fw-medium">Location:</span>
+                              <span className="text-muted fw-medium">{t("Location")}</span>
                               <span className='text-end text-capitalize'>{companyData.company_address}</span>
                             </div>
                           </div>
@@ -394,28 +409,25 @@ const CompanySingle = () => {
                        {jobs.length > 0 && (
                         <div id="vacancies_section" ref={vacanciesRef}
                           className="row mt-4">
-                            <h5 className="mb-3">Vacancies :</h5>
+                            <h5 className="mb-3">{t("Vacancies")}</h5>
                               <div className="col-12 mb-4" >
                                 <div className="card company_list_card border-0 shadow">
                                   <div className="card-body">
-                            {jobs.slice(0,4).map((job) => (
-                                    <div key={job.id}>
-                                    <Link className="d-flex justify-content-between " to={`/jobs/${job.slug}`}>
-                                      <h6 className="mb-2 " dangerouslySetInnerHTML={{ __html: job.title }}></h6>
-                                      <i className="fa-solid fa-chevron-right"></i>
-                                    </Link>
-
-                                    </div>
-                                  
-
-                                ))}
+                                    {jobs.slice(0,4).map((job) => (
+                                      <div key={job.id}>
+                                        <Link className="d-flex justify-content-between " to={`/jobs/${job.slug}`}>
+                                          <h6 className="mb-2 text-capitalize" dangerouslySetInnerHTML={{ __html: job.title }}></h6>
+                                          <i className="fa-solid fa-chevron-right"></i>
+                                        </Link>
+                                      </div>
+                                    ))}
                                   </div>
                                 </div>
                               </div>
                           </div>
                           ) }
                       
-                      {/* {bannerPlace && bannerPlace.placement === "category_side" && (
+                      {/* {bannerPlace && bannerPlace.placement === "home_top" && (
                           <div className="col-lg-12 col-md-12 mt-4  banner_sideImage">
                             <Link to={bannerPlace.redirect_url} target="_blank" rel="noopener noreferrer">
                               <img
@@ -423,7 +435,8 @@ const CompanySingle = () => {
                                 className="img-fluid w-100 rounded-4"
                                 alt={bannerPlace.title}
                               />
-                            </Link>
+                            </Link>    
+
                           </div>
                       )} */}
 

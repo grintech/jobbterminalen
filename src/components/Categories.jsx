@@ -30,7 +30,8 @@ const Categories = () => {
         // const response = await axios.get(getApiUrl(`${API_URL}/get_main_categories.php`), {
         //   headers: { Authorization: `Bearer ${bearerKey}` },
         // });
-        const response = await axios.get(`${API_URL}/get_main_categories.php`, {
+        // const response = await axios.get(`${API_URL}/get_main_categories.php`, {
+        const response = await axios.get(`${API_URL}/top-category.php`, {
           headers: { Authorization: `Bearer ${bearerKey}` },
         });
   
@@ -80,7 +81,7 @@ const Categories = () => {
                       <div className="card h-100">
                         <div className="card-body text-center">                      
                           <img src={`${IMG_URL}/${category.image}`} alt={category.name} />
-                          <h5 className="mt-3 mb-0">{category.name}</h5>
+                          <h5 className="mt-3 mb-0 text-capitalize">{category.name}</h5>
                         </div>
                       </div>
                     </Link>

@@ -5130,11 +5130,14 @@ const MyAccount = () => {
                           <select
                             className="form-select"
                             value={userData.gender || ""}
-                            onChange={(e) =>
+                            onChange={(e) => {
+                               const selectedGender = e.target.value;
+                               console.log("Selected Gender:", selectedGender);
                               setUserData({
                                 ...userData,
                                 gender: e.target.value,
                               })
+                            }
                             }
                           >
                             <option value="">Select gender</option>

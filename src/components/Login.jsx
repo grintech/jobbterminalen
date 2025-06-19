@@ -32,11 +32,10 @@ const Login = () => {
 
  
 
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-     const selectedLang = getGoogleTranslateLang(); 
+    const selectedLang = getGoogleTranslateLang(); 
 
     const data = new FormData();
     data.append("email", formData.email);

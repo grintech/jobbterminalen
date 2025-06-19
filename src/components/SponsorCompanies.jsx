@@ -146,9 +146,13 @@ const SponsorCompanies = () => {
   };
 
   // Filter companies based on the active tab (industry)
+  // const filteredCompanies = activeTab === 'All'
+  //   ? companies
+  //   : companies.filter(company => company.company_industry === activeTab);
+
   const filteredCompanies = activeTab === 'All'
-    ? companies
-    : companies.filter(company => company.company_industry === activeTab);
+  ? companies.slice(0, 8) // Only show 8 when "All" is active
+  : companies.filter(company => company.company_industry === activeTab);
 
   return (
     <>
@@ -200,6 +204,7 @@ const SponsorCompanies = () => {
               {filteredCompanies && filteredCompanies.map((company) => (
                 <div className="col-lg-3 col-md-6 col-sm-6 mb-4" key={company.id}>
                   <div className="card h-100">
+                    {company.is_featured == 1 && <div className="fea_tag">Featured</div>}
                     <div className="card-body text-center">
                       {/* <img
                       src={company.company_profile ? `${IMG_URL}/${company.company_profile}` : '/images/company3.gif'}
@@ -263,7 +268,7 @@ const SponsorCompanies = () => {
 
       <ToastContainer
         position="top-right"
-        // autoClose={3000}
+        autoClose={3000}
         hideProgressBar
         newestOnTop={false}
         closeOnClick

@@ -8,9 +8,11 @@ import { useAuthContext } from "../store/authContext"; // Assuming you have auth
 import HeroBanner from "../components/HeroBanner";
 import Filter from "../components/Filter";
 import Avatar from "react-avatar";
+import { useTranslation } from "react-i18next";
 
 const SearchJobs = () => {
   const { search } = useLocation(); // Get the search string from the URL
+  const { t } = useTranslation();
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -198,7 +200,7 @@ const SearchJobs = () => {
               <Filter />
             </div> */}
             <div className="col-lg-11 mx-auto">
-            <h1 className="job_head">Job Search Results</h1>
+            <h1 className="job_head">{t("JobResults")}</h1>
               {loading ? (
               <div className="loading-screen d-flex justify-content-center align-items-center flex-column ">
                 <div className="spinner-grow text-primary" role="status">
@@ -246,11 +248,11 @@ const SearchJobs = () => {
                               </div>
                               <div className="d-flex align-items-center">
                                 <button
-                                  className={`btn-light border-0 shadow me-2 `}
+                                  className={`save_post me-2 `}
                                   onClick={() => toggleSavedJob(job.job_id)}
                                 >
                                   <i
-                                    className={`fa-bookmark ${isJobSaved(job.job_id) ? "fa-solid" : "fa-regular"}`}
+                                    className={`fa-heart ${isJobSaved(job.job_id) ? "fa-solid" : "fa-regular"}`}
                                   ></i>
                                 </button>
                                 {/* <Link className="btn-light shadow me-2">

@@ -24,13 +24,13 @@ const JobSidebar = () => {
             <li><i className="fa-regular fa-user me-2"></i>{t("Profile")}</li>
           </NavLink>
           <NavLink to='/saved-jobs' className={({ isActive }) => (isActive ? 'active' : '')}>
-            <li><i className="fa-solid fa-bookmark me-2"></i>{t("SavedJobs")}</li>
+            <li><i className="fa-solid fa-heart me-2"></i>{t("SavedJobs")}</li>
           </NavLink>
           <NavLink to='/applied-jobs' className={({ isActive }) => (isActive ? 'active' : '')}>
             <li><i className="fa-solid fa-book-open-reader me-2"></i>{t("AppliedJobs")}</li>
           </NavLink>
           <NavLink to='/saved-companies' className={({ isActive }) => (isActive ? 'active' : '')}>
-            <li><i className="fa-solid fa-bookmark me-2"></i>{t("SavedComp")}</li>
+            <li><i className="fa-solid fa-heart me-2"></i>{t("SavedComp")}</li>
           </NavLink>
           <li
             style={{ cursor: 'pointer' }}

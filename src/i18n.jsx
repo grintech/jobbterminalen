@@ -39,6 +39,7 @@ const resources = {
       "JobSeeker": "Job Seeker",
       "Recruiter": "Recruiter",
       "Full_Name": "Full Name",
+      "Name": "Name",
       "Designation": "Designation",
       "Name_placeholder": "Enter your name",
       "Design_placeholder": "Enter your designation",
@@ -47,7 +48,7 @@ const resources = {
       "Description": "Description",
       "Desc_placeholder": "Your Message",
       "Select": "Select",
-      "AttachFile": "Attach File",
+      "AttachFile": "Attach File (optional)",
       "BySigning":"By signing up, you agree to our",
 
       /* --Otp Page --- */
@@ -84,14 +85,17 @@ const resources = {
       "PartTimeJobs" : "Part Time Jobs",
       "FullTimeJobs" : "Full Time Jobs",
 
+      "LatestJobs": "Latest Jobs",
+      "ViewAllJobs": "View all jobs",
+
       /* --- About Page--- */
       "AboutTitle" : "About Us",
       "AboutHead" : "Millions of jobs.",
       "AboutHead1" : "Find the one that's right for you.",
       "AboutText" : "Embark on your career journey with our extensive job listings. Whether you're seeking your first job, a career change, or advancement in your current field, we connect you with opportunities that align with your aspirations and skills. Explore diverse industries and find the perfect fit for your professional growth.",
-      "Aboutlist1" : "Digital Marketing Solutions for Tomorrow",
-      "Aboutlist2" : "Our Talented & Experienced Marketing Agency",
-      "Aboutlist3" : "Create your own skin to match your brand",
+      "Aboutlist1" : "Smart Solutions for the Future of Work",
+      "Aboutlist2" : "Driven by Talent, Powered by Experience",
+      "Aboutlist3" : "Customize Your Job Hunt",
       "AboutHead2" : "Here's why you'll love our platform",
       "AboutText2" : "Search all the open positions on the web. Get your own personalized salary estimate. Read reviews on over 30000+ companies worldwide.",
       "AboutSmallHead1" : "24/7 Support",
@@ -126,6 +130,22 @@ const resources = {
       "RecentCompanies" : "Recently Added Companies",
       "CompanySmlHead1" : "Here is the list of all the companies!",
       "CompanySmlHead2" : "Here is the list of all featured companies!",
+      "SlideText1": "Want to make your company sponsored?",
+      "SlideText2": "Reach more candidates with sponsorship!",
+      "SlideText3": "Get chance to show your ad on the website!",
+      "SlideBtn1" : "Click Here",
+      "SlideBtn2" : "Become Sponsor",
+      "SlideBtn3" : "Join Now",
+
+      /* --- Companies Single ----*/
+      "AboutCompany" : "About Company :",
+      "ViewPhotos" : "View Photos :",
+      "SeeJobs" : "See Jobs",
+      "Industry" : "Industry:",
+      "Tagline" : "Tagline:",
+      "Website" : "Website:",
+      "Location" : "Location:",
+      "Vacancies" : "Vacancies:",
 
       /*  --- Footer --- */
       "ConnectWithUs" : "Connect With Us",
@@ -483,6 +503,59 @@ const resources = {
       "CategorySmlText3" : "Access expert advice, resources, and career development tools.",
       "CategoryFootText" : "Your future starts here — let us help you reach it.",
 
+      /* ---- Job Detail Page ----*/
+      "Apply" : "Apply",
+      "Experience" : "Experience :",
+      "Posted" : "Posted :", 
+      "Save" : "Save",
+      "Saved" : "Saved",
+      "Share" : "Share",
+      "JobDescription" : "Job Description :",
+      "ReadMore" : "Read more",
+      "ReadLess" : "Read less",
+      "Skills" : "Skills",
+      "Role" : "Role :",
+      "IndustryType" : "Industry Type :",
+      "EmploymentType" : "Employment Type :",
+      "ContactDetails" : "Contact Details :",
+      "ThanksRegards" : "Thanks & Regards,",
+      "SimilarJobs" : "Similar Jobs",
+      "NotSpecified" : "Not Specified",
+
+      /*--- Job Search page ---*/
+      "JobResults" : "Job Search Results",
+
+
+      /*--- Apply Job page ---*/
+      "JobText" : "Please complete the form below to apply for a position with us.",
+      "Gender" : "Gender",
+      "SelectGender" : "Select Gender",
+      "Male" : "Male",
+      "Female" : "Female",
+      "Transgender" : "Transgender",
+      "DOB" : "Date of Birth",
+      "EmailAddress" : "Email Address",
+      "PhoneNumber" : "Phone Number",
+      "LinkedInProfile" : "LinkedIn Profile URL (optional)",
+      "CoverLetter" : "Cover Letter (optional)",
+      "CoverLetterPlaceholder" : "Write your cover letter here...",
+      "WordCount" : "Word Count :",
+      "Resume" : "Resume",
+      "UploadNewResume" : "Upload new resume",
+      "ChooseFile" : "Choose File to Upload",
+      "SelectedFile" : "Selected File:",
+      "SupportedFormats" : "Supported format pdf only, upto 2 MB",
+      "UploadCertificate" : "Upload Certificate (optional)",
+      "UploadCertificatePlace" : "Upload Certificate",
+      "SelectedCertificates" : "Selected Certificates :",
+      "Selected" : "Selected",
+
+
+      /*-----Thank you page -----*/
+      "ThankYou" : "Thank You!",
+      "SuccessMessage" : "Your form has been successfully submitted.",
+      "Redirecting" : "Redirecting you shortly...",
+
 
       /*-------- Jobseeker Dashboard ---- */
 
@@ -545,6 +618,7 @@ const resources = {
       "JobSeeker": "Jobbsökande",
       "Recruiter": "Rekryterare",
       "Full_Name": "Fullständigt namn",
+      "Name": "Namn",
       "Designation": "Beteckning",
       "Name_placeholder": "Ange ditt namn",
       "Design_placeholder": "Ange din beteckning",
@@ -553,7 +627,7 @@ const resources = {
       "Description": "Beskrivning",
       "Desc_placeholder": "Ditt meddelande",
       "Select": "Välj",
-      "AttachFile": "Bifoga fil",
+      "AttachFile": "Bifoga fil (valfritt)",
       "BySigning" : "Genom att registrera dig samtycker du till vår",
 
        /* --Otp Page --- */
@@ -590,14 +664,17 @@ const resources = {
      "PartTimeJobs" : "Deltidsjobb",
       "FullTimeJobs" : "Heltidsjobb",
 
+      "LatestJobs": "Senaste jobb",
+      "ViewAllJobs": "Visa alla jobb",
+
       /* --- About Page--- */
       "AboutTitle" : "Om oss",
       "AboutHead" : "Miljoner jobb.",
       "AboutHead1" : "Hitta den som är rätt för dig.",
       "AboutText" : "Påbörja din karriärresa med våra omfattande jobbannonser. Oavsett om du söker ditt första jobb, en karriärförändring eller avancemang inom ditt nuvarande område, kopplar vi ihop dig med möjligheter som stämmer överens med dina ambitioner och färdigheter. Utforska olika branscher och hitta det som passar perfekt för din professionella utveckling.",
-      "Aboutlist1" : "Digitala marknadsföringslösningar för morgondagen",
-      "Aboutlist2" : "Vår begåvade och erfarna marknadsföringsbyrå",
-      "Aboutlist3" : "Skapa din egen hud för att matcha ditt varumärke",
+      "Aboutlist1" : "Smarta lösningar för framtidens arbete",
+      "Aboutlist2" : "Driven av talang, stärkt av erfarenhet",
+      "Aboutlist3" : "Anpassa din jobbsökning",
       "AboutHead2" : "Här är varför du kommer att älska vår plattform",
       "AboutText2" : "Sök alla öppna positioner på webben. Få din egen personliga löneuppskattning. Läs recensioner om över 30000+ företag världen över.",
       "AboutSmallHead1" : "24/7 Support",
@@ -632,6 +709,22 @@ const resources = {
       "RecentCompanies" : "Nyligen tillagda företag",
       "CompanySmlHead1" : "Här är listan över alla företag!",
       "CompanySmlHead2" : "Här är listan över alla utvalda företag!",
+      "SlideText1": "Vill du att ditt företag ska sponsras?",
+      "SlideText2": "Nå fler kandidater med sponsring!",
+      "SlideText3": "Få chansen att visa din annons på webbplatsen!",
+      "SlideBtn1" : "Klicka här",
+      "SlideBtn2" : "Bli sponsor",
+      "SlideBtn3" : "Gå med nu",
+
+       /* --- Companies Single ----*/
+      "AboutCompany" : "Om företaget:",
+      "ViewPhotos" : "Se foton :",
+      "SeeJobs" : "Se jobb",
+      "Industry" : "Bransch:",
+      "Tagline" : "Slogan:",
+      "Website" : "Webbplats:",
+      "Location" : "Plats:",
+      "Vacancies" : "Lediga tjänster:",
 
       /*  --- Footer --- */
       "ConnectWithUs" : "Anslut med oss",
@@ -979,6 +1072,57 @@ const resources = {
         "CategorySmlText2" : "Skapa en profil som sticker ut och låt arbetsgivarna komma till dig.",
         "CategorySmlText3" : "Få tillgång till expertråd, resurser och verktyg för karriärutveckling.",
         "CategoryFootText" : "Din framtid börjar här - låt oss hjälpa dig att nå den.",
+
+        /* ---- Job Detail Page ----*/
+        "Apply" : "Ansök",
+        "Experience" : "Erfarenhet :",
+        "Posted" : "Postad :",
+        "Save" : "Spara",
+        "Saved" : "Sparad",
+        "Share" : "Dela",
+        "JobDescription" : "Jobbbeskrivning :",
+        "ReadMore" : "Läs mer",
+        "ReadLess" : "Läs mindre",
+        "Skills" : "Färdigheter",
+        "Role" : "Roll :",
+        "IndustryType" : "Industrityp :",
+        "EmploymentType" : "Anställningstyp :",
+        "ContactDetails" : "Kontaktuppgifter :",
+        "ThanksRegards" : "Med vänliga hälsningar,",
+        "SimilarJobs" : "Liknande jobb",
+        "NotSpecified" : "Not Specified",
+
+        /*--- Job Search page ---*/
+       "JobResults" : "Resultat för jobbsökning",
+
+       /*--- Apply Job page ---*/
+        "JobText" : "Vänligen fyll i formuläret nedan för att ansöka om en tjänst hos oss.",
+        "Gender" : "Kön",
+        "SelectGender" : "Välj kön",
+        "Male" : "Man",
+        "Female" : "Kvinna",
+        "Transgender" : "Transgender",
+        "DOB" : "Födelsedatum",
+        "EmailAddress" : "E-postadress",
+        "PhoneNumber" : "Telefonnummer",
+        "LinkedInProfile" : "LinkedIn-profil (valfritt)",
+        "CoverLetter" : "Följebrev (valfritt)",
+        "CoverLetterPlaceholder" : "Skriv ditt följebrev här...",
+        "WordCount" : "Ordantal :",
+        "Resume" : "CV",
+        "UploadNewResume" : "Ladda upp nytt CV",
+        "ChooseFile" : "Välj fil att ladda upp",
+        "SelectedFile" : "Vald fil:",
+        "SupportedFormats" : "Endast PDF-format stöds, upp till 2 MB",
+        "UploadCertificate" : "Ladda upp certifikat (valfritt)",
+        "UploadCertificatePlace" : "Ladda upp certifikat",
+        "SelectedCertificates" : "Valda certifikat :",
+        "Selected" : "Vald",
+
+        /*-----Thank you page -----*/
+        "ThankYou" : "Tack!",
+        "SuccessMessage" : "Din blankett har skickats in.",
+        "Redirecting" : "Omdirigerar dig snart...",
 
 
       /*-------- Jobseeker Dashboard ---- */

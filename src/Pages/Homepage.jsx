@@ -12,14 +12,25 @@ import axios from "axios";
 import "./homepage.css";
 import { useTranslation } from "react-i18next";
 import { Helmet } from "react-helmet-async";
+import HomepageJobs from "../components/HomepageJobs";
 
 const Homepage = () => {
   const { t } = useTranslation();
   const [homeBannerPlace, setHomeBannerPlace] = useState("");
   const bearerKey = import.meta.env.VITE_BEARER_KEY;
   const API_URL = import.meta.env.VITE_API_URL;
+  const IMG_URL = import.meta.env.VITE_IMG_URL;
+
+  const [bannerPlace, setBannerPlace] = useState("");
 
   useEffect(() => {
+
+     // Load cached data from localStorage first (if available)
+    const storedBanner = localStorage.getItem('savedBanner');
+     if (storedBanner) {
+      setBannerPlace(JSON.parse(storedBanner));
+    }
+
     const fetchBannerPlace = async () => {
       try {
         const response = await axios.get(`${API_URL}/banner-ads.php`, {
@@ -29,33 +40,43 @@ const Homepage = () => {
           },
         });
 
-        const rawResponse = response.data;
-        const splitResponse = rawResponse
-          .split("}{")
-          .map((item, index, array) => {
-            if (index === 0) return item + "}";
-            if (index === array.length - 1) return "{" + item;
-            return "{" + item + "}";
-          });
-
-        const parsedData = splitResponse.map((item) => JSON.parse(item));
-
-        const formattedArray = parsedData.map((item) => {
-          return {
-            type: item.type,
-            message: item.message,
-            data: {
-              id: item.data.id,
-              title: item.data.title,
-              placement: item.data.placement,
-            },
-          };
-        });
-
-        if (formattedArray.length > 0) {
-          setHomeBannerPlace(formattedArray[0].data.placement);
-          // console.log('Banner Placement:', formattedArray[0].data.placement);
+         if (response.data.type === 'success' ) {
+          setBannerPlace(response.data.data);      
+          // Saving data to localStorage
+          localStorage.setItem('savedBanner', JSON.stringify(response.data.data));
+        } else {
+          console.log('Unexpected API response');
         }
+
+        
+
+        // const rawResponse = response.data;
+        // const splitResponse = rawResponse
+        //   .split("}{")
+        //   .map((item, index, array) => {
+        //     if (index === 0) return item + "}";
+        //     if (index === array.length - 1) return "{" + item;
+        //     return "{" + item + "}";
+        //   });
+
+        // const parsedData = splitResponse.map((item) => JSON.parse(item));
+
+        // const formattedArray = parsedData.map((item) => {
+        //   return {
+        //     type: item.type,
+        //     message: item.message,
+        //     data: {
+        //       id: item.data.id,
+        //       title: item.data.title,
+        //       placement: item.data.placement,
+        //     },
+        //   };
+        // });
+
+        // if (formattedArray.length > 0) {
+        //   setHomeBannerPlace(formattedArray[0].data.placement);
+        //   // console.log('Banner Placement:', formattedArray[0].data.placement);
+        // }
       } catch (error) {
         console.error("Error fetching HomeBanners data:", error);
       }
@@ -79,95 +100,27 @@ const Homepage = () => {
       <Navbar />
       <div>
         <HeroBanner />
-        {homeBannerPlace === "home_top" && <HomeBanners />}
+        {/* {homeBannerPlace === "home_top" && <HomeBanners />} */}
+        
       </div>
 
-      {/* <div className="home_job_types py-5">
-        <div className="container">
-          <div className="row justify-content-center">
-            <div className="inside_card mb-4">
-              <Link to='/work-type'>
-                <div className="card">
-                  <div className="card-body text-center d-flex flex-column align-items-center justify-content-center">
-                    <i className="fa-solid fa-diagram-project"></i>
-                    <h5 className='text-center mt-2 mb-0'>Project Basis</h5>
-                  </div>
-                </div>
+      <div className="container">
+          {bannerPlace && bannerPlace.placement === "home_top" && (
+            <div className="col-lg-12 col-md-12 mt-5  banner_sideImage">
+              <Link to={bannerPlace.redirect_url} target="_blank" rel="noopener noreferrer">
+                <img
+                  src={`${IMG_URL}/${bannerPlace.image_url}`}
+                  className="img-fluid w-100 rounded-4"
+                  alt={bannerPlace.title}
+                />
               </Link>
             </div>
-            <div className="inside_card mb-4">
-              <Link>
-                <div className="card">
-                  <div className="card-body text-center d-flex flex-column align-items-center justify-content-center">
-                    <i className="fa-solid fa-home"></i>
-                    <h5 className="text-center mt-2 mb-0">{t("Remote")}</h5>
-                  </div>
-                </div>
-              </Link>
-            </div>
-            <div className="inside_card mb-4">
-              <Link>
-                <div className="card">
-                  <div className="card-body text-center d-flex flex-column align-items-center justify-content-center">
-                    <i className="fa-solid fa-building"></i>
-                    <h5 className="text-center mt-2 mb-0">
-                      {t("WorkFromOffice")}
-                    </h5>
-                  </div>
-                </div>
-              </Link>
-            </div>
-            <div className="inside_card mb-4">
-              <Link>
-                <div className="card">
-                  <div className="card-body text-center d-flex flex-column align-items-center justify-content-center">
-                    <i className="fa-solid fa-briefcase"></i>
-                    <h5 className="text-center mt-2 mb-0">{t("Hybrid")}</h5>
-                  </div>
-                </div>
-              </Link>
-            </div>
-            <div className="inside_card mb-4">
-              <Link>
-                <div className="card">
-                  <div className="card-body text-center d-flex flex-column align-items-center justify-content-center">
-                    <i className="fa-solid fa-person"></i>
-                    <h5 className="text-center mt-2 mb-0">
-                      {t("StudentJobs")}
-                    </h5>
-                  </div>
-                </div>
-              </Link>
-            </div>
-            <div className="inside_card mb-4">
-              <Link>
-                <div className="card">
-                  <div className="card-body text-center d-flex flex-column align-items-center justify-content-center">
-                    <i className="fa-solid fa-clock"></i>
-                    <h5 className="text-center mt-2 mb-0">
-                      {t("PartTimeJobs")}
-                    </h5>
-                  </div>
-                </div>
-              </Link>
-            </div>
-            <div className="inside_card mb-4">
-              <Link>
-                <div className="card">
-                  <div className="card-body text-center d-flex flex-column align-items-center justify-content-center">
-                    <i className="fa-solid fa-user-graduate"></i>
-                    <h5 className="text-center mt-2 mb-0">
-                      {t("InternshipJobs")}
-                    </h5>
-                  </div>
-                </div>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </div> */}
+          )}
+      </div>
 
       <Categories />
+
+      <HomepageJobs />
 
       <SponsorCompanies />
 

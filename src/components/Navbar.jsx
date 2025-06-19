@@ -70,37 +70,46 @@ const Navbar = () => {
 
 
 
- useEffect(() => {
-    const injectTranslateScript = () => {
-      // Remove old widget
-      const oldElem = document.getElementById('google_translate_element');
-      if (oldElem) {
-        oldElem.innerHTML = ''; // clear widget
-      }
+    useEffect(() => {
+        const injectTranslateScript = () => {
+          // Remove old widget
+          const oldElem = document.getElementById('google_translate_element');
+          if (oldElem) {
+            oldElem.innerHTML = ''; // clear widget
+          }
 
-      // Remove existing script tag
-      const oldScript = document.getElementById('google-translate-script');
-      if (oldScript) {
-        oldScript.remove();
-      }
+          // Remove existing script tag
+          const oldScript = document.getElementById('google-translate-script');
+          if (oldScript) {
+            oldScript.remove();
+          }
 
-      // Create new script
-      const script = document.createElement('script');
-      script.src = "//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
-      script.id = 'google-translate-script';
-      document.body.appendChild(script);
+          // Create new script
+          const script = document.createElement('script');
+          script.src = "//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
+          script.id = 'google-translate-script';
+          document.body.appendChild(script);
 
-      // Declare callback globally
-      window.googleTranslateElementInit = () => {
-        new window.google.translate.TranslateElement({
-          pageLanguage: 'en',
-          includedLanguages: 'en,sv',
-          layout: window.google.translate.TranslateElement.InlineLayout.SIMPLE,
-        }, 'google_translate_element');
-      };
-    };
+          // Declare callback globally
+          window.googleTranslateElementInit = () => {
+            new window.google.translate.TranslateElement({
+              pageLanguage: 'en',
+              includedLanguages: 'en,sv',
+              layout: window.google.translate.TranslateElement.InlineLayout.SIMPLE,
+            }, 'google_translate_element');
+          };
+        };
 
-    injectTranslateScript();
+        injectTranslateScript();
+      }, [location.pathname]);
+
+    
+  // Hiding lanuguage select on my-account page
+  useEffect(() => {
+    if (location.pathname.includes('/my-account')) {
+      const widget = document.getElementById('google_translate_element');
+      if (widget) widget.remove();
+    }
   }, [location.pathname]);
 
 
@@ -177,7 +186,7 @@ const Navbar = () => {
 
         <ul className="navbar-nav mx-auto d-lg-flex mb-2 mb-lg-0">
             <li className="nav-item">
-                <Link to="/home" className="nav-link" aria-current="page">{t("Home")}</Link>
+                <Link to="/" className="nav-link" aria-current="page">{t("Home")}</Link>
             </li>
             {/* <li className="nav-item">
                 <Link to="/about" className="nav-link">{t("About")}</Link>

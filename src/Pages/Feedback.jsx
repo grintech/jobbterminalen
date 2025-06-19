@@ -91,8 +91,9 @@ const Feedback = () => {
 
       const resData = await response.json();
       if (resData.type === 'success') {
-        toast.success(resData.message || 'Feedback submitted!');
+        // toast.success(resData.message || 'Feedback submitted!');
         resetForm();
+        navigate('/thank-you', { state: { from: 'feedback' } });
       } else {
         toast.error(resData.message || 'Something went wrong.');
       }

@@ -6,6 +6,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
 import { getGoogleTranslateLang } from "../utils/getLang";
+import { useTranslation } from "react-i18next";
 
 const ApplyJob = () => {
   const location = useLocation();
@@ -16,6 +17,8 @@ const ApplyJob = () => {
   const fileInputRef = useRef(null);
   const [fileName, setFileName] = useState("");
   const [jobTitle, setJobTitle] = useState("");
+
+  const {t} = useTranslation();
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -60,6 +63,12 @@ const ApplyJob = () => {
     setError("");
     return true;
   };
+
+  const decodeHTMLEntities = (str) => {
+  const txt = document.createElement("textarea");
+  txt.innerHTML = str;
+  return txt.value;
+};
 
   // Coverletter start
   const [coverLetter, setCoverLetter] = useState("");
@@ -309,15 +318,18 @@ const ApplyJob = () => {
       });
 
       if (response.data.type === "success") {
-        toast.success(response.data.message);
+
+        // toast.success(response.data.message);
         setIsSubmitting(false);
         setCoverLetter(""); // Reset fields
         setCertificates([]); // Reset fields
         setLinkedInUrl(""); // Reset fields
 
-        setTimeout(() => {
-          navigate('/jobs');
-        },2000);
+       navigate('/thank-you', { state: { from: 'apply' } });
+
+        // setTimeout(() => {
+        //   navigate('/jobs');
+        // },2000);
       } else {
         toast.error(response.data.message);
       }
@@ -338,9 +350,9 @@ const ApplyJob = () => {
           <div className="card">
             <div className="card-body p-4 p-md-5">
             <h1 className="text-start fs-4 mb-3">
-            {userId ? `Apply for ${jobTitle.replace(/-/g, ' ')}` : "Apply"}
+           {userId ? `Apply for ${decodeHTMLEntities(jobTitle).replace(/-/g, ' ')}` : t("Apply")}
           </h1>
-            <p className="text-muted text-start">Please complete the form below to apply for a position with us.</p>
+            <p className="text-muted text-start">{t("JobText")}</p>
 
             <form className="form-container" onSubmit={handleFormSubmit}>
               <input type="hidden" name="job_id" value={formData.job_id || ''} />
@@ -349,7 +361,7 @@ const ApplyJob = () => {
               <input type="hidden" name="recruiter_id" value={formData.recruiter_id || ''} />
 
               <div className="mb-3">
-                <label className="form-label" htmlFor="name">Name <span className="text-danger">*</span></label>
+                <label className="form-label" htmlFor="name">{t("Name")} <span className="text-danger">*</span></label>
                 <input
                   className="form-control"
                   type="text"
@@ -363,7 +375,7 @@ const ApplyJob = () => {
 
               <div className="row mb-3">
                 <div className="col">
-                  <label className="form-label" htmlFor="gender">Gender <span className="text-danger">*</span></label>
+                  <label className="form-label" htmlFor="gender">{t("Gender")} <span className="text-danger">*</span></label>
                   <select
                     className="form-select "
                     id="gender"
@@ -371,15 +383,15 @@ const ApplyJob = () => {
                     onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
                     
                   >
-                    <option value="" disabled>Select gender</option>
-                    <option value="Male">Male</option>
-                    <option value="Female">Female</option>
-                    <option value="Transgender">Transgender</option>
+                    <option value="" disabled>{t("SelectGender")}</option>
+                    <option value="Male">{t("Male")}</option>
+                    <option value="Female">{t("Female")}</option>
+                    <option value="Transgender">{t("Transgender")}</option>
                   </select>
                 </div>
 
                 <div className="col">
-                  <label className="form-label" htmlFor="dob">Date of Birth <span className="text-danger">*</span></label>
+                  <label className="form-label" htmlFor="dob">{t("DOB")} <span className="text-danger">*</span></label>
                   <input
                     className="form-control"
                     type="date"
@@ -393,7 +405,7 @@ const ApplyJob = () => {
 
               <div className="row mb-3">
                 <div className="col-sm-6 mb-3 mb-sm-0">
-                  <label className="form-label" htmlFor="email">Email Address <span className="text-danger">*</span></label>
+                  <label className="form-label" htmlFor="email">{t("EmailAddress")} <span className="text-danger">*</span></label>
                   <input
                     className="form-control"
                     type="email"
@@ -403,7 +415,7 @@ const ApplyJob = () => {
                   />
                 </div>
                 <div className="col-sm-6">
-                  <label className="form-label" htmlFor="phone">Phone Number <span className="text-danger">*</span></label>
+                  <label className="form-label" htmlFor="phone">{t("PhoneNumber")} <span className="text-danger">*</span></label>
                   <input
                     className="form-control"
                     type="tel"
@@ -417,7 +429,7 @@ const ApplyJob = () => {
 
               <div className="mb-3">
               <label className="form-label" htmlFor="linkedin">
-                LinkedIn Profile URL
+                {t("LinkedInProfile")}
               </label>
               <div className="input-group">
                 {/* <span className="input-group-text">{LINKEDIN_PREFIX}</span> */}
@@ -435,16 +447,16 @@ const ApplyJob = () => {
             </div>
 
               <div className="mb-4">
-                <label className="form-label">Cover Letter</label>
+                <label className="form-label">{t("CoverLetter")}</label>
                 <textarea
                   rows={5}
                   className="form-control"
                   value={coverLetter}
                   onChange={handleChange}
-                  placeholder="Write your cover letter here..."
+                  placeholder={t("CoverLetterPlaceholder")}
                 />
                 <div className="text-end text-muted mt-1">
-                  Word count: {getWordCount()}/ 500
+                  {t("WordCount")} {getWordCount()}/ 500
                 </div>
               </div>
 
@@ -452,14 +464,14 @@ const ApplyJob = () => {
 
               <div className="row">
                 <div className="col-md-6 mb-4">
-                  <label className="form-label" htmlFor="resume">Resume <span className="text-danger">*</span></label>
+                  <label className="form-label" htmlFor="resume">{t("Resume")} <span className="text-danger">*</span></label>
                   {/* <p className="text-muted text-start">75% of recruiters discover candidates through their resume.</p> */}
 
                   <div className="file-input mb-2">
                     <div className="input-box" onClick={() => fileInputRef.current.click()}>
                       <h6 className="m-0">
                         <i className="fa-solid fa-upload me-2"></i>
-                        {formData.resume ? 'Upload new resume' : 'Choose File to Upload'} 
+                        {formData.resume ? (t("UploadNewResume")) : (t("ChooseFile"))}
                         </h6>
                     </div>
                     <input
@@ -473,21 +485,24 @@ const ApplyJob = () => {
                   </div>
 
                   {formData.resume && (
-                    <div className=" mb-2 d-flex align-items-baseline select_file">
-                      <h6 className="mt-2 text-success me-3 mb-0">
-                        Selected File: {fileName}
+                    <div className=" mb-2 d-flex flex-column align-items-baseline select_file">
+                      <h6 className="m-0 text-center w-100">Or </h6>
+                      <div className="d-flex">
+                        <h6 className="mt-2 text-success me-3 mb-0">
+                       {t("SelectedFile")} {fileName}
                       </h6>
                       <div className=" mt-2 ">
                         <i className="fa-solid fa-trash" onClick={handleRemoveResume}></i>
                       </div>
+                      </div>
                     </div>
                   )}
-                  
-                  {!formData.resume && <small className="text-muted text-start">Supported format pdf only, upto 2 MB</small>}
+
+                  {!formData.resume && <small className="text-muted text-start">{t("SupportedFormats")}</small>}
                 </div>
           
                 <div className=" col-md-6 mb-3">
-                  <label className="form-label">Upload Certificates</label>
+                  <label className="form-label">{t("UploadCertificate")}</label>
                   <div className="d-flex align-items-center gap-2">
                     {/* <input
                       type="file"
@@ -503,7 +518,7 @@ const ApplyJob = () => {
                     <div className="input-box" onClick={() => fileInputRef1.current.click()}>
                       <h6 className="m-0">
                         <i className="fa-solid fa-upload me-2"></i>
-                         Upload certificates
+                         {t("UploadCertificatePlace")}
                         </h6>
                     </div>
                   
@@ -518,13 +533,13 @@ const ApplyJob = () => {
                   </div>
 
                   {certificates.length > 0 && <span className="badge bg-theme">
-                    {certificates.length} file{certificates.length !== 1 ? "s" : ""} selected
+                    {certificates.length} file{certificates.length !== 1 ? "s" : ""} {t("Selected")}
                   </span>
                   }
 
                   {certificates.length > 0 && (
                     <div className="mt-4 preview_certificates">
-                      <h6>Selected Certificates:</h6>
+                      <h6>{t("SelectedCertificates")}</h6>
                       <ul className="list-group">
                         {certificates.map((file, index) => (
                           <li
@@ -545,7 +560,7 @@ const ApplyJob = () => {
                     </div>
                   )}
 
-                   {certificates.length == 0 && <small className="text-muted text-start">Supported format pdf only, upto 2 MB</small>}
+                   {certificates.length == 0 && <small className="text-muted text-start">{t("SupportedFormats")}</small>}
                 </div>
              </div>
 
@@ -557,7 +572,7 @@ const ApplyJob = () => {
                  {isSubmitting ? (
                       <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
                     ) : null}
-                    {isSubmitting ? "Submitting.." : "Submit"}
+                    {isSubmitting ? (t("Submitting")) : (t("Submit"))}
                     {/* Submit */}
               </button>
             </form>

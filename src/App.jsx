@@ -40,6 +40,9 @@ import HelpCenter from './Pages/HelpCenter'
 import ApplyJob from './components/ApplyJob'
 import Maintenance from './Pages/Maintenance'
 import PublicRoute from './routes/PublicRoute'
+import TemplatePreview from './resume-builder/TemplatePreview'
+import TemplatePage from './resume-builder/TemplatePage'
+import ThankYou from './Pages/ThankYou'
 // import TranslateWidget from './components/TranslateWidget'
 
 
@@ -61,8 +64,8 @@ const App = () => {
       {/* <HomeBanners /> */}
 
       <Routes >
-        <Route path='/' element={ <Maintenance />} />
-        <Route path='/home' element={ <Homepage />} />
+        <Route path='/' element={ <Homepage />} />
+        {/* <Route path='/home' element={ <Homepage />} /> */}
         <Route path='/register' element={ <PublicRoute> <Register /> </PublicRoute> } />
         <Route path='/login' element={<PublicRoute> <Login /> </PublicRoute> } />
         <Route path='/forgot-password' element={<PublicRoute> <ForgetPassword /> </PublicRoute> } />
@@ -99,6 +102,11 @@ const App = () => {
         <Route path='/job/category/:slug' element={ <CategoryList />} />
         {/* <Route path='/job-detail' element={ <JobDetail />} /> */}
         <Route path='/jobs/:slug' element={ <JobDetail />} />
+        <Route path='/thank-you' element={ <ThankYou />} />
+
+
+        <Route path='/templates' element={ <TemplatePreview />} />
+         <Route path="/template/:id" element={<TemplatePage />} />
 
         <Route path='/apply-job'  element={ <ProtectedRoute allowedRoles={["job_seeker"]}> <ApplyJob /> </ProtectedRoute> } />
 

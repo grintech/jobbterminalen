@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Navigation, A11y, Pagination } from "swiper/modules";
+import { Navigation, A11y, Pagination, Autoplay } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { useAuthContext } from "../store/authContext";
 import axios from "axios";
@@ -172,19 +172,76 @@ const PopularJob = () => {
                 </div>
               </div>
 
-              <div className="offset-lg-2 col-lg-4 text-center">
-                <img src="/images/popular1.png" className="pop_img" alt="job" />
-                  <p
-                    className="m-0 text-center text-white"
-                    style={{ fontWeight: "500" }}
-                  >
-                  Discover jobs across popular roles
+              <div className="offset-lg-1 col-lg-5 text-center">
+                {/* <img src="/images/popular1.png" className="pop_img" alt="job" /> */}
+                    
+                <Swiper
+                  className="p-0 w-100"
+                  modules={[Navigation, A11y , Autoplay]}
+                  loop={true}
+                  slidesPerView={1}
+                  spaceBetween={20}
+                  autoplay={{
+                    delay: 0,
+                    disableOnInteraction: false,
+                  }}
+                  speed={2500}
+                  breakpoints={{
+                    576: {
+                      slidesPerView: 2,
+                    },
+                    992: {
+                      slidesPerView: 1,
+                    },
+                  }}
+                              
+                 >
+                    <SwiperSlide>
+                        <img src="/images/popular1.png" className="pop_img mb-3" alt="job" />
+                         <p className="m-0 text-center text-white" style={{ fontWeight: "500" }} >
+                          Discover jobs across popular roles
+                        </p>
+                        <p className="m-0 text-center text-light">
+                          <small>
+                            Select a role and we'll show you all the related jobs!
+                          </small>
+                        </p>
+                    </SwiperSlide>  
+                    <SwiperSlide>
+                       <Link target="_blank" to='https://tumbablomstercity.com/'>
+                         <img src="/images/tumba.webp" className="pop_img mb-3" alt="job" />
+                         <p className="m-0 text-center text-white" style={{ fontWeight: "500" }} >
+                         Tumba Blomstercity
+                        </p>
+                        <p className="m-0 text-center text-light">
+                          <small>
+                            Vad du än vill säga
+                          </small>
+                        </p>
+                       </Link>
+                    </SwiperSlide>  
+                    <SwiperSlide>
+                        <img src="/images/2.jpg" className="pop_img mb-3" alt="job" />
+                         <p className="m-0 text-center text-white" style={{ fontWeight: "500" }} >
+                          Discover jobs across popular roles
+                        </p>
+                        <p className="m-0 text-center text-light">
+                          <small>
+                            Select a role and we'll show you all the related jobs!
+                          </small>
+                        </p>
+                    </SwiperSlide>  
+
+                </Swiper>
+
+                 {/* <p className="m-0 text-center text-white" style={{ fontWeight: "500" }} >
+                   Discover jobs across popular roles
                  </p>
                  <p className="m-0 text-center text-light">
                   <small>
                     Select a role and we'll show you all the related jobs!
                   </small>
-                 </p>
+                 </p> */}
               </div>
 
             </div>
