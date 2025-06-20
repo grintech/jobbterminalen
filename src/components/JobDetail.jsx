@@ -699,12 +699,14 @@ const JobDetail = () => {
                  <div className="position-relative">
                   <div className="d-flex flex-wrap justify-content-between align-items-center">
                    <div className="py-1" >
-                    <span className="days border-end me-2 pe-2 d-inline-flex align-items-center">
+                    <span className="days  pe-2 d-inline-flex align-items-center">
                       <b className="me-1">{t("Posted")}</b>  <span className="badge text-dark btn-light">{calculateTimeAgo(jobDetails.created_at)}</span>
                       </span>
-                      <span className="days ">
-                      <b className="me-1">{t("Vacancies")}</b>  <Link to={`/companies/${jobDetails?.company_slug}`}>{jobDetails.total_vacancies}</Link>
-                      </span>
+                      { jobDetails.total_vacancies > 0 && (
+                        <span className="days border-start ps-2">
+                        <b className="me-1">{t("Vacancies")}</b>  <Link to={`/companies/${jobDetails?.company_slug}`}>{jobDetails.total_vacancies}</Link>
+                        </span>
+                      )}
                    </div>
                     <div className="py-1">
                       <button
@@ -783,7 +785,7 @@ const JobDetail = () => {
                                 className="btn btn-sm btn-primary"
                                 onClick={() => handleApplyClick(jobDetails.job_id)}
                               >
-                                Apply
+                               {t("Apply")}
                               </button>
                             )}
                           </div>
@@ -843,7 +845,7 @@ const JobDetail = () => {
                            </ul>
                           </>
                         ) : (
-                        <p className="m-0"><b className="me-1">Skills :</b>No skills are listed for this job.</p>
+                        <p className="m-0"><b className="me-1">{t("Skills")} : </b>No skills are listed for this job.</p>
 
                         )}
                       
@@ -859,12 +861,43 @@ const JobDetail = () => {
                             <b className="me-1">{t("EmploymentType")}</b>{jobDetails.job_type.replace(/-/g, ' ')}
                           </p>
 
-                          {jobDetails.parent_category_name && (                      
+                           {jobDetails.parent_category_name && (                      
                             <p>
                               <b className="me-1">
-                                Category:</b>{jobDetails.parent_category_name} 
+                                {t("Category")}</b>{jobDetails.parent_category_name} 
                             </p>
                           )}
+
+
+                           {jobDetails.linkedin_Url && (
+                           <p className="mb-2">
+                             <Link
+                               className="text-theme"
+                               to={jobDetails.linkedin_Url}
+                               target="_blank"
+                               rel="noopener noreferrer"
+                             >
+                               <i className="fa-brands fa-linkedin me-2"></i>
+                               {jobDetails.linkedin_Url}
+                             </Link>
+                           </p>
+                         )}
+                           {jobDetails.website && (
+                           <p className="mb-2">
+                             <Link
+                               className="text-theme"
+                               to={jobDetails.website}
+                               target="_blank"
+                               rel="noopener noreferrer"
+                             >
+                               <i className="fa-solid fa-globe me-2"></i>
+                               {jobDetails.website}
+                             </Link>
+                           </p>
+                         )}
+ 
+
+                         
                          </div>                  
 
                       </div>
@@ -904,20 +937,7 @@ const JobDetail = () => {
                            </p>
                          )}
 
-                         {jobDetails.linkedin_Url && (
-                           <p className="mb-2">
-                             <Link
-                               className="text-theme"
-                               to={jobDetails.linkedin_Url}
-                               target="_blank"
-                               rel="noopener noreferrer"
-                             >
-                               <i className="fa-brands fa-linkedin me-2"></i>
-                               {jobDetails.linkedin_Url}
-                             </Link>
-                           </p>
-                         )}
- 
+                        
                          <p className="mb-2">
                            <strong>{t("ThanksRegards")}</strong>
                          </p>

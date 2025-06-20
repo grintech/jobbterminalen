@@ -11,15 +11,20 @@ import { ToastContainer, toast } from "react-toastify";
 import { useRef } from 'react';
 import { useAuthContext } from '../store/authContext';
 
+import ReCAPTCHA from 'react-google-recaptcha';
+
 const Contact = () => {
     const { t } = useTranslation();
     const bearerKey = import.meta.env.VITE_BEARER_KEY;
     const API_URL = import.meta.env.VITE_API_URL;
+    const RECAPTCHA_SITE_KEY = import.meta.env.VITE_GOOGLE_RECAPTCHA_SITE_KEY;
 
     const {user} = useAuthContext();
     const navigate = useNavigate();
 
     const fileInputRef = useRef(null);
+
+     const [captchaToken, setCaptchaToken] = useState(null); // ✅ Added
     const [phone, setPhone] = useState('');
     const [formData, setFormData] = useState({
         name: "",
@@ -36,6 +41,8 @@ const Contact = () => {
         message: "",
         type: ""
     });
+
+     const handleCaptcha = (token) => setCaptchaToken(token); // ✅ Callback
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -127,6 +134,11 @@ const Contact = () => {
             return;
         }
 
+         if (!captchaToken) {
+            toast.error("Please verify reCAPTCHA");
+            return;
+        }
+
         setLoading(true);
 
         const formDataToSend = new FormData();
@@ -135,6 +147,8 @@ const Contact = () => {
         formDataToSend.append("phone", formData.phone);
         formDataToSend.append('description', formData.description);
         formDataToSend.append('type_of_user', formData.type_of_user);
+
+        formDataToSend.append('g-recaptcha-response', captchaToken); // ✅ Send token
 
         if (formData.attachment) {
             formDataToSend.append('attachment', formData.attachment);
@@ -277,6 +291,15 @@ const Contact = () => {
                                                      ref={fileInputRef}
                                                       />
                                                 </div>
+
+                                                 {/* ✅ Add reCAPTCHA here */}
+                                                <div className="col-12 mb-3">
+                                                    <ReCAPTCHA
+                                                        sitekey={RECAPTCHA_SITE_KEY}
+                                                        onChange={handleCaptcha}
+                                                    />
+                                                </div>
+
                                                 <div className="col-12">
                                                     {alert.show && (
                                                         <div className={`alert alert-${alert.type} alert-dismissible fade show`} role="alert">

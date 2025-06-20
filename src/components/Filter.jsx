@@ -147,7 +147,7 @@ const Filter = () => {
  // Mobile Filter code
 
   const [isMobile, setIsMobile] = useState(false);
-  const [activeMobileFilter, setActiveMobileFilter] = useState(""); // category, job_type, etc.
+  const [activeMobileFilter, setActiveMobileFilter] = useState(""); 
 
 
   useEffect(() => { 
@@ -258,14 +258,10 @@ const Filter = () => {
                               See All
                             </button>
                           )}
-
-                        
+                      
                       </div>
                     </div>
                   </div>
-
-
-
 
 
                   {/* Job Type Filter */}
@@ -340,6 +336,7 @@ const Filter = () => {
                     </div>
                   </div>
 
+
                   {/* Salary Range Filter */}
                   <div className="accordion-item">
                     <h2 className="accordion-header">
@@ -361,9 +358,6 @@ const Filter = () => {
           </div>
 
         )}
-
- 
-
 
 
       {showAllCategories && (
@@ -434,6 +428,7 @@ const Filter = () => {
                   </ul>
                 </div>
 
+
                 {/* Right Column: Options */}
                 <div className="w-50 ps-3 overflow-auto">
                   <div className="row">
@@ -451,7 +446,7 @@ const Filter = () => {
                           </div>
                         </div>
                       ))}
-                    </div>
+                  </div>
 
                   {activeMobileFilter === "job_type" &&
                     Object.keys(jobTypeMap).map((type) => (
@@ -512,6 +507,7 @@ const Filter = () => {
                       />
                     </>
                   )}
+
                 </div>
               </div>
 
@@ -519,6 +515,7 @@ const Filter = () => {
                 {/* <button className="btn btn-secondary" onClick={() => setActiveMobileFilter("")}>Close</button> */}
                 <button className="btn btn-sm btn-secondary" onClick={handleResetFilters}>Reset</button>
                 <button className="btn btn-sm btn-primary" onClick={handleApplyFilters}>Apply</button>
+                {/* <button className="btn btn-sm btn-primary" >Apply</button> */}
               </div>
             </div>
           </div>

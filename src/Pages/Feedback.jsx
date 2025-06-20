@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
@@ -10,6 +10,8 @@ import { useAuthContext } from '../store/authContext';
 
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/bootstrap.css';
+import ReCAPTCHA from 'react-google-recaptcha';
+
 
 const Feedback = () => {
   const { t } = useTranslation();
@@ -18,6 +20,10 @@ const Feedback = () => {
 
   const API_URL = import.meta.env.VITE_API_URL;
   const bearerKey = import.meta.env.VITE_BEARER_KEY;
+  const RECAPTCHA_SITE_KEY = import.meta.env.VITE_GOOGLE_RECAPTCHA_SITE_KEY; 
+
+  const [captchaToken, setCaptchaToken] = useState(null); // for reCAPTCHA validation
+  const recaptchaRef = useRef();
 
   const [initialValues, setInitialValues] = useState({
     issue_type: '',
@@ -26,6 +32,7 @@ const Feedback = () => {
     email: '',
     phone_no: '',
     file: null,
+    recaptcha: '', // reCAPTCHA field
   });
 
   useEffect(() => {
@@ -78,6 +85,9 @@ const Feedback = () => {
     formData.append('email', values.email);
     formData.append('phone_no', values.phone_no);
     formData.append('user_id', user?.id || '');
+    formData.append('g-recaptcha-response', values.recaptcha);
+ // for reCAPTCHA validation
+
     if (values.file) {
       formData.append('file', values.file);
     }
@@ -93,6 +103,8 @@ const Feedback = () => {
       if (resData.type === 'success') {
         // toast.success(resData.message || 'Feedback submitted!');
         resetForm();
+        setCaptchaToken(null);
+        recaptchaRef.current?.reset();
         navigate('/thank-you', { state: { from: 'feedback' } });
       } else {
         toast.error(resData.message || 'Something went wrong.');
@@ -124,6 +136,7 @@ const Feedback = () => {
                   if (!values.name) errors.name = 'Required';
                   if (!values.email) errors.email = 'Required';
                   if (!values.phone_no) errors.phone_no = 'Required';
+                  if (!values.recaptcha) errors.recaptcha = 'Please verify reCAPTCHA'; // for recaptcha validation
                   return errors;
                 }}
                 onSubmit={handleSubmit}
@@ -188,6 +201,18 @@ const Feedback = () => {
                         className='form-control'
                         onChange={(event) => setFieldValue('file', event.currentTarget.files[0])}
                       />
+                    </div>
+
+                    <div className="mb-3">
+                     <ReCAPTCHA
+                        sitekey={RECAPTCHA_SITE_KEY}
+                         ref={recaptchaRef}
+                        onChange={(token) => {
+                          setCaptchaToken(token); // set reCAPTCHA token
+                          setFieldValue('recaptcha', token); // update Formik
+                        }}
+                      />
+                      <ErrorMessage name="recaptcha" component="div" className="text-danger small" />
                     </div>
 
                     <div className="text-center mt-4">

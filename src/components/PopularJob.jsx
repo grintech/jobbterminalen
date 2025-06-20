@@ -15,7 +15,6 @@ const PopularJob = () => {
   const API_URL = import.meta.env.VITE_API_URL;
   const { i18n } = useTranslation();
  
-
   const { user } = useAuthContext();
   const userId = user?.id || null;
 
@@ -83,8 +82,6 @@ const PopularJob = () => {
   }, [API_URL, bearerKey, i18n.language]);
 
 
-
-
   // Define how many jobs per slide
   const jobsPerSlide = 6;
 
@@ -98,10 +95,10 @@ const PopularJob = () => {
     <>
       {isLoading ? (
          <div className="loading-screen d-flex flex-column justify-content-center align-items-center">
-         <div className="spinner-grow text-primary" role="status">
-           <span className="visually-hidden">Loading...</span>
-         </div>
-         <p className="mt-2">Fetching jobs...</p>
+          <div className="spinner-grow text-primary" role="status">
+            <span className="visually-hidden">Loading...</span>
+          </div>
+          <p className="mt-2">Fetching jobs...</p>
         </div>
       ) : error ? (
         error === "Failed to fetch" ? (
@@ -242,6 +239,7 @@ const PopularJob = () => {
                     Select a role and we'll show you all the related jobs!
                   </small>
                  </p> */}
+                 
               </div>
 
             </div>

@@ -27,6 +27,13 @@ const ApplyJob = () => {
 
   const navigate = useNavigate();
 
+  useEffect(() => {
+  if (!jobId) {
+    navigate("/jobs", { replace: true });
+  }
+ }, [jobId, navigate]);
+
+
   const stripHtml = (html) => {
     const doc = new DOMParser().parseFromString(html, "text/html");
     return doc.body.textContent || "";
