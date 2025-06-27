@@ -6,6 +6,8 @@ const resources = {
     translation: {
       "Welcome": "Welcome to JobbTerminalen",
       "Login": "Login",
+      "Loginjobseeker": "Login as a ",
+      "LoginjobseekerSpan": "jobseeker",
       "Register": "Register",
       "Registering":"Registering...",
       "Find Jobs": "Find Jobs",
@@ -27,8 +29,10 @@ const resources = {
        /*--- Forgot Password ---*/
       "Forget_Password": "Forgot Password",
       "Forget_head" : "Enter your registered email for verification.",
+      "Country": "Country",
+      "SelectCountry": "Select country",
       "Email": "Email Address",
-      "Email_placeholder": "Enter your Email",
+      "Email_placeholder": "Enter your email",
       "Submit": "Submit",
       "Submitting": "Submitting...",
       "Verifying": "Verifying...",
@@ -72,7 +76,8 @@ const resources = {
       /* -- Home Hero Section ------*/
 
       "HeroTitle" : "Find your dream job now",
-      "HeroText": "Over 7,00,000+ jobs to explore",
+      "HeroText": "Over",
+      "HeroText1": "jobs to explore",
       "EnterSkill" : "Enter Skills / Designation",
       "EnterLocation" : "Location",
       "JobType" : "Job Type",
@@ -184,7 +189,7 @@ const resources = {
       "About": "About",
       "Jobs": "Jobs",
       "AllCompanies": "All Companies",
-      "ForEmployers": "For Employers",
+      "ForEmployers": "For Employer",
       "MyAccount": "My Account",
       "Logout": "Logout",
       "ConfLogout": "Confirm Logout",
@@ -546,8 +551,8 @@ const resources = {
       "ChooseFile" : "Choose File to Upload",
       "SelectedFile" : "Selected File:",
       "SupportedFormats" : "Supported format pdf only, upto 2 MB",
-      "UploadCertificate" : "Upload Certificate (optional)",
-      "UploadCertificatePlace" : "Upload Certificate",
+      "UploadCertificate" : "Certificates (optional)",
+      "UploadCertificatePlace" : "Upload Multiple Certificates",
       "SelectedCertificates" : "Selected Certificates :",
       "Selected" : "Selected",
 
@@ -586,6 +591,8 @@ const resources = {
     translation: {
       "Welcome": "Välkommen till JobbTerminalen",
       "Login": "Logga in",
+      "Loginjobseeker": "Logga in som ",
+      "LoginjobseekerSpan":"jobbsökande",
       "Register": "Registrera",
       "Registering" :"Registrera dig...",
       "Find Jobs": "Hitta Jobb",
@@ -607,6 +614,8 @@ const resources = {
       /*--- Forgot Password ---*/
       "Forget_Password": "Glömt lösenord",
       "Forget_head" : "Ange din registrerade e-post för verifiering.",
+      "Country": "Land",
+      "SelectCountry": "Välj land",
       "Email": "E-postadress",
       "Email_placeholder": "Ange din e-post",
       "Submit": "Skicka",
@@ -652,7 +661,8 @@ const resources = {
       /* -- Home Hero Section ------*/
 
       "HeroTitle" : "Hitta ditt drömjobb nu",
-      "HeroText": "Över 7 00 000+ jobb att utforska",
+      "HeroText": "Över",
+      "HeroText1": "jobb att utforska",
       "EnterSkill" : "Ange färdigheter/beteckning",
       "EnterLocation" : "Plats",
       "JobType" : "Jobbtyp",
@@ -1116,8 +1126,8 @@ const resources = {
         "ChooseFile" : "Välj fil att ladda upp",
         "SelectedFile" : "Vald fil:",
         "SupportedFormats" : "Endast PDF-format stöds, upp till 2 MB",
-        "UploadCertificate" : "Ladda upp certifikat (valfritt)",
-        "UploadCertificatePlace" : "Ladda upp certifikat",
+        "UploadCertificate" : "Certifikat (valfritt)",
+        "UploadCertificatePlace" : "Ladda upp flera certifikat",
         "SelectedCertificates" : "Valda certifikat :",
         "Selected" : "Vald",
 

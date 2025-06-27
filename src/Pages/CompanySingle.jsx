@@ -95,8 +95,8 @@ const CompanySingle = () => {
 
 
   async function getCityName(latitude, longitude) {
-    const apiKey = import.meta.env.VITE_GOOGLE_API_KEY;
-    const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${apiKey}`;
+    const googleApiKey = import.meta.env.VITE_GOOGLE_API_KEY;
+    const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${googleApiKey}`;
 
     try {
       const response = await fetch(url);
@@ -179,30 +179,6 @@ const CompanySingle = () => {
 
         // console.log("Raw Banner Response:", response.data.data);
         setBannerPlace(response.data.data); 
-
-        // If response is a string, try parsing it correctly
-        // let parsedData;
-        // try {
-        //   parsedData = JSON.parse(response.data);
-        // } catch (error) {
-        //   const splitResponse = response.data.split("}{").map((item, index, array) => {
-        //     if (index === 0) return item + "}";
-        //     if (index === array.length - 1) return "{" + item;
-        //     return "{" + item + "}";
-        //   });
-
-        //   parsedData = splitResponse.map((item) => JSON.parse(item));
-        // }
-
-        // Ensure we have an array of banners
-        // const formattedArray = Array.isArray(parsedData) ? parsedData : [parsedData];
-
-        // if (formattedArray.length > 0 && formattedArray[0].data) {
-        //   setBannerPlace(formattedArray[0].data.placement);
-        //   console.log("Banner Placement:", formattedArray[0].data.placement);
-        // } else {
-        //   console.warn("No valid banner data received.");
-        // }
 
       } catch (error) {
         console.error("Error fetching HomeBanners data:", error);

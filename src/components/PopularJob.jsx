@@ -121,10 +121,10 @@ const PopularJob = () => {
                       spaceBetween={40}
                       slidesPerView={1}
                       navigation
-                      pagination={{
-                        type: "bullets",
-                        clickable: true,
-                      }}
+                      // pagination={{
+                      //   type: "bullets",
+                      //   clickable: true,
+                      // }}
                     >
                       {slides.map((jobGroup, index) => (
                         <SwiperSlide key={index}>

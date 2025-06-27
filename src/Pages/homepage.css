@@ -267,10 +267,8 @@
    color: black;
   }
 
-  .save_post{border: 1px solid #003479; padding: 5px 10px; border-radius: 50%; background-color: #fff;}
-  .save_post .fa-heart{
-    color: #003479;
-  }
+  .save_post{border: 1px solid #003479; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background-color: #fff;}
+  .save_post .fa-heart{color: #003479; font-size: 14px;}
   .save_post:hover{background-color: #003479;}
   .save_post:hover .fa-heart{color:#fff}
 
@@ -289,10 +287,14 @@
   .all_cat_filters .accordion-body .form-check{margin-bottom:2px;}
   .all_cat_filters .accordion-item:last-of-type {border-radius: 0 !important; border: 0;}
   .company_list_card .logo_div{
-    width: 60px;
-    height: 60px;
+    width: 30px;
+    height: 30px;
     border: 1px solid #ccc;
     border-radius: 8px;
+  }
+  .all_employers_page .company_list_card .logo_div{
+    width: 50px;
+    height: 50px;
   }
   .company_list_card .logo_div img{
     width: 100%;
@@ -301,11 +303,19 @@
     object-fit: contain;
     padding: 2px;
   }
-  .company_list_card h5{font-size: 18px;}
+  .company_list_card h5{font-size: 15px; color: #474d6a;}
   /* .company_list_card {box-shadow: 0 0 15px 0 rgba(220, 220, 220, .5); border: 0;} */
   .company_list_card {box-shadow: 0 0 20px 0 rgba(225, 225, 225, 1.5); border: 0;}
-  .company_list_card h6{font-size: 16px; color: #474d6a;}
-  .company_list_card h6:hover{font-size: 16px; color: #003479;}
+  .company_list_card h6{
+    font-size: 19px; color: #000;
+     display: -webkit-box;
+    -webkit-line-clamp: 2;       /* Limit to 2 lines */
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+   }
+  .company_list_card h6:hover{ color: #003479;}
   .company_list_card .job_details{color: #474d6a; font-size: 14px;}
   .company_list_card .job_description{
     color: #474d6a; font-size: 14px;
@@ -338,8 +348,8 @@
 .job_details .job_response li{ list-style: disc; font-size: 15px;margin-bottom: 5px;}
 
 .job_details .company_list_card .logo_div{
-  width:60px;
-  height:60px;
+  width:30px;
+  height:30px;
   border: 1px solid #ccc;
   border-radius: 8px;
 }
@@ -396,8 +406,8 @@
 
 .all_job_posts .company_list_card{border: 1px solid #0000; transition: all .3s ease;}
 .all_job_posts .company_list_card:hover{border: 1px solid#003479; transition: all .3s ease; box-shadow: none;}
-.all_job_posts .company_list_card h5{font-weight: 600; font-size: 19px;}
-.all_job_posts .company_list_card h6{font-weight: 600;font-size: 17px;}
+.all_job_posts .company_list_card h5{font-weight: 500; font-size: 14px; color: #706e6e;}
+.all_job_posts .company_list_card h6{font-weight: 500;font-size: 19px; color: #000;}
 .all_job_posts .company_list_card .main_desc {
   display: -webkit-box;
   -webkit-line-clamp: 1;

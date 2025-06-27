@@ -196,9 +196,7 @@ const SearchJobs = () => {
         <HeroBanner />
         <div className="container job_search_page py-4">
           <div className="row">
-            {/* <div className="col-lg-3">
-              <Filter />
-            </div> */}
+           
             <div className="col-lg-11 mx-auto">
             <h1 className="job_head">{t("JobResults")}</h1>
               {loading ? (
@@ -263,10 +261,10 @@ const SearchJobs = () => {
                             <div className="py-2">
                               <h5 className="py-2 m-0">{job.company_name}</h5>
                               <Link to={`/jobs/${job.job_slug}`}>
-                                <h6 className="text-capitalize m-0">{stripHtml(job.job_title)}</h6>
+                                <h6 className="text-capitalize mb-2">{stripHtml(job.job_title)}</h6>
                               </Link>
                             </div>
-                            <p className="main_desc text-capitalize">{job.company_tagline}</p>
+                            {/* <p className="main_desc text-capitalize">{job.company_tagline}</p> */}
                             <ul className="p-0 d-flex flex-wrap m-0">
                              {job.job_type && (
                                 <li>
@@ -290,11 +288,11 @@ const SearchJobs = () => {
                                 </li>
                               )}
 
-                              {job.city && (
+                              {job.job_location && (
                                 <li>
                                   <div className="btn btn-sm btn-green me-2 mb-2 text-start text-capitalize">
                                     <i className="fa-solid fa-location-dot "></i>
-                                    &nbsp;&nbsp;{job.city}
+                                    &nbsp;&nbsp;{job.job_location.replace(/-/g, " ")}
                                   </div>
                                 </li>
                               )}

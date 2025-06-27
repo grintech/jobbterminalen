@@ -43,33 +43,30 @@ const ApplyJob = () => {
 
   const [linkedInUrl, setLinkedInUrl] = useState("");
    const [error, setError] = useState("");
-   const LINKEDIN_PREFIX = "https://www.linkedin.com/in/";
 
   const handleLinkedInChange = (e) => {
-     let value = e.target.value;
+    const value = e.target.value.trim();
+    setLinkedInUrl(value);
 
-    // Remove the prefix if pasted
-    if (value.startsWith(LINKEDIN_PREFIX)) {
-      value = value.slice(LINKEDIN_PREFIX.length);
-    }
+    const linkedinRegex = /^https:\/\/(www\.)?linkedin\.com\/in\/[a-zA-Z0-9-_]+\/?$/;
 
-    // Allow only alphanumeric, dash, underscore
-    if (/^[a-zA-Z0-9-_]*$/.test(value)) {
-      setLinkedInUrl(value);
+    if (value === "" || linkedinRegex.test(value)) {
       setError("");
     } else {
-      setError("Only letters, numbers, hyphens, and underscores are allowed.");
+      setError("Please enter a valid LinkedIn profile URL (e.g., https://www.linkedin.com/in/yourname)");
     }
   };
 
-    const validateUrl = () => {
-    if (linkedInUrl.trim() === "") {
-      setError("LinkedIn username cannot be empty.");
-      return false;
-    }
-    setError("");
-    return true;
-  };
+
+
+  //   const validateUrl = () => {
+  //   if (linkedInUrl.trim() === "") {
+  //     setError("LinkedIn username cannot be empty.");
+  //     return false;
+  //   }
+  //   setError("");
+  //   return true;
+  // };
 
   const decodeHTMLEntities = (str) => {
   const txt = document.createElement("textarea");
@@ -435,23 +432,23 @@ const ApplyJob = () => {
               </div>
 
               <div className="mb-3">
-              <label className="form-label" htmlFor="linkedin">
-                {t("LinkedInProfile")}
-              </label>
-              <div className="input-group">
-                {/* <span className="input-group-text">{LINKEDIN_PREFIX}</span> */}
-                <input
-                  className={`form-control ${error ? "is-invalid" : ""}`}
-                  type="text"
-                  id="linkedin"
-                  value={LINKEDIN_PREFIX + linkedInUrl}
-                  onChange={handleLinkedInChange}
-                  placeholder="your-username"
-                  onBlur={validateUrl}
-                />
-                {error && <div className="invalid-feedback d-block">{error}</div>}
-              </div>
-            </div>
+                 <label className="form-label" htmlFor="linkedin">
+                  {t("LinkedInProfile")}
+                 </label>
+                
+                <div className="input-group">
+                  <input
+                    className={`form-control ${error ? "is-invalid" : ""}`}
+                    type="text"
+                    id="linkedin"
+                    value={linkedInUrl}
+                    onChange={handleLinkedInChange}
+                    placeholder="https://www.linkedin.com/in/yourname"
+                  />
+                  {error && <div className="invalid-feedback d-block">{error}</div>}
+                </div>
+
+             </div>
 
               <div className="mb-4">
                 <label className="form-label">{t("CoverLetter")}</label>
@@ -551,9 +548,9 @@ const ApplyJob = () => {
                         {certificates.map((file, index) => (
                           <li
                             key={index}
-                            className="list-group-item d-flex justify-content-between align-items-center"
+                            className="list-group-item d-flex justify-content-between align-items-start"
                           >
-                            {file.name}
+                            <span className="me-2">{file.name}</span>
                             <button
                               type="button"
                               className="btn btn-sm btn-danger"

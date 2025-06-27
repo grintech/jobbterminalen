@@ -160,12 +160,12 @@ const SavedCompanies = () => {
                                                 </div>
                                               <div className="pt-2 pb-3">
                                                 <Link to={`/companies/${company.company_slug}`}>
-                                                  <h5>{company.company_name}</h5>
+                                                  <h5 className='text-capitalize'>{company.company_name}</h5>
                                                 </Link>
-                                                <p className=" m-0">{company.company_tagline}</p>
+                                                <h6 className=" m-0 text-capitalize">{company.company_tagline}</h6>
                                               </div>
                                               <div className="d-flex justify-content-between align-items-baseline border-top pt-3">
-                                                <div className="text-muted me-2">
+                                                <div className="text-muted me-2 text-capitalize">
                                                   <i className="fa-solid fa-location-dot me-1 "></i>
                                                   {company.company_address}
                                                 </div>

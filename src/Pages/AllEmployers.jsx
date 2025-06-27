@@ -11,6 +11,8 @@ import Avatar from "react-avatar";
 
 import { Swiper, SwiperSlide } from "swiper/react";
 import {Autoplay } from "swiper/modules";
+import { JobCardSkeleton } from "../components/skeleton/JobCardSkeleton";
+import { CompanyCardsSkeleton } from "../components/skeleton/CompanyCardsSkeleton";
 
 
 const AllEmployers = () => {
@@ -223,13 +225,21 @@ const AllEmployers = () => {
           <div className="row mt-4">
             <div className="col-lg-9">
                 {/* Loading and Error States */}
+                
                 {loading ? (
                     <>
-                    <div className="loading-screen d-flex flex-column justify-content-center align-items-center">
+                    {/* <div className="loading-screen d-flex flex-column justify-content-center align-items-center">
                       <div className="spinner-grow text-primary" role="status">
                         <span className="visually-hidden">Loading...</span>
                       </div>
                     <p className='mt-2'>Fetching data...</p>
+                    </div> */}
+                    <div className="row">
+                      {Array.from({ length: 9 }).map((_, i) => (
+                        <div className="col-lg-4 col-md-4 col-sm-6 mb-5" key={i}>
+                          <CompanyCardsSkeleton />
+                        </div>
+                      ))}
                     </div>
                   </>
                 ) : error ? (
@@ -374,7 +384,7 @@ const AllEmployers = () => {
                 }
             </div>
             <div className="col-lg-3">
-              <div  className=" text-center ">
+              <div  className=" text-center card_sticky">
                 <div className="sponser_image d-flex flex-column align-items-center justify-content-center">
                   <Swiper
                     className="w-100"

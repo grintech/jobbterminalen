@@ -4,8 +4,6 @@ import axios from "axios";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
 import { useAuthContext } from "../store/authContext";
-import HomeBanners from "./HomeBanners";
-// import ApplyPopup from './ApplyPopup';
 import { ToastContainer, toast } from "react-toastify";
 import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
 import Avatar from "react-avatar";
@@ -95,16 +93,6 @@ const JobDetail = () => {
     }
   }, [plainText]);
 
-
-  const handleApplyClick = (jobId) => {
-    if (!userId) {
-      toast.error("You must be logged in to apply.");
-      setTimeout(() => {
-        navigate("/login");
-      }, 2000);
-      return;
-    }
-  };
 
   // Check if the job is saved
   useEffect(() => {
@@ -326,7 +314,7 @@ const JobDetail = () => {
     toast.success('Job link copied to clipboard!');
   };
   
-
+  // Fetching job details based on the slug
 
   useEffect(() => {
     const fetchJobDetails = async () => {
@@ -356,54 +344,31 @@ const JobDetail = () => {
     fetchJobDetails();
   }, [slug]);
 
-  const [bannerPlace, setBannerPlace] = useState("");
+// Apply button functionality
 
-  useEffect(() => {
-    const fetchBannerPlace = async () => {
-      try {
-        const response = await axios.get(`${API_URL}/banner-ads.php`, {
-          headers: {
-            Authorization: `Bearer ${bearerKey}`,
-            "Content-Type": "application/json",
-          },
+   const handleApplyClick = () => {
+    if (!userId) {
+      toast.error("You must be logged in to apply.");
+      setTimeout(() => {
+        navigate("/login", {
+          state: { from: location.pathname }, 
         });
+      }, 1500);
+      return;
+    }
 
-        // console.log("Raw Banner Response:", response.data);
+    // If user is logged in
+    if (jobDetails?.apply_redirect && jobDetails?.show_apply_link == "1") {
+      window.open(jobDetails.apply_redirect, "_blank"); // or just `window.location.href = ...` for same tab
+    } else {
+      navigate("/apply-job", {
+        state: { jobId: jobDetails.id },
+      });
+    }
+  };
 
-        // If response is a string, try parsing it correctly
-        let parsedData;
-        try {
-          parsedData = JSON.parse(response.data);
-        } catch (error) {
-          const splitResponse = response.data
-            .split("}{")
-            .map((item, index, array) => {
-              if (index === 0) return item + "}";
-              if (index === array.length - 1) return "{" + item;
-              return "{" + item + "}";
-            });
 
-          parsedData = splitResponse.map((item) => JSON.parse(item));
-        }
-
-        // Ensure we have an array of banners
-        const formattedArray = Array.isArray(parsedData)
-          ? parsedData
-          : [parsedData];
-
-        if (formattedArray.length > 0 && formattedArray[0].data) {
-          setBannerPlace(formattedArray[0].data.placement);
-          // console.log("Banner Placement:", formattedArray[0].data.placement);
-        } else {
-          console.warn("No valid banner data received.");
-        }
-      } catch (error) {
-        console.error("Error fetching HomeBanners data:", error);
-      }
-    };
-    fetchBannerPlace();
-  }, []);
-
+  // Fetch similar jobs based on the slug
   useEffect(() => {
     const fetchSimilarJobs = async () => {
       try {
@@ -562,207 +527,185 @@ const JobDetail = () => {
             </div>
 
             <div className="container">
-              <div className="card company_profile border-0 shadow">
-                <div className="card-body">
-                  <div className="d-flex align-items-center justify-content-between flex-wrap">
-                    <div className="d-flex align-items-center py-2">
-                      <div className="logo_div me-3">
-                        <Link to={`/companies/${jobDetails?.company_slug}`}>
-                          {/* <img
-                            loading="lazy"
-                            src={`${IMG_URL}/${jobDetails.company_profile}`}
-                            alt={jobDetails.company_name}
-                            className="rounded"
-                          /> */}
-                          {!jobDetails.company_profile ? (
-                            <Avatar
-                              name={jobDetails.company_name}
-                              size="80"
-                              round="8px"
-                              fgColor="#fff"
-                              textSizeRatio={2}
-                            />
-                            ) : (
-                            <img
-                              src={`${IMG_URL}/${jobDetails.company_profile}`}
-                              alt={jobDetails.company_name}
-                               className="rounded"
-                            />
-                          )}
-                        </Link>
-                      </div>
-                      <div>
-                        <h4 className="job_title text-capitalize">
-                          {stripHtml(jobDetails.title)}
-                        </h4>
-                        <h6 className="job_company">
-                          {jobDetails.company_name}
-                        </h6>
-                      </div>
-                    </div>
-
-                    <div className="d-flex py-2">
-                      {userId ? (
-                        <Link
-                          to="/apply-job"
-                          state={{ jobId: jobDetails.id }}
-                          className="btn btn-primary"
-                        >
-                          
-                          {t("Apply")}
-                        </Link>
-                      ) : (
-                        <button
-                          className="btn btn-primary"
-                          onClick={() => handleApplyClick(jobDetails.job_id)}
-                        >
-                          {t("Apply")}
-                        </button>
-                      )}
-                    </div>
-
-                    {/* <div className="d-flex py-2">
-                    {userId ? (
-                        <ApplyPopup jobId={jobDetails.id}>
-                          Apply
-                        </ApplyPopup>
-                      ) : (
-                        <button className="btn btn-primary" onClick={() => handleApplyClick(jobDetails.job_id)}>
-                          Apply
-                        </button>
-                      )}
-                    </div> */}
-                    
-                  </div>
-
-                  <div className="job_details mt-2">
-                    <ul className="p-0 d-flex flex-wrap align-items-center m-0">
-                      {/* <li className="d-flex align-items-center pe-2 me-2 border-end mb-2">
-                        <span className="fw-bold me-1">Experience : </span>
-                        <span>{jobDetails.experience_required} Yrs</span>
-                      </li> */}
-
-                      { jobDetails.experience_required === "0" ? (
-                         <li className="d-flex align-items-center pe-2 me-2 border-end mb-2">
-                         <span className="fw-bold me-1">{t("Experience")}</span>
-                         <span>Fresher</span>
-                        </li>
-                      ) : (
-                        <li className="d-flex align-items-center pe-2 me-2 border-end mb-2">
-                        <span className="fw-bold me-1">{t("Experience")}</span>
-                        <span>{jobDetails.experience_required} Yrs</span>
-                        </li>
-                       )}
-
-                       {jobDetails.salary_currency && jobDetails.salary_range && jobDetails.hourly_rate && (
-                        <li className="d-flex align-items-baseline pe-2 me-2 mb-2">
-                          <span className="fw-bold me-1">
-                            {jobDetails.salary_currency || "Not Specified"} :
-                          </span>
-                          <span>
-                            {jobDetails.salary_range || "Not Specified"}
-                          </span>
-                          <small className="ms-1">
-                            /{jobDetails.hourly_rate || "Not Specified"}
-                          </small>
-                        </li>
-                       )}
-
-                    </ul>
-                  </div>
-
-             {jobDetails.job_location && jobDetails.job_location !== "---" ? (
-                <div className="job_details mt-2">
-                  <ul className="p-0 d-flex flex-wrap align-items-center m-0">
-                    <li className="d-flex align-items-baseline pe-2 me-2 mb-2">
-                      <span className="text-capitalize">
-                        <i className="fa-solid fa-location-dot me-1"></i> 
-                        {jobDetails.job_location.replace(/-/g, ' ')}
-                      </span>
-                    </li>
-                  </ul>
-                </div>
-              ) : (
-                <div className="job_details mt-2">
-                  <ul className="p-0 d-flex flex-wrap align-items-center m-0">
-                    <li className="d-flex align-items-baseline pe-2 me-2 mb-2">
-                      <span className="text-capitalize">
-                        <i className="fa-solid fa-location-dot me-1"></i> Not Specified
-                      </span>
-                    </li>
-                  </ul>
-                </div>
-              )}
-
-
-                  <hr className="my-2" />
-                 <div className="position-relative">
-                  <div className="d-flex flex-wrap justify-content-between align-items-center">
-                   <div className="py-1" >
-                    <span className="days  pe-2 d-inline-flex align-items-center">
-                      <b className="me-1">{t("Posted")}</b>  <span className="badge text-dark btn-light">{calculateTimeAgo(jobDetails.created_at)}</span>
-                      </span>
-                      { jobDetails.total_vacancies > 0 && (
-                        <span className="days border-start ps-2">
-                        <b className="me-1">{t("Vacancies")}</b>  <Link to={`/companies/${jobDetails?.company_slug}`}>{jobDetails.total_vacancies}</Link>
-                        </span>
-                      )}
-                   </div>
-                    <div className="py-1">
-                      <button
-                        onClick={toggleSaved}
-                        // className={`btn btn-light btn-sm me-2 `}
-                        className={`btn btn-light btn-sm me-2 `}
-                        title={saved ? "Click to unsave" : "Click to save"}
-                      >
-                        <i
-                          className={`fa-heart me-1 ${
-                            saved ? "fa-solid" : "fa-regular"
-                          }`}
-                        ></i>
-                        {saved ? t("Saved") : t("Save")}
-                      </button>
-                      <button ref={buttonRef} 
-                      className="btn btn-light btn-sm " 
-                      onClick={() => setVisible((prev) => !prev)}
-                      >
-                        <i className="fa-solid fa-share me-1"></i>{t("Share")}
-                      </button>
-                    </div>
-                  </div>
-                  {visible && (
-                    <div ref={containerRef} className="social_icons_container">
-                    <div className="modal-body p-3">
-                      
-                      <div className="d-flex flex-wrap justify-content-between social_links mt-2">
-                        <button className="btn btn-sm btn-primary mx-1 mb-2" onClick={() => shareOnPlatform('facebook')}>
-                          <i className="fa-brands fa-facebook"></i>
-                        </button>
-                        <button className="btn btn-sm btn-primary mx-1 mb-2" onClick={() => shareOnPlatform('twitter')}>
-                          <i className="fa-brands fa-twitter"></i>
-                        </button>
-                        <button className="btn btn-sm btn-primary mx-1 mb-2" onClick={() => shareOnPlatform('linkedin')}>
-                          <i className="fa-brands fa-linkedin"></i>
-                        </button>
-                        <button className="btn btn-sm btn-primary mx-1 mb-2" onClick={() => shareOnPlatform('whatsapp')}>
-                          <i className="fa-brands fa-whatsapp"></i>
-                        </button>
-                        <button className="btn btn-sm btn-primary mx-1 mb-2" onClick={() => copyToClipboard()}>
-                          <i className="fa-solid fa-link"></i> 
-                        </button>
-                      </div>
-                    </div>
-                    </div>
-                  )}
-                  </div>         
-                </div>
-              </div>
+             
             </div>
             <div className="container pt-0 pt-lg-2">
-              <div className="row py-3">                        
+              <div className="row py-4">                        
                 {/* Job Details Section */}
                 <div className="col-lg-8 mb-4 mb-lg-0">
-                <h4 className="mb-3 text-start" >&nbsp;</h4>
+                
+
+                  <div className="card company_profile mt-0 border-0 shadow mb-3">
+                    <div className="card-body">
+                      <div className="d-flex align-items-start justify-content-between ">
+                        <div className="d-flex align-items-center flex-wrap py-2">
+                          <div className="logo_div me-3">
+                            <Link to={`/companies/${jobDetails?.company_slug}`}>
+                              {!jobDetails.company_profile ? (
+                                <Avatar
+                                  name={jobDetails.company_name}
+                                  size="80"
+                                  round="8px"
+                                  fgColor="#fff"
+                                  textSizeRatio={2}
+                                />
+                                ) : (
+                                <img
+                                  src={`${IMG_URL}/${jobDetails.company_profile}`}
+                                  alt={jobDetails.company_name}
+                                  className="rounded"
+                                />
+                              )}
+                            </Link>
+                          </div>
+                          <div>
+                          
+                            <h6 className="job_company text-secondary mt-2">
+                              <Link to={`/companies/${jobDetails?.company_slug}`}>
+                                 {jobDetails.company_name}
+                              </Link>
+                            </h6>
+                            <h4 className="job_title text-capitalize">
+                              {stripHtml(jobDetails.title)}
+                            </h4>
+                          </div>
+                        </div>
+
+                        <div className="d-flex py-2">
+                          <button className="btn btn-primary" onClick={handleApplyClick}>
+                            {t("Apply")}
+                          </button>
+                        </div>
+                        
+                      </div>
+
+                      <div className="job_details mt-2">
+                        <ul className="p-0 d-flex flex-wrap align-items-center m-0">
+                          {/* <li className="d-flex align-items-center pe-2 me-2 border-end mb-2">
+                            <span className="fw-bold me-1">Experience : </span>
+                            <span>{jobDetails.experience_required} Yrs</span>
+                          </li> */}
+
+                          { jobDetails.experience_required === "0" ? (
+                            <li className="d-flex align-items-center pe-2  mb-2">
+                            <span className="fw-bold me-1">{t("Experience")}</span>
+                            <span>Fresher</span>
+                            </li>
+                            // <></> 
+                          ) : (
+                            <li className="d-flex align-items-center pe-2  mb-2">
+                            <span className="fw-bold me-1">{t("Experience")}</span>
+                            <span>{jobDetails.experience_required} Yrs</span>
+                            </li>
+                          )}
+
+                          {jobDetails.salary_currency && jobDetails.salary_range && jobDetails.hourly_rate && (
+                            <li className="d-flex align-items-baseline border-start ps-2 me-2 mb-2">
+                              <span className="fw-bold me-1">
+                                {jobDetails.salary_currency || "Not Specified"} :
+                              </span>
+                              <span>
+                                {jobDetails.salary_range || "Not Specified"}
+                              </span>
+                              <small className="ms-1">
+                                /{jobDetails.hourly_rate || "Not Specified"}
+                              </small>
+                            </li>
+                          )}
+
+                        </ul>
+                      </div>
+
+              <div className="job_details">
+              <ul className="p-0 d-flex flex-wrap align-items-center m-0">
+                <li className="d-flex align-items-baseline pe-2 me-2 mb-2">
+                  <p className="text-capitalize m-0">
+                    <i className="fa-solid fa-location-dot me-1"></i>
+                    {jobDetails.job_type && (jobDetails.remote_type || jobDetails.city) ? (
+                      <>
+                        <span>{jobDetails.job_type.replace(/-/g, " ")}</span>
+                        <span className="ms-1">
+                          (
+                          {jobDetails.remote_type === "static Location" ||
+                          jobDetails.remote_type === "static location"
+                            ? jobDetails.city || "Not Specified"
+                            : jobDetails.remote_type?.trim() === "" && jobDetails.city
+                            ? jobDetails.city
+                            : jobDetails.remote_type || "Not Specified"}
+                          )
+                        </span>
+                      </>
+                    ) : (
+                      <span>Not Specified</span>
+                    )}
+                  </p>
+                </li>
+              </ul>
+            </div>
+
+
+                      <hr className="my-2" />
+                    <div className="position-relative">
+                      <div className="d-flex flex-wrap justify-content-between align-items-center">
+                      <div className="py-1" >
+                        <span className="days  pe-2 d-inline-flex align-items-center">
+                          <b className="me-1">{t("Posted")}</b>  <span className="badge text-dark btn-light">{calculateTimeAgo(jobDetails.created_at)}</span>
+                          </span>
+                          { jobDetails.total_vacancies > 0 && (
+                            <span className="days border-start ps-2">
+                            <b className="me-1">{t("Vacancies")}</b>  <Link to={`/companies/${jobDetails?.company_slug}`}>{jobDetails.total_vacancies}</Link>
+                            </span>
+                          )}
+                      </div>
+                        <div className="py-1">
+                          <button
+                            onClick={toggleSaved}
+                            // className={`btn btn-light btn-sm me-2 `}
+                            className={`btn btn-light btn-sm me-2 `}
+                            title={saved ? "Click to unsave" : "Click to save"}
+                          >
+                            <i
+                              className={`fa-heart me-1 ${
+                                saved ? "fa-solid" : "fa-regular"
+                              }`}
+                            ></i>
+                            {saved ? t("Saved") : t("Save")}
+                          </button>
+                          <button ref={buttonRef} 
+                          className="btn btn-light btn-sm " 
+                          onClick={() => setVisible((prev) => !prev)}
+                          >
+                            <i className="fa-solid fa-share me-1"></i>{t("Share")}
+                          </button>
+                        </div>
+                      </div>
+                      {visible && (
+                        <div ref={containerRef} className="social_icons_container">
+                        <div className="modal-body p-3">
+                          
+                          <div className="d-flex flex-wrap justify-content-between social_links mt-2">
+                            <button className="btn btn-sm btn-primary mx-1 mb-2" onClick={() => shareOnPlatform('facebook')}>
+                              <i className="fa-brands fa-facebook"></i>
+                            </button>
+                            <button className="btn btn-sm btn-primary mx-1 mb-2" onClick={() => shareOnPlatform('twitter')}>
+                              <i className="fa-brands fa-twitter"></i>
+                            </button>
+                            <button className="btn btn-sm btn-primary mx-1 mb-2" onClick={() => shareOnPlatform('linkedin')}>
+                              <i className="fa-brands fa-linkedin"></i>
+                            </button>
+                            <button className="btn btn-sm btn-primary mx-1 mb-2" onClick={() => shareOnPlatform('whatsapp')}>
+                              <i className="fa-brands fa-whatsapp"></i>
+                            </button>
+                            <button className="btn btn-sm btn-primary mx-1 mb-2" onClick={() => copyToClipboard()}>
+                              <i className="fa-solid fa-link"></i> 
+                            </button>
+                          </div>
+                        </div>
+                        </div>
+                      )}
+                      </div>         
+                    </div>
+                  </div>
 
                   <div className="card job_list_card mb-4">
                     <div className="card-body">
@@ -770,33 +713,9 @@ const JobDetail = () => {
                         <div className="job-description">
                           <div className="d-flex justify-content-between align-items-center">
                            <h5 className="job_company m-0">{t("JobDescription")}</h5>
-                           <div className="d-flex py-2">
-                            {userId ? (
-                              <Link
-                                to="/apply-job"
-                                state={{ jobId: jobDetails.id }}
-                                className="btn btn-sm btn-primary"
-                              >
-                                
-                                {t("Apply")}
-                              </Link>
-                            ) : (
-                              <button
-                                className="btn btn-sm btn-primary"
-                                onClick={() => handleApplyClick(jobDetails.job_id)}
-                              >
-                               {t("Apply")}
-                              </button>
-                            )}
-                          </div>
-
+                          
                           </div>
                         
-                          {/* <div 
-                            className="job-requirements mt-3"
-                            dangerouslySetInnerHTML={{ __html: cleanHtml(decodedHtml(text))}}
-                          /> */}
-
                          <div>
                             <div
                               ref={contentRef}
@@ -882,7 +801,8 @@ const JobDetail = () => {
                              </Link>
                            </p>
                          )}
-                           {jobDetails.website && (
+
+                        {jobDetails.website && (
                            <p className="mb-2">
                              <Link
                                className="text-theme"
@@ -904,54 +824,54 @@ const JobDetail = () => {
                     </div>
                   </div>
               
-                { jobDetails.show_contact_details === 1 && (
-                     <div className="card job_list_card mb-4">
-                     <div className="card-body">
-                       <div className="container job-details">
-                         <h5 className="fw-semibold">{t("ContactDetails")}</h5>
- 
-                         {jobDetails.job_email && (
-                           <p className="mb-2">
-                             <Link
-                               className="text-theme"
-                               to={`mailto:${jobDetails.job_email}`}
-                               rel="noopener noreferrer"
-                             >
-                               <i className="fa-regular fa-envelope me-2"></i>
-                               {jobDetails.job_email}
-                             </Link>
-                           </p>
-                         )}
- 
-                         {jobDetails.whatsapp && (
-                           <p className="mb-2">
-                             <Link
-                               className="text-theme"
-                               to={`https://wa.me/${jobDetails.whatsapp}`}
-                               target="_blank"
-                               rel="noopener noreferrer"
-                             >
-                               <i className="fa-brands fa-whatsapp me-2"></i>
-                               {jobDetails.whatsapp}
-                             </Link>
-                           </p>
-                         )}
+                  { jobDetails.show_contact_details === 1 && (
+                      <div className="card job_list_card mb-4">
+                      <div className="card-body">
+                        <div className="container job-details">
+                          <h5 className="fw-semibold">{t("ContactDetails")}</h5>
+  
+                          {jobDetails.job_email && (
+                            <p className="mb-2">
+                              <Link
+                                className="text-theme"
+                                to={`mailto:${jobDetails.job_email}`}
+                                rel="noopener noreferrer"
+                              >
+                                <i className="fa-regular fa-envelope me-2"></i>
+                                {jobDetails.job_email}
+                              </Link>
+                            </p>
+                          )}
+  
+                          {jobDetails.whatsapp && (
+                            <p className="mb-2">
+                              <Link
+                                className="text-theme"
+                                to={`https://wa.me/${jobDetails.whatsapp}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                              >
+                                <i className="fa-brands fa-whatsapp me-2"></i>
+                                {jobDetails.whatsapp}
+                              </Link>
+                            </p>
+                          )}
 
-                        
-                         <p className="mb-2">
-                           <strong>{t("ThanksRegards")}</strong>
-                         </p>
- 
-                         {jobDetails.contact_name && (
-                           <p className="m-0 text-capitalize">
-                             <strong>{jobDetails.contact_name}</strong>
-                           </p>
-                         )}
- 
-                       </div>
-                     </div>
-                     </div>
-                ) }
+                          
+                          {/* <p className="mb-2">
+                            <strong>{t("ThanksRegards")}</strong>
+                          </p> */}
+  
+                          {jobDetails.contact_name && (
+                            <p className="m-0 text-capitalize">
+                              <strong>{jobDetails.contact_name}</strong>
+                            </p>
+                          )}
+  
+                        </div>
+                      </div>
+                      </div>
+                  ) }
                  
                            
                 </div>
@@ -959,7 +879,7 @@ const JobDetail = () => {
                  {/* Sidebar Section */}
                 <div className="col-lg-4 mb-4">
                   <div className="card_sticky">
-                   <h4 className="mb-3 text-start">{t("SimilarJobs")}</h4>
+                   <h4 className="mb-3 text-center">{t("SimilarJobs")}</h4>
                    <div className="row">
                     {similarJobs.length > 0 ? (
                       similarJobs.slice(0,3).map((job) => (
@@ -1014,14 +934,14 @@ const JobDetail = () => {
                                 </div>
                               </div>
 
-                              <div className="py-2">
+                              <div className="">
                                 {/* <Link to={`/companies/${job.company_slug}`}>
                                   <h5 className="py-2 m-0">
                                     {stripHtml(job.company_name)}
                                   </h5>
                                 </Link> */}
                                 <Link to={`/jobs/${job.slug}`}>
-                                  <h6 className="py-2 m-0">
+                                  <h6 className=" mt-2 m-0 text-capitalize">
                                     {stripHtml(job.title)}
                                   </h6>
                                 </Link>
@@ -1029,7 +949,7 @@ const JobDetail = () => {
 
                               {/* <p className="main_desc">{job.company_tagline}</p> */}
 
-                              <ul className="p-0 d-flex flex-wrap m-0">
+                              <ul className="p-0 d-flex flex-wrap mt-2 m-0">
                                 {job.job_type && (
                                   <li>
                                     <div className="btn btn-sm btn-green me-2 mb-2 text-capitalize">

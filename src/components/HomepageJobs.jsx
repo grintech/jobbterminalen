@@ -6,6 +6,7 @@ import { useAuthContext } from "../store/authContext";
 import { ToastContainer,toast } from "react-toastify";
 import Avatar from "react-avatar";
 import { useTranslation } from "react-i18next";
+import { JobCardSkeleton } from "./skeleton/JobCardSkeleton";
 
 const HomepageJobs = () => {
 
@@ -26,46 +27,91 @@ const HomepageJobs = () => {
   const userId = user ? user.id : null;
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchJobs = async () => {
-      setLoading(true);
-      setError("");
-      try {
-        // console.log("Current Filters State:", filters); // Debug current filters
-        const query = new URLSearchParams(filters).toString();
-        // console.log("Generated Query String:", query); // Debug query string
+  // useEffect(() => {
+  //   const fetchJobs = async () => {
+  //     setLoading(true);
+  //     setError("");
+  //     try {
+  //      const response = await fetch(`${API_URL}/job-list.php`, {
+  //         headers: {
+  //           Authorization: `Bearer ${bearerKey}`,
+  //           "Content-Type": "multipart/form-data",
+  //         }
+  //       });
+  //       const result = await response.json();
 
-        const response = await fetch(`${API_URL}/job-list.php?${query}`, {
-          headers: {
-            Authorization: `Bearer ${bearerKey}`,
-            "Content-Type": "multipart/form-data",
-          }
-        });
-        const result = await response.json();
-
-        if (result.type === "success") {
-          setJobs(result.data);
+  //       if (result.type === "success") {
+  //         setJobs(result.data);
  
-        } else {
-          setJobs([]);
-          setError(result.message || "Failed to fetch job posts");
-        }
-      } catch (error) {
+  //       } else {
+  //         setJobs([]);
+  //         setError(result.message || "Failed to fetch job posts");
+  //       }
+  //     } catch (error) {
+  //       setJobs([]);
+  //       setError("An error occurred while fetching jobs.");
+  //       console.error("Error fetching job posts:", error);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+  //   fetchJobs();
+  // }, [bearerKey, API_URL]);
+
+  useEffect(() => {
+  const cacheKey = "jobs_list";
+  const cached = localStorage.getItem(cacheKey);
+
+  if (cached) {
+    const { data, timestamp } = JSON.parse(cached);
+    const now = Date.now();
+
+    // If cache is valid (less than 10 minutes old), use it
+    if (now - timestamp < 10 * 60 * 1000) {
+      setJobs(data);
+      setLoading(false);
+      return;
+    }
+  }
+
+  const fetchJobs = async () => {
+    setLoading(true);
+    setError("");
+
+    try {
+      const response = await fetch(`${API_URL}/job-list.php`, {
+        headers: {
+          Authorization: `Bearer ${bearerKey}`,
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      const result = await response.json();
+
+      if (result.type === "success") {
+        setJobs(result.data);
+
+        // ✅ Save to localStorage with timestamp
+        localStorage.setItem(
+          cacheKey,
+          JSON.stringify({ data: result.data, timestamp: Date.now() })
+        );
+      } else {
         setJobs([]);
-        setError("An error occurred while fetching jobs.");
-        console.error("Error fetching job posts:", error);
-      } finally {
-        setLoading(false);
+        setError(result.message || "Failed to fetch job posts");
       }
-    };
+    } catch (error) {
+      setJobs([]);
+      setError("An error occurred while fetching jobs.");
+      console.error("Error fetching job posts:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    fetchJobs();
-  }, [filters]);
+  fetchJobs();
+}, []);
 
-
-//   const handlePageChange = (page) => {
-//     setFilter({ page });
-//   };
 
 
 // Fetch saved jobs from the API
@@ -140,12 +186,21 @@ const fetchSavedJobs = async () => {
           <div className="row ">
             <div className="col-12 d-flex flex-column position-relative align-items-center-justify-content-center">
               {loading ? (
-                <div className="loading-screen d-flex flex-column justify-content-center align-items-center">
-                  <div className="spinner-grow text-primary" role="status">
-                    <span className="visually-hidden">Loading...</span>
-                  </div>
-                  <p className='mt-2'>Fetching jobs...</p>
+                // <div className="loading-screen d-flex flex-column justify-content-center align-items-center">
+                //   <div className="spinner-grow text-primary" role="status">
+                //     <span className="visually-hidden">Loading...</span>
+                //   </div>
+                //   <p className='mt-2'>Fetching jobs...</p>
+                // </div>
+
+                 <div className="row">
+                  {Array.from({ length: 8 }).map((_, i) => (
+                    <div className="col-lg-3 col-md-6 col-sm-6 mb-4" key={i}>
+                      <JobCardSkeleton />
+                    </div>
+                  ))}
                 </div>
+
               ) : error ? (
               <>
                 <div className="msg_card">
@@ -160,11 +215,12 @@ const fetchSavedJobs = async () => {
               ) : jobs.length > 0 ? (
                 <>
                   <div className="row">
-                  {jobs.slice(0,8).map((job) => (
+                  {jobs.slice(0,8).map((job , index) => (
                     <div className="col-lg-3 col-md-6 col-sm-6 mb-4" key={job.id}>
-                      <div className="card company_list_card h-100">
+                      <div className="card company_list_card position-relative h-100">
+                         {index % 2 === 0 && <div className="fea_tag">Featured</div>}
                         <div className="card-body ">
-                          <div className="d-flex justify-content-between align-items-start">
+                          <div className="d-flex justify-content-between align-items-start mt-2">
                             <Link to={`/companies/${job.companies_slug}`}>
                               <div className="logo_div border-0 shadow">
                                 {!job.company_profile ? (
@@ -259,14 +315,15 @@ const fetchSavedJobs = async () => {
                 </>
               ) : (
                 <>
-                <div className="msg_card">
+                {/* <div className="msg_card">
                   <div className="card  border-0 shadow">
                     <div className="card-body text-center p-4">
                     <img className="job_search" src="/images/no-job.png" alt="job_search" />
                     <h6 className="text-theme">{error === "No data found" ? "No jobs found at the moment.." : "No jobs found at the moment.."}</h6>
                   </div>
                   </div>
-                </div>
+                </div> */}
+                <div className="text-center">{error}</div>
               </>
               )}
        

@@ -184,7 +184,7 @@ const Navbar = () => {
         </button>
         <div className="collapse navbar-collapse pt-3 pt-lg-0" id="navbarSupportedContent">
 
-        <ul className="navbar-nav mx-auto d-lg-flex mb-2 mb-lg-0">
+        <ul className="navbar-nav mx-auto d-lg-flex ">
             <li className="nav-item">
                 <Link to="/" className="nav-link" aria-current="page">{t("Home")}</Link>
             </li>
@@ -216,32 +216,34 @@ const Navbar = () => {
                 <Link to="/contact" className="nav-link">{t("ContactUs")}</Link>
             </li> */}
             </ul>
+             <Link to='/find-cv' className="btn btn-register me-2 mb-2 mb-lg-0" >Find CV</Link>
+
+        
         { !user ? (
         <>
             <div className='d-none d-lg-block pe-2'>
-            <form className="d-flex  both_btns" role="search">
-                <Link to='/login' className="btn btn-login me-2" type="submit">{t("Login")}<i className="fa-solid fa-user ms-1"></i></Link>
-                
-            </form>
+              <form className="d-flex  both_btns" role="search">
+                  <Link to='/login' className="btn btn-login me-2" type="submit">{t("Login")}<i className="fa-solid fa-user ms-1"></i></Link>
+              </form>
             </div>
         
         </>
         ) : 
-        <div className="user_dropdown d-none d-lg-block">
-        <div className="dropdown">
-            <button className="btn border dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-          
-            <p className='ml-4 mb-0 text-capitalize'>{displayName}
-              <i style={{fontSize:"10px"}} className="fa-solid fa-chevron-down ps-1"></i>
-             </p>
+          <div className="user_dropdown d-none d-lg-block">
+          <div className="dropdown">
+              <button className="btn border dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            
+              <p className='ml-4 mb-0 text-capitalize'>{displayName}
+                <i style={{fontSize:"10px"}} className="fa-solid fa-chevron-down ps-1"></i>
+              </p>
 
-            </button>
-            <ul className="dropdown-menu">
-                <li><Link to='/my-account' className="dropdown-item"><i className="fa-regular fa-user me-2"></i>{t("MyAccount")}</Link></li>
-                <li><Link className="dropdown-item" onClick={() => setShowLogoutModal(true)}><i className="fa-solid fa-right-from-bracket me-2"></i>{t("Logout")}</Link></li>
-            </ul>
-            </div>
-        </div>
+              </button>
+              <ul className="dropdown-menu">
+                  <li><Link to='/my-account' className="dropdown-item"><i className="fa-regular fa-user me-2"></i>{t("MyAccount")}</Link></li>
+                  <li><Link className="dropdown-item" onClick={() => setShowLogoutModal(true)}><i className="fa-solid fa-right-from-bracket me-2"></i>{t("Logout")}</Link></li>
+              </ul>
+              </div>
+          </div>
         }
 
         <ul className="d-none d-lg-block employer p-0 ms-lg-2 m-0 me-3">

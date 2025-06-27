@@ -1,77 +1,183 @@
+// ✅ Coming up: Full updated `AllJobPost.jsx` file with integrated filter logic and UI
+
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import Filter from "../components/Filter";
 import { Link, useNavigate } from "react-router-dom";
-import { useFilterContext } from "../store/context";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import HeroBannerJobs from "../components/HeroBannerJobs";
 import { Helmet } from "react-helmet-async";
 import { useAuthContext } from "../store/authContext";
-import { ToastContainer,toast } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 import Avatar from "react-avatar";
+import { JobCardSkeleton } from "../components/skeleton/JobCardSkeleton";
 
 const AllJobPost = () => {
-  const { filters, setFilter } = useFilterContext();
-  const [jobs, setJobs] = useState([]);
- 
-   const [savedJobs, setSavedJobs] = useState([]);
-   const [saved, setSaved] = useState(false);
-    
-  const [pagination, setPagination] = useState({});
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-
   const bearerKey = import.meta.env.VITE_BEARER_KEY;
   const API_URL = import.meta.env.VITE_API_URL;
   const IMG_URL = import.meta.env.VITE_IMG_URL;
+
   const { user } = useAuthContext();
   const userId = user ? user.id : null;
   const navigate = useNavigate();
 
+  const [filters, setFilters] = useState({});
+  const [jobs, setJobs] = useState([]);
+  const [savedJobs, setSavedJobs] = useState([]);
+  const [saved, setSaved] = useState(false);
+  const [pagination, setPagination] = useState({});
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  // Filter specific states
+  const [categories, setCategories] = useState([]);
+  const [allLocations, setAllLocations] = useState([]);
+  const [categorySearch, setCategorySearch] = useState("");
+  const [locationSearch, setLocationSearch] = useState("");
+  const [localFilters, setLocalFilters] = useState({
+    job_type: [],
+    salary_min: "",
+    salary_max: "",
+    experience: [],
+    location: [],
+    category: [],
+  });
+  const [isMobile, setIsMobile] = useState(false);
+  const [activeMobileFilter, setActiveMobileFilter] = useState("");
+
+  const jobTypeMap = {
+    "Work From Office": "work-from-office",
+    Remote: "remote",
+    Hybrid: "hybrid",
+  };
+  const experienceMap = {
+    Fresher: "0",
+    "1 Year": "1",
+    "2 Years": "2",
+    "3+ Years": "3",
+    "5+ Years": "5",
+  };
+
   useEffect(() => {
-    const fetchJobs = async () => {
-      setLoading(true);
-      setError("");
+    const handleResize = () => setIsMobile(window.innerWidth <= 767);
+    window.addEventListener("resize", handleResize);
+    handleResize();
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
       try {
-        // console.log("Current Filters State:", filters); // Debug current filters
-        const query = new URLSearchParams(filters).toString();
-        // console.log("Generated Query String:", query); // Debug query string
-
-        const response = await fetch(`${API_URL}/job-list.php?${query}`, {
-          headers: {
-            Authorization: `Bearer ${bearerKey}`,
-            "Content-Type": "multipart/form-data",
-          }
+        const res = await axios.get(`${API_URL}/get_main_categories.php`, {
+          headers: { Authorization: `Bearer ${bearerKey}` },
         });
-        const result = await response.json();
-
-        if (result.type === "success") {
-          setJobs(result.data);
-          setPagination(result.pagination);
-        } else {
-          setJobs([]);
-          setError(result.message || "Failed to fetch job posts");
+        if (res.data.type === "success") {
+          setCategories(res.data.categories || []);
         }
-      } catch (error) {
-        setJobs([]);
-        setError("An error occurred while fetching jobs.");
-        console.error("Error fetching job posts:", error);
-      } finally {
-        setLoading(false);
+      } catch (err) {
+        console.error("Error fetching categories", err);
       }
     };
 
-    fetchJobs();
+    const fetchLocations = async () => {
+      try {
+        const res = await axios.get(`${API_URL}/job-location.php`, {
+          headers: { Authorization: `Bearer ${bearerKey}` },
+        });
+        if (res.data.type === "success") {
+          const locations = (res.data.data || []).map((name) => ({
+            name,
+            slug: name.toLowerCase().replace(/\s+/g, "-"),
+          }));
+          setAllLocations(locations);
+        }
+      } catch (err) {
+        console.error("Error fetching locations", err);
+      }
+    };
+
+    fetchCategories();
+    fetchLocations();
+  }, []);
+
+  useEffect(() => {
+    fetchJobs(filters);
   }, [filters]);
 
-
-  const handlePageChange = (page) => {
-    setFilter({ page }); // Update the page in filters
+  const fetchJobs = async (filterObj = {}) => {
+    setLoading(true);
+    try {
+      const query = new URLSearchParams(filterObj).toString();
+      const response = await fetch(`${API_URL}/job-list.php?${query}`, {
+        headers: {
+          Authorization: `Bearer ${bearerKey}`,
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      const result = await response.json();
+      if (result.type === "success") {
+        setJobs(result.data);
+        setPagination(result.pagination);
+      } else {
+        setJobs([]);
+        setError(result.message || "No jobs found.");
+      }
+    } catch (err) {
+      setJobs([]);
+      setError("Failed to fetch jobs.");
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
   };
 
+  const handleCheckboxChange = (category, value) => {
+    setLocalFilters((prev) => {
+      let mappedValue = value;
+      if (category === "experience") mappedValue = experienceMap[value];
+      else if (category === "job_type") mappedValue = jobTypeMap[value];
 
-  // Fetch saved jobs from the API
+      return {
+        ...prev,
+        [category]: prev[category].includes(mappedValue)
+          ? prev[category].filter((item) => item !== mappedValue)
+          : [...prev[category], mappedValue],
+      };
+    });
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setLocalFilters((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleApplyFilters = () => {
+    const cleaned = Object.entries(localFilters)
+      .filter(([_, val]) => (Array.isArray(val) ? val.length : val !== ""))
+      .reduce((acc, [k, v]) => ({ ...acc, [k]: v }), {});
+    setFilters(cleaned);
+    setActiveMobileFilter("");
+  };
+
+  const handleResetFilters = () => {
+    const empty = {
+      job_type: [],
+      salary_min: "",
+      salary_max: "",
+      experience: [],
+      location: [],
+      category: [],
+    };
+    setLocalFilters(empty);
+    setFilters({});
+    window.location.reload();
+     
+  };
+
+  const handlePageChange = (page) => {
+    setFilters((prev) => ({ ...prev, page }));
+  };
+
   const fetchSavedJobs = async () => {
     try {
       const response = await axios.get(`${API_URL}/bookmarked-jobs-list.php?user_id=${userId}`, {
@@ -79,148 +185,374 @@ const AllJobPost = () => {
           Authorization: `Bearer ${bearerKey}`,
         },
       });
-      if (response.data.type === 'success') {
+      if (response.data.type === "success") {
         setSavedJobs(response.data.saved_jobs || []);
-        setSaved(response.data.data.status === 'active');
-      } else {
-        setError('No jobs found at the moment');
+        setSaved(response.data.data?.status === "active");
       }
-    } catch (error) {
-      console.error('Error fetching saved jobs:', error);
-      setError(`No jobs found at the moment`);
-    } finally {
-      setLoading(false);
+    } catch (err) {
+      console.error("Error fetching saved jobs", err);
     }
   };
 
-  // Toggle save job functionality
   const toggleSavedJob = async (jobId) => {
-     if (!userId) {
+    if (!userId) {
       toast.error("Please login to save job.");
-      setTimeout(() => {
-        navigate('/login');
-      }, 2000);      
-      return;
-      }
-
+      return setTimeout(() => navigate("/login"), 2000);
+    }
     try {
       const formData = new FormData();
-      formData.append('user_id', userId);
-      formData.append('job_id', jobId);
+      formData.append("user_id", userId);
+      formData.append("job_id", jobId);
 
-      const response = await axios.post(`${API_URL}/bookmark-jobs.php`, formData, {
-        headers: {
-          Authorization: `Bearer ${bearerKey}`,
-        },
+      const res = await axios.post(`${API_URL}/bookmark-jobs.php`, formData, {
+        headers: { Authorization: `Bearer ${bearerKey}` },
       });
-
-      if (response.data.type === 'success') {
-         const actionMessage = isJobSaved(jobId) ? "Job Unsaved" : "Job Saved"; 
-        toast.success(actionMessage); 
-        fetchSavedJobs(); // Re-fetch saved jobs to update the list
+      if (res.data.type === "success") {
+        toast.success(isJobSaved(jobId) ? "Job Unsaved" : "Job Saved");
+        fetchSavedJobs();
         setSaved(!saved);
       }
-    } catch (error) {
-      console.error('Error toggling save job:', error);
-      toast.error("Error while saving job.", err);
+    } catch (err) {
+      console.error("Error saving job", err);
+      toast.error("Error while saving job.");
     }
+  };
+
+  const isJobSaved = (jobId) => {
+    return Array.isArray(savedJobs) && savedJobs.some((job) => job.id === jobId);
   };
 
   useEffect(() => {
     fetchSavedJobs();
   }, []);
 
-  const isJobSaved = (jobId) => {
-    return Array.isArray(savedJobs) && savedJobs.some((savedJob) => savedJob.id === jobId);
-  };
-
   return (
     <>
-        <Helmet>
-          
-        {/* <title>Browse Jobs in Sweden - Find Your Dream Job | JobbTerminalen</title>
-        <meta name="description" content="Explore the latest job openings in Sweden. Find full-time, part-time, and remote job opportunities across various industries on JobbTerminalen." />
-        <meta name="keywords" content="jobs in Sweden, job openings, Sweden careers, job portal, employment opportunities, remote jobs, full-time jobs, part-time jobs" /> */}
-  
-      </Helmet>
-
+      {/* <Helmet>
+        <title>All Job Posts</title>
+      </Helmet> */}
+      
       <div className="all_jobs_page">
         <Navbar />
-        {/* <div className="hero_banner d-flex flex-column align-items-center justify-content-center ">
-          <h1 className="fw-bold position-relative">Job Vacancies</h1>
-          <div className="banner_search container d-flex align-items-center justify-content-center mt-4">
-            <i className="fa-solid fa-magnifying-glass search_icon"></i>
-            <div className="row align-items-center justify-content-center w-100">
-              <div className="col-lg-3 border-end">
-                <div className="d-flex align-items-center">
-                  <i className="fa-solid fa-magnifying-glass d-block d-lg-none"></i>
-                  <input className="w-100" type="text" placeholder="Enter Skills / designation"
-                    onChange={(e) => setFilter({ skills: e.target.value })}
-                  />
-                </div>
-              </div>
-              <div className="col-lg-2 border-end">
-                <div className="d-flex align-items-center">
-                  <i className="fa-solid fa-location-dot"></i>
-                  <input className="w-100" type="text" placeholder="Location"
-                    onChange={(e) => setFilter({ location: e.target.value })}
-                  />
-                </div>
-              </div>
-              <div className="col-lg-3 border-end">
-                <div className="d-flex align-items-center">
-                  <i className="fa-solid fa-briefcase"></i>
-                  <select
-                    className="form-select"
-                    aria-label="Default select example"
-                    onChange={(e) => setFilter({ experience: e.target.value })}
-                  >
-                    <option default>Experience</option>
-                    <option value="fresher">Fresher</option>
-                    <option value="1">1 Year</option>
-                    <option value="2">2 years</option>
-                    <option value="3">3+ Years</option>
-                    <option value="5">5+ Years</option>
-                  </select>
-                </div>
-              </div>
-              <div className="col-lg-2 border-end mb-2 mb-lg-0">
-                <div className="d-flex align-items-center">
-                  <i className="fa-solid fa-magnifying-glass"></i>
-                  <select className="form-select" aria-label="Default select example"
-                    onChange={(e) => setFilter({ job_type: e.target.value })}
-                  >
-                    <option default>JobType</option>
-                    <option value="remote">Remote</option>
-                    <option value="work-from-office">WFO</option>
-                    <option value="hybrid">Hybrid</option>
-                  </select>
-                </div>
-              </div>
-              <div className="col-lg-2 ">
-                <button type="submit" className="btn-register w-100">
-                  Search
-                </button>
-              </div>
-            </div>
-          </div>
-        </div> */}
         <HeroBannerJobs />
 
+        {/* Main layout with Filter + Job List */}
         <div className="container d-flex flex-column py-5 all_job_posts">
-          {/* <h4 className="mb-4">All Jobs</h4> */}
           <div className="row pb-5">
             <div className="col-lg-3 col-md-4 mb-4 mb-md-0">
-              <Filter />
-            </div>
-            <div className="col-lg-9 col-md-8 d-flex flex-column position-relative align-items-center-justify-content-center">
-              {loading ? (
-                <div className="loading-screen d-flex flex-column justify-content-center align-items-center">
-                  <div className="spinner-grow text-primary" role="status">
-                    <span className="visually-hidden">Loading...</span>
+                {isMobile ? (
+        <>
+          <div className="d-flex align-items-center mb-3">
+            <h5 className="m-0">Add Filter</h5>
+            <i className="fa-solid fa-filter"></i>
+          </div>
+          <div className="mobile-filter-list">
+            {[
+              { label: "Category", key: "category" },
+              { label: "Job Type", key: "job_type" },
+              { label: "Experience", key: "experience" },
+              { label: "Location", key: "location" },
+              { label: "Salary", key: "salary" },
+            ].map((filter) => (
+              <div
+                key={filter.key}
+                className="mobile-filter-tab rounded-pill"
+                onClick={() => setActiveMobileFilter(filter.key)}
+                style={{ cursor: "pointer" }}
+              >
+                <span>{filter.label}</span>
+              </div>
+            ))}
+          </div>
+        </>
+                ) : (
+                  <div className="card_sticky">
+                    <div className="card all_cat_filters">
+                      <div className="card-body">
+                        <h5 className="">All Filters</h5>
+                        <div className="d-flex justify-content-between">
+                          <button
+                            className="btn btn-sm btn-secondary me-2 px-2 border-0 rounded-1"
+                            onClick={handleResetFilters}
+                          >
+                            Reset <i className="ms-1 fa-solid fa-rotate"></i>
+                          </button>
+                          <button
+                            className="btn btn-sm btn-dark px-2 border-0 rounded-1"
+                            onClick={handleApplyFilters}
+                          >
+                            Apply Filter <i className="ms-1 fa-solid fa-filter"></i>
+                          </button>
+                        </div>
+                        <hr />
+
+                        <div className="accordion border-0" id="accordionExample1">
+                          {/* Category Filter */}
+                          <div className="accordion-item">
+                            <h2 className="accordion-header">
+                              <button className="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCategory">
+                                <b>Category</b>
+                              </button>
+                            </h2>
+                            <div id="collapseCategory" className="accordion-collapse collapse show">
+                              <div className="accordion-body">
+                                <input
+                                  type="search"
+                                  className="form-control mb-3"
+                                  placeholder="Search categories..."
+                                  value={categorySearch}
+                                  onChange={(e) => setCategorySearch(e.target.value)}
+                                />
+                                {categories
+                                  .filter((cat) =>
+                                    cat.name.toLowerCase().includes(categorySearch.toLowerCase())
+                                  )
+                                  .slice(0, 10)
+                                  .map((cat) => (
+                                    <div className="form-check" key={cat.id}>
+                                      <input
+                                        className="form-check-input"
+                                        type="checkbox"
+                                        checked={localFilters.category.includes(cat.slug)}
+                                        onChange={() => handleCheckboxChange("category", cat.slug)}
+                                      />
+                                      <label className="form-check-label text-capitalize">{cat.name}</label>
+                                    </div>
+                                  ))}
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Job Type Filter */}
+                          <div className="accordion-item">
+                            <h2 className="accordion-header">
+                              <button className="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseJobType">
+                                <b>Job Type</b>
+                              </button>
+                            </h2>
+                            <div id="collapseJobType" className="accordion-collapse collapse show">
+                              <div className="accordion-body">
+                                {Object.keys(jobTypeMap).map((type) => (
+                                  <div className="form-check" key={type}>
+                                    <input
+                                      className="form-check-input"
+                                      type="checkbox"
+                                      checked={localFilters.job_type.includes(jobTypeMap[type])}
+                                      onChange={() => handleCheckboxChange("job_type", type)}
+                                    />
+                                    <label className="form-check-label text-capitalize">{type}</label>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Experience Filter */}
+                          <div className="accordion-item">
+                            <h2 className="accordion-header">
+                              <button className="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExperience">
+                                <b>Experience</b>
+                              </button>
+                            </h2>
+                            <div id="collapseExperience" className="accordion-collapse collapse show">
+                              <div className="accordion-body">
+                                {Object.keys(experienceMap).map((exp) => (
+                                  <div className="form-check" key={exp}>
+                                    <input
+                                      className="form-check-input"
+                                      type="checkbox"
+                                      checked={localFilters.experience.includes(experienceMap[exp])}
+                                      onChange={() => handleCheckboxChange("experience", exp)}
+                                    />
+                                    <label className="form-check-label text-capitalize">{exp}</label>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Location Filter */}
+                          <div className="accordion-item">
+                            <h2 className="accordion-header">
+                              <button className="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseLocation">
+                                <b>Location</b>
+                              </button>
+                            </h2>
+                            <div id="collapseLocation" className="accordion-collapse collapse show">
+                              <div className="accordion-body">
+                                <input
+                                  type="search"
+                                  className="form-control mb-3"
+                                  placeholder="Search locations..."
+                                  value={locationSearch}
+                                  onChange={(e) => setLocationSearch(e.target.value)}
+                                />
+                                {allLocations
+                                  // .filter((loc) =>
+                                  //   loc.name.toLowerCase().includes(locationSearch.toLowerCase())
+                                  // )
+                                  .filter((loc) =>
+                                    loc.name && loc.name.toLowerCase().includes(locationSearch.toLowerCase())
+                                    )
+                                  .slice(0, 10)
+                                  .map((loc) => (
+                                    <div className="form-check" key={loc.id}>
+                                      <input
+                                        className="form-check-input"
+                                        type="checkbox"
+                                        checked={localFilters.location.includes(loc.slug)}
+                                        onChange={() => handleCheckboxChange("location", loc.slug)}
+                                      /> 
+                                      <label className="form-check-label text-capitalize">{loc.name}</label>
+                                    </div>
+                                  ))}
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Salary Filter */}
+                          <div className="accordion-item">
+                            <h2 className="accordion-header">
+                              <button className="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSalary">
+                                <b>Salary Range</b>
+                              </button>
+                            </h2>
+                            <div id="collapseSalary" className="accordion-collapse collapse show">
+                              <div className="accordion-body">
+                                <input type="number" name="salary_min" className="form-control mb-2" placeholder="Min Salary" value={localFilters.salary_min} onChange={handleInputChange} />
+                                <input type="number" name="salary_max" className="form-control" placeholder="Max Salary" value={localFilters.salary_max} onChange={handleInputChange} />
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                  <p className='mt-2'>Fetching jobs...</p>
-                </div>
+                )}
+
+                {/* Mobile Modal Filter UI */}
+                {activeMobileFilter && (
+                  <div className="modal show d-block mobile_filter_modal" tabIndex="-1">
+                    <div className="modal-dialog modal-dialog-centered modal-lg">
+                      <div className="modal-content">
+                        <div className="modal-header">
+                          <h5 className="modal-title">Filter Jobs</h5>
+                          <button type="button" className="btn-close" onClick={() => setActiveMobileFilter("")}></button>
+                        </div>
+                        <div className="modal-body d-flex" style={{ height: "250px" }}>
+                          <div className="w-50 border-end">
+                            <ul className="list-group list-group-flush">
+                              {["category", "job_type", "experience", "location", "salary"].map((key) => (
+                                <li key={key} className={`list-group-item ${activeMobileFilter === key ? "active" : ""}`} onClick={() => setActiveMobileFilter(key)}>
+                                  {key.charAt(0).toUpperCase() + key.slice(1).replace("_", " ")}
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                          <div className="w-50 ps-3 overflow-auto">
+                          {activeMobileFilter === "category" && (
+                              <>
+                                <input
+                                  type="search"
+                                  className="form-control mb-2"
+                                  placeholder="Search categories..."
+                                  value={categorySearch}
+                                  onChange={(e) => setCategorySearch(e.target.value)}
+                                />
+                                {categories
+                                  .filter((cat) =>
+                                    cat.name.toLowerCase().includes(categorySearch.toLowerCase())
+                                  )
+                                  // .slice(0, 10)
+                                  .map((cat) => (
+                                    <div className="form-check" key={cat.id}>
+                                      <input
+                                        className="form-check-input"
+                                        type="checkbox"
+                                        checked={localFilters.category.includes(cat.slug)}
+                                        onChange={() => handleCheckboxChange("category", cat.slug)}
+                                      />
+                                      <label className="form-check-label text-capitalize">{cat.name}</label>
+                                    </div>
+                                  ))}
+                              </>
+                            )}
+
+                            {activeMobileFilter === "job_type" &&
+                              Object.keys(jobTypeMap).map((type) => (
+                                <div className="form-check" key={type}>
+                                  <input className="form-check-input" type="checkbox" checked={localFilters.job_type.includes(jobTypeMap[type])} onChange={() => handleCheckboxChange("job_type", type)} />
+                                  <label className="form-check-label text-capitalize">{type}</label>
+                                </div>
+                              ))}
+
+                            {activeMobileFilter === "experience" &&
+                              Object.keys(experienceMap).map((exp) => (
+                                <div className="form-check" key={exp}>
+                                  <input className="form-check-input" type="checkbox" checked={localFilters.experience.includes(experienceMap[exp])} onChange={() => handleCheckboxChange("experience", exp)} />
+                                  <label className="form-check-label text-capitalize">{exp}</label>
+                                </div>
+                              ))}
+
+                            {activeMobileFilter === "location" && (
+                              <>
+                                <input
+                                  type="search"
+                                  className="form-control mb-2"
+                                  placeholder="Search locations..."
+                                  value={locationSearch}
+                                  onChange={(e) => setLocationSearch(e.target.value)}
+                                />
+                                {allLocations
+                                  .filter((loc) =>
+                                    loc.name.toLowerCase().includes(locationSearch.toLowerCase())
+                                  )
+                                  .map((loc) => (
+                                    <div className="form-check" key={loc.id}>
+                                      <input className="form-check-input" type="checkbox" checked={localFilters.location.includes(loc.slug)} onChange={() => handleCheckboxChange("location", loc.slug)} />
+                                      <label className="form-check-label text-capitalize">{loc.name}</label>
+                                    </div>
+                                  ))}
+                              </>
+                            )}
+
+                            {activeMobileFilter === "salary" && (
+                              <>
+                                <input type="number" name="salary_min" className="form-control mb-2" placeholder="Min Salary" value={localFilters.salary_min} onChange={handleInputChange} />
+                                <input type="number" name="salary_max" className="form-control" placeholder="Max Salary" value={localFilters.salary_max} onChange={handleInputChange} />
+                              </>
+                            )}
+
+                          </div>
+                        </div>
+                        <div className="modal-footer">
+                          <button className="btn btn-sm btn-secondary" onClick={handleResetFilters}>Reset</button>
+                          <button className="btn btn-sm btn-primary" onClick={handleApplyFilters}>Apply</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+            </div>
+            <div className="col-lg-9 col-md-8">
+
+                 {loading ? (
+                // <div className="loading-screen d-flex flex-column justify-content-center align-items-center">
+                //   <div className="spinner-grow text-primary" role="status">
+                //     <span className="visually-hidden">Loading...</span>
+                //   </div>
+                //   <p className='mt-2'>Fetching jobs...</p>
+                // </div>
+
+                      <div className="row">
+                        {Array.from({ length: 6 }).map((_, i) => (
+                          <div className="col-lg-4 col-md-6 col-sm-6 mb-4" key={i}>
+                            <JobCardSkeleton />
+                          </div>
+                        ))}
+                      </div>
+
+
               ) : error ? (
               <>
                 <div className="msg_card">
@@ -399,23 +731,12 @@ const AllJobPost = () => {
               </div>
 
 
-
             </div>
           </div>
         </div>
 
         <Footer />
-        <ToastContainer 
-          position="top-right"
-          autoClose={3000}
-          hideProgressBar
-          newestOnTop={false}
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-        />
+        <ToastContainer />
       </div>
     </>
   );

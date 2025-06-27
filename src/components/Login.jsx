@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useAuthContext } from "../store/authContext";
 import Navbar from "./Navbar";
@@ -21,6 +21,9 @@ const Login = () => {
 
   const { login } = useAuthContext();
   const navigate = useNavigate();
+
+  const location = useLocation();
+
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -56,9 +59,16 @@ const Login = () => {
 
         login(userData);
 
+        // setTimeout(() => {
+        //   if (userData.role === "job_seeker") {
+        //     navigate("/");
+        //   }
+        // }, 2000);
+
         setTimeout(() => {
           if (userData.role === "job_seeker") {
-            navigate("/");
+            const redirectPath = location.state?.from || "/";
+            navigate(redirectPath, { replace: true }); // 👈 redirect back to original page if exists
           }
         }, 2000);
 
@@ -135,7 +145,9 @@ const Login = () => {
                   onSubmit={handleSubmit}
                 >
                   <div>
-                    <h1>{t("Login")}</h1>
+                    <h1>
+                      {t("Loginjobseeker")} 
+                      <span className="ms-1 text-theme fw-bold"> {t("LoginjobseekerSpan")}</span> </h1>
                     <p>{t("Login-Text")}</p>
                     <div className="row">
                       <div className="col-12 mb-3">
@@ -226,7 +238,7 @@ const Login = () => {
                           {t("Register")}
                         </Link>
                       </p>
-                      <p className="text-center m-0">{t("Copyright")}</p>
+                      <p className="text-theme text-center m-0">{t("Copyright")}</p>
                     </div>
                   </div>
                 </form>

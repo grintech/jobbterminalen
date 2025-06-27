@@ -6,7 +6,7 @@
 }
 
 body{
-  overflow-x: hidden;
+  /* overflow-x: hidden; */
    /* background-color: #f8f8f8;  */
    background-color: #eaeaea; 
    top: 0 !important;
@@ -734,7 +734,7 @@ input[type="checkbox"]:focus{box-shadow: none !important; }
   background-color: white;
   border: 1px solid #ccc;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-  z-index: 1000;
+  z-index: 100;
   margin-top: 5px;
   border-radius: 12px;
 }
@@ -747,11 +747,12 @@ input[type="checkbox"]:focus{box-shadow: none !important; }
 }
 
 .suggestion-item {
-  padding: 8px 12px;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-  background: white;
-  color: black;
+    padding: 5px 12px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    background: white;
+    color: black;
+    font-size: 15px;
 }
 
 .suggestion-item:hover {
@@ -855,9 +856,10 @@ div#google_translate_element .indicator{font-size: 0px !important;}
     color: black;
 }
 .mobile_filter_modal li {font-size: 15px;}
+.mobile_filter_modal input[type="search"]:focus{box-shadow:unset !important;}
 
 .sponser_image {
-  height:435px;
+  height:430px;
   background: url("../public/images/sponsered.webp");
   /* background-color: #000000; */
   background-position: top center;
@@ -888,9 +890,74 @@ div#google_translate_element .indicator{font-size: 0px !important;}
 .thank-you .card h5{ font-size: 26px;}
 .thank-you .card img{ width: 130px; margin-bottom: 20px;}
 
+
+/*------- Find CV -----------*/
+.find_cv .filter_section label{font-size: 18px;}
+.find_cv .filter_section input{height: 50px;border: 1px solid #e7e7e7;}
+.find_cv .filter_section input:focus{box-shadow: unset;border: 1px solid #003479;}
+.find_cv .filter_section button{height: 50px; }
+.find_cv .candidate_cards .card{box-shadow: unset;border: 1px solid #e7e7e7 !important;}
+.find_cv .candidate_cards .card:hover{box-shadow: unset;border: 1px solid #003479 !important;border-color: #003479;}
+
+.create_free_job{position: relative; background-color: #003479; 
+}
+.create_free_job::after{
+  content: ''; 
+  /* background: rgba(0, 0, 0, 0.5); */
+    position: absolute;left: 0; top: 0; width: 100%; height: 100%; border-radius: 10px;}
+.create_free_job .create_btn{position: absolute; transform: translate(-50%, -50%); top: 50%; left: 50%; color: #fff; width: 70%;}
+.create_free_job .create_btn h3{font-size: 28px;}
+
+.popular_categories .emp_type_cards h5{font-size: 20px !important; font-weight: 600; text-align: center;}
+
+.blinking-text {
+  animation: blink 1.2s infinite;
+}
+.popular_categories .emp_type_cards:hover {
+  animation: blink1 1.2s infinite;
+}
+
+@keyframes blink {
+  0%, 100% {
+    text-shadow: none;
+    opacity: 1;
+   transform: scale(1);
+  }
+  50% {
+    text-shadow: 0 0 8px #00bcd4;
+    opacity: 1;
+    transform: scale(1.04);
+  }
+}
+
+@keyframes blink1 {
+  0%, 100% {
+    text-shadow: none;
+    opacity: 1;
+   transform: scale(1);
+  }
+  50% {
+    text-shadow: 0 0 10px #00bcd4;
+    opacity: 1;
+    transform: scale(1.02);
+  }
+}
+
+
+
+.register_container .stsearch-box input {font-size: 14px !important; height: 40px;}
+.register_container .stdropdown-tools {display: none !important;}
+.register_container .stdropdown-container{border: 0 !important;}
+.register_container .stsearch-box {padding: 0 !important;}
+.register_container .stsearch-box input:focus-visible{outline: 0 !important;}
+
+.company_sekeleton .logo_div{
+  background: transparent !important; border: 0 !important;
+}
+
 /*-------- Media Query --------------*/
 @media screen and (min-width:1400px) {
-  .sponser_image { height:415px;}
+  .sponser_image { height:405px;}
 }
 @media screen and (min-width:992px) {
   .navbar .navbar-nav .dropdown:hover .dropdown-menu {
@@ -907,6 +974,7 @@ div#google_translate_element .indicator{font-size: 0px !important;}
 }
 
 @media screen and (max-width:992px) {
+  .create_free_job .create_btn h3{font-size: 20px;}
   .signup_form{margin-right: 0;}
   .navbar .navbar-toggler{ padding: 3px 8px !important;}
   .navbar .employer .dropdown-menu[data-bs-popper] {
@@ -1076,7 +1144,7 @@ div#google_translate_element .indicator{font-size: 0px !important;}
 
 @media screen and (max-width:375px) {
   .category_modal label{font-size: 13px;}
-
+  .banner_sideImage .swiper-pagination{bottom: 0px !important;}
   .otp-input {width: 35px;height: 35px !important;}
   .home_job_types .inside_card h5{font-size: 14px; }
   .home_job_types .inside_card i{font-size: 22px; color: #003479; }
@@ -1122,7 +1190,7 @@ div#google_translate_element .indicator{font-size: 0px !important;}
 }
 
 .file-input .input-box {
-  padding: 10px;
+  padding: 9px;
   color: #003479;
   font-weight: bold;
 }
@@ -1223,6 +1291,8 @@ div#google_translate_element .indicator{font-size: 0px !important;}
 .popup-container .btn-close:focus {box-shadow: none;}
 
 .preview_certificates .list-group-item {font-size: 14px !important;}
+.preview_certificates .list-group-item .btn-danger{padding: 1px 7px !important;}
+.preview_certificates .list-group-item i{font-size: 11px !important;}
 
 
 .job-description-text {
@@ -1290,7 +1360,11 @@ small.badge.text-bg-light{font-weight: 600;background-color :rgb(235, 235, 235) 
 .maintainance{background-color: #003479; color: #fff;}
 
 .banner_sideImage a{display: flex; height: auto;}
-.banner_sideImage img{height: 100%; width: 100%; }
+.banner_sideImage img{height: 100%; width: 100%;}
+
+.banner_sideImage .swiper-pagination{bottom: 5px !important;}
+.banner_sideImage .swiper-pagination-bullet{background-color: #fff; opacity: 0.8 !important; }
+.banner_sideImage .swiper-pagination-bullet-active{color: #0d99ff !important; }
 
 #ShareModal .social_links .btn-primary{
   display: flex ;
@@ -1326,8 +1400,8 @@ small.badge.text-bg-light{font-weight: 600;background-color :rgb(235, 235, 235) 
 
 .clamped {
   display: -webkit-box;
-  -webkit-line-clamp: 3;
-  line-clamp: 3;
+  -webkit-line-clamp:5;
+  line-clamp:5;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
@@ -1427,9 +1501,7 @@ small.badge.text-bg-light{font-weight: 600;background-color :rgb(235, 235, 235) 
 #collapseCategory .accordion-body{height: 200px;overflow-y: scroll;}
 #collapseCategory input:focus{box-shadow: none !important;}
 #collapseCategory .accordion-body::-webkit-scrollbar{width: 7px}
-#collapseCategory .accordion-body::-webkit-scrollbar-track {
-  background: transparent;
-}
+#collapseCategory .accordion-body::-webkit-scrollbar-track { background: transparent;}
 
 #collapseCategory .accordion-body::-webkit-scrollbar-thumb {
   background-color: rgba(155, 155, 155, 0.5);
@@ -1437,13 +1509,29 @@ small.badge.text-bg-light{font-weight: 600;background-color :rgb(235, 235, 235) 
   border: transparent;
 }
 
+
+#collapseLocation .accordion-body{height: 200px;overflow-y: scroll;}
+#collapseLocation input:focus{box-shadow: none !important;}
+#collapseLocation .accordion-body::-webkit-scrollbar{width: 7px}
+#collapseLocation .accordion-body::-webkit-scrollbar-track { background: transparent;}
+#collapseLocation .accordion-body::-webkit-scrollbar-thumb {
+  background-color: rgba(155, 155, 155, 0.5);
+  border-radius: 20px;
+  border: transparent;
+}
+
+
 /* #collapseCategory .accordion-body{
   -ms-overflow-style: none;  
   scrollbar-width: none; 
 } */
 
-.apply_job_page form label{color: #686868;}
+/* .apply_job_page form label{color: #686868;} */
+.apply_job_page form label {color: #171515;}
+.apply_job_page form .form-control {color: #686868;}
+.apply_job_page form .form-select {color: #686868;}
 #company_details .company_info_card .text-end{font-size: 15px;}
+#company_details .company_info_card .company_list_card h6{font-size: 16px;}
 #company_details .company_info_card a:hover{color: #003479 !important;}
 #vacancies_section .company_list_card i{font-size: 14px;}
 #vacancies_section .company_list_card a:hover i{color: #003479 !important;}

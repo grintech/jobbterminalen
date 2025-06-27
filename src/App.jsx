@@ -21,7 +21,6 @@ import ForgetPassword from './components/ForgotPassword'
 import VerifyOtp from './components/VerifyOtp'
 import ResetPassword from './components/ResetPassword'
 import ProjectBasis from './Pages/ProjectBasis'
-// import SearchPage from './components/SearchPage'
 import MyAccount from './Pages/jobseeker/MyAccount'
 import ProtectedRoute from './routes/ProtectedRoute'
 import SavedJobs from './Pages/jobseeker/SavedJobs'
@@ -43,6 +42,8 @@ import PublicRoute from './routes/PublicRoute'
 import TemplatePreview from './resume-builder/TemplatePreview'
 import TemplatePage from './resume-builder/TemplatePage'
 import ThankYou from './Pages/ThankYou'
+import FindCV from './components/FindCV'
+import EmploymentList from './components/EmploymentList'
 // import TranslateWidget from './components/TranslateWidget'
 
 
@@ -100,9 +101,11 @@ const App = () => {
 
       
         <Route path='/job/category/:slug' element={ <CategoryList />} />
+        <Route path='/job/employment-type/:slug' element={ <EmploymentList />} />
         {/* <Route path='/job-detail' element={ <JobDetail />} /> */}
         <Route path='/jobs/:slug' element={ <JobDetail />} />
         <Route path='/thank-you' element={ <ThankYou />} />
+        <Route path='/find-cv' element={ <FindCV />} />
 
 
         <Route path='/templates' element={ <TemplatePreview />} />
@@ -112,7 +115,6 @@ const App = () => {
 
         {/* <Route path='/apply-job' element={ <ApplyJob />} /> */}
 
-        {/* <Route path='/search-job' element={ <SearchPage />} /> */}
         <Route path='/job-search' element={ <SearchJobs />} />
 
 

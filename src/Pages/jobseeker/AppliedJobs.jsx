@@ -82,10 +82,11 @@ const Appliedjobs = () => {
           // Refresh the applied jobs list
            setJobs(prev => prev.filter(job => job.application_id !== selectedApplicationId));
           setSelectedApplicationId(null);
-          fetchData();
+          
 
           window.bootstrap.Modal.getInstance(document.getElementById("revokeModal")).hide();
           toast.success(response.data.message || "Application revoked successfully!");
+          window.location.reload();
         } else {
           toast.error(response.data.message || "Failed to revoke application.");
         }

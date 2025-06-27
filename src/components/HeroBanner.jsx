@@ -4,7 +4,17 @@ import axios from "axios";
 import { useTranslation } from "react-i18next";
 
 const HeroBanner = () => {
-const { t } = useTranslation();
+  const { t } = useTranslation();
+
+    const INITIAL_COUNT = 1000;
+
+    const getInitialCount = () => {
+      const saved = localStorage.getItem("jobCount");
+      return saved ? parseInt(saved, 10) : INITIAL_COUNT;
+    };
+
+  const [jobCount, setJobCount] = useState(getInitialCount);
+  const intervalRef = useRef(null);
 
   const [formData, setFormData] = useState({
     skills: "",
@@ -86,10 +96,37 @@ const { t } = useTranslation();
     }
   };
 
+  // Job count update function
+   useEffect(() => {
+    // Save immediately in case count is from initial value
+    localStorage.setItem("jobCount", jobCount);
+
+    // Clear any existing interval
+    if (intervalRef.current) clearInterval(intervalRef.current);
+
+    intervalRef.current = setInterval(() => {
+      setJobCount((prev) => {
+        const updated = prev + 1;
+        localStorage.setItem("jobCount", updated);
+        return updated;
+      });
+    }, 180000); // Every 3 minutes
+
+    return () => clearInterval(intervalRef.current);
+  }, []); // Run only once
+
+  const formatNumber = (x) => {
+    // return x.toLocaleString("en-IN");
+     return x.toLocaleString("sv-SE");
+  };
+  
+
   return (
     <div className="hero_banner d-flex flex-column align-items-center justify-content-center">
       <h1 className="fw-bold position-relative text-center">{t("HeroTitle")}</h1>
-      <h2 className="position-relative herotext text-center">{t("HeroText")}</h2>
+       <h2 className="position-relative herotext text-center">
+        {t("HeroText")} <span className="fs-3 fw-bold">{formatNumber(jobCount)}</span>+ {t("HeroText1")}
+      </h2>
 
       <div className="banner_search container d-flex align-items-center justify-content-center mt-4 shadow">
         <i className="fa-solid fa-magnifying-glass search_icon"></i>
