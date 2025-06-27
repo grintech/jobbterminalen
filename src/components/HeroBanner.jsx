@@ -8,13 +8,41 @@ const HeroBanner = () => {
 
     const INITIAL_COUNT = 1000;
 
-    const getInitialCount = () => {
-      const saved = localStorage.getItem("jobCount");
-      return saved ? parseInt(saved, 10) : INITIAL_COUNT;
+  const INTERVAL_MS = 60000; // 3 minutes
+
+    const [jobCount, setJobCount] = useState(INITIAL_COUNT);
+
+  useEffect(() => {
+    const savedStart = localStorage.getItem("jobCountStart");
+    const savedTime = localStorage.getItem("jobStartTime");
+
+    let baseCount = INITIAL_COUNT;
+    let startTime = Date.now();
+
+    if (savedStart && savedTime) {
+      baseCount = parseInt(savedStart, 10);
+      startTime = parseInt(savedTime, 10);
+    } else {
+      localStorage.setItem("jobCountStart", baseCount);
+      localStorage.setItem("jobStartTime", startTime);
+    }
+
+    const updateCount = () => {
+      const now = Date.now();
+      const elapsed = now - startTime;
+      const intervalsPassed = Math.floor(elapsed / INTERVAL_MS);
+      setJobCount(baseCount + intervalsPassed);
     };
 
-  const [jobCount, setJobCount] = useState(getInitialCount);
-  const intervalRef = useRef(null);
+    updateCount(); // initial
+    const interval = setInterval(updateCount, 1000); // check every 1s
+
+    return () => clearInterval(interval);
+  }, []);
+  // const formatIndianNumber = (x) => x.toLocaleString("en-IN");
+  const formatNumber = (x) => x.toLocaleString("sv-SE");
+
+  //--------------------///
 
   const [formData, setFormData] = useState({
     skills: "",
@@ -96,29 +124,7 @@ const HeroBanner = () => {
     }
   };
 
-  // Job count update function
-   useEffect(() => {
-    // Save immediately in case count is from initial value
-    localStorage.setItem("jobCount", jobCount);
-
-    // Clear any existing interval
-    if (intervalRef.current) clearInterval(intervalRef.current);
-
-    intervalRef.current = setInterval(() => {
-      setJobCount((prev) => {
-        const updated = prev + 1;
-        localStorage.setItem("jobCount", updated);
-        return updated;
-      });
-    }, 180000); // Every 3 minutes
-
-    return () => clearInterval(intervalRef.current);
-  }, []); // Run only once
-
-  const formatNumber = (x) => {
-    // return x.toLocaleString("en-IN");
-     return x.toLocaleString("sv-SE");
-  };
+  
   
 
   return (
