@@ -8,8 +8,16 @@ import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 
 import html2pdf from "html2pdf.js"; 
+import { useTranslation } from "react-i18next";
 
 const MyAccount = () => {
+
+  const {t, } = useTranslation();
+
+  const bearerKey = import.meta.env.VITE_BEARER_KEY;
+  const API_URL = import.meta.env.VITE_API_URL;
+  const IMG_URL = import.meta.env.VITE_IMG_URL;
+  const SITE_URL = import.meta.env.VITE_SITE_URL;
 
   const [isSaving, setIsSaving] = useState(false);
 
@@ -110,9 +118,9 @@ const MyAccount = () => {
     );
 
     if (!value) {
-      setUrlError('URL is required');
+      setUrlError(t("URLMessage"));
     } else if (!urlPattern.test(value)) {
-      setUrlError('Please enter a valid URL');
+      setUrlError(t("URLErrorMsg"));
     } else {
       setUrlError('');
     }
@@ -228,13 +236,11 @@ const MyAccount = () => {
   const validateCerUrl = (value) => {
     const urlPattern = /^(https?:\/\/)/;
     if (value && !urlPattern.test(value)) {
-      setUrlError('URL must start with http:// or https://');
+      setUrlError(t("URLErrorMsg"));
     } else {
       setUrlError('');
     }
   };
-
-
 
 
 
@@ -250,14 +256,12 @@ const MyAccount = () => {
 
     if (file) {
       if (!allowedTypes.includes(file.type)) {
-        setResumeError(
-          "Invalid file type. Only PDF is allowed."
-        );
+        setResumeError(t("InvalidFileType"));
         return;
       }
 
       if (file.size > maxSize) {
-        setResumeError("File size exceeds 2 MB.");
+        setResumeError(t("FileTooLarge"));
         return;
       }
 
@@ -290,7 +294,7 @@ const MyAccount = () => {
         );
 
         if (response.data.type === "success") {
-          toast.success("Resume uploaded successfully!");
+          toast.success(t("ResumeUploadedSuccess"));
           fetchUserData();
           //  ajaxModal.hide();
           var resumeLink = response.data.resume.split("/").pop();
@@ -304,8 +308,8 @@ const MyAccount = () => {
           toast.error(response.data.message);
         }
       } catch (error) {
-        console.error("Error uploading resume:", error);
-        toast.error("Error uploading resume.");
+        console.error(t("ErrorUploadingResume"), error);
+        toast.error(t("ErrorUploadingResume"));
       } finally {
         setTimeout(() => {
           setIsSaving(false);
@@ -316,7 +320,7 @@ const MyAccount = () => {
 
  const handleResumeDownload = async () => {
   if (!userId) {
-    toast.error("User ID not available.");
+    toast.error(t("UserNotavailable"));
     return;
   }
   try {
@@ -352,12 +356,12 @@ const MyAccount = () => {
       link.click();
       document.body.removeChild(link);
     } else {
-      console.log("No resume found for the user.");
-      toast.info("No resume found for this user.");
+      console.log(t("NoResumeFound"));
+      toast.info(t("NoResumeFound"));
     }
   } catch (error) {
-    console.error("Error while fetching resume:", error);
-    toast.error("Failed to get response. Please try again.");
+    console.error(t("ErrorFetchingResume"), error);
+    toast.error(t("FailedToGetResponse"));
   }
 };
 
@@ -385,7 +389,7 @@ const MyAccount = () => {
       );
 
       if (response.data.type === "success") {
-        toast.success("Resume removed successfully!");
+        toast.success(t("ResumeRemovedSuccess"));
         fetchUserData();
         setResume(null);
         setUserData((prevData) => ({
@@ -397,8 +401,8 @@ const MyAccount = () => {
         toast.error(response.data.message);
       }
     } catch (error) {
-      console.error("Error removing resume:", error);
-      toast.error("Error removing resume.");
+      console.error(t("ErrorRemovingResume"), error);
+      toast.error(t("ErrorRemovingResume"));
     } finally{
         setTimeout(() => {
           setIsSaving(false);
@@ -406,10 +410,7 @@ const MyAccount = () => {
     }
   };
 
-  const bearerKey = import.meta.env.VITE_BEARER_KEY;
-  const API_URL = import.meta.env.VITE_API_URL;
-  const IMG_URL = import.meta.env.VITE_IMG_URL;
-  const SITE_URL = import.meta.env.VITE_SITE_URL;
+  
 
   const fetchUserData = async () => {
     if (userId) {
@@ -518,14 +519,12 @@ const MyAccount = () => {
     ];
 
     if (!allowedExtensions.includes(file.type)) {
-      toast.error(
-        "Invalid file type. Only JPG, PNG, WEBP, and GIF are allowed."
-      );
+      toast.error(t("InvalidImageType"));
       return;
     }
 
     if (file.size > 500 * 1024) {
-      toast.error("File too large. Max size is 500 KB.");
+      toast.error(t("ImageTooLarge"));
       return;
     }
 
@@ -537,7 +536,7 @@ const MyAccount = () => {
     reader.readAsDataURL(file);
 
     if (!userId || !bearerKey) {
-      toast.error("Authentication error. Please log in again.");
+      toast.error(t("AuthError"));
       return;
     }
 
@@ -551,8 +550,7 @@ const MyAccount = () => {
       const ajaxModal = new bootstrap.Modal(
         document.getElementById("ajaxModal")
       );
-      document.getElementById("ajaxModalMessage").textContent =
-        "Uploading profile image...";
+      document.getElementById("ajaxModalMessage").textContent = t("UploadingImage");
       ajaxModal.show();
 
       const response = await axios.post(
@@ -567,7 +565,7 @@ const MyAccount = () => {
       );
 
       if (response.data.type === "success") {
-        toast.success("Profile image uploaded successfully!");
+        toast.success(t("ProfileImageUploaded"));
         setProfileImage(response.data.image || reader.result);
 
         fetchUserData();
@@ -579,7 +577,7 @@ const MyAccount = () => {
       }
     } catch (error) {
       console.error("Upload failed:", error);
-      toast.error("Error uploading profile image.");
+      toast.error(t("ErrorUploadingImage"));
     } finally {
       setUploading(false); // Stop Uploading
 
@@ -599,7 +597,7 @@ const MyAccount = () => {
 
     const ajaxModal = new bootstrap.Modal(document.getElementById("ajaxModal"));
     document.getElementById("ajaxModalMessage").textContent =
-      "Removing profile image...";
+      t("RemovingImage");
     //  ajaxModal.show();
 
     try {
@@ -614,7 +612,7 @@ const MyAccount = () => {
       );
 
       if (response.data.type === "success") {
-        toast.success("Profile image removed successfully!");
+        toast.success(t("ProfileImageRemoved"));
         setProfileImage("/images/blank_user.png");
         fetchUserData();
         // ajaxModal.hide();
@@ -622,8 +620,8 @@ const MyAccount = () => {
         toast.error(response.data.message);
       }
     } catch (error) {
-      console.error("Error removing profile image:", error);
-      toast.error("Error removing profile image.");
+      console.error(t("ErrorRemovingImage"), error);
+      toast.error(t("ErrorRemovingImage"));
     } finally {
        setTimeout(() => {
       ajaxModal.hide();
@@ -707,7 +705,7 @@ const MyAccount = () => {
       );
 
       if (response.data.type === "success") {
-        toast.success("Skills updated successfully!");
+        toast.success(t("SkillAdded"));
         fetchUserData();
         setUserData((prevData) => ({
           ...prevData,
@@ -718,12 +716,12 @@ const MyAccount = () => {
         );
         skillModal.hide();
       } else {
-        toast.error(response.data.message || "Failed to update skills.");
+        toast.error(response.data.message || t("FailedToUpdateSkill"));
       }
     } catch (error) {
-      console.error("Error updating skills:", error);
+      console.error(t("ErrorUpdatingSkills"), error);
       toast.error(
-        error.response?.data?.message || "An unexpected error occurred."
+        error.response?.data?.message || t("UnexpectedError")
       );
     }
   };
@@ -743,8 +741,8 @@ const MyAccount = () => {
 
     // Show ajaxModal with dynamic message
     const ajaxModal = new bootstrap.Modal(document.getElementById("ajaxModal"));
-    document.getElementById("ajaxModalMessage").textContent =
-      "Saving your details...";
+    document.getElementById("ajaxModalMessage").textContent = t("SavingDetails");
+
     ajaxModal.show();
 
     // setUserData();
@@ -771,7 +769,7 @@ const MyAccount = () => {
       );
 
       if (response.data.type === "success") {
-        toast.success("Details updated successfully!");
+        toast.success(t("PersonalDetailsUpdated"));
         setUserData((prevData) => ({
           ...prevData,
           name: userData.name,
@@ -792,12 +790,12 @@ const MyAccount = () => {
         // ajaxModal.hide();
 
       } else {
-        toast.error(response.data.message || "Failed to update details.");
+        toast.error(response.data.message || t("FailedToUpdateDetails"));
       }
     } catch (error) {
       console.error("Error updating data:", error);
       toast.error(
-        error.response?.data?.message || "An unexpected error occurred."
+        error.response?.data?.message || t("UnexpectedError")
       );
     } finally {
        setTimeout(() => {
@@ -892,7 +890,7 @@ const MyAccount = () => {
 
   const saveNewEmploymentData = async () => {
     const ajaxModal = new bootstrap.Modal(document.getElementById("ajaxModal"));
-    document.getElementById("ajaxModalMessage").textContent = "Saving your details...";
+    document.getElementById("ajaxModalMessage").textContent = t("SavingDetails");
     ajaxModal.show();
 
     try {
@@ -914,7 +912,7 @@ const MyAccount = () => {
       );
 
       if (response.data.type === "success") {
-        toast.success("Employment data saved successfully!");
+        toast.success(t("EmploymentSaved"));
 
         const employModal = bootstrap.Modal.getInstance(document.getElementById("AddemployModal"));
         employModal.hide();
@@ -927,11 +925,11 @@ const MyAccount = () => {
 
 
       } else {
-        toast.error(response.data.message || "Failed to update details.");
+        toast.error(response.data.message || t("FailedToUpdateDetails"));
       }
     } catch (error) {
       console.error("Save Error:", error);
-      toast.error(error.response?.data?.message || "An unexpected error occurred.");
+      toast.error(error.response?.data?.message || t("UnexpectedError"));
     } finally {
        setTimeout(() => {
       ajaxModal.hide();
@@ -969,13 +967,13 @@ const MyAccount = () => {
       }
     } catch (error) {
       console.error("Error fetching employment data:", error);
-      toast.error("Failed to load employment data.");
+      toast.error(t("FailedToFetchEmployment"));
     }
   };
 
   const updateEmploymentData = async () => {
     const ajaxModal = new bootstrap.Modal(document.getElementById("ajaxModal"));
-    document.getElementById("ajaxModalMessage").textContent = "Updating your details...";
+    document.getElementById("ajaxModalMessage").textContent = t("UpdatingDetails");
     ajaxModal.show();
 
     try {
@@ -997,7 +995,7 @@ const MyAccount = () => {
       );
 
       if (response.data.type === "success") {
-        toast.success("Employment details updated successfully!");
+        toast.success(t("EmploymentUpdated"));
 
         // Close the modal
         const employModal = bootstrap.Modal.getInstance(document.getElementById("employModal"));
@@ -1010,11 +1008,11 @@ const MyAccount = () => {
         // console.log("loader 1 hided")
 
       } else {
-        toast.error(response.data.message || "Failed to update.");
+        toast.error(response.data.message || t("FailedToUpdateDetails"));
       }
     } catch (error) {
       console.error("Update Error:", error);
-      toast.error("Something went wrong while updating.");
+      toast.error(t("SomethingWentWrong"));
     } finally {
       setTimeout(() => {
       ajaxModal.hide();
@@ -1028,7 +1026,7 @@ const MyAccount = () => {
 
     const ajaxModal = new bootstrap.Modal(document.getElementById("ajaxModal"));
     document.getElementById("ajaxModalMessage").textContent =
-      "Deleting employment data...";
+      t("DeletingEmployment");
     ajaxModal.show();
 
     try {
@@ -1055,8 +1053,8 @@ const MyAccount = () => {
         toast.error(response.data.message);
       }
     } catch (error) {
-      console.error("Error deleting employment data:", error);
-      toast.error("Error deleting employment data.");
+      console.error(t("ErrorDeletingEmployment"), error);
+      toast.error(t("ErrorDeletingEmployment"));
     } finally {
        setTimeout(() => {
       ajaxModal.hide();
@@ -1202,8 +1200,8 @@ const MyAccount = () => {
     const marks = educationData.marks;
 
     if (!/^[1-9]\d{0,4}$/.test(marks)) {
-      setMarksError("Marks must be a positive number (not 0 or all zeros)");
-      toast.error("Marks must be a positive number (not 0 or all zeros)");
+      setMarksError(t("EducationMarksError"));
+      toast.error(t("EducationMarksError"));
       return; // Block form submission
     } else {
       setMarksError(""); // Clear previous error if valid
@@ -1239,7 +1237,7 @@ const MyAccount = () => {
 
     // Show ajaxModal with dynamic message
     const ajaxModal = new bootstrap.Modal(document.getElementById("ajaxModal"));
-    document.getElementById("ajaxModalMessage").textContent = "Saving your details...";
+    document.getElementById("ajaxModalMessage").textContent = t("SavingDetails");
     ajaxModal.show();
 
     try {
@@ -1255,7 +1253,7 @@ const MyAccount = () => {
       );
 
       if (response.data.type === "success") {
-        toast.success("Education details added successfully!");
+        toast.success(t("EducationSaved"));
 
         setEducationData({
           id: "",
@@ -1284,11 +1282,11 @@ const MyAccount = () => {
         // ajaxModal.hide();
 
       } else {
-        toast.error(response.data.message || "Failed to add education details.");
+        toast.error(response.data.message || t("FailedToAddEducation"));
       }
     } catch (error) {
       console.error("Error adding education data:", error);
-      toast.error(error.response?.data?.message || "An unexpected error occurred.");
+      toast.error(error.response?.data?.message || t("UnexpectedError"));
     } finally {
       setTimeout(() => {
       ajaxModal.hide();
@@ -1330,7 +1328,7 @@ const MyAccount = () => {
       }
     } catch (error) {
       console.error("Error fetching education data:", error);
-      toast.error("Failed to load education data.");
+      toast.error(t("FailedToFetchEducation"));
     }
   };
 
@@ -1341,8 +1339,8 @@ const MyAccount = () => {
     const marks = educationData.marks;
 
     if (!/^[1-9]\d{0,4}$/.test(marks)) {
-      setMarksError("Marks must be a positive number (not 0 or all zeros)");
-      toast.error("Marks must be a positive number (not 0 or all zeros)");
+      setMarksError(t("EducationMarksError"));
+      toast.error(t("EducationMarksError"));
       return; // Block update
     } else {
       setMarksError(""); // Clear error if valid
@@ -1357,8 +1355,8 @@ const MyAccount = () => {
       educationData.course_ending_year &&
       endYear < startYear
     ) {
-      setYearError('Ending year should be the same or greater than starting year');
-      toast.error('Ending year should be the same or greater than starting year');
+      setYearError(t("EndingYearError"));
+      toast.error(t("EndingYearError"));
       return;
     }
 
@@ -1395,7 +1393,7 @@ const MyAccount = () => {
 
     // Show loading modal
     const ajaxModal = new bootstrap.Modal(document.getElementById("ajaxModal"));
-    document.getElementById("ajaxModalMessage").textContent = "Updating your details...";
+    document.getElementById("ajaxModalMessage").textContent = t("UpdatingDetails");
     ajaxModal.show();
 
     try {
@@ -1411,7 +1409,7 @@ const MyAccount = () => {
       );
 
       if (response.data.type === "success") {
-        toast.success("Education details updated successfully!");
+        toast.success(t("EducationUpdated"));
 
         // Reset the form
         setEducationData({
@@ -1442,11 +1440,11 @@ const MyAccount = () => {
         fetchUserData();
         // ajaxModal.hide();
       } else {
-        toast.error(response.data.message || "Failed to update education details.");
+        toast.error(response.data.message || t("FailedToUpdateEducation"));
       }
     } catch (error) {
       console.error("Error updating education data:", error);
-      toast.error(error.response?.data?.message || "An unexpected error occurred.");
+      toast.error(error.response?.data?.message || t("UnexpectedError"));
     } finally {
        setTimeout(() => {
       ajaxModal.hide();
@@ -1459,7 +1457,7 @@ const MyAccount = () => {
 
     const ajaxModal = new bootstrap.Modal(document.getElementById("ajaxModal"));
     document.getElementById("ajaxModalMessage").textContent =
-      "Deleting education data...";
+      t("DeletingEducation");
     ajaxModal.show();
 
     try {
@@ -1489,7 +1487,7 @@ const MyAccount = () => {
       }
     } catch (error) {
       console.error("Error deleting education data:", error);
-      toast.error("Error deleting education data.");
+      toast.error(t("ErrorDeletingEducation"));
     } finally {
        setTimeout(() => {
       ajaxModal.hide();
@@ -1556,8 +1554,7 @@ const MyAccount = () => {
     }
 
     const ajaxModal = new bootstrap.Modal(document.getElementById("ajaxModal"));
-    document.getElementById("ajaxModalMessage").textContent =
-      "Saving your details...";
+    document.getElementById("ajaxModalMessage").textContent = t("SavingDetails");
     ajaxModal.show();
 
     try {
@@ -1603,12 +1600,12 @@ const MyAccount = () => {
         // ajaxModal.hide();
 
       } else {
-        toast.error(response.data.message || "Failed to update details.");
+        toast.error(response.data.message || t("FailedToUpdateDetails"));
       }
     } catch (error) {
       console.error("Error updating data:", error);
       toast.error(
-        error.response?.data?.message || "An unexpected error occurred."
+        error.response?.data?.message || t("UnexpectedError")
       );
     } finally {
        setTimeout(() => {
@@ -1622,7 +1619,7 @@ const MyAccount = () => {
 
     const ajaxModal = new bootstrap.Modal(document.getElementById("ajaxModal"));
     document.getElementById("ajaxModalMessage").textContent =
-      "Deleting social profile...";
+      t("DeletingSocialProfile");
     ajaxModal.show();
 
     try {
@@ -1652,7 +1649,7 @@ const MyAccount = () => {
       }
     } catch (error) {
       console.error("Error deleting social profile:", error);
-      toast.error("Error deleting social profile.");
+      toast.error(t("ErrorDeletingSocialProfile"));
     } finally {
        setTimeout(() => {
       ajaxModal.hide();
@@ -1702,15 +1699,15 @@ const MyAccount = () => {
       );
 
       if (response.data.type === "success") {
-        toast.success("Language deleted successfully.");
+        toast.success(t("LanguageDeleted"));
         setLanguages(languages.filter((_, i) => i !== index));
       } else {
-        toast.error(response.data.message || "Failed to delete language.");
+        toast.error(response.data.message || t("FailedToDeleteLanguage"));
       }
     } catch (error) {
       console.error("Error deleting language:", error);
       toast.error(
-        error.response?.data?.message || "An unexpected error occurred."
+        error.response?.data?.message || t("UnexpectedError")
       );
     }
   };
@@ -1739,7 +1736,7 @@ const MyAccount = () => {
 
     const ajaxModal = new bootstrap.Modal(document.getElementById("ajaxModal"));
     document.getElementById("ajaxModalMessage").textContent =
-      "Saving your details...";
+      t("SavingDetails");
     ajaxModal.show();
 
     try {
@@ -1774,17 +1771,17 @@ const MyAccount = () => {
       );
 
       if (response.data.type === "success") {
-        toast.success("Personal details updated successfully!");
+        toast.success(t("PersonalDetailsUpdated"));
 
         fetchUserData();
         // ajaxModal.hide();
       } else {
-        toast.error(response.data.message || "Failed to update details.");
+        toast.error(response.data.message || t("FailedToUpdatePersonalDetails"));
       }
     } catch (error) {
       console.error("Error updating data:", error);
       toast.error(
-        error.response?.data?.message || "An unexpected error occurred."
+        error.response?.data?.message || t("UnexpectedError")
       );
     } finally {
        setTimeout(() => {
@@ -1792,6 +1789,8 @@ const MyAccount = () => {
     }, 300);
     }
   };
+
+  // Certificates Starts ---------
 
   const fetchCertificates = async (userId) => {
     try {
@@ -1833,7 +1832,7 @@ const MyAccount = () => {
     // URL validation before saving
     const urlPattern = /^(https?:\/\/)/;
     if (!urlPattern.test(selectedCertificate.certification_url)) {
-      toast.error("Please enter a valid URL ");
+      toast.error(t("URLErrorMsg"));
       return;
     }
 
@@ -1861,7 +1860,7 @@ const MyAccount = () => {
 
     const ajaxModal = new bootstrap.Modal(document.getElementById("ajaxModal"));
     document.getElementById("ajaxModalMessage").textContent =
-      "Saving your details...";
+      t("SavingDetails");
     ajaxModal.show();
 
     try {
@@ -1909,12 +1908,12 @@ const MyAccount = () => {
 
 
       } else {
-        toast.error(response.data.message || "Failed to update details.");
+        toast.error(response.data.message || t("FailedToUpdateDetails"));
       }
     } catch (error) {
       console.error("Error updating data:", error);
       toast.error(
-        error.response?.data?.message || "An unexpected error occurred."
+        error.response?.data?.message || t("UnexpectedError")
       );
     } finally {
        setTimeout(() => {
@@ -1944,7 +1943,7 @@ const MyAccount = () => {
 
     const ajaxModal = new bootstrap.Modal(document.getElementById("ajaxModal"));
     document.getElementById("ajaxModalMessage").textContent =
-      "Deleting certificate...";
+      t("DeletingCertificate");
     ajaxModal.show();
 
     try {
@@ -1974,7 +1973,7 @@ const MyAccount = () => {
       }
     } catch (error) {
       console.error("Error deleting certificate:", error);
-      toast.error("Error deleting certificate.");
+      toast.error(t("ErrorDeletingCertificate"));
     } finally {
        setTimeout(() => {
       ajaxModal.hide();
@@ -1983,6 +1982,8 @@ const MyAccount = () => {
 
     }
   };
+
+  // Certificates Ends -----------
 
   // const calculateTimeAgo = (date) => {
   //   if (!date) return "Updating...";
@@ -2113,16 +2114,13 @@ const MyAccount = () => {
               <div className="card border-0 shadow bg_lblue">
                 <div className="card-body">
                   <h1 className="job_head">
-                    <span>Welcome</span>
+                    <span>{t("JobWelcome")}</span>
                     <span className="text-theme text-capitalize mx-1">
                       "{user?.name}"
                     </span>
-                    <span>to your account</span>
+                    <span>{t("JobAccount")}</span>
                   </h1>
-                  <h6>
-                    From your account dashboard, you can see your saved jobs,
-                    applied jobs, and profile, and edit them as well.
-                  </h6>
+                  <h6>{t("JobWelcomeText")}</h6>
                 </div>
               </div>
 
@@ -2138,7 +2136,7 @@ const MyAccount = () => {
                   <div className="modal-content">
                     <div className="modal-header">
                       <h5 className="modal-title" id="ajaxModalLabel">
-                        Processing...
+                        {t("Processing")}
                       </h5>
                       <button
                         type="button"
@@ -2158,14 +2156,14 @@ const MyAccount = () => {
                         ></div>
                       </div>
                       <p className="text-center" id="ajaxModalMessage">
-                        Please wait...
+                        {t("PleaseWait")}
                       </p>
                     </div>
                   </div>
                 </div>
               </div>
               <div className="text-end py-3">
-                <button className="btn btn-register" data-bs-toggle="modal" data-bs-target="#resumeModal">Preview Resume</button>
+                <button className="btn btn-register" data-bs-toggle="modal" data-bs-target="#resumeModal">{t("PreviewResume")}</button>
               </div>
 
               <div className="card  shadow border-0 rounded-3">
@@ -2287,7 +2285,7 @@ const MyAccount = () => {
                                 />
                                 <label className="profile_img_label" htmlFor="profile_img">
                                   <span>
-                                    Upload <i className="fa-solid fa-plus"></i>
+                                    {t("Upload")} <i className="fa-solid fa-plus"></i>
                                   </span>
                                 </label>
                               </>
@@ -2297,7 +2295,7 @@ const MyAccount = () => {
                                 onClick={() => setSelectedImageId(userData.id)}
                                 data-bs-toggle="modal"
                                 data-bs-target="#removeImageModal"
-                                title="Remove Image"
+                                title={t("RemoveImage")}
                               ></i>
                             )}
                           </div>
@@ -2324,7 +2322,7 @@ const MyAccount = () => {
                         }
                         {userData.updated_at && (
                           <h6 className="text-secondary m-0 fw-light">
-                            <b> Profile last updated - </b>
+                            <b> {t("ProfileUpdated")} </b>
                             <TimeAgo timestamp={userData.updated_at} />
                           </h6>)
                         }
@@ -2403,7 +2401,7 @@ const MyAccount = () => {
                 <div className="modal-dialog">
                   <div className="modal-content">
                     <div className="modal-header">
-                      <h5 className="modal-title">Remove Profile Image</h5>
+                      <h5 className="modal-title">{t("RemoveProfile")}</h5>
                       <button
                         type="button"
                         className="btn-close"
@@ -2411,7 +2409,7 @@ const MyAccount = () => {
                       ></button>
                     </div>
                     <div className="modal-body">
-                      Are you sure you want to remove your profile image?
+                      {t("RemoveProfileText")}
                     </div>
                     <div className="modal-footer">
                       <button
@@ -2419,7 +2417,7 @@ const MyAccount = () => {
                         className="btn btn-secondary"
                         data-bs-dismiss="modal"
                       >
-                        Cancel
+                        {t("RemoveProfileCancel")}
                       </button>
                       <button
                         type="button"
@@ -2427,7 +2425,7 @@ const MyAccount = () => {
                         onClick={handleRemoveImage}
                         data-bs-dismiss="modal"
                       >
-                        Remove
+                        {t("RemoveProfileConfirm")}
                       </button>
                     </div>
                   </div>
@@ -2449,7 +2447,7 @@ const MyAccount = () => {
                         className="modal-title fs-5"
                         id="editProfileModalLabel"
                       >
-                        Basic Details
+                        {t("BasicDetails")}
                       </h1>
                       <button
                         type="button"
@@ -2461,7 +2459,7 @@ const MyAccount = () => {
                     <div className="modal-body ">
                       <form action="" className="">
                         <div className="mb-4">
-                          <label htmlFor="">Name</label>
+                          <label htmlFor="">{t("Name")}</label>
                           <input
                             type="text"
                             className="form-control"
@@ -2484,7 +2482,7 @@ const MyAccount = () => {
                           )}
                         </div> */}
                         <div className="mb-4">
-                          <label htmlFor="">Work Status</label>
+                          <label htmlFor="">{t("WorkStatus")}</label>
                           <div className="d-flex">
                             <div className="form-check me-4">
                               <input
@@ -2500,7 +2498,7 @@ const MyAccount = () => {
                                 className="form-check-label"
                                 htmlFor="fresher"
                               >
-                                Fresher
+                                {t("Fresher")}
                               </label>
                             </div>
                             <div className="form-check experience_radio">
@@ -2517,18 +2515,18 @@ const MyAccount = () => {
                                 className="form-check-label"
                                 htmlFor="experienced"
                               >
-                                Experienced
+                                {t("Experienced")}
                               </label>
                             </div>
                           </div>
                           {userData.work_status === "experienced" && (
                             <div className="row mt-4 experience">
-                              <label htmlFor="">Total experience</label>
+                              <label htmlFor="">{t("TotalExperience")}</label>
                               <div className="col-md-6 mb-2 mb-md-0">
                                 <input
                                   type="text"
                                   className="form-control"
-                                  placeholder="Enter Years"
+                                  placeholder={t("EnterYears")}
                                   name="total_experience_years"
                                   value={userData.total_experience_years || ""}
                                   onChange={(e) => {
@@ -2548,7 +2546,7 @@ const MyAccount = () => {
                                 <input
                                   type="text"
                                   className="form-control"
-                                  placeholder="Enter Months"
+                                  placeholder={t("EnterMonths")}
                                   name="total_experience_months"
                                   value={userData.total_experience_months || ""}
                                   onChange={(e) => {
@@ -2569,12 +2567,9 @@ const MyAccount = () => {
                         </div>
                         {userData.work_status === "experienced" && (
                         <div className="mb-4">
-                          <label htmlFor="">Current Salary</label>
+                          <label htmlFor="">{t("CurrentSalary")}</label>
                           <p>
-                            <small>
-                              Salary information helps us find relevant jobs for
-                              you
-                            </small>
+                            <small>{t("SalaryText")} </small>
                           </p>
                           <div className="row">
                             <div className="col-4 col-md-3 col-lg-2">
@@ -2591,7 +2586,7 @@ const MyAccount = () => {
                                 type="text"
                                 name="current_salary"
                                 className="form-control"
-                                placeholder="Eg. 4,50,000"
+                                placeholder={t("SalaryPlaceholder")}
                                 value={
                                   userData.current_salary
                                     ? userData.current_salary.split(" ")[0]
@@ -2607,7 +2602,7 @@ const MyAccount = () => {
                         )}
                         <div className="mb-4">
                           <div className="row mt-4">
-                            <label htmlFor="">Current Location</label>
+                            <label htmlFor="">{t("CurrentLocation")}</label>
                             <div className="d-flex">
                               <div className="form-check me-4">
                                 <input
@@ -2625,7 +2620,7 @@ const MyAccount = () => {
                                   className="form-check-label"
                                   htmlFor="RadioLocation1"
                                 >
-                                  Sweden
+                                  {t("Sweden")}
                                 </label>
                               </div>
                               <div className="form-check locationRadio">
@@ -2644,7 +2639,7 @@ const MyAccount = () => {
                                   className="form-check-label"
                                   htmlFor="RadioLocation2"
                                 >
-                                  Outside Sweden
+                                  {t("OutSweden")}
                                 </label>
                               </div>
                             </div>
@@ -2653,7 +2648,7 @@ const MyAccount = () => {
                                 <input
                                   type="text"
                                   className="form-control"
-                                  placeholder="Enter current location"
+                                  placeholder={t("LocationPlaceholder")}
                                   value={userData.current_location || ""}
                                   // onChange={(e) =>
                                   //   setUserData((prev) => ({
@@ -2678,7 +2673,7 @@ const MyAccount = () => {
                                   <input
                                     type="text"
                                     className="form-control"
-                                    placeholder="Enter country name"
+                                    placeholder={t("CountryPlaceholder")}
                                     value={userData.country_name || ""}
                                     // onChange={(e) =>
                                     //   setUserData((prev) => ({
@@ -2703,10 +2698,10 @@ const MyAccount = () => {
                           </div>
                         </div>
                         <div className="mb-4">
-                          <label htmlFor="">Notice Period</label>
+                          <label htmlFor="">{t("NoticePeriod")}</label>
                           <p>
                             <small>
-                              Lets recruiters know your availability to join
+                             {t("NoticePeriodText")}
                             </small>
                           </p>
                           <div className="mt-3">
@@ -2723,23 +2718,25 @@ const MyAccount = () => {
                               }
                             >
                               <option value="15 days or less">
-                                15 Days or less
+                                {t("FifteenDays")}
                               </option>
-                              <option value="1 month">1 Month</option>
-                              <option value="2 months">2 Months</option>
-                              <option value="3 months">3 Months</option>
+                              <option value="1 month">{t("OneMonth")}</option>
+                              <option value="2 months">{t("TwoMonths")}</option>
+                              <option value="3 months">{t("ThreeMonths")}</option>
                               <option value="more than 3 months">
-                                More than 3 months
+                                {t("MoreThanThreeMonths")}
                               </option>
                               <option value="serving notice period">
-                                Serving notice period
+                                {t("ServingNotice")}
                               </option>
                             </select>
                           </div>
                         </div>
                         <div className="mb-4">
-                          <label htmlFor="">Profile Summary</label>
-                          <textarea className="form-control" value={userData.bio}  name="bio" id="" rows={4}
+                          <label htmlFor="">{t("ProfileSummary")}</label>
+                          <textarea className="form-control"  placeholder={t("SummaryPlaceholder")}
+                           value={userData.bio}  name="bio" id="" 
+                           rows={4}
                            onChange={(e) =>
                                 setUserData({
                                   ...userData,
@@ -2756,7 +2753,7 @@ const MyAccount = () => {
                         className="btn btn-secondary rounded-pill"
                         data-bs-dismiss="modal"
                       >
-                        Cancel
+                        {t("Cancel")}
                       </button>
                       <button
                         type="button"
@@ -2764,20 +2761,19 @@ const MyAccount = () => {
                         data-bs-dismiss="modal"
                         onClick={saveJobSeekerData}
                       >
-                        Save
+                        {t("Save")}
                       </button>
                     </div>
                   </div>
                 </div>
               </div>
 
+
               {/* Resume Upload Section */}
               <div className="card mt-4 shadow border-0 rounded-3">
                 <div className="card-body">
-                  <h5 className="text-theme">Resume</h5>
-                  <p>
-                    75% of recruiters discover candidates through their resume
-                  </p>
+                  <h5 className="text-theme">{t("Resume")}</h5>
+                  <p>{t("ResumeText")}</p>
 
                   <div className="upload_resume">
                     {resume || userData.resume ? (
@@ -2802,7 +2798,7 @@ const MyAccount = () => {
                             <p className="text-secondary">
                               <small>
                                 {/* Uploaded on {timeAgo(userData.resume_uploaded_on)} */}
-                                <b>Uploaded -</b> <TimeAgo timestamp={userData.resume_uploaded_on} />
+                                <b>{t("Uploaded")}</b> <TimeAgo timestamp={userData.resume_uploaded_on} />
                               </small>
                             </p>
 
@@ -2828,11 +2824,11 @@ const MyAccount = () => {
                           onChange={handleResumeUpload}
                         />
                         <label htmlFor="upload_resume_input">
-                          Upload resume
+                          {t("UploadResume")}
                         </label>
                         <p className="m-0 text-center">
                           <small>
-                            Supported Format: PDF only, upto 2 MB.
+                            {t("ResumeFormat")}
                           </small>
                         </p>
                       </div>
@@ -2856,7 +2852,7 @@ const MyAccount = () => {
                   <div className="modal-content">
                     <div className="modal-header">
                       <h5 className="modal-title" id="removeResumeModalLabel">
-                        Remove Resume
+                        {t("RemoveResume")}
                       </h5>
                       <button
                         type="button"
@@ -2866,7 +2862,7 @@ const MyAccount = () => {
                       ></button>
                     </div>
                     <div className="modal-body">
-                      Are you sure you want to remove your resume?
+                     {t("RemoveResumeText")}
                     </div>
                     <div className="modal-footer">
                       <button
@@ -2874,7 +2870,7 @@ const MyAccount = () => {
                         className="btn btn-secondary"
                         data-bs-dismiss="modal"
                       >
-                        Cancel
+                        {t("RemoveResumeCancel")}
                       </button>
                       <button
                         type="button"
@@ -2882,7 +2878,7 @@ const MyAccount = () => {
                         onClick={confirmRemoveResume}
                         data-bs-dismiss="modal"
                       >
-                        Remove
+                        {t("RemoveResumeConfirm")}
                       </button>
                     </div>
                   </div>
@@ -2894,7 +2890,7 @@ const MyAccount = () => {
                 <div className="card-body">
                   <div className="d-flex justify-content-between">
                     <h5 className="m-0 me-3 text-theme">
-                      Key Skills
+                     {t("KeySkills")}
                       {userData.skills && userData.skills.length > 0 && (
                         <Link
                           data-bs-toggle="modal"
@@ -2910,7 +2906,7 @@ const MyAccount = () => {
                         data-bs-toggle="modal"
                         data-bs-target="#skillModal"
                       >
-                        Add Skills
+                        {t("AddSkills")}
                       </Link>
                     )}
                   </div>
@@ -2928,7 +2924,7 @@ const MyAccount = () => {
                         ))}
                       </ul>
                     ) : (
-                      <p className="m-0 text-muted">No skills added yet</p>
+                      <p className="m-0 text-muted">{t("NoSkills")}</p>
                     )}
                   </div>
                 </div>
@@ -2945,7 +2941,7 @@ const MyAccount = () => {
                   <div className="modal-content p-3 p-sm-4">
                     <div className="modal-header border-0">
                       <h1 className="modal-title fs-5" id="skillModalLabel">
-                        Key Skills
+                        {t("KeySkills")}
                       </h1>
                       <button
                         type="button"
@@ -2957,7 +2953,7 @@ const MyAccount = () => {
                     <div className="modal-body ">
                       <form action="" className="">
                         <div className="mb-4">
-                          <label htmlFor="">Skills</label>
+                          <label htmlFor="">{t("Skills")}</label>
 
                           {skills && skills.length >= 1 && (
                             <div className="all_added_skills py-2">
@@ -2980,7 +2976,7 @@ const MyAccount = () => {
 
                           <input
                             type="text"
-                            placeholder="Add skills"
+                            placeholder={t("AddSkills")}
                             className="add_Skill_input form-control"
                             value={input}
                             onChange={handleInputChange}
@@ -2988,7 +2984,7 @@ const MyAccount = () => {
                           />
                           <div className="skill-suggestions">
                             {loadingSuggestions ? (
-                              <p className="p-2">Loading...</p>
+                              <p className="p-2">{t("Loading")}</p>
                             ) : (
                               suggestions.map((suggestion, index) => (
                                 <div
@@ -3010,14 +3006,14 @@ const MyAccount = () => {
                         className="btn btn-secondary rounded-pill"
                         data-bs-dismiss="modal"
                       >
-                        Cancel
+                        {t("Cancel")}
                       </button>
                       <button
                         type="button"
                         className="btn btn-primary rounded-pill"
                         onClick={() => saveSkills()}
                       >
-                        Save
+                        {t("Save")}
                       </button>
                     </div>
                   </div>
@@ -3028,14 +3024,14 @@ const MyAccount = () => {
               <div className="card mt-4 shadow border-0 rounded-3">
                 <div className="card-body">
                   <div className="d-flex justify-content-between mb-3">
-                    <h5 className="text-theme">Employment</h5>
+                    <h5 className="text-theme">{t("Employment")}</h5>
                     <Link
                       className="text-theme"
                       data-bs-toggle="modal"
                       data-bs-target="#AddemployModal"
                       onClick={() => setEmploymentForm(defaultEmploymentForm)}
                     >
-                      Add employment
+                     {t("AddEmployment")}
                     </Link>
 
                   </div>
@@ -3063,14 +3059,14 @@ const MyAccount = () => {
                               <small>
                                 <span>
                                   {employ.employment_type} | {employ.joining_date} &nbsp;To&nbsp;
-                                  {employ.worked_till || "Present"}
+                                  {employ.worked_till || t("Present")}
                                 </span>
                               </small>
                             </p>
                           </div>
                         ))
                       ) : (
-                        <p className="text-muted">No employment details filled yet.</p>
+                        <p className="text-muted">{t("NoEmployment")}</p>
                       )}
 
 
@@ -3091,7 +3087,7 @@ const MyAccount = () => {
                   <div className="modal-content">
                     <div className="modal-header">
                       <h5 className="modal-title" id="deleteModalLabel">
-                        Delete employment data
+                        {t("DeleteEmployment")}
                       </h5>
                       <button
                         type="button"
@@ -3101,7 +3097,7 @@ const MyAccount = () => {
                       ></button>
                     </div>
                     <div className="modal-body">
-                      Are you sure you want to delete employment details?
+                      {t("DeleteEmploymentText")}
                     </div>
                     <div className="modal-footer">
                       <button
@@ -3109,7 +3105,7 @@ const MyAccount = () => {
                         className="btn btn-secondary"
                         data-bs-dismiss="modal"
                       >
-                        Cancel
+                        {t("Cancel")}
                       </button>
                       <button
                         type="button"
@@ -3117,7 +3113,7 @@ const MyAccount = () => {
                         onClick={() => confirmDelete(employmentForm.id)}
                         data-bs-dismiss="modal"
                       >
-                        Delete
+                        {t("Delete")}
                       </button>
                     </div>
                   </div>
@@ -3145,21 +3141,21 @@ const MyAccount = () => {
                     <div className="modal-body ">
                       <div className="d-flex justify-content-between">
                         <h1 className="modal-title fs-5" id="employModalLabel">
-                          Edit Employment Details
+                          {t("EditEmployment")}
                         </h1>
                         <Link
                           className="text-theme"
                           data-bs-toggle="modal"
                           data-bs-target="#deleteModal"
                         >
-                          Delete
+                          {t("Delete")}
                         </Link>
                       </div>
 
                       <form className="mt-3">
                         {/* Current Employment */}
                         <div className="mb-4">
-                          <label>Is this your current employment?</label>
+                          <label>{t("EmploymentText")}</label>
                           <div className="d-flex mt-3">
                             <div className="form-check me-4">
                               <input
@@ -3176,7 +3172,7 @@ const MyAccount = () => {
                                   })
                                 }
                               />
-                              <label className="form-check-label">Yes</label>
+                              <label className="form-check-label">{t("Yes")}</label>
                             </div>
                             <div className="form-check">
                               <input
@@ -3193,14 +3189,14 @@ const MyAccount = () => {
                                   })
                                 }
                               />
-                              <label className="form-check-label">No</label>
+                              <label className="form-check-label">{t("No")}</label>
                             </div>
                           </div>
                         </div>
 
                         {/* Employment Type */}
                         <div className="mb-4">
-                          <label htmlFor="employment_type">Employment Type</label>
+                          <label htmlFor="employment_type">{t("EmploymentType")}</label>
                           <select
                             className="form-select"
                             value={employmentForm.employment_type}
@@ -3211,24 +3207,24 @@ const MyAccount = () => {
                               })
                             }
                           >
-                            <option value="">Select</option>
-                            <option value="1">Full Time</option>
-                            <option value="2">Part Time</option>
-                            <option value="3">Fixed</option>
-                            <option value="4">Hourly</option>
+                            <option value="">{t("Select")}</option>
+                            <option value="1">{t("FullTime")}</option>
+                            <option value="2">{t("PartTime")}</option>
+                            <option value="3">{t("Fixed")}</option>
+                            <option value="4">{t("Hourly")}</option>
                           </select>
                         </div>
 
                         {/* Total Experience */}
                         {employmentForm.current_employment === "yes" && (
                           <div className="row mt-4">
-                            <label>Total Experience</label>
+                            <label>{t("TotalExperience")}</label>
 
                             <div className="col-md-6 mb-2">
                               <input
                                 type="text"
                                 className="form-control"
-                                placeholder="Enter Years (Ex:05)"
+                                placeholder={t("EnterYears")}
                                 maxLength={2}
                                 value={
                                   employmentForm.total_experience?.split(",")[0]?.replace(" years", "").trim() || ""
@@ -3252,7 +3248,7 @@ const MyAccount = () => {
                               <input
                                 type="text"
                                 className="form-control"
-                                placeholder="Enter Months (Ex:01)"
+                                placeholder={t("EnterMonths")}
                                 maxLength={2}
                                 value={
                                   employmentForm.total_experience?.split(",")[1]?.replace(" months", "").trim() || ""
@@ -3279,13 +3275,13 @@ const MyAccount = () => {
                         <div className="mt-4">
                           <label>
                             {employmentForm.current_employment === "yes"
-                              ? "Current Company Name"
-                              : "Previous Company Name"}
+                              ? t("CurrentCompanyName")
+                              : t("PrevCompanyName")}
                           </label>
                           <input
                             type="text"
                             className="form-control"
-                            placeholder="XYZ Company"
+                            placeholder={t("CompNamePlaceholder")}
                             value={employmentForm.current_company_name}
                             onChange={(e) =>
                               setEmploymentForm({
@@ -3300,13 +3296,13 @@ const MyAccount = () => {
                         <div className="mt-4">
                           <label>
                             {employmentForm.current_employment === "yes"
-                              ? "Current Job Title"
-                              : "Previous Job Title"}
+                              ? t("CurrentJobTitle")
+                              : t("PrevJobTitle")}
                           </label>
                           <input
                             type="text"
                             className="form-control"
-                            placeholder="ABC Job Title"
+                            placeholder={t("JobTitlePlaceholder")}
                             value={employmentForm.current_job_title}
                             onChange={(e) => {
                               const input = e.target.value;
@@ -3322,7 +3318,7 @@ const MyAccount = () => {
 
                         {/* Joining Date */}
                         <div className="row mt-4">
-                          <label>Joining Date</label>
+                          <label>{t("JoiningDate")}</label>
                           <div className="col-md-12 mb-2">
                             <input
                               type="date"
@@ -3341,7 +3337,7 @@ const MyAccount = () => {
                         {/* Worked Till */}
                         {employmentForm.current_employment === "no" && (
                           <div className="row mt-4">
-                            <label>Worked Till</label>
+                            <label>{t("WorkedTill")}</label>
                             <div className="col-md-12 mb-2">
                               <input
                                 type="date"
@@ -3361,7 +3357,7 @@ const MyAccount = () => {
                         {/* Current Salary */}
                         {employmentForm.current_employment === "yes" &&
                           <div className="mt-4">
-                            <label>Current Salary</label>
+                            <label>{t("CurrentSalary")}</label>
                             <div className="row">
                               <div className="col-4 col-md-3 col-lg-2">
                                 <select
@@ -3383,7 +3379,7 @@ const MyAccount = () => {
                                 <input
                                   type="text"
                                   className="form-control"
-                                  placeholder="Eg. 4,50,000"
+                                  placeholder={t("SalaryPlaceholder")}
                                   value={employmentForm.current_salary?.split(" ")[1] || ""}
                                   onChange={(e) => {
                                     let input = e.target.value.replace(/\D/g, ""); // Only digits
@@ -3407,11 +3403,11 @@ const MyAccount = () => {
 
                         {/* Job Profile */}
                         <div className="mt-4">
-                          <label>Job Profile</label>
+                          <label>{t("JobProfile")}</label>
                           <input
                             type="text"
                             className="form-control"
-                            placeholder="Enter job profile"
+                            placeholder={t("SummaryPlaceholder")}
                             value={employmentForm.job_profile}
                             onChange={(e) =>
                               setEmploymentForm({
@@ -3425,7 +3421,7 @@ const MyAccount = () => {
                         {/* Notice Period */}
                         {employmentForm.current_employment === "yes" &&
                           <div className="mt-4">
-                            <label>Notice Period</label>
+                            <label>{t("NoticePeriod")}</label>
                             <select
                               className="form-select"
                               value={employmentForm.notice_period?.trim() || ""}
@@ -3436,13 +3432,13 @@ const MyAccount = () => {
                                 })
                               }
                             >
-                              <option value="">Select</option>
-                              <option value="15 days or less">15 Days or Less</option>
-                              <option value="1 month">1 Month</option>
-                              <option value="2 months">2 Months</option>
-                              <option value="3 months">3 Months</option>
-                              <option value="more than 3 months">More than 3 months</option>
-                              <option value="serving notice period">Serving notice period</option>
+                              <option value="">{t("Select")}</option>
+                              <option value="15 days or less">{t("FifteenDays")}</option>
+                              <option value="1 month">{t("OneMonth")}</option>
+                              <option value="2 months">{t("TwoMonths")}</option>
+                              <option value="3 months">{t("ThreeMonths")}</option>
+                              <option value="more than 3 months">{t("MoreThanThreeMonths")}</option>
+                              <option value="serving notice period">{t("ServingNotice")}</option>
                             </select>
                           </div>
                         }
@@ -3455,7 +3451,7 @@ const MyAccount = () => {
                         className="btn btn-secondary rounded-pill"
                         data-bs-dismiss="modal"
                       >
-                        Cancel
+                        {t("Cancel")}
                       </button>
                       <button
                         type="button"
@@ -3463,7 +3459,7 @@ const MyAccount = () => {
                         data-bs-dismiss="modal"
                         onClick={updateEmploymentData}
                       >
-                        Save
+                        {t("Save")}
                       </button>
                     </div>
                   </div>
@@ -3491,14 +3487,14 @@ const MyAccount = () => {
                     <div className="modal-body">
                       <div className="d-flex justify-content-between">
                         <h1 className="modal-title fs-5" id="AddemployModalLabel">
-                          Add Employment
+                          {t("AddEmployment")}
                         </h1>
                       </div>
                       <form className="mt-3">
 
                         {/* Current Employment */}
                         <div className="mb-4">
-                          <label>Is this your current employment?</label>
+                          <label>{t("EmploymentText")}</label>
                           <div className="d-flex mt-3">
                             <div className="form-check me-4">
                               <input
@@ -3517,7 +3513,7 @@ const MyAccount = () => {
 
                               />
                               <label className="form-check-label" >
-                                Yes
+                                {t("Yes")}
                               </label>
                             </div>
                             <div className="form-check">
@@ -3536,7 +3532,7 @@ const MyAccount = () => {
                                 }
                               />
                               <label className="form-check-label" >
-                                No
+                                {t("No")}
                               </label>
                             </div>
                           </div>
@@ -3544,7 +3540,7 @@ const MyAccount = () => {
 
                         {/* Employment Type */}
                         <div className="mb-4">
-                          <label htmlFor="employment_type">Employment Type</label>
+                          <label htmlFor="employment_type">{t("EmploymentType")}</label>
                           <select
                             className="form-select"
                             value={employmentForm.employment_type}
@@ -3555,25 +3551,25 @@ const MyAccount = () => {
                               })
                             }
                           >
-                            <option value="">Select</option>
-                            <option value="1">Full Time</option>
-                            <option value="2">Part Time</option>
-                            <option value="3">Fixed</option>
-                            <option value="4">Hourly</option>
+                            <option value="">{t("Select")}</option>
+                            <option value="1">{t("FullTime")}</option>
+                            <option value="2">{t("PartTime")}</option>
+                            <option value="3">{t("Fixed")}</option>
+                            <option value="4">{t("Hourly")}</option>
                           </select>
                         </div>
 
                         {/* Total Experience */}
                         {employmentForm.current_employment === "yes" && (
                           <div className="row mt-4">
-                            <label>Total Experience</label>
+                            <label>{t("TotalExperience")}</label>
 
                             {/* Years */}
                             <div className="col-md-6 mb-2">
                               <input
                                 type="text"
                                 className="form-control"
-                                placeholder="Enter Years (Ex:05)"
+                                placeholder={t("ExpPlaceholder")}
                                 maxLength={2}
                                 onKeyPress={(e) => {
                                   if (!/[0-9]/.test(e.key)) e.preventDefault(); // Block non-numeric input
@@ -3595,7 +3591,7 @@ const MyAccount = () => {
                               <input
                                 type="text"
                                 className="form-control"
-                                placeholder="Enter Months (Ex:01)"
+                                placeholder={t("MonPlaceholder")}
                                 maxLength={2}
                                 onKeyPress={(e) => {
                                   if (!/[0-9]/.test(e.key)) e.preventDefault(); // Block non-numeric input
@@ -3619,12 +3615,12 @@ const MyAccount = () => {
                         {/* Company Name */}
                         <div className="mt-4">
                           <label>
-                            {employmentForm.current_employment === "yes" ? " Current Company Name" : " Previous Company Name"}
+                            {employmentForm.current_employment === "yes" ? t("CurrentCompanyName") : t("PrevCompanyName")}
                           </label>
                           <input
                             type="text"
                             className="form-control"
-                            placeholder="XYZ Company"
+                            placeholder={t("CompNamePlaceholder")}
                             value={employmentForm.current_company_name}
                             onChange={(e) =>
                               setEmploymentForm({
@@ -3638,12 +3634,12 @@ const MyAccount = () => {
                         {/* Job Title */}
                         <div className="mt-4">
                           <label>
-                            {employmentForm.current_employment === "yes" ? " Current Job Title" : "Previous Job Title"}
+                            {employmentForm.current_employment === "yes" ? t("CurrentJobTitle") : t("PrevJobTitle")}
                           </label>
                           <input
                             type="text"
                             className="form-control"
-                            placeholder="ABC Job Title"
+                            placeholder={t("JobTitlePlaceholder")}
                             value={employmentForm.current_job_title}
                             onChange={(e) => {
                               const input = e.target.value;
@@ -3660,7 +3656,7 @@ const MyAccount = () => {
 
                         {/* Joining Date */}
                         <div className="row mt-4">
-                          <label>Joining Date</label>
+                          <label>{t("JoiningDate")}</label>
                           <div className="col-md-12 mb-2">
                             <input
                               type="date"
@@ -3680,7 +3676,7 @@ const MyAccount = () => {
 
                         {employmentForm.current_employment === "no" &&
                           <div className="row mt-4">
-                            <label>Worked Till</label>
+                            <label>{t("WorkedTill")}</label>
                             <div className="col-md-12 mb-2">
                               <input
                                 type="date"
@@ -3700,7 +3696,7 @@ const MyAccount = () => {
                         {/* Current Salary */}
                         {employmentForm.current_employment === "yes" &&
                           <div className="mt-4">
-                            <label>Current Salary</label>
+                            <label>{t("CurrentSalary")}</label>
                             <div className="row">
                               <div className="col-4 col-md-3 col-lg-2">
                                 <select
@@ -3720,7 +3716,7 @@ const MyAccount = () => {
                                 <input
                                   type="text"
                                   className="form-control"
-                                  placeholder="Eg. 4,50,000"
+                                  placeholder={t("SalaryPlaceholder")}
                                   value={employmentForm.current_salary.split(" ")[1] || ""}
                                   onChange={(e) => {
                                     let input = e.target.value.replace(/\D/g, ""); // Keep only digits
@@ -3747,11 +3743,11 @@ const MyAccount = () => {
 
                         {/* Job Profile */}
                         <div className="mt-4">
-                          <label htmlFor="">Job Profile</label>
+                          <label htmlFor="">{t("JobProfile")}</label>
                           <input
                             type="text"
                             className="form-control"
-                            placeholder="Type Here..."
+                            placeholder={t("SummaryPlaceholder")}
                             value={employmentForm.job_profile}
                             onChange={(e) =>
                               setEmploymentForm({
@@ -3765,7 +3761,7 @@ const MyAccount = () => {
                         {/* Notice Period */}
                         {employmentForm.current_employment === "yes" &&
                           <div className="mt-4">
-                            <label>Notice Period</label>
+                            <label>{t("NoticePeriod")}</label>
                             <select
                               className="form-select"
                               value={employmentForm.notice_period}
@@ -3776,13 +3772,13 @@ const MyAccount = () => {
                                 })
                               }
                             >
-                              <option value="">Select</option>
-                              <option value="15 days or less">15 Days or less</option>
-                              <option value="1 month">1 Month</option>
-                              <option value="2 months">2 Months</option>
-                              <option value="3 months">3 Months</option>
-                              <option value="more than 3 months">More than 3 months</option>
-                              <option value="serving notice period">Serving notice period</option>
+                              <option value="">{t("Select")}</option>
+                              <option value="15 days or less">{t("FifteenDays")}</option>
+                              <option value="1 month">{t("OneMonth")}</option>
+                              <option value="2 months">{t("TwoMonths")}</option>
+                              <option value="3 months">{t("ThreeMonths")}</option>
+                              <option value="more than 3 months">{t("MoreThanThreeMonths")}</option>
+                              <option value="serving notice period">{t("ServingNotice")}</option>
                             </select>
                           </div>
                         }
@@ -3795,7 +3791,7 @@ const MyAccount = () => {
                         className="btn btn-secondary rounded-pill"
                         data-bs-dismiss="modal"
                       >
-                        Cancel
+                        {t("Cancel")}
                       </button>
                       <button
                         type="button"
@@ -3803,7 +3799,7 @@ const MyAccount = () => {
                         data-bs-dismiss="modal"
                         onClick={saveNewEmploymentData}
                       >
-                        Save
+                        {t("Save")}
                       </button>
                     </div>
                   </div>
@@ -3817,14 +3813,14 @@ const MyAccount = () => {
               >
                 <div className="card-body">
                   <div className="d-flex justify-content-between mb-3">
-                    <h5 className="text-theme">Education</h5>
+                    <h5 className="text-theme">{t("Education")}</h5>
                     <Link
                       className="text-theme"
                       data-bs-toggle="modal"
                       data-bs-target="#AddEducationModal"
                       onClick={() => setEducationData(defaultEducationForm)}
                     >
-                      Add education
+                     {t("AddEducation")}
                     </Link>
                   </div>
                   {education.length > 0 ? (
@@ -3873,7 +3869,7 @@ const MyAccount = () => {
                       );
                     })
                   ) : (
-                    <p className="m-0 text-muted">No educational details filled yet.</p>
+                    <p className="m-0 text-muted">{t("NoEducation")}</p>
                   )}
 
 
@@ -3902,40 +3898,37 @@ const MyAccount = () => {
                     <div className="modal-body">
                       <div className="d-flex justify-content-between">
                         <h1 className="modal-title fs-5 m-0" id="AddEducationModalLabel">
-                          Add Education
+                          {t("AddEducation")}
                         </h1>
 
                       </div>
-                      <h6 className="text-muted">
-                        Details of your course and university help recruiters
-                        understand your background.
-                      </h6>
+                      <h6 className="text-muted">{t("EducationText")} </h6>
 
                       <form>
                         <div className="mt-4 mb-4">
-                          <label>Education</label>
+                          <label>{t("Education")}</label>
                           <select
                             className="form-select"
                             value={educationData.education}
                             onChange={(e) => setEducationData({ ...educationData, education: e.target.value })}
                           >
-                            <option value="">Select education</option>
-                            <option value="1">Doctorate/PHD</option>
-                            <option value="2">Masters/Post Graduation</option>
-                            <option value="3">Graduation/Diploma</option>
-                            <option value="4">12th</option>
-                            <option value="5">10th</option>
+                            <option value="">{t("SelectEducation")}</option>
+                            <option value="1">{t("Doctorate")}</option>
+                            <option value="2">{t("Masters")}</option>
+                            <option value="3">{t("Graduation")}</option>
+                            <option value="4">{t("Class12")}</option>
+                            <option value="5">{t("Class10")}</option>
                           </select>
                         </div>
 
                         {isSchoolLevel && (
                           <>
                             <div className="mb-4">
-                              <label>Board</label>
+                              <label>{t("Board")}</label>
                               <input
                                 type="text"
                                 className="form-control"
-                                placeholder="Enter board name"
+                                placeholder={t("BoardPlaceholder")}
                                 value={educationData.board}
                                 // onChange={(e) => setEducationData({ ...educationData, board: e.target.value })}
 
@@ -3949,11 +3942,11 @@ const MyAccount = () => {
                             </div>
 
                             <div className="mb-4">
-                              <label>Passing out year</label>
+                              <label>{t("PassingYear")}</label>
                               <input
                                 type="text"
                                 className="form-control"
-                                placeholder="Enter year"
+                                placeholder={t("YearPlaceholder")}
                                 value={educationData.passing_year}
                                 // onChange={(e) => setEducationData({ ...educationData, passing_year: e.target.value })}
 
@@ -3968,11 +3961,11 @@ const MyAccount = () => {
                             </div>
 
                             <div className="mb-4">
-                              <label>School Medium</label>
+                              <label>{t("SchoolMedium")}</label>
                               <input
                                 type="text"
                                 className="form-control"
-                                placeholder="Enter medium"
+                                placeholder={t("MediumPlaceholder")}
                                 value={educationData.school_medium}
                                 // onChange={(e) => setEducationData({ ...educationData, school_medium: e.target.value })}
 
@@ -3990,16 +3983,16 @@ const MyAccount = () => {
                         {!isSchoolLevel && (
                           <>
                             <div className="mb-4">
-                              <label>University/Institute</label>
+                              <label>{t("University")}</label>
                               <input
                                 type="text"
                                 className="form-control"
-                                placeholder="Enter institute name"
+                                placeholder={t("UniversityPlaceholder")}
                                 value={educationData.institute}
                                 // onChange={(e) => setEducationData({ ...educationData, institute: e.target.value })}
                                 onChange={(e) => {
                                   const input = e.target.value;
-                                  if (/^[a-zA-Z]*$/.test(input)) {
+                                  if (/^[a-zA-Z\s]*$/.test(input)) {
                                     setEducationData({ ...educationData, institute: input });
                                   }
                                 }}
@@ -4007,34 +4000,35 @@ const MyAccount = () => {
                             </div>
 
                             <div className="mb-4">
-                              <label>Course</label>
+                              <label>{t("Course")}</label>
                               <input
                                 type="text"
                                 className="form-control"
-                                placeholder="Enter course name"
+                                placeholder={t("CoursePlaceholder")}
                                 value={educationData.course}
                                 // onChange={(e) => setEducationData({ ...educationData, course: e.target.value })}
                                 onChange={(e) => {
                                   const input = e.target.value;
-                                  if (/^[a-zA-Z]*$/.test(input)) {
+                                  if (/^[a-zA-Z\s]*$/.test(input)) {
                                     setEducationData({ ...educationData, course: input })
                                   }
+                                  
                                 }}
                               />
                             </div>
 
                             <div className="mb-4">
-                              <label>Specialization</label>
+                              <label>{t("Specialization")}</label>
                               <input
                                 type="text"
                                 className="form-control"
-                                placeholder="Enter your specialization"
+                                placeholder={t("SpecialPlaceholder")}
                                 value={educationData.specialization}
                                 // onChange={(e) => setEducationData({ ...educationData, specialization: e.target.value })}
 
                                 onChange={(e) => {
                                   const input = e.target.value;
-                                  if (/^[a-zA-Z]*$/.test(input)) {
+                                  if (/^[a-zA-Z\s]*$/.test(input)) {
                                     setEducationData({ ...educationData, specialization: input })
                                   }
                                 }}
@@ -4042,7 +4036,7 @@ const MyAccount = () => {
                             </div>
 
                             <div className="mb-4">
-                              <label>Course Type</label>
+                              <label>{t("CourseType")}</label>
                               <div className="form-check">
                                 <input
                                   className="form-check-input"
@@ -4051,7 +4045,7 @@ const MyAccount = () => {
                                   checked={educationData.course_type === "Full Time"}
                                   onChange={() => setEducationData({ ...educationData, course_type: "Full Time" })}
                                 />
-                                <label className="form-check-label">Full Time</label>
+                                <label className="form-check-label">{t("FullTime")}</label>
                               </div>
                               <div className="form-check">
                                 <input
@@ -4061,7 +4055,7 @@ const MyAccount = () => {
                                   checked={educationData.course_type === "Part Time"}
                                   onChange={() => setEducationData({ ...educationData, course_type: "Part Time" })}
                                 />
-                                <label className="form-check-label">Part Time</label>
+                                <label className="form-check-label">{t("PartTime")}</label>
                               </div>
                               <div className="form-check">
                                 <input
@@ -4071,18 +4065,18 @@ const MyAccount = () => {
                                   checked={educationData.course_type === "Correspondence"}
                                   onChange={() => setEducationData({ ...educationData, course_type: "Correspondence" })}
                                 />
-                                <label className="form-check-label">Correspondence</label>
+                                <label className="form-check-label">{t("Correspondence")}</label>
                               </div>
                             </div>
 
                             <div className="mb-4">
-                              <label>Course Duration</label>
+                              <label>{t("CourseDuration")}</label>
                               <div className="row flex-column flex-md-row align-items-center">
                                 <div className="col">
                                   <input
                                     type="text"
                                     className="form-control"
-                                    placeholder="Starting Year"
+                                    placeholder={t("CoursePlaceholder")}
                                     value={educationData.course_starting_year}
                                     // onChange={(e) => {
                                     //   setEducationData({ ...educationData, course_starting_year: e.target.value });
@@ -4100,13 +4094,13 @@ const MyAccount = () => {
                                   />
                                 </div>
                                 <div className="col-1 text-center">
-                                  <span>To</span>
+                                  <span>{t("To")}</span>
                                 </div>
                                 <div className="col">
                                   <input
                                     type="text"
                                     className="form-control"
-                                    placeholder="Ending Year"
+                                    placeholder={t("CoursePlaceholder1")}
                                     value={educationData.course_ending_year}
                                     onChange={(e) => {
                                       const endingYear = e.target.value;
@@ -4123,7 +4117,7 @@ const MyAccount = () => {
                                         course_ending_year &&
                                         parseInt(course_ending_year) < parseInt(course_starting_year)
                                       ) {
-                                        setYearError('Ending year should be the same or greater than starting year');
+                                        setYearError(t("YearErrorMsg"));
                                       }
                                     }}
                                     maxLength={4}
@@ -4151,11 +4145,11 @@ const MyAccount = () => {
                         </div> */}
 
                         <div className="mb-4">
-                          <label>Marks</label>
+                          <label>{t("Marks")}</label>
                           <input
                             type="text"
                             className={`form-control ${marksError ? 'is-invalid' : ''}`}
-                            placeholder="Enter marks"
+                            placeholder={t("MarksPlaceholder")}
                             value={educationData.marks}
                             onChange={(e) => {
                               const input = e.target.value;
@@ -4170,7 +4164,8 @@ const MyAccount = () => {
                               const marks = educationData.marks;
 
                               if (parseInt(marks) < 0 || marks === '0' || marks === '00' || marks === '000' || marks === '0000' || marks === '00000') {
-                                setMarksError('Marks cannot be negative or 0');
+                                // setMarksError('Marks cannot be negative or 0');
+                                 setMarksError(t("MarksErrorMsg"));
                               }
                             }}
                             maxLength={5}
@@ -4190,7 +4185,7 @@ const MyAccount = () => {
                         className="btn btn-secondary rounded-pill"
                         data-bs-dismiss="modal"
                       >
-                        Cancel
+                        {t("Cancel")}
                       </button>
                       <button
                         type="button"
@@ -4198,7 +4193,7 @@ const MyAccount = () => {
                         data-bs-dismiss="modal"
                         onClick={AddEducationData}
                       >
-                        Save
+                        {t("Save")}
                       </button>
                     </div>
                   </div>
@@ -4226,46 +4221,45 @@ const MyAccount = () => {
                     <div className="modal-body">
                       <div className="d-flex justify-content-between">
                         <h1 className="modal-title fs-5 m-0" id="EditEducationModalLabel">
-                          Edit Education
+                          {t("EditEducation")}
                         </h1>
                         <Link
                           className="text-theme"
                           data-bs-toggle="modal"
                           data-bs-target="#educationDeleteModal"
                         >
-                          Delete
+                          {t("Delete")}
                         </Link>
                       </div>
                       <h6 className="text-muted">
-                        Details of your course and university help recruiters
-                        understand your background.
+                        {t("EducationText")}
                       </h6>
 
                       <form>
                         <div className="mt-4 mb-4">
-                          <label>Education</label>
+                          <label>{t("Education")}</label>
                           <select
                             className="form-select"
                             value={educationData.education}
                             onChange={(e) => setEducationData({ ...educationData, education: e.target.value })}
                           >
-                            <option value="">Select education</option>
-                            <option value="1">Doctorate/PHD</option>
-                            <option value="2">Masters/Post Graduation</option>
-                            <option value="3">Graduation/Diploma</option>
-                            <option value="4">12th</option>
-                            <option value="5">10th</option>
+                            <option value="">{t("SelectEducation")}</option>
+                            <option value="1">{t("Doctorate")}</option>
+                            <option value="2">{t("Masters")}</option>
+                            <option value="3">{t("Graduation")}</option>
+                            <option value="4">{t("Class12")}</option>
+                            <option value="5">{t("Class10")}</option>
                           </select>
                         </div>
 
                         {isSchoolLevel && (
                           <>
                             <div className="mb-4">
-                              <label>Board</label>
+                              <label>{t("Board")}</label>
                               <input
                                 type="text"
                                 className="form-control"
-                                placeholder="Enter board name"
+                                placeholder={t("BoardPlaceholder")}
                                 value={educationData.board}
                                 // onChange={(e) => setEducationData({ ...educationData, board: e.target.value })}
 
@@ -4279,11 +4273,11 @@ const MyAccount = () => {
                             </div>
 
                             <div className="mb-4">
-                              <label>Passing out year</label>
+                              <label>{t("PassingYear")}</label>
                               <input
                                 type="text"
                                 className="form-control"
-                                placeholder="Enter year"
+                                placeholder={t("YearPlaceholder")}
                                 value={educationData.passing_year}
                                 // onChange={(e) => setEducationData({ ...educationData, passing_year: e.target.value })}
                                 onChange={(e) => {
@@ -4298,11 +4292,11 @@ const MyAccount = () => {
                             </div>
 
                             <div className="mb-4">
-                              <label>School Medium</label>
+                              <label>{t("SchoolMedium")}</label>
                               <input
                                 type="text"
                                 className="form-control"
-                                placeholder="Enter medium"
+                                placeholder={t("MediumPlaceholder")}
                                 value={educationData.school_medium}
                                 // onChange={(e) => setEducationData({ ...educationData, school_medium: e.target.value })}
 
@@ -4320,11 +4314,11 @@ const MyAccount = () => {
                         {!isSchoolLevel && (
                           <>
                             <div className="mb-4">
-                              <label>University/Institute</label>
+                              <label>{t("University")}</label>
                               <input
                                 type="text"
                                 className="form-control"
-                                placeholder="Enter institute name"
+                                placeholder={t("UniversityPlaceholder")}
                                 value={educationData.institute}
                                 // onChange={(e) => setEducationData({ ...educationData, institute: e.target.value })}
 
@@ -4338,11 +4332,11 @@ const MyAccount = () => {
                             </div>
 
                             <div className="mb-4">
-                              <label>Course</label>
+                              <label>{t("Course")}</label>
                               <input
                                 type="text"
                                 className="form-control"
-                                placeholder="Enter course name"
+                                placeholder={t("CoursePlaceholder")}
                                 value={educationData.course}
                                 // onChange={(e) => setEducationData({ ...educationData, course: e.target.value })}
 
@@ -4357,11 +4351,11 @@ const MyAccount = () => {
                             </div>
 
                             <div className="mb-4">
-                              <label>Specialization</label>
+                              <label>{t("Specialization")}</label>
                               <input
                                 type="text"
                                 className="form-control"
-                                placeholder="Enter your specialization"
+                                placeholder={t("SpecialPlaceholder")}
                                 value={educationData.specialization}
                                 // onChange={(e) => setEducationData({ ...educationData, specialization: e.target.value })}
 
@@ -4375,7 +4369,7 @@ const MyAccount = () => {
                             </div>
 
                             <div className="mb-4">
-                              <label>Course Type</label>
+                              <label>{t("CourseType")}</label>
                               <div className="form-check">
                                 <input
                                   className="form-check-input"
@@ -4384,7 +4378,7 @@ const MyAccount = () => {
                                   checked={educationData.course_type === "Full Time"}
                                   onChange={() => setEducationData({ ...educationData, course_type: "Full Time" })}
                                 />
-                                <label className="form-check-label">Full Time</label>
+                                <label className="form-check-label">{t("FullTime")}</label>
                               </div>
                               <div className="form-check">
                                 <input
@@ -4394,7 +4388,7 @@ const MyAccount = () => {
                                   checked={educationData.course_type === "Part Time"}
                                   onChange={() => setEducationData({ ...educationData, course_type: "Part Time" })}
                                 />
-                                <label className="form-check-label">Part Time</label>
+                                <label className="form-check-label">{t("PartTime")}</label>
                               </div>
                               <div className="form-check">
                                 <input
@@ -4404,18 +4398,18 @@ const MyAccount = () => {
                                   checked={educationData.course_type === "Correspondence"}
                                   onChange={() => setEducationData({ ...educationData, course_type: "Correspondence" })}
                                 />
-                                <label className="form-check-label">Correspondence</label>
+                                <label className="form-check-label">{t("Correspondence")}</label>
                               </div>
                             </div>
 
                             <div className="mb-4">
-                              <label>Course Duration</label>
+                              <label>{t("CourseDuration")}</label>
                               <div className="row flex-column flex-md-row align-items-center">
                                 <div className="col">
                                   <input
                                     type="text"
                                     className="form-control"
-                                    placeholder="Starting Year"
+                                    placeholder={t("CoursePlaceholder1")}
                                     value={educationData.course_starting_year}
                                     // onChange={(e) => {
                                     //   setEducationData({ ...educationData, course_starting_year: e.target.value });
@@ -4433,13 +4427,13 @@ const MyAccount = () => {
                                   />
                                 </div>
                                 <div className="col-1 text-center">
-                                  <span>To</span>
+                                  <span>{t("To")}</span>
                                 </div>
                                 <div className="col">
                                   <input
                                     type="text"
                                     className="form-control"
-                                    placeholder="Ending Year"
+                                    placeholder={t("CoursePlaceholder2")}
                                     value={educationData.course_ending_year}
                                     onChange={(e) => {
                                       const endingYear = e.target.value;
@@ -4456,7 +4450,7 @@ const MyAccount = () => {
                                         course_ending_year &&
                                         parseInt(course_ending_year) < parseInt(course_starting_year)
                                       ) {
-                                        setYearError('Ending year should be the same or greater than starting year');
+                                        setYearError(t("YearErrorMsg"));
                                       }
                                     }}
                                     maxLength={4}
@@ -4485,11 +4479,11 @@ const MyAccount = () => {
                           />
                         </div> */}
                         <div className="mb-4">
-                          <label>Marks</label>
+                          <label>{t("Marks")}</label>
                           <input
                             type="text"
                             className={`form-control ${marksError ? 'is-invalid' : ''}`}
-                            placeholder="Enter marks"
+                            placeholder={t("MarksPlaceholder")}
                             value={educationData.marks}
                             onChange={(e) => {
                               const input = e.target.value;
@@ -4504,7 +4498,7 @@ const MyAccount = () => {
                               const marks = educationData.marks;
 
                               if (parseInt(marks) < 0 || marks === '0' || marks === '00' || marks === '000' || marks === '0000' || marks === '00000') {
-                                setMarksError('Marks cannot be negative or 0');
+                                setMarksError(t("MarksErrorMsg"));
                               }
                             }}
                             maxLength={5}
@@ -4523,7 +4517,7 @@ const MyAccount = () => {
                         className="btn btn-secondary rounded-pill"
                         data-bs-dismiss="modal"
                       >
-                        Cancel
+                        {t("Cancel")}
                       </button>
                       <button
                         type="button"
@@ -4531,7 +4525,7 @@ const MyAccount = () => {
                         data-bs-dismiss="modal"
                         onClick={UpdateEducationData}
                       >
-                        Save
+                        {t("Save")}
                       </button>
                     </div>
                   </div>
@@ -4553,7 +4547,7 @@ const MyAccount = () => {
                         className="modal-title"
                         id="educationDeleteModalLabel"
                       >
-                        Delete education data
+                        {t("DeleteEducation")}
                       </h5>
                       <button
                         type="button"
@@ -4563,7 +4557,7 @@ const MyAccount = () => {
                       ></button>
                     </div>
                     <div className="modal-body">
-                      Are you sure you want to delete education details?
+                     {t("DeleteEducationText")}
                     </div>
                     <div className="modal-footer">
                       <button
@@ -4571,7 +4565,7 @@ const MyAccount = () => {
                         className="btn btn-secondary"
                         data-bs-dismiss="modal"
                       >
-                        Cancel
+                        {t("Cancel")}
                       </button>
                       <button
                         type="button"
@@ -4581,7 +4575,7 @@ const MyAccount = () => {
                         }
                         data-bs-dismiss="modal"
                       >
-                        Delete
+                        {t("Delete")}
                       </button>
                     </div>
                   </div>
@@ -4595,7 +4589,7 @@ const MyAccount = () => {
               <div className="card mt-4 shadow border-0 rounded-3">
                 <div className="card-body">
                   <div className="d-flex justify-content-between ">
-                    <h5 className="m-0 text-theme">Online Profile</h5>
+                    <h5 className="m-0 text-theme">{t("OnlineProfile")}</h5>
 
                     <Link
                       className="text-theme"
@@ -4603,12 +4597,12 @@ const MyAccount = () => {
                       data-bs-target="#addSocialModal"
                       onClick={() => setSelectedSocialProfile({})}
                     >
-                      Add Profile
+                      {t("AddProfile")}
                     </Link>
                   </div>
 
                   <p>
-                    <small> Add link to online professional profiles (e.g.LinkedIn, etc.) </small>
+                    <small> {t("ProfileText")}</small>
                   </p>
 
                   <div className=" online_profile">
@@ -4616,7 +4610,7 @@ const MyAccount = () => {
                       socialProfiles.map((social_profiles, index) => (
                         <div key={index} className="mb-3">
                           <div className="d-flex align-items-baseline">
-                            <h6 className="m-0">
+                            <h6 className="m-0 text-capitalize">
                               {social_profiles.social_profile_name}
                               <Link
                                 data-bs-toggle="modal"
@@ -4633,7 +4627,7 @@ const MyAccount = () => {
                         </div>
                       ))
                     ) : (
-                      <p className="text-muted m-0">No online profiles added yet</p>
+                      <p className="text-muted m-0">{t("NoProfile")}</p>
                     )}
                   </div>
                 </div>
@@ -4658,8 +4652,8 @@ const MyAccount = () => {
                             id={`socialModal-${profile.id}-Label`}
                           >
                             {profile.id
-                              ? "Edit Online Profile"
-                              : "Add Online Profile"}
+                              ? t("EditOnlineProfile")
+                              : t("AddOnlineProfile")}
                           </h1>
                           <button
                             type="button"
@@ -4671,8 +4665,7 @@ const MyAccount = () => {
                         <div className="modal-body">
                           <div className="d-flex justify-content-between">
                             <h6 className="text-muted">
-                              Add link to online professional profiles (e.g.
-                              LinkedIn, etc.)
+                              {t("ProfileText")}
                             </h6>
                             {profile.id && (
                               <Link
@@ -4680,7 +4673,7 @@ const MyAccount = () => {
                                 data-bs-toggle="modal"
                                 data-bs-target={`#deleteSocialModal-${profile.id}`}
                               >
-                                Delete
+                                {t("Delete")}
                               </Link>
                             )}
                           </div>
@@ -4690,12 +4683,12 @@ const MyAccount = () => {
                               <label
                                 htmlFor={`social_profile_name-${profile.id}`}
                               >
-                                Social Profile
+                               {t("SocialProfile")}
                               </label>
                               <input
                                 type="text"
                                 className="form-control"
-                                placeholder="Enter Social Profile Name"
+                                placeholder={t("SocialProfilePlaceholder")}
                                 value={
                                   selectedSocialProfile.social_profile_name ||
                                   ""
@@ -4725,11 +4718,11 @@ const MyAccount = () => {
                             </div> */}
 
                             <div className="mb-4">
-                              <label htmlFor={`url-${profile.id}`}>URL</label>
+                              <label htmlFor={`url-${profile.id}`}>{t("URL")}</label>
                               <input
                                 type="url"
                                 className={`form-control ${urlError ? 'is-invalid' : ''}`}
-                                placeholder="Enter Social Profile URL"
+                                placeholder={t("URLPlaceholder")}
                                 value={selectedSocialProfile.url || ""}
                                 onChange={(e) => {
                                   const value = e.target.value;
@@ -4741,7 +4734,7 @@ const MyAccount = () => {
                                 }}
                                 onBlur={() => {
                                   if (!selectedSocialProfile.url) {
-                                    setUrlError('URL is required');
+                                    setUrlError(t("URLMessage"));
                                   }
                                 }}
                               />
@@ -4750,13 +4743,13 @@ const MyAccount = () => {
 
                             <div className="mb-4">
                               <label htmlFor={`description-${profile.id}`}>
-                                Description
+                                {t("Description")}
                               </label>
                               <textarea
                                 name="description"
                                 className="form-control"
                                 rows={3}
-                                placeholder="Type here..."
+                                placeholder={t("SummaryPlaceholder")}
                                 value={selectedSocialProfile.description || ""}
                                 onChange={(e) =>
                                   setSelectedSocialProfile((prev) => ({
@@ -4774,14 +4767,14 @@ const MyAccount = () => {
                             className="btn btn-secondary rounded-pill"
                             data-bs-dismiss="modal"
                           >
-                            Cancel
+                            {t("Cancel")}
                           </button>
                           <button
                             type="button"
                             className="btn btn-primary rounded-pill"
                             onClick={() => saveSocialProfiles(profile.id)}
                           >
-                            Save
+                            {t("Save")}
                           </button>
                         </div>
                       </div>
@@ -4803,7 +4796,7 @@ const MyAccount = () => {
                             className="modal-title"
                             id={`deleteSocialModal-${profile.id}-Label`}
                           >
-                            Delete Social Profile
+                           {t("DeleteSocialProfile")}
                           </h5>
                           <button
                             type="button"
@@ -4813,7 +4806,7 @@ const MyAccount = () => {
                           ></button>
                         </div>
                         <div className="modal-body">
-                          Are you sure you want to delete this social profile?
+                          {t("DeleteSocialProfileText")}
                         </div>
                         <div className="modal-footer">
                           <button
@@ -4821,7 +4814,7 @@ const MyAccount = () => {
                             className="btn btn-secondary"
                             data-bs-dismiss="modal"
                           >
-                            Cancel
+                            {t("Cancel")}
                           </button>
                           <button
                             type="button"
@@ -4829,7 +4822,7 @@ const MyAccount = () => {
                             onClick={() => confirmSocialDelete(profile.id)}
                             data-bs-dismiss="modal"
                           >
-                            Delete
+                            {("Delete")}
                           </button>
                         </div>
                       </div>
@@ -4850,7 +4843,7 @@ const MyAccount = () => {
                   <div className="modal-content p-3 p-sm-4">
                     <div className="modal-header border-0 pb-0">
                       <h1 className="modal-title fs-5" id="addSocialModalLabel">
-                        Add Online Profile
+                       {t("AddOnlineProfile")}
                       </h1>
                       <button
                         type="button"
@@ -4861,18 +4854,17 @@ const MyAccount = () => {
                     </div>
                     <div className="modal-body">
                       <h6 className="text-muted">
-                        Add link to online professional profiles (e.g. LinkedIn,
-                        etc.)
+                        {t("ProfileText")}
                       </h6>
                       <form>
                         <div className="mt-4 mb-4">
                           <label htmlFor="social_profile_name">
-                            Social profile
+                            {t("SocialProfile")}
                           </label>
                           <input
                             type="text"
                             className="form-control"
-                            placeholder="Enter Social Profile Name"
+                            placeholder={t("SocialProfilePlaceholder")}
                             value={
                               selectedSocialProfile?.social_profile_name || ""
                             }
@@ -4885,11 +4877,11 @@ const MyAccount = () => {
                           />
                         </div>
                         <div className="mb-4">
-                          <label htmlFor=''>URL</label>
+                          <label htmlFor=''>{t("URL")}</label>
                           <input
                             type="url"
                             className={`form-control ${urlError ? 'is-invalid' : ''}`}
-                            placeholder="Enter Social Profile URL"
+                            placeholder={t("URLPlaceholder")}
                             value={selectedSocialProfile.url || ""}
                             onChange={(e) => {
                               const value = e.target.value;
@@ -4901,19 +4893,19 @@ const MyAccount = () => {
                             }}
                             onBlur={() => {
                               if (!selectedSocialProfile.url) {
-                                setUrlError('URL is required');
+                                setUrlError(t("URLMessage"));
                               }
                             }}
                           />
                           {urlError && <small className="text-danger">{urlError}</small>}
                         </div>
                         <div className="mb-4">
-                          <label htmlFor="description">Description</label>
+                          <label htmlFor="description">{t("Description")}</label>
                           <textarea
                             name="description"
                             className="form-control"
                             rows={3}
-                            placeholder="Type here..."
+                            placeholder={t("SummaryPlaceholder")}
                             value={selectedSocialProfile?.description || ""}
                             onChange={(e) =>
                               setSelectedSocialProfile((prev) => ({
@@ -4931,14 +4923,14 @@ const MyAccount = () => {
                         className="btn btn-secondary rounded-pill"
                         data-bs-dismiss="modal"
                       >
-                        Cancel
+                        {t("Cancel")}
                       </button>
                       <button
                         type="button"
                         className="btn btn-primary rounded-pill"
                         onClick={() => saveSocialProfiles()}
                       >
-                        Save
+                        {t("Save")}
                       </button>
                     </div>
                   </div>
@@ -4950,7 +4942,7 @@ const MyAccount = () => {
                 <div className="card-body">
                   <div className="d-flex align-items-center">
                     <h5 className="m-0 text-theme">
-                      Personal Details
+                      {t("PersonalDetails")}
                       <Link
                         data-bs-toggle="modal"
                         data-bs-target="#PersonalDetailModal"
@@ -4964,7 +4956,7 @@ const MyAccount = () => {
                   <div className="mt-4 personal_details">
                     <div className="row">
                         <div className="col-lg-4 col-md-6 col-6">
-                          <label htmlFor="">Personal</label>
+                          <label htmlFor="">{t("Personal")}</label>
                           <p className="text-capitalize">
                             {userData.gender && userData.maritial_status
                               ? `${userData.gender}, ${userData.maritial_status}`
@@ -4976,7 +4968,7 @@ const MyAccount = () => {
                           </p>
                         </div>
                         <div className="col-lg-4 col-md-6 col-6">
-                          <label htmlFor="">Date of birth</label>
+                          <label htmlFor="">{t("DOB")}</label>
                           <p className="text-capitalize">
                             {userData.dob ? (
                               <span>{userData.dob}</span>
@@ -4986,7 +4978,7 @@ const MyAccount = () => {
                           </p>
                         </div>                     
                         <div className="col-lg-4 col-md-6 col-6">
-                          <label htmlFor="">Religion</label>
+                          <label htmlFor="">{t("Religion")}</label>
                           <p className="text-capitalize">
                             {userData.religion ? (
                               <span>{userData.religion}</span>
@@ -4996,7 +4988,7 @@ const MyAccount = () => {
                           </p>
                         </div>
                         <div className="col-lg-4 col-md-6 col-6">
-                          <label htmlFor="">Address</label>
+                          <label htmlFor="">{t("Address")}</label>
                           <p className="text-capitalize">
                             {userData.permanent_address ? (
                               <span>{userData.permanent_address}</span>
@@ -5006,7 +4998,7 @@ const MyAccount = () => {
                           </p>
                         </div>
                         <div className="col-lg-4 col-md-6 col-6">
-                          <label htmlFor="">Zipcode</label>
+                          <label htmlFor="">{t("Zipcode")}</label>
                           <p className="text-capitalize">
                             {userData.pincode ? (
                               <span>{userData.pincode}</span>
@@ -5016,7 +5008,7 @@ const MyAccount = () => {
                           </p>
                         </div>
                         <div className="col-lg-4 col-md-6 col-6">
-                          <label htmlFor="">City</label>
+                          <label htmlFor="">{t("City")}</label>
                           <p className="text-capitalize">
                             {userData.city ? (
                               <span>{userData.city}</span>
@@ -5026,7 +5018,7 @@ const MyAccount = () => {
                           </p>
                         </div>
                         <div className="col-lg-4 col-md-6 col-6">
-                          <label htmlFor="">State</label>
+                          <label htmlFor="">{t("State")}</label>
                           <p>
                             {userData.state ? (
                               <span>{userData.state}</span>
@@ -5036,7 +5028,7 @@ const MyAccount = () => {
                           </p>
                         </div>
                         <div className="col-lg-4 col-md-6 col-6">
-                          <label htmlFor="">Country</label>
+                          <label htmlFor="">{t("Country")}</label>
                           <p>
                             {userData.country_name ? (
                               <span>{userData.country_name}</span>
@@ -5060,7 +5052,7 @@ const MyAccount = () => {
                   <div className="modal-content">
                     <div className="modal-header">
                       <h5 className="modal-title" id="deleteLanguageLabel">
-                        Delete language
+                        {t("DeleteLanguage")}
                       </h5>
                       <button
                         type="button"
@@ -5070,7 +5062,7 @@ const MyAccount = () => {
                       ></button>
                     </div>
                     <div className="modal-body">
-                      Are you sure you want to delete?
+                      {t("DeleteLanguageText")}
                     </div>
                     <div className="modal-footer">
                       <button
@@ -5078,7 +5070,7 @@ const MyAccount = () => {
                         className="btn btn-secondary"
                         data-bs-dismiss="modal"
                       >
-                        Cancel
+                        {t("Cancel")}
                       </button>
                       <button
                         type="button"
@@ -5086,7 +5078,7 @@ const MyAccount = () => {
                         onClick={() => deleteLanguageRow()}
                         data-bs-dismiss="modal"
                       >
-                        Delete
+                        {t("Delete")}
                       </button>
                     </div>
                   </div>
@@ -5118,15 +5110,15 @@ const MyAccount = () => {
                           className="modal-title fs-5 m-0"
                           id="PersonalDetailModalLabel"
                         >
-                          Personal details
+                          {t("PersonalDetails")}
                         </h1>
                         <h6 className="text-muted">
-                          This informations help recuiter to know you better
+                          {t("PersonalDetailsText")}
                         </h6>
                       </div>
                       <form action="" className="">
                         <div className="mt-4 mb-4">
-                          <label htmlFor="">Gender</label>
+                          <label htmlFor="">{t("Gender")}</label>
                           <select
                             className="form-select"
                             value={userData.gender || ""}
@@ -5140,14 +5132,14 @@ const MyAccount = () => {
                             }
                             }
                           >
-                            <option value="">Select gender</option>
-                            <option value="Male">Male</option>
-                            <option value="Female">Female</option>
-                            <option value="Transgender">Transgender</option>
+                            <option value="">{t("SelectGender")}</option>
+                            <option value="Male">{t("Male")}</option>
+                            <option value="Female">{t("Female")}</option>
+                            <option value="Transgender">{t("Transgender")}</option>
                           </select>
                         </div>
                         <div className="mb-4">
-                          <label htmlFor="">Maritial Status</label>
+                          <label htmlFor="">{t("MartialStatus")}</label>
                           <select
                             className="form-select"
                             value={userData.maritial_status || ""}
@@ -5158,23 +5150,23 @@ const MyAccount = () => {
                               })
                             }
                           >
-                            <option value="">Select status</option>
-                            <option value="Single">Single</option>
-                            <option value="Married">Married</option>
-                            <option value="Widowed">Widowed</option>
-                            <option value="Divorced">Divorced</option>
-                            <option value="Seperated">Seperated</option>
-                            <option value="Other">Other</option>
+                            <option value="">{t("SelectStatus")}</option>
+                            <option value="Single">{t("Single")}</option>
+                            <option value="Married">{t("Married")}</option>
+                            <option value="Widowed">{t("Widowed")}</option>
+                            <option value="Divorced">{t("Divorced")}</option>
+                            <option value="Seperated">{t("Seperated")}</option>
+                            <option value="Other">{t("Other")}</option>
                           </select>
                         </div>
                         <div className="mb-4">
-                          <label htmlFor="">Date of birth</label>
+                          <label htmlFor="">{t("DOB")}</label>
                           <div className="row flex-column flex-md-row align-items-center">
                             <div className="col-md-12 col-12 mb-2">
                               <input
                                 type="date"
                                 className="form-control"
-                                placeholder="Enter Date of Birth"
+                                placeholder={t("DOBPlaceholder")}
                                 value={userData.dob ?? ""}
                                 onChange={(e) =>
                                   setUserData({
@@ -5187,11 +5179,11 @@ const MyAccount = () => {
                           </div>
                         </div>
                         <div className="mb-4">
-                          <label htmlFor="">Religion</label>
+                          <label htmlFor="">{t("Religion")}</label>
                           <input
                             type="text"
                             className="form-control"
-                            placeholder="Enter your religion"
+                            placeholder={t("ReligionPlaceholder")}
                             value={userData.religion}
                             onChange={(e) => {
                               const input = e.target.value;
@@ -5221,7 +5213,7 @@ const MyAccount = () => {
 
                         <div className="abled_section">
                           <div className="mb-4">
-                            <label htmlFor="">Are you differently abled?</label>
+                            <label htmlFor="">{t("DifferentlyAbled")}</label>
                             <div className="d-flex mt-2">
                               <div className="form-check me-4">
                                 <input
@@ -5237,7 +5229,7 @@ const MyAccount = () => {
                                   className="form-check-label"
                                   htmlFor="AbledYes"
                                 >
-                                  Yes
+                                  {t("Yes")}
                                 </label>
                               </div>
                               <div className="form-check locationRadio">
@@ -5254,7 +5246,7 @@ const MyAccount = () => {
                                   className="form-check-label"
                                   htmlFor="AbledNo"
                                 >
-                                  No
+                                  {t("No")}
                                 </label>
                               </div>
                             </div>
@@ -5263,45 +5255,44 @@ const MyAccount = () => {
                           {isDifferentlyAbled === "Yes" && (
                             <>
                               <div className="mb-4 abled_type">
-                                <label htmlFor="">Type</label>
+                                <label htmlFor="">{t("DisabilityType")}</label>
                                 <select
                                   className="form-select"
                                   value={userData.differently_abled_type || ""}
                                   onChange={handleAbledTypeChange}
                                 >
-                                  <option value="Blindness">Blindness</option>
-                                  <option value="Low Vision">Low Vision</option>
+                                  <option value="Blindness">{t("Blindness")}</option>
+                                  <option value="Low Vision">{("LowVision")}</option>
                                   <option value="Hearing Impairment">
-                                    Hearing Impairment
+                                    {t("HearingImpairment")}
                                   </option>
                                   <option value="Speech and Language Disability">
-                                    Speech and Language Disability
+                                    {t("SpeechImpairment")}
                                   </option>
-                                  <option value="Dwarfism">Dwarfism</option>
+                                  <option value="Dwarfism">{t("Dwarfism")}</option>
                                   <option value="Acid Attack Victim">
-                                    Acid Attack Victim
+                                    {t("AcidVictims")}
                                   </option>
                                   <option value="Mental Illness">
-                                    Mental Illness
+                                    {t("MentalIllness")}
                                   </option>
                                   <option value="Multiple Disabilities">
-                                    Multiple Disabilities
+                                    {t("MultipleDisabilities")}
                                   </option>
-                                  <option value="Others">Others</option>
+                                  <option value="Others">{t("Other")}</option>
                                 </select>
                               </div>
 
                               {abledType === "Others" && (
                                 <div className="mb-4 describe_abled">
-                                  <label htmlFor="">Describe</label>
+                                  <label htmlFor="">{t("DescribeDisability")}</label>
                                   <textarea
                                     name="differently_abled_condition"
                                     id="describe_abled"
                                     value={
                                       userData.differently_abled_condition || ""
                                     }
-                                    placeholder="Specify about your differently abled condition"
-                                    className="form-control"
+                                    placeholder={t("DescribeDisabilityPlaceholder")}
                                     onChange={(e) =>
                                       setUserData((prevData) => ({
                                         ...prevData,
@@ -5315,14 +5306,14 @@ const MyAccount = () => {
 
                               <div className="mb-4 assistance">
                                 <label htmlFor="">
-                                  Do you need assistance at your workplace?
+                                  {t("AssistanceRequired")}
                                 </label>
                                 <textarea
                                   name="workplace_assistance"
                                   id="workplace_assistance"
                                   rows={3}
                                   value={userData.workplace_assistance || ""}
-                                  placeholder="Type here (ex: wheelchair)"
+                                  placeholder={t("AssistanceRequiredPlaceholder")}
                                   className="form-control"
                                   onChange={(e) =>
                                     setUserData((prevData) => ({
@@ -5337,11 +5328,11 @@ const MyAccount = () => {
                         </div>
 
                         <div className="mb-4">
-                          <label htmlFor="">Permanent Address</label>
+                          <label htmlFor="">{t("PermanentAddress")}</label>
                           <input
                             type="text"
                             className="form-control"
-                            placeholder="Enter your permanent address"
+                            placeholder={t("PermanentAddressPlaceholder")}
                             value={userData.permanent_address}
                             onChange={(e) =>
                               setUserData({
@@ -5352,11 +5343,11 @@ const MyAccount = () => {
                           />
                         </div>
                         <div className="mb-4">
-                          <label htmlFor="">Hometown</label>
+                          <label htmlFor="">{t("HomeTown")}</label>
                           <input
                             type="text"
                             className="form-control"
-                            placeholder="Enter your hometown"
+                            placeholder={t("HomeTownPlaceholder")}
                             value={userData.hometown}
                             // onChange={(e) =>
                             //   setUserData({
@@ -5373,11 +5364,11 @@ const MyAccount = () => {
                           />
                         </div>
                         <div className="mb-4">
-                          <label htmlFor="">Pincode</label>
+                          <label htmlFor="">{t("Zipcode")}</label>
                           <input
                             type="text"
                             className="form-control"
-                            placeholder="Enter your pincode"
+                            placeholder={t("ZipCodePlaceholder")}
                             value={userData.pincode}
                             // onChange={(e) =>
                             //   setUserData({
@@ -5396,11 +5387,11 @@ const MyAccount = () => {
                         </div>
 
                         <div className="mb-4">
-                          <label htmlFor="">City</label>
+                          <label htmlFor="">{t("City")}</label>
                           <input
                             type="text"
                             className="form-control"
-                            placeholder="Enter your city"
+                            placeholder={t("CityPlaceholder")}
                             value={userData.city}
                             // onChange={(e) =>
                             //   setUserData({ ...userData, city: e.target.value })
@@ -5415,11 +5406,11 @@ const MyAccount = () => {
                         </div>
 
                         <div className="mb-4">
-                          <label htmlFor="">State</label>
+                          <label htmlFor="">{t("State")}</label>
                           <input
                             type="text"
                             className="form-control"
-                            placeholder="Enter your state"
+                            placeholder={t("StatePlaceholder")}
                             value={userData.state}
                             // onChange={(e) =>
                             //   setUserData({
@@ -5436,11 +5427,11 @@ const MyAccount = () => {
                           />
                         </div>
                         <div className="mb-4">
-                          <label htmlFor="">Country</label>
+                          <label htmlFor="">{t("Country")}</label>
                           <input
                             type="text"
                             className="form-control"
-                            placeholder="Enter your state"
+                            placeholder={t("CountryPlaceholder")}
                             value={userData.country_name}
                             onChange={(e) => {
                               const input = e.target.value;
@@ -5451,19 +5442,20 @@ const MyAccount = () => {
                           />
                         </div>
 
+                       {languages.length > 0 ? (
                         <div className="card mt-4 shadow border-0 rounded-3">
                           <div className="card-body">
                             <div className="language_section mb-4">
-                              <label htmlFor="">Language Proficiency</label>
+                              <label htmlFor="">{t("LanguageProficiency")}</label>
 
                               {languages.map((row, index) => (
                                 <div className="row mt-3" key={index}>
                                   <div className="col-md-6 mb-2 mb-md-0">
-                                    <label htmlFor="">Language</label>
+                                    <label htmlFor="">{t("Language")}</label>
                                     <input
                                       type="text"
                                       className="form-control"
-                                      placeholder="Enter language"
+                                      placeholder={t("LanguagePlaceholder")}
                                       value={row.language}
                                       onChange={(e) =>
                                         handleLanguageChange(
@@ -5474,7 +5466,7 @@ const MyAccount = () => {
                                     />
                                   </div>
                                   <div className="col-md-6 mb-2 mb-md-0">
-                                    <label htmlFor="">Proficiency</label>
+                                    <label htmlFor="">{t("Proficiency")}</label>
                                     <select
                                       className="form-select"
                                       value={row.proficiency}
@@ -5485,11 +5477,11 @@ const MyAccount = () => {
                                         )
                                       }
                                     >
-                                      <option value="Beginner">Beginner</option>
+                                      <option value="Beginner">{t("Beginner")}</option>
                                       <option value="Proficient">
-                                        Proficient
+                                        {t("Proficient")}
                                       </option>
-                                      <option value="Expert">Expert</option>
+                                      <option value="Expert">{t("Expert")}</option>
                                     </select>
                                   </div>
                                   <div className="d-flex mt-1 fw-semibold justify-content-end text-theme">
@@ -5499,7 +5491,7 @@ const MyAccount = () => {
                                         showDeleteLanguageModal(index)
                                       }
                                     >
-                                      Delete
+                                      {t("Delete")}
                                     </span>
                                   </div>
                                 </div>
@@ -5510,11 +5502,24 @@ const MyAccount = () => {
                                 style={{ cursor: "pointer", color: "green" }}
                                 onClick={addLanguageRow}
                               >
-                                Add another language
+                                {t("AddAnotherLanguage")}
                               </p>
                             </div>
                           </div>
                         </div>
+                       ) : (
+                         <div className="language_section mb-4">
+                              <label htmlFor="">{t("LanguageProficiency")}</label>
+                              <p
+                                className="mt-2 fw-semibold"
+                                style={{ cursor: "pointer", color: "green" }}
+                                onClick={addLanguageRow}
+                              >
+                                {t("AddLanguage")}
+                              </p>
+                            </div>
+                       )
+                      }     
                       </form>
                     </div>
                     <div className="modal-footer border-0">
@@ -5523,14 +5528,14 @@ const MyAccount = () => {
                         className="btn btn-secondary rounded-pill"
                         data-bs-dismiss="modal"
                       >
-                        Cancel
+                        {t("Cancel")}
                       </button>
                       <button
                         type="button"
                         className="btn btn-primary rounded-pill"
                         onClick={savePersonalDetail}
                       >
-                        Save
+                        {t("Save")}
                       </button>
                     </div>
                   </div>
@@ -5541,14 +5546,14 @@ const MyAccount = () => {
               <div className="card mt-4 shadow border-0 rounded-3">
                 <div className="card-body">
                   <div className="d-flex justify-content-between mb-3">
-                    <h5 className="text-theme">Certification</h5>
+                    <h5 className="text-theme">{t("Certification")}</h5>
                     <Link
                       className="text-theme"
                       data-bs-toggle="modal"
                       data-bs-target="#certificateModal"
                       onClick={resetCertificateForm}
                     >
-                      Add
+                      {t("AddCertificate")}
                     </Link>
                   </div>
 
@@ -5575,15 +5580,15 @@ const MyAccount = () => {
                           </p>
                           <p className="m-0">
                             {certificate.expire_on ? (
-                              <small>Expire On - {certificate.expire_on}</small>
+                              <small>{t("ExpiresOn")} {certificate.expire_on}</small>
                             ) : (
-                              <small>Validity - Lifetime</small>
+                              <small>{t("Validity")}</small>
                             )}
                           </p>
                         </div>
                       ))
                     ) : (
-                      <p className="text-muted m-0">No certifications added yet</p>
+                      <p className="text-muted m-0">{t("NoCertificate")}</p>
                     )}
                   </div>
                 </div>
@@ -5600,7 +5605,7 @@ const MyAccount = () => {
                 <div className="modal-dialog modal-dialog-centered modal-lg">
                   <div className="modal-content p-3 p-sm-4">
                     <div className="modal-header border-0 pb-0">
-                      <h1 className="modal-title fs-5">Add Certificate</h1>
+                      <h1 className="modal-title fs-5">{t("AddCertificate")}</h1>
                       <button
                         type="button"
                         className="btn-close"
@@ -5610,8 +5615,7 @@ const MyAccount = () => {
                     </div>
                     <div className="modal-body">
                       <h6 className="text-muted">
-                        Add details of Certifications you have
-                        achieved/completed
+                        {t("CertificateText")}
                       </h6>
                       <form>
                         {/* <div className="text-end">
@@ -5625,23 +5629,23 @@ const MyAccount = () => {
                         </div> */}
                         <div className="mt-4 mb-4">
                           <label htmlFor="certification_name">
-                            Certification Name
+                            {t("CertificateName")}
                           </label>
                           <input
                             type="text"
                             className="form-control"
-                            placeholder="Enter your certification name"
+                            placeholder={t("CertificateNamePlaceholder")}
                             name="certification_name"
                             value={selectedCertificate.certification_name}
                             onChange={handleCertificateChange}
                           />
                         </div>
                         <div className="mt-4 mb-4">
-                          <label htmlFor="certification_url">Certification URL</label>
+                          <label htmlFor="certification_url">{t("CertificateUrl")}</label>
                           <input
                             type="text"
                             className={`form-control ${urlError ? 'is-invalid' : ''}`}
-                            placeholder="Enter the certification URL"
+                            placeholder={t("CertificatePlaceholder")}
                             name="certification_url"
                             value={selectedCertificate.certification_url}
                             onChange={handleCertificateChange}  // Handles the change for any input
@@ -5655,13 +5659,13 @@ const MyAccount = () => {
                               <div className="row">
                                 <div className="col-lg-12 mb-2">
                                   <label htmlFor="certification_validity">
-                                    Certification validity
+                                    {t("CertificationValidity")}
                                   </label>
                                   <input
                                     type="text"
                                     list="certification_validity"
                                     className="form-control"
-                                    placeholder="Enter Validity e.g: 5 years"
+                                    placeholder={t("CertificateValidityPlaceholder")}
                                     name="certification_validity"
                                     value={
                                       selectedCertificate.certification_validity
@@ -5672,12 +5676,12 @@ const MyAccount = () => {
                                     }
                                   />
                                   <datalist id="certification_validity">
-                                    <option value="6 months">6 months</option>
-                                    <option value="1 year">1 year</option>
-                                    <option value="2 years">2 years</option>
-                                    <option value="3 years">3 years</option>
-                                    <option value="5 years">5 years</option>
-                                    <option value="Lifetime">Lifetime</option>
+                                    <option value="6 months">{t("SixMonths")}</option>
+                                    <option value="1 year">{t("OneYear")}</option>
+                                    <option value="2 years">{t("TwoYears")}</option>
+                                    <option value="3 years">{t("ThreeYears")}</option>
+                                    <option value="5 years">{t("FiveYears")}</option>
+                                    <option value="Lifetime">{t("Lifetime")}</option>
                                   </datalist>
                                 </div>
                               </div>
@@ -5688,12 +5692,12 @@ const MyAccount = () => {
                                   <div className="row">
                                     <div className="col-lg-12 mb-2">
                                       <label htmlFor="expire_on">
-                                        Expired Date
+                                        {t("ExpiredDate")}
                                       </label>
                                       <input
                                         type="date"
                                         className="form-control"
-                                        placeholder="Enter Expired Date"
+                                        placeholder={t("ExpiredDatePlaceholder")}
                                         name="expire_on"
                                         value={selectedCertificate.expire_on}
                                         onChange={handleCertificateChange}
@@ -5713,7 +5717,7 @@ const MyAccount = () => {
                               onChange={handleCertificateChange}
                             />
                             <span className="ms-2">
-                              This certificate does not expire
+                              {t("DoesNotExpire")}
                             </span>
                           </div>
                         </div>
@@ -5725,20 +5729,21 @@ const MyAccount = () => {
                         className="btn btn-secondary rounded-pill"
                         data-bs-dismiss="modal"
                       >
-                        Cancel
+                        {t("Cancel")}
                       </button>
                       <button
                         type="button"
                         className="btn btn-primary rounded-pill"
                         onClick={() => saveCertificate()}
                       >
-                        Save
+                        {t("Save")}
                       </button>
                     </div>
                   </div>
                 </div>
               </div>
 
+             {/* Modals for Deleting Certificates */}                 
               <div
                 className="modal fade"
                 id="deleteCertificate"
@@ -5750,7 +5755,7 @@ const MyAccount = () => {
                   <div className="modal-content">
                     <div className="modal-header">
                       <h5 className="modal-title" id="deleteCertificateLabel">
-                        Delete Certificate
+                        {t("DeleteCertificate")}
                       </h5>
                       <button
                         type="button"
@@ -5760,7 +5765,7 @@ const MyAccount = () => {
                       ></button>
                     </div>
                     <div className="modal-body">
-                      Are you sure you want to delete Certificate?
+                      {t("DeleteCertificateText")}
                     </div>
                     <div className="modal-footer">
                       <button
@@ -5768,7 +5773,7 @@ const MyAccount = () => {
                         className="btn btn-secondary"
                         data-bs-dismiss="modal"
                       >
-                        Cancel
+                        {t("Cancel")}
                       </button>
                       <button
                         type="button"
@@ -5778,7 +5783,7 @@ const MyAccount = () => {
                         }
                         data-bs-dismiss="modal"
                       >
-                        Delete
+                        {t("Delete")}
                       </button>
                     </div>
                   </div>
@@ -5802,7 +5807,7 @@ const MyAccount = () => {
                           className="modal-title fs-5"
                           id={`showCertificateModal-${certificate.id}-Label`}
                         >
-                          Edit Certification
+                          {t("EditCertificate")}
                         </h1>
                         <button
                           type="button"
@@ -5814,8 +5819,7 @@ const MyAccount = () => {
                       <div className="modal-body">
                         <div className="d-flex justify-content-between">
                           <h6 className="text-muted">
-                            Edit details of Certifications you have
-                            achieved/completed
+                            {t("EditText")}
                           </h6>
                           {certificate.id && (
                             <Link
@@ -5826,30 +5830,30 @@ const MyAccount = () => {
                                 setSelectedCertificate(certificate)
                               }
                             >
-                              Delete
+                              {t("Delete")}
                             </Link>
                           )}
                         </div>
                         <form>
                           <div className="mt-4 mb-4">
                             <label htmlFor="certification_name">
-                              Certification Name
+                              {t("CertificateName")}
                             </label>
                             <input
                               type="text"
                               className="form-control"
-                              placeholder="Enter your certification name"
+                              placeholder={t("CertificateNamePlaceholder")}
                               name="certification_name"
                               value={selectedCertificate.certification_name}
                               onChange={handleCertificateChange}
                             />
                           </div>
                           <div className="mt-4 mb-4">
-                            <label htmlFor="certification_url">Certification URL</label>
+                            <label htmlFor="certification_url">{t("CertificateUrl")}</label>
                             <input
                               type="text"
                               className={`form-control ${urlError ? 'is-invalid' : ''}`}
-                              placeholder="Enter the certification URL"
+                              placeholder={t("CertificatePlaceholder")}
                               name="certification_url"
                               value={selectedCertificate.certification_url}
                               onChange={handleCertificateChange}  // Handles the change for any input
@@ -5863,13 +5867,13 @@ const MyAccount = () => {
                                 <div className="row">
                                   <div className="col-lg-12 mb-2">
                                     <label htmlFor="certification_validity">
-                                      Certification validity
+                                      {t("CertificationValidity")}
                                     </label>
                                     <input
                                       type="text"
                                       list="certification_validity"
                                       className="form-control"
-                                      placeholder="Enter Validity e.g: 5 years"
+                                      placeholder={t("CertificateValidityPlaceholder")}
                                       name="certification_validity"
                                       value={
                                         selectedCertificate.certification_validity
@@ -5880,12 +5884,12 @@ const MyAccount = () => {
                                       }
                                     />
                                     <datalist id="certification_validity">
-                                      <option value="6 months">6 months</option>
-                                      <option value="1 year">1 year</option>
-                                      <option value="2 years">2 years</option>
-                                      <option value="3 years">3 years</option>
-                                      <option value="5 years">5 years</option>
-                                      <option value="Lifetime">Lifetime</option>
+                                      <option value="6 months">{t("SixMonths")}</option>
+                                      <option value="1 year">{t("OneYear")}</option>
+                                      <option value="2 years">{t("TwoYears")}</option>
+                                      <option value="3 years">{t("ThreeYears")}</option>
+                                      <option value="5 years">{t("FiveYears")}</option>
+                                      <option value="Lifetime">{t("Lifetime")}</option>
                                     </datalist>
                                   </div>
                                 </div>
@@ -5897,12 +5901,12 @@ const MyAccount = () => {
                                     <div className="row">
                                       <div className="col-lg-12 mb-2">
                                         <label htmlFor="expire_on">
-                                          Expired Date
+                                          {t("ExpiredDate")}
                                         </label>
                                         <input
                                           type="date"
                                           className="form-control"
-                                          placeholder="Enter Expire Date"
+                                          placeholder={t("ExpiredDatePlaceholder")}
                                           name="expire_on"
                                           value={selectedCertificate.expire_on}
                                           onChange={handleCertificateChange}
@@ -5925,7 +5929,7 @@ const MyAccount = () => {
                                 onChange={handleCertificateChange}
                               />
                               <span className="ms-2">
-                                This certificate does not expire
+                                {t("DoesNotExpire")}
                               </span>
                             </div>
                           </div>
@@ -5937,7 +5941,7 @@ const MyAccount = () => {
                           className="btn btn-secondary rounded-pill"
                           data-bs-dismiss="modal"
                         >
-                          Cancel
+                          {t("Cancel")}
                         </button>
                         <button
                           type="button"
@@ -5946,7 +5950,7 @@ const MyAccount = () => {
                             saveCertificate(selectedCertificate.id)
                           }
                         >
-                          Save
+                          {t("Save")}
                         </button>
                       </div>
                     </div>
@@ -5976,13 +5980,13 @@ const MyAccount = () => {
       <div className="modal-dialog modal-lg">
           <div className="modal-content">
             <div className="modal-header ">
-                <h1 className="modal-title fs-4" id="resumeModalLabel">Resume</h1>
+                <h1 className="modal-title fs-4" id="resumeModalLabel">{t("Resume")}</h1>
                 <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div className="modal-body pt-3 pb-3 p-4 px-md-5" ref={resumeRef}>
                 <div className="card candidate_resume">
                     <div className="card-body ">
-                        <div className="d-flex flex-wrap align-items-center border-bottom">
+                        <div className="d-flex flex-wrap align-items-center border-bottom pb-2">
                           <div className="resume_profile_image me-3"><img src={profileImage} style={{borderRadius:"50%", height:"80px", width:"80px"}} alt="profile_image" /></div>
                             <div className="user_details py-3">
                               <h5 className="mb-1 text-uppercase">{user.name}</h5>
@@ -6001,14 +6005,16 @@ const MyAccount = () => {
                         </div>
                         
                         <div className="border-bottom details">
-                          <h6 className="text-uppercase fw-semibold">Objective</h6>        
-                          <p className="m-0">{userData.bio ? userData.bio : (<span className="text-muted">No details added yet!</span>)}</p>
+                          <h6 className="text-uppercase fw-semibold">{t("Objective")}</h6>        
+                          <p className="m-0">{userData.bio ? userData.bio : (<span className="text-muted">
+                            {t("NoDetailsAdded")}
+                          </span>)}</p>
                         </div> 
 
                         <div className="border-bottom details">
-                            <h6 className="text-uppercase fw-semibold">Personal Details</h6>        
+                            <h6 className="text-uppercase fw-semibold">{t("PersonalDetails")}</h6>        
                             <div className="row">
-                                <div className="col-sm-4 col-6"><span className="text-uppercase">Gender </span></div>
+                                <div className="col-sm-4 col-6"><span className="text-uppercase">{t("Gender")} </span></div>
                                 <div className="col-sm-8  col-6 text-capitalize"><span className="me-2">:</span>
                                   {userData.gender ? (
                                     <span>{userData.gender}</span>
@@ -6018,7 +6024,7 @@ const MyAccount = () => {
                                 </div>
                             </div>
                             <div className="row">
-                                <div className="col-sm-4 col-6"><span className="text-uppercase">Date of birth </span></div>
+                                <div className="col-sm-4 col-6"><span className="text-uppercase">{t("DOB")}</span></div>
                                 <div className="col-sm-8  col-6 text-capitalize"><span className="me-2">:</span>
                                     {userData.dob ? (
                                       <span>{userData.dob}</span>
@@ -6028,7 +6034,7 @@ const MyAccount = () => {
                                 </div>
                             </div>
                             <div className="row">
-                                <div className="col-sm-4 col-6"><span className="text-uppercase">Maritial status </span></div>
+                                <div className="col-sm-4 col-6"><span className="text-uppercase">{t("MartialStatus")}</span></div>
                                 <div className="col-sm-8  col-6 text-capitalize"><span className="me-2">:</span>
                                   {userData.maritial_status ? (
                                       <span>{userData.maritial_status}</span>
@@ -6038,7 +6044,7 @@ const MyAccount = () => {
                                 </div>
                             </div>
                             <div className="row">
-                                <div className="col-sm-4 col-6"><span className="text-uppercase">Address </span></div>
+                                <div className="col-sm-4 col-6"><span className="text-uppercase">{t("Address")} </span></div>
                                 <div className="col-sm-8  col-6 text-capitalize"><span className="me-2">:</span>
                                 {userData.permanent_address ? (
                                     <span>{userData.permanent_address}</span>
@@ -6054,7 +6060,7 @@ const MyAccount = () => {
                             </div> */}
 
                             <div className="row">
-                                <div className="col-sm-4 col-6"><span className="text-uppercase">Zipcode </span></div>
+                                <div className="col-sm-4 col-6"><span className="text-uppercase">{t("ZipCode")} </span></div>
                                 <div className="col-sm-8  col-6"><span className="me-2">:</span>{userData.pincode ? (
                               <span>{userData.pincode}</span>
                             ) : (
@@ -6064,7 +6070,7 @@ const MyAccount = () => {
                         </div> 
 
                         <div className="border-bottom details">
-                            <h6 className="text-uppercase fw-semibold">Educational Details</h6>        
+                            <h6 className="text-uppercase fw-semibold">{t("EducationalDetails")}</h6>        
                             
                             {education.length > 0 ? (
                               education.map((edu, index) => {
@@ -6135,12 +6141,12 @@ const MyAccount = () => {
                                 );
                               })
                             ) : (
-                              <p className="m-0 text-muted">No educational details filled yet.</p>
+                              <p className="m-0 text-muted">{t("NoEducationDetailsFilled")}</p>
                             )}   
                         </div> 
 
                         <div className="border-bottom details">
-                            <h6 className="text-uppercase fw-semibold">Employment Details</h6>        
+                            <h6 className="text-uppercase fw-semibold">{t("EmploymentDetails")}</h6>        
                             {employment && employment.length > 0 ? (
                             employment.map((employ) => (
                               // <div className="mb-3" key={employ.id}>
@@ -6168,7 +6174,7 @@ const MyAccount = () => {
                                       <p className="mb-0 text-capitalize">
                                         <span>
                                         {employ.employment_type} | {employ.joining_date}&nbsp;to&nbsp;
-                                        {employ.worked_till || "Present"}
+                                        {employ.worked_till || t("Present")}
                                       </span>
                                       </p>
                                     </div>
@@ -6177,14 +6183,14 @@ const MyAccount = () => {
 
                               ))
                             ) : (
-                              <p className="text-muted">No employment details filled yet.</p>
+                              <p className="text-muted">{t("NoEmploymentDetailsFilled")}</p>
                             )}
                         </div>
                          <div className="border-bottom details">
-                            <h6 className="text-uppercase fw-semibold">Skills</h6>
+                            <h6 className="text-uppercase fw-semibold">{t("Skills")}</h6>
                              {userData.skills && userData.skills.length > 0 ? (
                                 <div className="row mb-2" >
-                                  <div className="col-sm-4 col-6"><span className="text-uppercase">Key Skills</span>
+                                  <div className="col-sm-4 col-6"><span className="text-uppercase">{t("KeySkills")}</span>
                                   </div>
                                   <div className="col-sm-8  col-6 d-flex align-items-baseline">
                                     <span className="me-2">:</span>
@@ -6196,14 +6202,14 @@ const MyAccount = () => {
                                   </div>
                               </div>
                     ) : (
-                      <p className="m-0 text-muted">No skills added yet</p>
+                      <p className="m-0 text-muted">{t("NoSkills")}</p>
                     )}
 
                             
                         </div>
 
                         <div className="py-3 details">
-                            <h6 className="text-uppercase fw-semibold">Certificates</h6> 
+                            <h6 className="text-uppercase fw-semibold">{t("Certificates")}</h6> 
                             {certificates.length > 0 ? (
                               certificates.map((certificate, index) => (
                                   <div key={index} className="row mb-2">
@@ -6213,9 +6219,9 @@ const MyAccount = () => {
                                         <div>
                                           <p className="mb-0 text-theme"> {certificate.certification_url}</p>
                                           <p className="mb-0 "> {certificate.expire_on ? (
-                                            <small>Expire On - {certificate.expire_on}</small>
+                                            <small>{t("ExpiresOn")} {certificate.expire_on}</small>
                                             ) : (
-                                              <small>Validity - Lifetime</small>
+                                              <small>{t("Validity")}</small>
                                             )}
                                           </p>
                                         </div>
@@ -6223,7 +6229,7 @@ const MyAccount = () => {
                                   </div>
                               ))
                             ) : (
-                              <p className="text-muted m-0">No certifications added yet</p>
+                              <p className="text-muted m-0">{t("NoCertificate")}</p>
                             )}       
                         </div>  
 
@@ -6234,7 +6240,7 @@ const MyAccount = () => {
                 {/* <button onClick={handleDownload} className="btn btn-primary">
                   <i className="fa fa-download me-2"></i> Download Resume
                 </button> */}
-                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">{t("Cancel")}</button>
             </div>
 
                
@@ -6248,7 +6254,7 @@ const MyAccount = () => {
           <div className="modal-dialog">
             <div className="modal-content">
               <div className="modal-header">
-                <h1 className="modal-title fs-4" id="">Processing...</h1>
+                <h1 className="modal-title fs-4" id="">{t("Processing")}</h1>
                 <button
                   type="button"
                   className="btn-close"
@@ -6258,7 +6264,7 @@ const MyAccount = () => {
               </div>
               <div className="modal-body text-center p-3">
                 <div className="spinner-border text-primary" role="status" />
-                <p>Saving your details...</p>
+                <p>{t("SavingDetails")}</p>
               </div>
             </div>
           </div>

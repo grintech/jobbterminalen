@@ -686,7 +686,7 @@ input[type="checkbox"]:focus{box-shadow: none !important; }
 
 .job_profile_icon .profile_img_label{ width: 100%; height: 100%; position: absolute; top: 0; left: 0;   border-radius: 50%;  display: flex; align-items: center; justify-content: center; cursor: pointer;}
 
-.job_profile_icon .profile_img_label span{opacity: 0; color: white;background-color: rgba(0, 0, 0, 0.3); padding: 3px; transition: all .5s ease;text-align: center; }
+.job_profile_icon .profile_img_label span{opacity: 0; color: white;background-color: rgba(0, 0, 0, 0.3); padding: 3px; transition: all .5s ease;text-align: center; font-size: 14px; }
 .job_profile_icon .fa-xmark{ background-color:#d2e3f9; font-weight: 900; padding: 5px; position: absolute; right: -7px; top: -22px;border-radius: 2px; font-size: 13px; cursor: pointer; }
 
 .job_profile_icon:hover .profile_img_label span{opacity: 1; transition: all .5s ease;}
@@ -1083,6 +1083,7 @@ div#google_translate_element .indicator{font-size: 0px !important;}
 }
 
 @media screen and (max-width:475px) {
+  .popular_categories .emp_type_cards h5{font-size: 16px !important;}
   .register_form .register_select_country{width: 30% !important;}
   .register_form .register_phone_input{width: 70% !important;}
   .applied_comp_tabs .company_card h6{font-size: 14px;}
@@ -1115,6 +1116,7 @@ div#google_translate_element .indicator{font-size: 0px !important;}
    .thank-you .card h5{ font-size: 20px;}
    .thank-you .card img{ width: 100px; margin-bottom: 20px;}
 }
+
 
 @media screen and (max-width:400px) {
   .register_container .register_form{padding: 30px 20px; /* width: 350px; */}
@@ -1415,7 +1417,7 @@ small.badge.text-bg-light{font-weight: 600;background-color :rgb(235, 235, 235) 
     text-transform: capitalize;
 }
 .candidate_resume .border-bottom.details{padding: 10px 0;}
-.candidate_resume .border-bottom.details .fw-semibold{text-decoration: underline; color: rgb(59, 58, 58);}
+.candidate_resume .details .fw-semibold{text-decoration: underline; color: rgb(59, 58, 58);}
 
 
 

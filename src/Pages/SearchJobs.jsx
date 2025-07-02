@@ -67,7 +67,7 @@ const SearchJobs = () => {
   const toggleSavedJob = async (jobId) => {
     if (!userId) {
       // console.log("Please login to save jobs.");
-      toast.error("Please login to save jobs.");
+      toast.error(t("PleaseLoginSave"));
       return;
     }
 
@@ -84,7 +84,7 @@ const SearchJobs = () => {
       });
 
       if (response.data.type === "success") {
-        const actionMessage = isJobSaved(jobId) ? "Job Unsaved" : "Job Saved";
+        const actionMessage = isJobSaved(jobId) ? t("JobUnsaved") : t("JobSaved");
         toast.success(actionMessage);
         setSavedJobs((prevSavedJobs) => {
           if (isJobSaved(jobId)) {
@@ -98,7 +98,7 @@ const SearchJobs = () => {
       }
     } catch (err) {
       console.error("Error while toggling saved job:", err);
-      toast.error("Error while saving job.");
+      toast.error(t("ErrorSavingJob"));
     }
   };
 
@@ -126,11 +126,11 @@ const SearchJobs = () => {
           setJobs(response.data.data);
         } else {
           setJobs([]);
-          setError(response.data.message || "No jobs found for the given search.");
+          setError(response.data.message || t("NoJobFoundSearch"));
         }
       } catch (err) {
         console.error("Error fetching jobs:", err);
-        setError("Failed to fetch jobs. Please try again later.");
+        setError(t("FailedToFetchJobs"));
       } finally {
         setLoading(false);
       }
@@ -202,16 +202,16 @@ const SearchJobs = () => {
               {loading ? (
               <div className="loading-screen d-flex justify-content-center align-items-center flex-column ">
                 <div className="spinner-grow text-primary" role="status">
-                  <span className="visually-hidden">Loading...</span>
+                  <span className="visually-hidden">{t("Loading")}</span>
                 </div>
-                <p className="mt-2">Fetching data...</p>
+                <p className="mt-2">{t("FetchingData")}</p>
               </div>
                 ) : error ? (
                   <div className="msg_card  mb-4">
                   <div className="card border-0 shadow">
                    <div className="card-body text-center p-4">
                    <img className="job_search" src="/images/no-job.png" alt="job_search" />
-                   <h6 className="text-theme">{error == "No data found" ? "No matched result available." :error}</h6>
+                   <h6 className="text-theme">{error == "No data found" ? t("NoMatchedResult") : error}</h6>
                  </div>
                  </div>
                  </div>
@@ -316,7 +316,7 @@ const SearchJobs = () => {
                   <div className="card border-0 shadow">
                    <div className="card-body text-center p-4">
                    <img className="job_search" src="/images/no-job.png" alt="job_search" />
-                   <h6 className="text-theme">No data found at the moment.Please try later</h6>
+                   <h6 className="text-theme">{t("NoDataFoundMoment")}</h6>
                    </div>
                   </div>
                  </div>

@@ -5,7 +5,7 @@ import Navbar from "./Navbar";
 import Footer from "./Footer";
 import { useTranslation } from "react-i18next";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-import { getGoogleTranslateLang } from "../utils/getLang";
+// import { getGoogleTranslateLang } from "../utils/getLang";
 
 // ✅ Import CountrySelect properly
 import { CountrySelect } from "react-country-state-city";
@@ -16,7 +16,7 @@ const API_URL = import.meta.env.VITE_API_URL;
 const EmpLogin = import.meta.env.VITE_EMP_URL;
 
 const Register = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -64,15 +64,26 @@ const Register = () => {
       return;
     }
 
-    const passwordRegex = /^(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?=.{8,})/;
+    // const passwordRegex = /^(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?=.{8,})/;  
+    // if (!passwordRegex.test(formData.password)) {
+    //   setAlert({
+    //     type: "error",
+    //     message: "Password must be at least 8 characters long, include one uppercase letter, and one special character.",
+    //   });
+    //   setTimeout(() => setAlert({ type: "", message: "" }), 4000);
+    //   return;
+    // }
+
+    const passwordRegex = /^(?=.*[^a-zA-Z0-9])(?=.{8,})/;
     if (!passwordRegex.test(formData.password)) {
       setAlert({
         type: "error",
-        message: "Password must be at least 8 characters long, include one uppercase letter, and one special character.",
+        message: "Password must be at least 8 characters long and include one special character.",
       });
       setTimeout(() => setAlert({ type: "", message: "" }), 4000);
       return;
     }
+
 
     const emailDomain = formData.email.split("@")[1]?.toLowerCase();
     if (formData.role === "recruiter") {
@@ -84,7 +95,8 @@ const Register = () => {
       }
     }
 
-    const selectedLang = getGoogleTranslateLang();
+    // const selectedLang = getGoogleTranslateLang();
+    const selectedLang = i18n.language;
 
     const formDataToSend = new FormData();
     formDataToSend.append("name", formData.name);

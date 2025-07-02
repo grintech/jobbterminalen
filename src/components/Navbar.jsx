@@ -12,6 +12,7 @@ const Navbar = () => {
 
     const changeLanguage = (language) => {
       i18n.changeLanguage(language);
+      localStorage.setItem("lang", language); // saving language 
     };
 
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 475);
@@ -216,7 +217,7 @@ const Navbar = () => {
                 <Link to="/contact" className="nav-link">{t("ContactUs")}</Link>
             </li> */}
             </ul>
-             <Link to='/find-cv' className="btn btn-register me-2 mb-2 mb-lg-0" >Find CV</Link>
+             <Link to='/find-cv' className="btn btn-register me-2 mb-2 mb-lg-0" >{t("FindCv")}</Link>
 
         
         { !user ? (
@@ -257,15 +258,15 @@ const Navbar = () => {
             </li>
         </ul>
 
-        {/* <select className='lang_select ms-lg-2 d-none d-lg-block' onChange={(e) => changeLanguage(e.target.value)} defaultValue={i18n.language}>
+        <select className='lang_select ms-lg-2 d-none d-lg-block' onChange={(e) => changeLanguage(e.target.value)} defaultValue={i18n.language}>
         <option value="en">EN</option>
         <option value="sv">SV</option>
-       </select> */}
+       </select>
 
 
-       <div className='position-relative google_translater'>
+       {/* <div className='position-relative google_translater'>
         <div id="google_translate_element"></div>
-       </div>
+       </div> */}
         
 
         </div>

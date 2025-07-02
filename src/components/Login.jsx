@@ -6,13 +6,13 @@ import Navbar from "./Navbar";
 import Footer from "./Footer";
 import { useTranslation } from "react-i18next";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-import { getGoogleTranslateLang } from "../utils/getLang";
+// import { getGoogleTranslateLang } from "../utils/getLang";
 
 const bearerKey = import.meta.env.VITE_BEARER_KEY;
 const API_URL = import.meta.env.VITE_API_URL;
 
 const Login = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [showPassword, setShowPassword] = useState(false);
   const [isVerified, setIsVerified] = useState(1); // default to 1 (verified)
 
@@ -38,7 +38,8 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const selectedLang = getGoogleTranslateLang(); 
+    // const selectedLang = getGoogleTranslateLang(); 
+     const selectedLang = i18n.language;
 
     const data = new FormData();
     data.append("email", formData.email);

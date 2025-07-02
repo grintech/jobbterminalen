@@ -11,7 +11,7 @@ import Avatar from "react-avatar";
 
 import { Swiper, SwiperSlide } from "swiper/react";
 import {Autoplay } from "swiper/modules";
-import { JobCardSkeleton } from "../components/skeleton/JobCardSkeleton";
+// import { JobCardSkeleton } from "../components/skeleton/JobCardSkeleton";
 import { CompanyCardsSkeleton } from "../components/skeleton/CompanyCardsSkeleton";
 
 
@@ -83,7 +83,7 @@ const AllEmployers = () => {
       }
     } catch (error) {
       console.error("Error fetching companies:", error);
-      setError("Failed to load companies"); 
+      setError(t("FailLoadCompanies")); 
     } finally {
       setLoading(false);
     }
@@ -161,7 +161,7 @@ const AllEmployers = () => {
     // Toggle like/unlike company
     const toggleLike = async (companyId) => {
       if (!userId) {
-        toast.error("Please login to like companies.");
+        toast.error(t("PleaseLogin"));
         setTimeout(() => {
           navigate('/login');
         }, 2000);
@@ -192,15 +192,15 @@ const AllEmployers = () => {
   
           // Show a toast message based on whether the company is saved or unsaved
           const actionMessage = likedCards[companyId]
-            ? "Company Unsaved"
-            : "Company Saved";
+            ? t("CompanyUnSaved")
+            : t("CompanySaved");
           toast.success(actionMessage);
         } else {
-          toast.error("Failed to toggle like.");
+          toast.error(t("FailedToToggle"));
         }
       } catch (error) {
         console.error("Error while toggling like:", error);
-        toast.error("Error while saving company. Please try again.");
+        toast.error(t("ErrorSavingCompany"));
       }
     };
 
@@ -247,7 +247,7 @@ const AllEmployers = () => {
                     <div className='text-center text-theme'>
                       <img loading='lazy' src="/images/no-data1.png" className='no_company' alt='' /> 
                       <h6>{ error === "Failed to fetch" ? (
-                      <p className="text-center text-theme">Failed to fetch companies.Please try later!</p>
+                      <p className="text-center text-theme">{t("ErrorFetchingCompanies")}</p>
                         ) : (
                           <p className="text-center text-theme" >
                             {error}
@@ -262,7 +262,7 @@ const AllEmployers = () => {
                       <div className="text-center text-theme " >
                       <div className='text-center text-theme'>
                         <img loading='lazy' src="/images/no-data1.png" className='no_company' alt='' /> 
-                        <h6>No companies found at the moment.Please try later.</h6>
+                        <h6>{t("NoCompanyFound")}</h6>
                       </div>
                       </div>
                     ) : (
@@ -277,7 +277,7 @@ const AllEmployers = () => {
                                 onClick={() => toggleLike(company.id)}
                                 style={{ cursor: "pointer", fontSize:"20px" }}
                                 title={
-                                  likedCards[company.id] ? "Click to unsave" : "Click to save"
+                                  likedCards[company.id] ? t("ClickToUnsave") : t("ClickToSave")
                                 }
                               ></i>
                                 </div>
@@ -319,8 +319,8 @@ const AllEmployers = () => {
                                 </div>
                                 <Link to={`/companies/${company.slug}`}>
                                     <p className="text_blue text-center m-0">
-                                      <span className="pe-1">{company.job_count === 0 ? "No" : company.job_count}</span>
-                                      Jobs</p>
+                                      <span className="pe-1">{company.job_count === 0 ? t("No") : company.job_count}</span>
+                                      {t("Jobs")}</p>
                                 </Link>
                               </div>
                             </div>

@@ -92,10 +92,10 @@ const HomepageJobs = () => {
         setJobs(result.data);
 
         // ✅ Save to localStorage with timestamp
-        localStorage.setItem(
-          cacheKey,
-          JSON.stringify({ data: result.data, timestamp: Date.now() })
-        );
+        // localStorage.setItem(
+        //   cacheKey,
+        //   JSON.stringify({ data: result.data, timestamp: Date.now() })
+        // );
       } else {
         setJobs([]);
         setError(result.message || "Failed to fetch job posts");
@@ -182,7 +182,7 @@ const fetchSavedJobs = async () => {
     <>
       <div className="all_jobs_page">
         <div className="container d-flex flex-column py-5 all_job_posts">
-          <h4 className="mb-4 text-center">{t("LatestJobs")}</h4>
+          <h4 className="mb-5 text-center">{t("LatestJobs")}</h4>
           <div className="row ">
             <div className="col-12 d-flex flex-column position-relative align-items-center-justify-content-center">
               {loading ? (
@@ -218,7 +218,8 @@ const fetchSavedJobs = async () => {
                   {jobs.slice(0,8).map((job , index) => (
                     <div className="col-lg-3 col-md-6 col-sm-6 mb-4" key={job.id}>
                       <div className="card company_list_card position-relative h-100">
-                         {index % 2 === 0 && <div className="fea_tag">Featured</div>}
+                         {/* {index % 2 === 0 && <div className="fea_tag">Featured</div>} */}
+                         {job.is_featured === "1" && <div className="fea_tag">Featured</div>}
                         <div className="card-body ">
                           <div className="d-flex justify-content-between align-items-start mt-2">
                             <Link to={`/companies/${job.companies_slug}`}>

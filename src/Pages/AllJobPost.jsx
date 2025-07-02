@@ -570,6 +570,7 @@ const AllJobPost = () => {
                     <div className="col-lg-4 col-md-6 col-sm-6 mb-4" key={job.id}>
                       <div className="card company_list_card h-100">
                         <div className="card-body ">
+                         {job.is_featured === "1" && <div className="fea_tag">Featured</div>}
                           <div className="d-flex justify-content-between align-items-start">
                             <Link to={`/companies/${job.companies_slug}`}>
                               <div className="logo_div border-0 shadow">

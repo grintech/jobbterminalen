@@ -5,7 +5,7 @@ import { ToastContainer, toast } from "react-toastify";
 import { useLocation, useNavigate } from "react-router-dom";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
-import { getGoogleTranslateLang } from "../utils/getLang";
+// import { getGoogleTranslateLang } from "../utils/getLang";
 import { useTranslation } from "react-i18next";
 
 const ApplyJob = () => {
@@ -18,7 +18,7 @@ const ApplyJob = () => {
   const [fileName, setFileName] = useState("");
   const [jobTitle, setJobTitle] = useState("");
 
-  const {t} = useTranslation();
+  const {t, i18n} = useTranslation();
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -258,7 +258,8 @@ const ApplyJob = () => {
   const handleFormSubmit = async (e) => {
     e.preventDefault();
 
-    const selectedLang = getGoogleTranslateLang(); 
+    // const selectedLang = getGoogleTranslateLang(); 
+    const selectedLang = i18n.language;
   
     // Check if user is logged in
     if (!userId || !bearerKey) {

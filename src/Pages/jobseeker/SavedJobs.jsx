@@ -41,11 +41,11 @@ const SavedJobs = () => {
         setSavedJobs(response.data.saved_jobs || []);
         setSaved(response.data.data.status === 'active');
       } else {
-        setError('No jobs found at the moment');
+        setError(t("NoJobFound"));
       }
     } catch (error) {
-      console.error('Error fetching saved jobs:', error);
-      setError(`No jobs found at the moment`);
+      console.error(t("ErrorFetchJob"), error);
+      setError(t("NoJobFound"));
     } finally {
       setLoading(false);
     }
@@ -65,14 +65,14 @@ const SavedJobs = () => {
       });
 
       if (response.data.type === 'success') {
-         const actionMessage = isJobSaved(jobId) ? "Job Unsaved" : "Job Saved"; 
+         const actionMessage = isJobSaved(jobId) ? t("JobUnsaved") : t("JobSaved"); 
         toast.success(actionMessage); 
         fetchSavedJobs(); // Re-fetch saved jobs to update the list
         setSaved(!saved);
       }
     } catch (error) {
-      console.error('Error toggling save job:', error);
-      toast.error("Error while saving job.", err);
+      console.error(t("ErrorTogglingJob"), error);
+      toast.error(t("ErrorSavingJob"), error);
     }
   };
 

@@ -284,13 +284,40 @@ const Contact = () => {
                                                         </label>
                                                     </div>
                                                 </div>
-                                                <div className="col-12 mb-3">
+                                                <div className="col-12 mb-2">
                                                     <label>{t("AttachFile")}</label>
                                                     <input type="file" className='form-control'
                                                      onChange={handleFileChange}
+                                                     style={{ display: "none" }}
                                                      ref={fileInputRef}
                                                       />
                                                 </div>
+
+                                                 {/* Dotted upload box */}
+                                                 <div className="col-12 mb-2">
+                                                    <div
+                                                        onClick={() => fileInputRef.current?.click()}
+                                                        style={{
+                                                        border: "2px dashed #ccc",
+                                                        padding: "20px",
+                                                        textAlign: "center",
+                                                        borderRadius: "8px",
+                                                        cursor: "pointer",
+                                                        // backgroundColor: "#f9f9f9"
+                                                        }}
+                                                    >
+                                                        <i className="text-theme fa fa-upload mb-2" style={{ fontSize: "24px" }}></i>
+                                                        <p className="mb-0">{t("ClickToUpload")}</p>
+                                                    </div>
+                                                 </div>
+
+                                                 {/* Show selected file name */}
+                                                    {formData.attachment && (
+                                                        <div className="col-12 mt-2 mb-2 text-theme">
+                                                        <i className="fa fa-file me-2"></i>
+                                                        {formData.attachment.name}
+                                                        </div>
+                                                    )}
 
                                                  {/* ✅ Add reCAPTCHA here */}
                                                 <div className="col-12 mb-3">

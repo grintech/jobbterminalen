@@ -7,6 +7,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import Footer from '../../components/Footer';
 import { Link } from 'react-router-dom';
 import Avatar from 'react-avatar';
+import { useTranslation } from 'react-i18next';
 
 const SavedCompanies = () => {
     const [savedCompanies, setSavedCompanies] = useState([]);
@@ -14,6 +15,7 @@ const SavedCompanies = () => {
     const [error, setError] = useState(null);
     const [saved, setSaved] = useState(false);  
     
+    const {t} = useTranslation();
     const { user } = useAuthContext();
     const userId = user ? user.id : null;
 
@@ -41,11 +43,11 @@ const SavedCompanies = () => {
           setSavedCompanies(response.data.data || []);
           setSaved(response.data.data.status === 'active');
         } else {
-          setError('Companies not found');
+          setError(t("CompNotFound"));
         }
       } catch (error) {
-        console.error('Error fetching saved Companies:', error);
-        setError('Error fetching saved Companies:');
+        console.error(t("ErrorFetchComp"), error);
+        setError(t("ErrorFetchComp"));
       } finally {
         setLoading(false);
       }
@@ -66,7 +68,7 @@ const SavedCompanies = () => {
               fetchSavedCompanies();
           }
       } catch (error) {
-          toast.error('Error while saving companies.');
+          toast.error(t("ErrorSavingComp"));
       }
   };
 
@@ -88,9 +90,9 @@ const SavedCompanies = () => {
                             {loading ? (
                                 <div className="text-center">
                                     <div className="spinner-grow text-primary" role="status">
-                                        <span className="visually-hidden">Loading...</span>
+                                        <span className="visually-hidden">{t("Loading")}</span>
                                     </div>
-                                    <p className="mt-2">Fetching data...</p>
+                                    <p className="mt-2">{t("FetchingData")}</p>
                                 </div>
                             ) : error ? (
                                 <p className="text-danger">{error}</p>
@@ -103,15 +105,15 @@ const SavedCompanies = () => {
                                     src="/images/company_search.png"
                                     alt="job_search"  
                                   />
-                                  <h4>No companies saved yet!</h4>
-                                  <p>Tap on save icon on a job to save it.</p>
-                                  <div className="btn btn-register">Search companies</div>
+                                  <h4>{t("NoSavedComp")}</h4>
+                                  <p>{t("NoSaveCompText")}</p>
+                                  <div className="btn btn-register">{t("SearchComps")}</div>
                                 </div>
                               </div>
                             </div>
                             ) : (
                                 <div className='row'>
-                                    <h1 className=" job_head">Saved companies ({savedCompanies.length})</h1>
+                                    <h1 className=" job_head">{t("SavedComp")} ({savedCompanies.length})</h1>
                                     {savedCompanies.map((company) => (
                                         <div className="col-lg-4 col-md-6 col-sm-6 mb-4" key={company.id}>
                                           <div className="card company_list_card border-0 shadow h-100">

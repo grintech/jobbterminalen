@@ -241,16 +241,7 @@ const CategoryList = () => {
               </div>
               )}
             <div className="row">
-              {/* <div className="col-lg-3 mb-5 mb-lg-0">
-                <div className="card_sticky">
-                  <div className="card all_cat_filters">
-                    <div className="card-body">
-                      <h5>All Filters</h5>
-                    </div>
-                  </div>
-                </div>
-              </div> */}
-
+              
               <div className="col-lg-10 mx-auto">
                 <h4 className="text-capitalize mb-4">
                   {slug.replace(/-/g, ' ')} 

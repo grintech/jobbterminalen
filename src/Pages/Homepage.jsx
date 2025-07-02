@@ -52,7 +52,7 @@ const Homepage = () => {
             <Link target="_blank" to={EMP_URL} >
               <div className="card create_free_job border-0 rounded-4 h-100" >
                   <div className="create_btn ">
-                    <h3 className="blinking-text">Post a free job</h3>
+                    <h3 className="blinking-text">{t("PostFreeJob")}</h3>
                   </div>
               </div>
             </Link>

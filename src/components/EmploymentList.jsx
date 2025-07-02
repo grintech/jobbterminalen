@@ -7,6 +7,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import { useAuthContext } from "../store/authContext"; // Assuming you have authContext for user
 import { Helmet } from "react-helmet-async";
 import Avatar from "react-avatar";
+import { useTranslation } from "react-i18next";
 
 const EmploymentList = () => {
   const { slug } = useParams();
@@ -19,6 +20,7 @@ const EmploymentList = () => {
   const userId = user ? user.id : null;
 
   const navigate = useNavigate();
+  const {t} = useTranslation();
 
   const IMG_URL = import.meta.env.VITE_IMG_URL;
   const bearerKey = import.meta.env.VITE_BEARER_KEY;
@@ -95,13 +97,13 @@ const EmploymentList = () => {
         if (response.data.type === "success") {
           setCategoryData(response.data.data);
         } else {
-          setError("No employment type found.");
+          setError(t("NoEmploymentFound"));
         }
         setLoading(false);
       })
       .catch((err) => {
         console.error("Error fetching data:", err);
-        setError("Failed to load data.");
+        setError(t("FailedLoadData"));
         setLoading(false);
       });
   }, [slug]);
@@ -148,7 +150,7 @@ const EmploymentList = () => {
   // Toggle saved/unsaved job
   const toggleSavedJob = async (jobId) => {
     if (!userId) {
-      toast.error("Please login to save jobs."); 
+      toast.error(t("PleaseLoginSave")); 
       setTimeout(() => {
         navigate("/login");
       }, 2000);
@@ -168,7 +170,7 @@ const EmploymentList = () => {
       });
   
       if (response.data.type === "success") {
-        const actionMessage = isJobSaved(jobId) ? "Job Unsaved" : "Job Saved"; 
+        const actionMessage = isJobSaved(jobId) ? t("JobUnsaved") : t("JobSaved"); 
         toast.success(actionMessage); 
         setSavedJobs((prevSavedJobs) => {
           if (isJobSaved(jobId)) {
@@ -183,7 +185,7 @@ const EmploymentList = () => {
       }
     } catch (err) {
       console.error("Error while toggling saved job:", err);
-      toast.error("Error while saving job.", err);
+      toast.error(t("ErrorSavingJob") , err);
     }
   };
   
@@ -201,7 +203,7 @@ const EmploymentList = () => {
               {loginAlert && (
               <div className="d-flex">
                   <div className="alert alert-danger alert-dismissible fade show w-25" role="alert">
-                  Please login to save jobs.
+                  {t("PleaseLoginSave")}
                 </div>
               </div>
               )}
@@ -220,16 +222,16 @@ const EmploymentList = () => {
                <h4 className="mb-4">
                 {slug
                     .replace(/[_-]/g, ' ') // Replace _ or - with space
-                    .replace(/\b\w/g, (char) => char.toUpperCase())} Jobs
+                    .replace(/\b\w/g, (char) => char.toUpperCase())} {t("Jobs")}
                 </h4>
 
                 <div className="row">
                   {loading ? (
                     <div className="loading-screen d-flex flex-column justify-content-center align-items-center">
                       <div className="spinner-grow text-primary" role="status">
-                        <span className="visually-hidden">Loading...</span>
+                        <span className="visually-hidden">{t("Loading")}</span>
                       </div>
-                      <p className="mt-2">Fetching data...</p>
+                      <p className="mt-2">{t("FetchingData")}</p>
                     </div>
                   ) : error ? (
                     <>
@@ -237,7 +239,7 @@ const EmploymentList = () => {
                     <div className="card border-0 shadow">
                       <div className="card-body text-center p-4">
                       <img className="job_search" src="/images/no-job.png" alt="job_search" />
-                      <h6 className="text-theme">No job found at the moment.</h6>
+                      <h6 className="text-theme">{t("NoDataFoundMoment")}</h6>
                     </div>
                     </div>
                     </div>

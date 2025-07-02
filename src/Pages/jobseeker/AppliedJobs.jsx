@@ -54,10 +54,10 @@ const Appliedjobs = () => {
           setJobs(result.data);
           setApplicationsCount(result.applications_count);
         } else {
-          setError(result.message || "Failed to fetch company data");
+          setError(result.message || t("FailedToFetchCompanies"));
         }
       } catch (err) {
-        setError("An error occurred while fetching company data.");
+        setError(t("ErrorFetchingCompany"));
       } finally {
         setIsLoading(false);
       }
@@ -85,13 +85,13 @@ const Appliedjobs = () => {
           
 
           window.bootstrap.Modal.getInstance(document.getElementById("revokeModal")).hide();
-          toast.success(response.data.message || "Application revoked successfully!");
+          toast.success(response.data.message || t("ApplicationRevokeSuccess"));
           window.location.reload();
         } else {
-          toast.error(response.data.message || "Failed to revoke application.");
+          toast.error(response.data.message || t("FailedToRevokeApplication"));
         }
       } catch (err) {
-        toast.error("An error occurred while revoking the application.");
+        toast.error(t("ErrorRevokeApplication"));
         console.error(err);
       }
     };
@@ -140,15 +140,28 @@ const Appliedjobs = () => {
       const diffTime = now - localDate;
       const diffHours = Math.floor(diffTime / (1000 * 60 * 60));
       
+      // if (diffHours < 24) {
+      //   return `Applied today`;
+      // } else if (diffHours < 48) {
+      //   return `Applied yesterday`;
+      // } else {
+      //   const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+      //   return `Applied ${diffDays} day${diffDays === 1 ? '' : 's'} ago`;
+      // }
+
       if (diffHours < 24) {
-        return `Applied today`;
+      return t("AppliedToday");
       } else if (diffHours < 48) {
-        return `Applied yesterday`;
+        return t("AppliedYesterday");
       } else {
         const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-        return `Applied ${diffDays} day${diffDays === 1 ? '' : 's'} ago`;
+        const dayLabel = diffDays === 1 ? t("Day") : t("Days");
+        return `${t("Applied")} ${diffDays} ${dayLabel} ${t("Ago")}`;
       }
+
     };
+
+    
 
     // const calculateTimeAgo = (timestamp) => {
     //   if (!timestamp) return "";
@@ -259,15 +272,17 @@ const Appliedjobs = () => {
       <div className="modal-dialog">
         <div className="modal-content">
           <div className="modal-header">
-            <h5 className="modal-title" id="revokeModalLabel">Confirm Revocation</h5>
+            <h5 className="modal-title" id="revokeModalLabel">
+              {t("ConfirmRevoke")}
+            </h5>
             <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div className="modal-body text-center">
-           <p className="m-0"> Are you sure you want to revoke this job application?</p>
+           <p className="m-0">{t("RevokeText")} </p>
           </div>
           <div className="modal-footer justify-content-center align-items-center">
-            <button type="button" className="btn btn-success mx-2" onClick={ handleRevokeConfirm}>Confirm</button>
-            <button type="button" className="btn btn-danger mx-2" data-bs-dismiss="modal">Cancel</button>
+            <button type="button" className="btn btn-danger mx-2" data-bs-dismiss="modal">{t("Cancel")}</button>
+            <button type="button" className="btn btn-success mx-2" onClick={ handleRevokeConfirm}>{t("Confirm")}</button>
           
           </div>
         </div>
@@ -309,7 +324,7 @@ const Appliedjobs = () => {
               <div className="jobs_applied">
               {appliedJobs.length > 0 ? (
                 <>
-                  <h1 className="job_head">Jobs Applied ({applicationsCount})</h1>
+                  <h1 className="job_head">{t("AppliedJobs")} ({applicationsCount})</h1>
                   <div className="card border-0 shadow">
                     <div className="card-body pt-0">
                       <div className="row">
@@ -325,7 +340,7 @@ const Appliedjobs = () => {
                                 >
                                   <li className="text-start py-3">
                                     <div className="company_card">
-                                      <h6>{stripHtml(job.job_title)}</h6>
+                                      <h6 className="text-capitalize">{stripHtml(job.job_title)}</h6>
                                       <p className="text-secondary fw-semibold">{job.company_name}</p>
                                       <span className="border bg-white rounded-pill d-inline-flex align-items-baseline py-1 px-2 applied_time">
                                         <i className="fa-solid fa-check-circle me-1"></i>
@@ -348,7 +363,7 @@ const Appliedjobs = () => {
                                     <div className="d-flex align-items-start justify-content-between">
                                       <div>
                                         <Link to={`/jobs/${appliedJobs[selectedJobIndex].job_slug}`}>
-                                         <h5 className="text-dark">{stripHtml(appliedJobs[selectedJobIndex].job_title)}</h5>
+                                         <h5 className="text-dark text-capitalize">{stripHtml(appliedJobs[selectedJobIndex].job_title)}</h5>
                                         </Link>
 
                                          <h6 className="text-secondary m-0">{appliedJobs[selectedJobIndex].company_name}</h6>
@@ -360,53 +375,53 @@ const Appliedjobs = () => {
                                       data-bs-target="#revokeModal"
                                       onClick={() => setSelectedApplicationId(appliedJobs[selectedJobIndex].application_id)}
                                     >
-                                      Revoke
+                                      {t("Revoke")}
                                     </button>
                                     </div>
                                     
                                   </div>
                                   <div className="border-bottom py-3">
-                                    <h5 className="text-dark">Application Status</h5>
-                                    <ul className="job_status p-0">
+                                    <h5 className="text-dark">{t("ApplicationStatus")}</h5>
+                                    <ul className="job_status p-0 m-0">
                                       <li>
-                                        <span className="me-2">Applied</span> <i className="fa-solid fa-check"></i>
+                                        <span className="me-2">{t("Applied")}</span> <i className="fa-solid fa-check"></i>
                                       </li>
                                       <li>
-                                        <span className="me-2">Application sent</span>
+                                        <span className="me-2">{t("ApplicationSent")}</span>
                                         <i className="fa-solid fa-check"></i>
                                       </li>
 
                                       <li>
                                         {appliedJobs[selectedJobIndex].status === "Applied" ? (
                                           <>
-                                            <span className="me-2">Awaiting Recruiter Action</span>
+                                            <span className="me-2">{t("AwaitingAction")}</span>
                                             <i className="fa-solid fa-hourglass-start"></i>
                                           </>
                                         ) : (
                                           <>
                                             {appliedJobs[selectedJobIndex].status === "Viewed" && (
                                               <span className="text-success">
-                                                We wanted to inform you that your job application has been viewed by <strong>{appliedJobs[selectedJobIndex].company_name}</strong>. Stay tuned for further updates.
+                                                {t("ViewedMsg1")}<strong>{appliedJobs[selectedJobIndex].company_name}</strong>{t("ViewedMsg2")}
                                               </span>
                                             )}
                                             {appliedJobs[selectedJobIndex].status === "Shortlisted" && (
                                               <span className="text-success">
-                                                Congratulations! Your application has been shortlisted by <strong>{appliedJobs[selectedJobIndex].company_name}</strong>. Our team will contact you for the next steps.
+                                                {t("ShortListMsg1")}<strong>{appliedJobs[selectedJobIndex].company_name}</strong> {t("ShortListMsg2")}
                                               </span>
                                             )}
                                             {appliedJobs[selectedJobIndex].status === "Selected" && (
                                               <span className="text-success">
-                                                Great news! You have been selected for the position at <strong>{appliedJobs[selectedJobIndex].job_title}</strong>. Please check your email for further instructions.
+                                                {t("SelectedMsg1")}<strong>{appliedJobs[selectedJobIndex].job_title}</strong>{t("SelectedMsg2")}
                                               </span>
                                             )}
                                             {appliedJobs[selectedJobIndex].status === "Rejected" && (
                                               <span className="text-danger">
-                                                We appreciate your interest in <strong>{appliedJobs[selectedJobIndex].company_name}</strong>. Unfortunately, we have decided to move forward with other candidates. We encourage you to apply for future opportunities.
+                                                {t("RejectedMsg1")} <strong>{appliedJobs[selectedJobIndex].company_name}</strong>{t("RejectedMsg2")}
                                               </span>
                                             )}
                                             {appliedJobs[selectedJobIndex].status === "Cancelled" && (
                                               <span className="text-danger">
-                                                Your job application at <strong>{appliedJobs[selectedJobIndex].company_name}</strong> has been cancelled, for more details please check your email.
+                                                {t("CancelledMsg1")} <strong>{appliedJobs[selectedJobIndex].company_name}</strong> {t("CancelledMsg2")}
                                               </span>
                                             )}
                                           </>
@@ -416,29 +431,29 @@ const Appliedjobs = () => {
                                   </div>
 
                                   <div className="border-bottom py-3 activity_display">
-                                    <h5 className='text-dark'>Activity on this job</h5>
+                                    <h5 className='text-dark'>{t("ActivityOnJob")}</h5>
                                     <div className="d-inline-flex border rounded-2 card-body">
-                                      <div className='d-flex border-end px-3'>
-                                        <h4 className='m-0 me-2'>{appliedJobs[selectedJobIndex].job_count}</h4>
-                                        <p className='m-0'>Total <br />applications</p>
+                                      <div className='d-flex  px-3'>
+                                        <h4 className='m-0 me-3'>{appliedJobs[selectedJobIndex].job_count}</h4>
+                                        <p className='m-0'>{t("Total")} <br />{t("Applications")}</p>
                                       </div>
-                                      {appliedJobs[selectedJobIndex].status === "Applied" ? (
+                                      {/* {appliedJobs[selectedJobIndex].status === "Applied" ? (
                                         <div className='d-flex px-3 application_views'>
                                           <h4 className='m-0 me-2'>0</h4>
-                                          <p className='m-0'>Applications <br />viewed by recruiter</p>
+                                          <p className='m-0'>{t("Applications")} <br />{t("ViewedBy")}</p>
                                         </div>
                                       ) : (
                                         <div className='d-flex px-3 application_views'>
                                           <h4 className='m-0 me-2'>1</h4>
-                                          <p className='m-0'>Applications <br />viewed by recruiter</p>
+                                          <p className='m-0'>{t("Applications")} <br />{t("ViewedBy")}</p>
                                         </div>
-                                      )}
+                                      )} */}
                                     </div>
                                   </div>
 
                                   <div className="pt-3">
-                                    <h5 className='text-dark mb-0'>Similar Jobs</h5>
-                                    <div className="row mt-3">
+                                    <h5 className='text-dark mb-0'> {t("SimilarJobs")}</h5>
+                                    <div className="row">
                                       {similarJobs.length > 0 ? (
                                         similarJobs.slice(0,4).map((job) => (
                                           <div className="col-md-6 col-sm-6 mt-4" key={job.id}>
@@ -500,7 +515,7 @@ const Appliedjobs = () => {
                                                   {job.experience_required && (
                                                    <li>
                                                      <div className="btn btn-sm btn-green me-2 mb-2 text-capitalize">
-                                                      <span>Experience -</span> {job.experience_required}
+                                                      <span>{t("JobExperience")}</span> {job.experience_required}
                                                     </div>
                                                    </li>
                                                   )}
@@ -525,7 +540,7 @@ const Appliedjobs = () => {
                                       ) : (
                                         <div className="text-center">
                                          <img className='job_search' src="/images/job_search.png" alt="job_search" style={{ width: '70px' }}  />
-                                         <p className="text-theme m-0">No similar jobs found.</p>
+                                         <p className="text-theme m-0">{t("NoSimilarFound")}</p>
                                         </div>
                                       )}
                                     </div>
