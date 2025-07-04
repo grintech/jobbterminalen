@@ -14,7 +14,7 @@ const AdvertisementBanner = () => {
   const IMG_URL = import.meta.env.VITE_IMG_URL;
 
   const [banners, setBanners] = useState([]);
-  const [loading, setLoading] = useState(true); // 👈 New loading state
+  const [loading, setLoading] = useState(true); 
 
   useEffect(() => {
     const cacheKey = "home_top_banners";
@@ -45,7 +45,7 @@ const AdvertisementBanner = () => {
           const filtered = response.data.data.filter(b => b.placement === "home_top");
           setBanners(filtered);
 
-          // ✅ Save to localStorage
+          //  Save to localStorage
           localStorage.setItem(
             cacheKey,
             JSON.stringify({ data: filtered, timestamp: Date.now() })
@@ -109,7 +109,7 @@ const AdvertisementBanner = () => {
           </Swiper>
         </div>
       ) : (
-        <div className="text-center py-4">No banners available</div>
+        <div className="text-center py-4">{t("NoBannerAvailable")}</div>
       )}
     </>
   );

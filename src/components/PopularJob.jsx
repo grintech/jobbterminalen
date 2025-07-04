@@ -13,7 +13,7 @@ const PopularJob = () => {
 
   const bearerKey = import.meta.env.VITE_BEARER_KEY;
   const API_URL = import.meta.env.VITE_API_URL;
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
  
   const { user } = useAuthContext();
   const userId = user?.id || null;
@@ -69,10 +69,10 @@ const PopularJob = () => {
         if (result.type === "success") {
           setJobsData(result.data);
         } else {
-          throw new Error(result.message || "Failed to fetch jobs data");
+          throw new Error(result.message || t("FailedToFetchJobs"));
         }
       } catch (err) {
-        setError(err.message || "Failed to fetch jobs data");
+        setError(err.message || t("FailedToFetchJobs"));
       } finally {
         setIsLoading(false);
       }
@@ -96,13 +96,13 @@ const PopularJob = () => {
       {isLoading ? (
          <div className="loading-screen d-flex flex-column justify-content-center align-items-center">
           <div className="spinner-grow text-primary" role="status">
-            <span className="visually-hidden">Loading...</span>
+            <span className="visually-hidden">{t("Loading")}</span>
           </div>
-          <p className="mt-2">Fetching jobs...</p>
+          <p className="mt-2">{t("FetchingData")}</p>
         </div>
       ) : error ? (
         error === "Failed to fetch" ? (
-          <p className="text-center text-theme">Failed to fetch jobs data</p>
+          <p className="text-center text-theme">{t("FailedToFetchJobs")}</p>
         ) : (
           <p className="text-center text-theme" >
             {error}
@@ -150,8 +150,8 @@ const PopularJob = () => {
                                           <span>
                                             {job.job_count}{" "}
                                             {job.job_count === 1
-                                              ? "Job"
-                                              : "Jobs"}
+                                              ? t("Job")
+                                              : t("Jobs")}
                                           </span>
                                         </p>
                                       </div>

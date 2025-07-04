@@ -171,10 +171,10 @@ const Navbar = () => {
             </div>
         </div>
         }
-         {/* <select className='lang_select ms-2' onChange={(e) => changeLanguage(e.target.value)} defaultValue={i18n.language}>
-         <option value="en">EN</option>
-         <option value="sv">SV</option>
-         </select> */}
+         <select className='lang_select ms-1 d-block d-lg-none' onChange={(e) => changeLanguage(e.target.value)} defaultValue={i18n.language}>
+        <option value="en">EN</option>
+        <option value="sv">SV</option>
+       </select>
 
         </div>
 

@@ -10,7 +10,7 @@ const bearerKey = import.meta.env.VITE_BEARER_KEY;
 const API_URL = import.meta.env.VITE_API_URL;
 
 const ResetPassword = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -26,17 +26,30 @@ const ResetPassword = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    const selectedLang = i18n.language;
+
     // Validate passwords
     if (password !== confirmPassword) {
-      setAlert({ type: "error", message: "Passwords do not match." });
+      setAlert({ type: "error", message: t("PasswordNotMatch") });
       setTimeout(() => setAlert({ type: "", message: "" }), 3000);
       return;
     }
 
-    if (password.length < 6) {
+    // if (password.length < 6) {
+    //   setAlert({
+    //     type: "error",
+    //     message: "Password must be at least 6 characters long.",
+    //   });
+    //   setTimeout(() => setAlert({ type: "", message: "" }), 3000);
+    //   return;
+    // }
+
+    const specialCharRegex = /[!@#$%^&*(),.?":{}|<>]/;
+
+    if (password.length < 8 || !specialCharRegex.test(password)) {
       setAlert({
         type: "error",
-        message: "Password must be at least 6 characters long.",
+        message: t("PasswordCheck"),
       });
       setTimeout(() => setAlert({ type: "", message: "" }), 3000);
       return;
@@ -48,6 +61,7 @@ const ResetPassword = () => {
       const formData = new FormData();
       formData.append("session_token", session_token);
       formData.append("password", password);
+      formData.append("lang", selectedLang);
 
       const response = await axios.post(`${API_URL}/change-password.php`,formData,
           {
@@ -77,7 +91,7 @@ const ResetPassword = () => {
       console.error("Error resetting password:", error);
       setAlert({
         type: "error",
-        message: "An error occurred while resetting the password. Please try again.",
+        message: t("ErrorResetingPassword"),
       });
       setLoading(false);
       setTimeout(() => setAlert({ type: "", message: "" }), 3000);
@@ -147,6 +161,7 @@ const ResetPassword = () => {
                       {showPassword ? <FaEye /> : <FaEyeSlash />}
                     </span>
                     </div>
+                   
                   </div>
 
                   <div className="col-12 mb-3">

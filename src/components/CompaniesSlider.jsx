@@ -46,11 +46,11 @@ const CompaniesSlider = () => {
         });
   
         if (response.data.type === "success" && response.data.data.length === 0) {
-          setError("No companies available at the moment.");
+          setError(t("NoCompanyFound"));
         } else if (response.data.type === "success") {
           setCompanyData(response.data.data);
   
-          // ✅ Save fresh data to localStorage
+          // Save fresh data to localStorage
           localStorage.setItem("companyData", JSON.stringify(response.data.data));
         } else {
           setError(`API Error: ${response.data.message}`);
@@ -58,10 +58,10 @@ const CompaniesSlider = () => {
       } catch (error) {
         if (error.response) {
           setError(
-            `API Error: ${error.response.data.message || "Unknown error from server"}`
+            `API Error: ${error.response.data.message || t("UnknownError")}`
           );
         } else if (error.request) {
-          setError("Network Error: No response from server");
+          setError(t("NetworkError"));
         } else {
           setError(`Error: ${error.message}`);
         }
@@ -103,7 +103,7 @@ const CompaniesSlider = () => {
   // Toggle like/unlike company
   const toggleLike = async (companyId) => {
     if (!userId) {
-      toast.error("Please login to like companies.");
+      toast.error(t("PleaseLogin"));
       setTimeout(() => {
         navigate('/login');
       }, 2000);      
@@ -134,15 +134,15 @@ const CompaniesSlider = () => {
 
         // Show a toast message based on whether the company is saved or unsaved
         const actionMessage = likedCards[companyId]
-          ? "Company Unsaved"
-          : "Company Saved";
+          ? t("CompanyUnSaved")
+          : t("CompanySaved");
         toast.success(actionMessage);
       } else {
-        toast.error("Failed to toggle like.");
+        toast.error(t("FailedToToggle"));
       }
     } catch (error) {
       console.error("Error while toggling like:", error);
-      toast.error("Error while saving company. Please try again.");
+      toast.error(t("ErrorSavingCompany"));
     }
   };
 
@@ -192,9 +192,9 @@ const CompaniesSlider = () => {
           {loading ? (
             <div className="loading-screen d-flex flex-column justify-content-center align-items-center">
               <div className="spinner-grow text-primary" role="status">
-                <span className="visually-hidden">Loading...</span>
+                <span className="visually-hidden">{t("Loading")}</span>
               </div>
-              <p className="mt-2">Fetching companies...</p>
+              <p className="mt-2">{t("FetchingData")}</p>
             </div>
           ) : error ? (
             <div className="text-center text-theme bg-white p-4 rounded-3">
@@ -272,7 +272,7 @@ const CompaniesSlider = () => {
                               onClick={() => toggleLike(company.id)}
                               style={{ cursor: "pointer" }}
                               title={
-                                likedCards[company.id] ? "Click to unsave" : "Click to save"
+                                likedCards[company.id] ? t("ClickToUnsave") : t("ClickToSave")
                               }
                             ></i>
                           </div>

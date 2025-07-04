@@ -10,7 +10,7 @@ const API_URL = import.meta.env.VITE_API_URL;
 
 
 const ForgetPassword = () => {
-   const { t } = useTranslation();
+   const { t, i18n} = useTranslation();
 
    const [email, setEmail] = useState(""); // State for input email
    const [alert, setAlert] = useState({ type: "", message: "" }); // State for alert
@@ -22,8 +22,10 @@ const ForgetPassword = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    const selectedLang = i18n.language;
+
     if (!email) {
-      setAlert({ type: "error", message: "Email address is required." });
+      setAlert({ type: "error", message: t("EmailRequired") });
       setTimeout(() => setAlert({ type: "", message: "" }), 3000);
       return;
     }
@@ -31,6 +33,7 @@ const ForgetPassword = () => {
     // Create FormData and append email
     const formData = new FormData();
     formData.append("email", email);
+    formData.append("lang", selectedLang); 
 
     try {
       setLoading(true);
@@ -68,7 +71,7 @@ const ForgetPassword = () => {
       console.error("Error sending forgot password request:", error);
       setAlert({
         type: "error",
-        message: "An error occurred. Please try again later.",
+        message: t("SomethingWrongPleaseTry"),
       });
       setLoading(false);
       setTimeout(() => setAlert({ type: "", message: "" }), 2000);

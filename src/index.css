@@ -944,8 +944,8 @@ div#google_translate_element .indicator{font-size: 0px !important;}
 }
 
 
-
-.register_container .stsearch-box input {font-size: 14px !important; height: 40px;}
+.register_container .stsearch-box input {font-size: 14px !important; height: 40px; padding: 5px 10px !important;}
+.register_container .stsearch-box input::placeholder {font-size: 14px !important; font-weight: 400;color: rgb(66, 66, 66) !important;}
 .register_container .stdropdown-tools {display: none !important;}
 .register_container .stdropdown-container{border: 0 !important;}
 .register_container .stsearch-box {padding: 0 !important;}

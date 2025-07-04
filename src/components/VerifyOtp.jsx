@@ -10,7 +10,7 @@ const API_URL = import.meta.env.VITE_API_URL;
 
 
 const VerifyOtp = () => {
-  const { t } = useTranslation();
+  const { t , i18n } = useTranslation();
 
   const inputsRef = useRef([]);
   // const location = useLocation();
@@ -19,10 +19,9 @@ const VerifyOtp = () => {
   // const { email } = location.state || {}; // Access email from location state
   const email  = localStorage.getItem('forgot_email');
 
-  // console.log("Email: ", email);
 
   const [otp, setOtp] = useState(""); 
-  const [alert, setAlert] = useState({ type: "", message: "" }); // Alert state
+  const [alert, setAlert] = useState({ type: "", message: "" }); 
   const [loading, setLoading] = useState(false);
 
   const [resendLoading, setResendLoading] = useState(false);
@@ -34,7 +33,7 @@ const VerifyOtp = () => {
 
     // Restrict input to numbers only
     if (!/^\d$/.test(value)) {
-      e.target.value = ""; // Clear invalid input
+      e.target.value = ""; 
       return;
     }
 
@@ -74,15 +73,17 @@ const VerifyOtp = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    const selectedLang = i18n.language;
+
     if (otp.length !== 6) {
-      setAlert({ type: "error", message: "Please enter a valid 6-digit OTP." });
+      setAlert({ type: "error", message: t("ValidOTP") });
       resetOtpFields();
       setTimeout(() => setAlert({ type: "", message: "" }), 3000);
       return;
     }
 
     if (!email){
-      setAlert({ type: "error", message: "Email does not exist." });
+      setAlert({ type: "error", message: t("EmailNoExists") });
       resetOtpFields();
       setTimeout(() =>{
         setAlert({ type: "", message: "" });
@@ -98,6 +99,7 @@ const VerifyOtp = () => {
       const formData = new FormData();
       formData.append("email", email);
       formData.append("otp", otp);
+      formData.append("lang", selectedLang); 
 
       // Send OTP verification request
       const response = await axios.post(`${API_URL}/verify-otp.php`,formData,
@@ -130,7 +132,7 @@ const VerifyOtp = () => {
       console.error("Error verifying OTP:", error);
       setAlert({
         type: "error",
-        message: "An error occurred while verifying OTP. Please try again.",
+        message: t("ErrorVerifyOtp"),
       });
       setLoading(false);
       resetOtpFields();
@@ -140,8 +142,11 @@ const VerifyOtp = () => {
 
   // Resend OTP
   const handleResendOtp = async () => {
+
+   const selectedLang = i18n.language;
+
     if (!email){
-      setAlert({ type: "error", message: "Email does not exist." });
+      setAlert({ type: "error", message: t("EmailNoExists") });
       resetOtpFields();
       setTimeout(() =>{
         setAlert({ type: "", message: "" });
@@ -154,6 +159,7 @@ const VerifyOtp = () => {
       setResendLoading(true);
       const formData = new FormData();
       formData.append("email", email);
+      formData.append("lang", selectedLang);
   
       const response = await axios.post(`${API_URL}/resend_otp.php`,formData,
         {
@@ -172,7 +178,7 @@ const VerifyOtp = () => {
       setTimeout(() => setAlert({ type: "", message: "" }), 3000);
     } catch (error) {
       console.error("Resend OTP failed:", error);
-      setAlert({ type: "error", message: "Failed to resend OTP. Try again later." });
+      setAlert({ type: "error", message: t("FailedResendOtp") });
       setResendLoading(false);
       resetOtpFields();
       setTimeout(() => setAlert({ type: "", message: "" }), 3000);

@@ -28,6 +28,14 @@ const resources = {
       "Dont-account": "Don't have an account?",
       "Terms": "Terms of use",
       "Privacy": "Privacy Policy",
+      "ErrorResendingEmail" : "An error occurred while resending the email.",
+      "UnknownError" : "Unknown error from server",
+      "NetworkError" : "Network Error: No response from server",
+      "PleaseFillFields":"Please fill all required fields.",
+      "PasswordNotMatch":"Password do not match!",
+       "PasswordCheck":"Password must be at least 8 characters long and include one special character.",
+       "DomainEmail": "Recruiters must use a domain email.",
+
        /*--- Forgot Password ---*/
       "Forget_Password": "Forgot Password",
       "Forget_head" : "Enter your registered email for verification.",
@@ -40,6 +48,8 @@ const resources = {
       "Verifying": "Verifying...",
       "New_platform": "New to our platform?",
       "Create_account": "Create an account",
+      "EmailRequired" : "Email address is required.",
+      
       /*-Register-*/
       "Register_Text": "Join JobbTerminalen Today – Unlock Opportunities, Build Your Future!",
       "JobSeeker": "Job Seeker",
@@ -61,7 +71,11 @@ const resources = {
       "Otp_title" : "OTP Verification",
       "Otp_text": "Please enter the OTP sent to your email.",
       "ResendOtp": "Resend OTP",
-       "Resending": "Resending...",
+      "Resending": "Resending...",
+      "ValidOTP" : "Please enter a valid 6-digit OTP.",
+      "EmailNoExists" : "Email does not exist.",
+      "ErrorVerifyOtp" : "An error occurred while verifying OTP. Please try again.",
+      "FailedResendOtp" : "Failed to resend OTP. Try again later.",
       
 
       /* --Reset Password Page --- */
@@ -74,6 +88,7 @@ const resources = {
       "Resetting": "Resetting...",
       "ViewMore" : "View more",
       "ViewAllCompanies": "View all companies",
+      "ErrorResetingPassword" : "An error occurred while resetting the password. Please try again.",
       
       /* -- Home Hero Section ------*/
 
@@ -144,13 +159,14 @@ const resources = {
       "SlideBtn2" : "Become Sponsor",
       "SlideBtn3" : "Join Now",
       "FailLoadCompanies" : "Failed to load companies",
-      "PleaseLogin" : "Please login to like companies.",
+      "PleaseLogin" : "Please login to save companies.",
       "CompanySaved" : "Company Saved",
       "CompanyUnSaved" : "Company Unsaved",
       "FailedToToggle" : "Failed to toggle like.",
       "ErrorSavingCompany" : "Error while saving company. Please try again.",
-      "ErrorFetchingCompanies" : "Failed to fetch companies.Please try later!",
-      "NoCompanyFound" : "No companies found at the moment.Please try later.",
+      "ErrorFetchingCompanies" : "Failed to fetch companies. Please try later!",
+      "NoCompanyFound" : "No companies found at the moment. Please try later.",
+      "NoCompFound" : "No companies found.",
       "ClickToSave" : "Click to save",
       "ClickToUnsave" : "Click to unsave",
 
@@ -163,6 +179,22 @@ const resources = {
       "Website" : "Website:",
       "Location" : "Location:",
       "Vacancies" : "Vacancies:",
+
+      /*--- Alljobpost page --- */
+      "AddFilter" : "Add Filter",
+      "AllFilters" : "All Filters",
+      "ApplyFilter" : "Apply Filter",
+      "FilterJobs" : "Filter Jobs",
+      "SimpleCategory" : "Category",
+      "SimpleExperience" : "Experience",
+      "SimpleLocation" : "Location",
+      "SearchCategories" : "Search categories...",
+      "SearchLocations" : "Search locations...",
+      "NoCatFound" : "No category found",
+      "SalaryRange" : "Salary Range",
+      "MinSalary" : "Min Salary",
+      "MaxSalary" : "Max Salary",
+      
 
       /*  --- Footer --- */
       "ConnectWithUs" : "Connect With Us",
@@ -199,6 +231,7 @@ const resources = {
 
       "Home": "Home",
       "About": "About",
+      "Job": "Job",
       "Jobs": "Jobs",
       "AllCompanies": "All Companies",
       "ForEmployers": "For Employer",
@@ -589,6 +622,13 @@ const resources = {
       "NoEmploymentFound" : "No employment type found.",
       "FailedLoadData" : "Failed to load data.",
 
+      /* --- HomepageJobs ---- */
+      "ErrorFetchingJobs" : "An error occurred while fetching jobs.",
+
+       /*-- Home Adversitement Banner ---*/
+       "NoBannerAvailable" : "Inga banners tillgängliga",
+
+
       /*-------- Jobseeker Dashboard ---- */
 
       /*--- JobSidebar ---*/
@@ -597,7 +637,7 @@ const resources = {
       "SavedJobs" : "Saved Jobs",  
       "AppliedJobs" : "Applied Jobs",
       "SavedComp" : "Saved Companies",
-      "NoJobsFound" : "No jobs found.",
+      "NoJobsFound" : "No jobs found at the moment.",
 
       /*--- Saved Jobs ---*/
       "Loading" : "Loading...",
@@ -925,6 +965,7 @@ const resources = {
       "FailedToFetchEmployment" : "Failed to fetch employment details.",
       "EmploymentUpdated" : "Employment details updated successfully!",
       "SomethingWentWrong" : "Something went wrong while updating.",
+      "SomethingWrongPleaseTry" : "Something went wrong! Please try again later.",
       "DeletingEmployment" : "Deleting employment data...",
       "EmploymentDeleted" : "Employment data deleted successfully!",
       "ErrorDeletingEmployment" : "Error deleting employment data.",
@@ -998,6 +1039,14 @@ const resources = {
       "Dont-account": "Har du inget konto??",
       "Terms": "Villkor för användning",
       "Privacy": "Integritetspolicy",
+      "ErrorResendingEmail" : "Ett fel inträffade när du skickade om e-postmeddelandet.",
+      "UnknownError" : "Okänt fel från servern",
+      "NetworkError" : "Nätverksfel: Inget svar från servern",
+      "PleaseFillFields":"Vänligen fyll i alla obligatoriska fält.",
+      "PasswordNotMatch":"Lösenordet stämmer inte överens!",
+       "PasswordCheck":"Lösenordet måste vara minst 8 tecken långt och innehålla ett specialtecken.",
+       "DomainEmail": "Rekryterare måste använda en domän-epost.",
+
       /*--- Forgot Password ---*/
       "Forget_Password": "Glömt lösenord",
       "Forget_head" : "Ange din registrerade e-post för verifiering.",
@@ -1010,6 +1059,8 @@ const resources = {
       "Verifying": "Verifiering...",
       "New_platform": "Ny på vår plattform?",
       "Create_account": "Skapa ett konto",
+      "EmailRequired" : "E-postadress krävs.",
+
       /*-Register-*/
       "Register_Text": "Gå med i JobbTerminalen idag - öppna möjligheter, bygg din framtid!",
       "JobSeeker": "Jobbsökande",
@@ -1032,8 +1083,11 @@ const resources = {
        "Otp_text": "Ange den OTP som skickats till din e-post.",
        "ResendOtp": "Skicka OTP igen",
        "Resending": "Återlämnar...",
+        "ValidOTP" : "Ange en giltig 6-siffrig OTP.",
+        "EmailNoExists" : "E-post finns inte.",
+        "ErrorVerifyOtp" : "Ett fel inträffade vid verifiering av OTP. Vänligen försök igen.",
+        "FailedResendOtp" : "Misslyckades med att skicka OTP igen. Försök igen senare.",
        
-
         /* --Reset Password Page --- */
       "Reset_title": "Återställ lösenord",
       "Reset_text": "Ange ditt nya lösenord för att återställa.",
@@ -1044,6 +1098,7 @@ const resources = {
       "Resetting": "Återställer...",
       "ViewMore" : "Visa mer",
       "ViewAllCompanies": "Se alla företag",
+      "ErrorResetingPassword" : "Ett fel inträffade när du återställde lösenordet. Vänligen försök igen.",
 
       /* -- Home Hero Section ------*/
 
@@ -1126,13 +1181,14 @@ const resources = {
       "SlideBtn2" : "Bli sponsor",
       "SlideBtn3" : "Gå med nu",
       "FailLoadCompanies" : "Misslyckades med att ladda företag",
-      "PleaseLogin" : "Vänligen logga in för att gilla företag.",
+      "PleaseLogin" : "Vänligen logga in för att spara företag.",
       "CompanySaved" : "Företag sparat",
       "CompanyUnSaved" : "Företag osparade",
       "FailedToToggle" : "Misslyckades med att växla som.",
       "ErrorSavingCompany" : "Fel vid sparande av företag. Vänligen försök igen.",
       "ErrorFetchingCompanies" : "Misslyckades med att hämta företag.försök senare!",
       "NoCompanyFound" : "Inga företag hittades för tillfället. Försök igen senare!",
+      "NoCompFound" : "Inga företag hittades.",
       "ClickToSave" : "Klicka för att spara",
       "ClickToUnsave" : "Klicka för att ta bort sparandeto",
 
@@ -1145,6 +1201,21 @@ const resources = {
       "Website" : "Webbplats:",
       "Location" : "Plats:",
       "Vacancies" : "Lediga tjänster:",
+
+      /*--- Alljobpost page --- */
+      "AddFilter" : "Lägg till filter",
+      "AllFilters" : "Alla filter",
+      "ApplyFilter" : "Använd filter",
+      "FilterJobs" : "Filtrera jobb",
+      "SimpleCategory" : "Kategori",
+      "SimpleExperience" : "Erfarenhet",
+      "SimpleLocation" : "Plats",
+      "SearchCategories" : "Sök kategorier...",
+      "SearchLocations" : "Sökplatser...",
+      "NoCatFound" : "Ingen kategori hittades",
+      "SalaryRange" : "Löneintervall",
+      "MinSalary" : "Min Lön",
+      "MaxSalary" : "Max lön",
 
       /*  --- Footer --- */
       "ConnectWithUs" : "Anslut med oss",
@@ -1181,6 +1252,7 @@ const resources = {
 
       "Home": "Hem",
       "About": "Om",
+      "Job": "Jobb",
       "Jobs": "Jobb",
       "AllCompanies": "Alla företag",
       "ForEmployers": "För arbetsgivare",
@@ -1560,6 +1632,12 @@ const resources = {
         "NoEmploymentFound" : "Ingen typ av anställning hittades.",
         "FailedLoadData" : "Misslyckades med att ladda data.",
 
+        /* --- HomepageJobs ---- */
+       "ErrorFetchingJobs" : "Ett fel inträffade vid hämtning av jobb.",
+
+       /*-- Home Adversitement Banner ---*/
+       "NoBannerAvailable" : "No banners available",
+
 
       /*-------- Jobseeker Dashboard ---- */
 
@@ -1569,7 +1647,7 @@ const resources = {
       "SavedJobs" : "Sparade jobb",  
       "AppliedJobs" : "Tillämpade jobb",
       "SavedComp" : "Sparade företag",
-      "NoJobsFound" : "Inga jobb hittades.",
+      "NoJobsFound" : "Inga jobb hittades för tillfället",
 
       /*--- Saved Jobs ---*/
       "Loading" : "Laddar...",
@@ -1894,6 +1972,7 @@ const resources = {
       "FailedToFetchEmployment" : "Misslyckades med att hämta anställningsinformation.",
       "EmploymentUpdated" : "Anställningsuppgifter uppdaterade framgångsrikt!",
       "SomethingWentWrong" : "Något gick fel under uppdateringen.",
+      "SomethingWrongPleaseTry" : "Något gick fel! Vänligen försök igen senare.",
       "DeletingEmployment" : "Radering av anställningsuppgifter...",
       "EmploymentDeleted" : "Anställningsuppgifter raderade framgångsrikt!",
       "ErrorDeletingEmployment" : "Fel vid radering av anställningsuppgifter.",

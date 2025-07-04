@@ -7,7 +7,7 @@ import { useTranslation } from "react-i18next";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 // import { getGoogleTranslateLang } from "../utils/getLang";
 
-// ✅ Import CountrySelect properly
+// Import CountrySelect properly
 import { CountrySelect } from "react-country-state-city";
 import "react-country-state-city/dist/react-country-state-city.css";
 
@@ -53,13 +53,13 @@ const Register = () => {
     e.preventDefault();
 
     if (!formData.name || !formData.email || !formData.password || !formData.confirmPassword || !selectedCountry) {
-      setAlert({ type: "error", message: "Please fill all required fields." });
+      setAlert({ type: "error", message: t("PleaseFillFields") });
       setTimeout(() => setAlert({ type: "", message: "" }), 3000);
       return;
     }
 
     if (formData.password !== formData.confirmPassword) {
-      setAlert({ type: "error", message: "Passwords do not match!" });
+      setAlert({ type: "error", message: t("PasswordNotMatch") });
       setTimeout(() => setAlert({ type: "", message: "" }), 3000);
       return;
     }
@@ -78,7 +78,7 @@ const Register = () => {
     if (!passwordRegex.test(formData.password)) {
       setAlert({
         type: "error",
-        message: "Password must be at least 8 characters long and include one special character.",
+        message: t("PasswordCheck"),
       });
       setTimeout(() => setAlert({ type: "", message: "" }), 4000);
       return;
@@ -89,7 +89,7 @@ const Register = () => {
     if (formData.role === "recruiter") {
       const publicDomains = ["aol.com"];
       if (publicDomains.includes(emailDomain)) {
-        setEmailError("Recruiters must use a domain email.");
+        setEmailError(t("DomainEmail"));
         setTimeout(() => setEmailError(""), 4000);
         return;
       }
@@ -141,7 +141,7 @@ const Register = () => {
     } catch (error) {
       console.error("Registration error:", error);
       setLoading(false);
-      setAlert({ type: "error", message: "Something went wrong. Please try again later." });
+      setAlert({ type: "error", message: t("SomethingWrongPleaseTry") });
       setTimeout(() => setAlert({ type: "", message: "" }), 3000);
     }
   };

@@ -91,18 +91,18 @@ const HomepageJobs = () => {
       if (result.type === "success") {
         setJobs(result.data);
 
-        // ✅ Save to localStorage with timestamp
-        // localStorage.setItem(
-        //   cacheKey,
-        //   JSON.stringify({ data: result.data, timestamp: Date.now() })
-        // );
+        // Save to localStorage with timestamp
+        localStorage.setItem(
+          cacheKey,
+          JSON.stringify({ data: result.data, timestamp: Date.now() })
+        );
       } else {
         setJobs([]);
-        setError(result.message || "Failed to fetch job posts");
+        setError(result.message || t("FailedToFetchJobs"));
       }
     } catch (error) {
       setJobs([]);
-      setError("An error occurred while fetching jobs.");
+      setError(t("ErrorFetchingJobs"));
       console.error("Error fetching job posts:", error);
     } finally {
       setLoading(false);
@@ -127,11 +127,11 @@ const fetchSavedJobs = async () => {
       setSavedJobs(response.data.saved_jobs || []);
       setSaved(response.data.data.status === 'active');
     } else {
-      setError('No jobs found at the moment');
+      setError(t("NoJobsFound"));
     }
   } catch (error) {
     console.error('Error fetching saved jobs:', error);
-    setError(`No jobs found at the moment`);
+    setError(t("NoJobsFound"));
   } finally {
     setLoading(false);
   }
@@ -140,7 +140,7 @@ const fetchSavedJobs = async () => {
   // Toggle save job functionality
   const toggleSavedJob = async (jobId) => {
      if (!userId) {
-      toast.error("Please login to save job.");
+      toast.error(t("PleaseLoginSave"));
       setTimeout(() => {
         navigate('/login');
       }, 2000);      
@@ -159,14 +159,14 @@ const fetchSavedJobs = async () => {
       });
 
       if (response.data.type === 'success') {
-         const actionMessage = isJobSaved(jobId) ? "Job Unsaved" : "Job Saved"; 
+         const actionMessage = isJobSaved(jobId) ? t("JobUnsaved") : t("JobSaved"); 
         toast.success(actionMessage); 
         fetchSavedJobs(); // Re-fetch saved jobs to update the list
         setSaved(!saved);
       }
     } catch (error) {
-      console.error('Error toggling save job:', error);
-      toast.error("Error while saving job.", err);
+      console.error(t("ErrorTogglingJob"), error);
+      toast.error(t("ErrorSavingJob"), err);
     }
   };
 
@@ -181,7 +181,7 @@ const fetchSavedJobs = async () => {
   return (
     <>
       <div className="all_jobs_page">
-        <div className="container d-flex flex-column py-5 all_job_posts">
+        <div className="container d-flex flex-column pt-5 pb-4 all_job_posts">
           <h4 className="mb-5 text-center">{t("LatestJobs")}</h4>
           <div className="row ">
             <div className="col-12 d-flex flex-column position-relative align-items-center-justify-content-center">
@@ -207,7 +207,8 @@ const fetchSavedJobs = async () => {
                   <div className="card border-0 shadow">
                     <div className="card-body text-center p-4">
                     <img className="job_search" src="/images/no-job.png" alt="job_search" />
-                    <h6 className="text-theme">{error === "No data found" ? "No jobs found at the moment.." : "No data found"}</h6>
+                    {/* <h6 className="text-theme">{error === "No data found" ? "No jobs found at the moment.." : "No data found"}</h6> */}
+                    <h6 className="text-theme">{error}</h6>
                 </div>
                   </div>
                 </div>
@@ -249,7 +250,7 @@ const fetchSavedJobs = async () => {
                                 }`}
                                 onClick={() => toggleSavedJob(job.id)}
                                   title={
-                                    isJobSaved(job.id) ? "Click to unsave" : "Click to save"}
+                                    isJobSaved(job.id) ? t("ClickToUnsave") : t("ClickToSave")}
 
                                 ></i>
                               </Link>
@@ -265,7 +266,7 @@ const fetchSavedJobs = async () => {
                               <h6 className="m-0 text-capitalize" dangerouslySetInnerHTML={{ __html: job.title }}></h6>
                             </Link>
                           </div>
-                          <p className="main_desc">Trusted global solutions company.</p>
+                          <p className="main_desc">{job.company_tagline}</p>
                           <ul className="p-0 d-flex flex-wrap m-0">
                             {job.job_type && (
                               <li>
@@ -278,7 +279,7 @@ const fetchSavedJobs = async () => {
                             <li>
                               <div className="btn btn-sm btn-green me-2 mb-2 text-capitalize">
                                 {job.experience_required === "0" ? (
-                                  "Fresher"
+                                  t("Fresher")
                                 ) : job.experience_required === "1" ? (
                                   `Exp - 1 Yr`
                                 ) : (

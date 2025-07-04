@@ -42,7 +42,7 @@ const SponsorCompanies = () => {
       })
       .catch((error) => {
         console.error('Error fetching industries:', error);
-        setError('No companies found');
+        setError(t("NoCompFound"));
         setLoading(false);
       });
   }, []);
@@ -64,7 +64,7 @@ const SponsorCompanies = () => {
       })
       .catch((error) => {
         console.error('Error fetching companies:', error);
-        setError('No companies found.');
+        setError(t("NoCompFound"));
         setLoading(false);
       });
   }, []);
@@ -93,7 +93,7 @@ const SponsorCompanies = () => {
   // Toggle save/unsave company
   const toggleSaveCompany = async (companyId) => {
     if (!userId) {
-      toast.error("Please login to save companies.");
+      toast.error(t("PleaseLogin"));
       setTimeout(() => {
         navigate('/login')
       }, 2000);
@@ -113,7 +113,7 @@ const SponsorCompanies = () => {
       });
 
       if (response.data.type === 'success') {
-        const actionMessage = isCompanySaved(companyId) ? "Company Unsaved" : "Company Saved";
+        const actionMessage = isCompanySaved(companyId) ? t("CompanyUnSaved") : t("CompanySaved");
         toast.success(actionMessage);
 
         setSavedCompanies((prevSavedCompanies) => {
@@ -124,11 +124,11 @@ const SponsorCompanies = () => {
           }
         });
       } else {
-        toast.error(`Failed to save company: ${response.data.message}`);
+        toast.error(`${response.data.message}`);
       }
     } catch (err) {
       console.error("Error while toggling saved company:", err);
-      toast.error("Error while saving company. Please try again.");
+      toast.error(t("ErrorSavingCompany"));
     }
   };
 
@@ -165,15 +165,15 @@ const SponsorCompanies = () => {
           <div className="text-center my-5">
             <div className="loading-screen d-flex flex-column justify-content-center align-items-center">
               <div className="spinner-grow text-primary" role="status">
-                <span className="visually-hidden">Loading...</span>
+                <span className="visually-hidden">{t("Loading")}</span>
               </div>
-              <p className='mt-2'>Fetching data...</p>
+              <p className='mt-2'>{t("FetchingData")}</p>
             </div>
           </div>
         ) : error ? (
           <div className='text-center text-theme'>
             <img src="/images/no-company.webp" className='no_data' alt='' />
-            <p>{error === "No companies found." ? "No companies available at the moment." : error}</p>
+            <p>{error}</p>
           </div>
         ) : (
           <>
@@ -246,7 +246,7 @@ const SponsorCompanies = () => {
                           <i
                             className={`fa-heart ${isCompanySaved(company.id) ? 'fa-solid' : 'fa-regular'}`}
                             title={
-                              isCompanySaved(company.id) ? "Click to unsave" : "Click to save"
+                              isCompanySaved(company.id) ? t("ClickToUnsave") : t("ClickToSave")
                             }
                           ></i>
                         </div>

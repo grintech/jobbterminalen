@@ -1,16 +1,15 @@
-// ✅ Coming up: Full updated `AllJobPost.jsx` file with integrated filter logic and UI
-
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import HeroBannerJobs from "../components/HeroBannerJobs";
-import { Helmet } from "react-helmet-async";
+// import { Helmet } from "react-helmet-async";
 import { useAuthContext } from "../store/authContext";
 import { ToastContainer, toast } from "react-toastify";
 import Avatar from "react-avatar";
 import { JobCardSkeleton } from "../components/skeleton/JobCardSkeleton";
+import { useTranslation } from "react-i18next";
 
 const AllJobPost = () => {
   const bearerKey = import.meta.env.VITE_BEARER_KEY;
@@ -20,6 +19,7 @@ const AllJobPost = () => {
   const { user } = useAuthContext();
   const userId = user ? user.id : null;
   const navigate = useNavigate();
+  const {t} = useTranslation();
 
   const [filters, setFilters] = useState({});
   const [jobs, setJobs] = useState([]);
@@ -100,12 +100,14 @@ const AllJobPost = () => {
     fetchLocations();
   }, []);
 
-  useEffect(() => {
-    fetchJobs(filters);
-  }, [filters]);
+    useEffect(() => {
+        fetchJobs(filters);
+      }, [filters]);
+
 
   const fetchJobs = async (filterObj = {}) => {
     setLoading(true);
+    setError(""); // Clear error before fetching new data
     try {
       const query = new URLSearchParams(filterObj).toString();
       const response = await fetch(`${API_URL}/job-list.php?${query}`, {
@@ -120,11 +122,11 @@ const AllJobPost = () => {
         setPagination(result.pagination);
       } else {
         setJobs([]);
-        setError(result.message || "No jobs found.");
+        setError(result.message || t("NoJobFound"));
       }
     } catch (err) {
       setJobs([]);
-      setError("Failed to fetch jobs.");
+      setError(t("FailedToFetchJobs"));
       console.error(err);
     } finally {
       setLoading(false);
@@ -159,20 +161,21 @@ const AllJobPost = () => {
     setActiveMobileFilter("");
   };
 
-  const handleResetFilters = () => {
-    const empty = {
-      job_type: [],
-      salary_min: "",
-      salary_max: "",
-      experience: [],
-      location: [],
-      category: [],
-    };
-    setLocalFilters(empty);
-    setFilters({});
-    window.location.reload();
-     
+const handleResetFilters = () => {
+  const empty = {
+    job_type: [],
+    salary_min: "",
+    salary_max: "",
+    experience: [],
+    location: [],
+    category: [],
   };
+  setLocalFilters(empty);
+  setFilters({});
+  fetchJobs({}); // Directly trigger a fresh API call
+};
+
+
 
   const handlePageChange = (page) => {
     setFilters((prev) => ({ ...prev, page }));
@@ -196,7 +199,7 @@ const AllJobPost = () => {
 
   const toggleSavedJob = async (jobId) => {
     if (!userId) {
-      toast.error("Please login to save job.");
+      toast.error(t("PleaseLoginSave"));
       return setTimeout(() => navigate("/login"), 2000);
     }
     try {
@@ -208,13 +211,13 @@ const AllJobPost = () => {
         headers: { Authorization: `Bearer ${bearerKey}` },
       });
       if (res.data.type === "success") {
-        toast.success(isJobSaved(jobId) ? "Job Unsaved" : "Job Saved");
+        toast.success(isJobSaved(jobId) ? t("JobUnsaved") : t("JobSaved"));
         fetchSavedJobs();
         setSaved(!saved);
       }
     } catch (err) {
       console.error("Error saving job", err);
-      toast.error("Error while saving job.");
+      toast.error(t("ErrorSavingJob"));
     }
   };
 
@@ -243,7 +246,7 @@ const AllJobPost = () => {
                 {isMobile ? (
         <>
           <div className="d-flex align-items-center mb-3">
-            <h5 className="m-0">Add Filter</h5>
+            <h5 className="m-0">{t("AddFilter")}</h5>
             <i className="fa-solid fa-filter"></i>
           </div>
           <div className="mobile-filter-list">
@@ -269,19 +272,19 @@ const AllJobPost = () => {
                   <div className="card_sticky">
                     <div className="card all_cat_filters">
                       <div className="card-body">
-                        <h5 className="">All Filters</h5>
+                        <h5 className="">{t("AllFilters")}</h5>
                         <div className="d-flex justify-content-between">
                           <button
                             className="btn btn-sm btn-secondary me-2 px-2 border-0 rounded-1"
                             onClick={handleResetFilters}
                           >
-                            Reset <i className="ms-1 fa-solid fa-rotate"></i>
+                            {t("Reset")} <i className="ms-1 fa-solid fa-rotate"></i>
                           </button>
                           <button
                             className="btn btn-sm btn-dark px-2 border-0 rounded-1"
                             onClick={handleApplyFilters}
                           >
-                            Apply Filter <i className="ms-1 fa-solid fa-filter"></i>
+                            {t("ApplyFilter")} <i className="ms-1 fa-solid fa-filter"></i>
                           </button>
                         </div>
                         <hr />
@@ -291,7 +294,7 @@ const AllJobPost = () => {
                           <div className="accordion-item">
                             <h2 className="accordion-header">
                               <button className="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCategory">
-                                <b>Category</b>
+                                <b>{t("SimpleCategory")}</b>
                               </button>
                             </h2>
                             <div id="collapseCategory" className="accordion-collapse collapse show">
@@ -299,16 +302,22 @@ const AllJobPost = () => {
                                 <input
                                   type="search"
                                   className="form-control mb-3"
-                                  placeholder="Search categories..."
+                                  placeholder={t("SearchCategories")}
                                   value={categorySearch}
                                   onChange={(e) => setCategorySearch(e.target.value)}
                                 />
-                                {categories
-                                  .filter((cat) =>
-                                    cat.name.toLowerCase().includes(categorySearch.toLowerCase())
-                                  )
-                                  .slice(0, 10)
-                                  .map((cat) => (
+                                {(() => {
+                                  const filteredCategories = categories
+                                    .filter((cat) =>
+                                      cat.name.toLowerCase().includes(categorySearch.toLowerCase())
+                                    )
+                                    .slice(0, 10);
+
+                                  if (filteredCategories.length === 0) {
+                                    return <p className="text-theme m-0 text-center">{t("NoCatFound")}</p>;
+                                  }
+
+                                  return filteredCategories.map((cat) => (
                                     <div className="form-check" key={cat.id}>
                                       <input
                                         className="form-check-input"
@@ -318,7 +327,8 @@ const AllJobPost = () => {
                                       />
                                       <label className="form-check-label text-capitalize">{cat.name}</label>
                                     </div>
-                                  ))}
+                                  ));
+                                })()}
                               </div>
                             </div>
                           </div>
@@ -327,7 +337,7 @@ const AllJobPost = () => {
                           <div className="accordion-item">
                             <h2 className="accordion-header">
                               <button className="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseJobType">
-                                <b>Job Type</b>
+                                <b>{t("JobType")}</b>
                               </button>
                             </h2>
                             <div id="collapseJobType" className="accordion-collapse collapse show">
@@ -351,7 +361,7 @@ const AllJobPost = () => {
                           <div className="accordion-item">
                             <h2 className="accordion-header">
                               <button className="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExperience">
-                                <b>Experience</b>
+                                <b>{t("SimpleExperience")}</b>
                               </button>
                             </h2>
                             <div id="collapseExperience" className="accordion-collapse collapse show">
@@ -375,7 +385,7 @@ const AllJobPost = () => {
                           <div className="accordion-item">
                             <h2 className="accordion-header">
                               <button className="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseLocation">
-                                <b>Location</b>
+                                <b>{t("SimpleLocation")}</b>
                               </button>
                             </h2>
                             <div id="collapseLocation" className="accordion-collapse collapse show">
@@ -383,7 +393,7 @@ const AllJobPost = () => {
                                 <input
                                   type="search"
                                   className="form-control mb-3"
-                                  placeholder="Search locations..."
+                                  placeholder={t("SearchLocations")}
                                   value={locationSearch}
                                   onChange={(e) => setLocationSearch(e.target.value)}
                                 />
@@ -414,13 +424,13 @@ const AllJobPost = () => {
                           <div className="accordion-item">
                             <h2 className="accordion-header">
                               <button className="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSalary">
-                                <b>Salary Range</b>
+                                <b>{t("SalaryRange")}</b>
                               </button>
                             </h2>
                             <div id="collapseSalary" className="accordion-collapse collapse show">
                               <div className="accordion-body">
-                                <input type="number" name="salary_min" className="form-control mb-2" placeholder="Min Salary" value={localFilters.salary_min} onChange={handleInputChange} />
-                                <input type="number" name="salary_max" className="form-control" placeholder="Max Salary" value={localFilters.salary_max} onChange={handleInputChange} />
+                                <input type="number" name="salary_min" className="form-control mb-2" placeholder={t("MinSalary")} value={localFilters.salary_min} onChange={handleInputChange} />
+                                <input type="number" name="salary_max" className="form-control" placeholder={t("MaxSalary")} value={localFilters.salary_max} onChange={handleInputChange} />
                               </div>
                             </div>
                           </div>
@@ -436,17 +446,22 @@ const AllJobPost = () => {
                     <div className="modal-dialog modal-dialog-centered modal-lg">
                       <div className="modal-content">
                         <div className="modal-header">
-                          <h5 className="modal-title">Filter Jobs</h5>
+                          <h5 className="modal-title">{t("FilterJobs")}</h5>
                           <button type="button" className="btn-close" onClick={() => setActiveMobileFilter("")}></button>
                         </div>
                         <div className="modal-body d-flex" style={{ height: "250px" }}>
                           <div className="w-50 border-end">
                             <ul className="list-group list-group-flush">
-                              {["category", "job_type", "experience", "location", "salary"].map((key) => (
+                              {[("category"), "job_type", "experience", "location", "salary"].map((key) => (
                                 <li key={key} className={`list-group-item ${activeMobileFilter === key ? "active" : ""}`} onClick={() => setActiveMobileFilter(key)}>
                                   {key.charAt(0).toUpperCase() + key.slice(1).replace("_", " ")}
                                 </li>
                               ))}
+                               {/* {[t("SimpleCategory"), t("JobType"), t("SimpleExperience"), t("SimpleLocation"), t("SalaryRange")].map((key) => (
+                                <li key={key} className={`list-group-item ${activeMobileFilter === key ? "active" : ""}`} onClick={() => setActiveMobileFilter(key)}>
+                                  {key.charAt(0).toUpperCase() + key.slice(1).replace("_", " ")}
+                                </li>
+                              ))} */}
                             </ul>
                           </div>
                           <div className="w-50 ps-3 overflow-auto">
@@ -455,7 +470,7 @@ const AllJobPost = () => {
                                 <input
                                   type="search"
                                   className="form-control mb-2"
-                                  placeholder="Search categories..."
+                                  placeholder={t("SearchCategories")}
                                   value={categorySearch}
                                   onChange={(e) => setCategorySearch(e.target.value)}
                                 />
@@ -526,8 +541,8 @@ const AllJobPost = () => {
                           </div>
                         </div>
                         <div className="modal-footer">
-                          <button className="btn btn-sm btn-secondary" onClick={handleResetFilters}>Reset</button>
-                          <button className="btn btn-sm btn-primary" onClick={handleApplyFilters}>Apply</button>
+                          <button className="btn btn-sm btn-secondary" onClick={handleResetFilters}>{t("Reset")}</button>
+                          <button className="btn btn-sm btn-primary" onClick={handleApplyFilters}>{t("Apply")}</button>
                         </div>
                       </div>
                     </div>
@@ -559,7 +574,7 @@ const AllJobPost = () => {
                   <div className="card border-0 shadow">
                     <div className="card-body text-center p-4">
                     <img className="job_search" src="/images/no-job.png" alt="job_search" />
-                    <h6 className="text-theme">{error === "No data found" ? "No jobs found at the moment.." : "No data found"}</h6>
+                    <h6 className="text-theme">{error}</h6>
                 </div>
                   </div>
                 </div>
@@ -599,7 +614,7 @@ const AllJobPost = () => {
                                 }`}
                                 onClick={() => toggleSavedJob(job.id)}
                                   title={
-                                    isJobSaved(job.id) ? "Click to unsave" : "Click to save"}
+                                    isJobSaved(job.id) ? t("ClickToUnsave") : t("ClickToSave")}
 
                                 ></i>
                               </Link>
@@ -615,7 +630,7 @@ const AllJobPost = () => {
                               <h6 className="m-0 text-capitalize" dangerouslySetInnerHTML={{ __html: job.title }}></h6>
                             </Link>
                           </div>
-                          <p className="main_desc">Trusted global solutions company.</p>
+                          <p className="main_desc">{job.company_tagline}</p>
                           <ul className="p-0 d-flex flex-wrap m-0">
                             {job.job_type && (
                               <li>
@@ -666,7 +681,7 @@ const AllJobPost = () => {
                   <div className="card  border-0 shadow">
                     <div className="card-body text-center p-4">
                     <img className="job_search" src="/images/no-job.png" alt="job_search" />
-                    <h6 className="text-theme">{error === "No data found" ? "No jobs found at the moment.." : "No jobs found at the moment.."}</h6>
+                    <h6 className="text-theme">{error }</h6>
                   </div>
                   </div>
                 </div>

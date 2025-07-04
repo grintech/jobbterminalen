@@ -44,7 +44,7 @@ const Login = () => {
     const data = new FormData();
     data.append("email", formData.email);
     data.append("password", formData.password);
-    data.append("lang", selectedLang);  // always send lang, default 'en'
+    data.append("lang", selectedLang); 
 
     try {
       const response = await axios.post(`${API_URL}/login_api.php`, data, {
@@ -87,16 +87,19 @@ const Login = () => {
     } catch (error) {
       console.error("Error during API request:", error);
       const errorMessage =
-        error.response?.data?.message || "Something went wrong. Please try again.";
+        error.response?.data?.message || t("SomethingWrongPleaseTry");
       setAlert({ show: true, type: "danger", message: errorMessage });
       setTimeout(() => setAlert({ show: false, type: "", message: "" }), 3000);
     }
   };
 
   const resendVerificationEmail = async () => {
+
+     const selectedLang = i18n.language;
     try {
       const formDataToSend = new FormData();
       formDataToSend.append("email", formData.email);
+      formDataToSend.append("lang", selectedLang);
 
       const response = await axios.post(`${API_URL}/resend_email.php`, formDataToSend, {
         headers: {
@@ -119,14 +122,14 @@ const Login = () => {
         setAlert({
           show: true,
           type: "danger",
-          message: response.data.message || "Something went wrong!",
+          message: response.data.message || t("SomethingWrongPleaseTry"),
         });
       }
     } catch (error) {
       setAlert({
         show: true,
         type: "danger",
-        message: "An error occurred while resending the email.",
+        message: t("ErrorResendingEmail"),
       });
     }
 
