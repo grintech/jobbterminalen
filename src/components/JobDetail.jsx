@@ -586,18 +586,20 @@ const JobDetail = () => {
                             <span>{jobDetails.experience_required} Yrs</span>
                           </li> */}
 
-                          { jobDetails.experience_required === "0" ? (
-                            <li className="d-flex align-items-center pe-2  mb-2">
-                            <span className="fw-bold me-1">{t("Experience")}</span>
-                            <span>Fresher</span>
-                            </li>
-                            // <></> 
-                          ) : (
-                            <li className="d-flex align-items-center pe-2  mb-2">
-                            <span className="fw-bold me-1">{t("Experience")}</span>
-                            <span>{jobDetails.experience_required} Yrs</span>
-                            </li>
+                          {jobDetails.experience_required !== '' && (
+                            jobDetails.experience_required === '0' ? (
+                              <li className="d-flex align-items-center pe-2 mb-2">
+                                <span className="fw-bold me-1">{t("Experience")}</span>
+                                <span>Fresher</span>
+                              </li>
+                            ) : (
+                              <li className="d-flex align-items-center pe-2 mb-2">
+                                <span className="fw-bold me-1">{t("Experience")}</span>
+                                <span>{jobDetails.experience_required} Yrs</span>
+                              </li>
+                            )
                           )}
+
 
                           {jobDetails.salary_currency && jobDetails.salary_range && jobDetails.hourly_rate && (
                             <li className="d-flex align-items-baseline border-start ps-2 me-2 mb-2">
@@ -769,16 +771,22 @@ const JobDetail = () => {
                         )}
                       
                          <div className=" job-details mt-3">
+                         {jobDetails.title && (
                           <p className="text-capitalize">
                             <b className="me-1">{t("Role")}</b>{stripHtml(jobDetails.title)}
                           </p>
-                          <p className="text-capitalize">
-                          <b className="me-1">{t("IndustryType")}</b>{jobDetails.company_industry.replace(/-/g, ' ')}
-                          </p>
+                         )}
+                          {jobDetails.company_industry && (
+                            <p className="text-capitalize">
+                            <b className="me-1">{t("IndustryType")}</b>{jobDetails.company_industry.replace(/-/g, ' ')}
+                            </p>
+                          )}
 
+                        {jobDetails.job_type && (
                           <p className="text-capitalize">
                             <b className="me-1">{t("EmploymentType")}</b>{jobDetails.job_type.replace(/-/g, ' ')}
                           </p>
+                        )}
 
                            {jobDetails.parent_category_name && (                      
                             <p>
